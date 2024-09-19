@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Open Link and Get Address</title>
+  </head>
+
+  <body>
+    <input type="text" id="addressInput" placeholder="Enter address">
+    <button onclick="openLink()">Open Address</button>
+
+    <script>
+      function openLink() {
+        // Get the address from the input field
+        let address = document.getElementById('addressInput').value;
+        if (!address) {
+          alert('Please enter an address.');
+          return;
+        }
+
+        // Open a new window with the specified address
+        let newWindow = window.open(address, '_blank');
+
+        // Polling to check when the new window has loaded its content
+        let checkWindow = setInterval(function () {
+          try {
+            // Check if the new window has loaded and is on the same domain
+            if (newWindow.location.href && newWindow.document.readyState === 'complete') {
+              // Get the project name element
+              let projectNameElement = newWindow.document.querySelector('.project-name');
+
+              if (projectNameElement) {
+                // Get the next sibling element which contains the address information
+                let addressContainer = projectNameElement.nextElementSibling;
+                if (addressContainer && addressContainer.children.length >= 2) {
+                  // Extract the address parts
+                  let streetAddress = addressContainer.children[0].innerText;
+                  let cityAndPostalCode = addressContainer.children[1].innerText;
+
+                  // Check if the city contains "Vancouver"
+                  if (cityAndPostalCode.includes('Vancouver')) {
+                    console.log('Street Address:', streetAddress);
+                    console.log('City and Postal Code:', cityAndPostalCode);
+                  } else {
+                    console.log('Address not found in Vancouver.');
+                  }
+                } else {
+                  console.error('Address container structure not as expected.');
+                }
+              } else {
+                console.error('Project name element not found.');
+              }
+
+              // Clear the interval
+              clearInterval(checkWindow);
+
+              // Optionally, you can close the new window
+              // newWindow.close();
+            }
+          } catch (e) {
+            console.error('Error accessing the new window:', e);
+          }
+        }, 1000); // Check every second
+      }
+    </script>
+  </body>
+
+</html>

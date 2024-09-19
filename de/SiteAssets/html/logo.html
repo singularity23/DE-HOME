@@ -1,0 +1,126 @@
+<style>
+  :root {
+    --circle--diameter: 700px;
+    --box-height: 300px;
+    --box-width: 330px;
+    --single-width: 15px;
+    --all-width: calc(15px*8);
+    --single-cell-width: calc((var(--box-width) - var(--all-width))/7);
+
+  }
+
+  .black {
+    width: var(--box-width);
+    height: 200px;
+    background-color: black;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    box-sizing: block-box;
+    padding: 0px 0px 100px 0px;
+    border-collapse: collapse;
+
+
+  }
+
+  .black.two {
+    height: var(--box-height);
+    width: var(--box-width);
+    position: absolute;
+    top: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: transparent;
+    padding-bottom: 0px;
+
+  }
+
+  .right {
+    justify-content: flex-end;
+
+  }
+
+  .white {
+    background-color: white;
+  }
+
+  .vertical {
+    width: 15px;
+  }
+
+  .high {
+    height: 200px;
+
+  }
+
+  .low {
+    height: 100px;
+  }
+
+  .bottom {
+    align-self: self-end;
+  }
+
+  .horizontal {
+    height: 15px;
+  }
+
+  .box {
+    background-color: black;
+    height: var(--circle--diameter);
+    width: var(--circle--diameter);
+    border-radius: 100%;
+    position: absolute
+  }
+
+  .short {
+    width: calc(var(--box-width) - var(--single-cell-width) - var(--single-width));
+  }
+
+  .full {
+    height: 300px;
+  }
+
+  .right {
+    align-self: self-end;
+
+  }
+
+  .container {
+    height: var(--box-height);
+    width: var(--box-width);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: calc(var(--box-height)/-2);
+    margin-left: calc(var(--box-width)/-2);
+  }
+</style>
+
+<body>
+  <div class='box'>
+    <div class='container'>
+      <div class='black'>
+        <div class='white vertical full'></div>
+        <div class='white vertical high'></div>
+        <div class='white vertical low bottom'></div>
+        <div class='white vertical low bottom'></div>
+        <div class='white vertical high'></div>
+        <div class='white vertical low bottom'></div>
+        <div class='white vertical low'></div>
+        <div class='white vertical full'></div>
+      </div>
+      <div class='black two'>
+        <div class='white horizontal'></div>
+        <div class=' horizontal'></div>
+        <div class=' horizontal'></div>
+        <div class=' horizontal'></div>
+        <div class='white horizontal short right'></div>
+        <div class=' horizontal'></div>
+        <div class='white horizontal'></div>
+      </div>
+
+    </div>
+  </div>
+</body>

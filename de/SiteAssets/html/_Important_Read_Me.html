@@ -1,0 +1,372 @@
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <style>
+      /*!
+ * Bootstrap v3.3.7 (http://getbootstrap.com)
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+      /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+
+      hr {
+        border: 0
+      }
+
+      body {
+        margin: auto;
+        padding: 40px;
+        width: 70%;
+      }
+
+      html {
+        font-family: sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%
+      }
+
+      a {
+        background-color: transparent
+      }
+
+      a:active,
+      a:hover {
+        outline: 0
+      }
+
+      strong {
+        font-weight: 700
+      }
+
+      h1 {
+        margin: .67em 0
+      }
+
+      hr {
+        height: 0;
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        box-sizing: content-box
+      }
+
+      pre {
+        overflow: auto
+      }
+
+      code,
+      pre {
+        font-size: 1em
+      }
+
+      /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
+      @media print {
+
+        blockquote,
+        pre {
+          page-break-inside: avoid
+        }
+
+        *,
+        :after,
+        :before {
+          color: #000 !important;
+          text-shadow: none !important;
+          background: 0 0 !important;
+          -webkit-box-shadow: none !important;
+          box-shadow: none !important
+        }
+
+        a,
+        a:visited {
+          text-decoration: underline
+        }
+
+        a[href]:after {
+          content: " (" attr(href) ")"
+        }
+
+        abbr[title]:after {
+          content: " (" attr(title) ")"
+        }
+
+        blockquote,
+        pre {
+          border: 1px solid #999
+        }
+
+        h2,
+        p {
+          orphans: 3;
+          widows: 3
+        }
+
+        h2 {
+          page-break-after: avoid
+        }
+      }
+
+      body {
+        background-color: #fff
+      }
+
+      @font-face {
+        font-family: 'Glyphicons Halflings';
+        src: url(../fonts/glyphicons-halflings-regular.eot);
+        src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),
+          url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'),
+          url(../fonts/glyphicons-halflings-regular.woff) format('woff'),
+          url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'),
+          url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
+      }
+
+      *,
+      :after,
+      :before {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box
+      }
+
+      html {
+        font-size: 10px;
+        -webkit-tap-highlight-color: transparent
+      }
+
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #333
+      }
+
+      a {
+        color: #337ab7;
+        text-decoration: none
+      }
+
+      a:focus,
+      a:hover {
+        color: #23527c;
+        text-decoration: underline
+      }
+
+      a:focus {
+        outline: -webkit-focus-ring-color auto 5px;
+        outline-offset: -2px
+      }
+
+      hr {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border-top: 1px solid #eee
+      }
+
+      h1,
+      h2,
+      h4 {
+        font-family: inherit;
+        font-weight: 500;
+        line-height: 1.1;
+        color: inherit
+      }
+
+      h1,
+      h2 {
+        margin-top: 20px;
+        margin-bottom: 10px
+      }
+
+      h4 {
+        margin-top: 10px;
+        margin-bottom: 10px
+      }
+
+      h1 {
+        font-size: 36px
+      }
+
+      h2 {
+        font-size: 30px
+      }
+
+      h4 {
+        font-size: 18px
+      }
+
+      p {
+        margin: 0 0 10px
+      }
+
+      pre {
+        line-height: 1.42857143
+      }
+
+      pre code {
+        background-color: transparent
+      }
+
+      ul {
+        margin-top: 0
+      }
+
+      blockquote p:last-child,
+      ul ul {
+        margin-bottom: 0
+      }
+
+      ul {
+        margin-bottom: 10px
+      }
+
+      abbr[title] {
+        cursor: help;
+        border-bottom: 1px dotted #777
+      }
+
+      blockquote {
+        padding: 10px 20px;
+        margin: 0 0 20px;
+        font-size: 14.5px;
+        border-left: 5px solid #eee
+      }
+
+      pre {
+        display: block;
+        color: #333
+      }
+
+      code {
+        padding: 2px 4px;
+        font-size: 90%
+      }
+
+      code,
+      pre {
+        font-family: Menlo, Monaco, Consolas, "Courier New", monospace
+      }
+
+      code {
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 4px
+      }
+
+      pre {
+        padding: 9.5px;
+        margin: 0 0 10px;
+        font-size: 13px;
+        word-break: break-all;
+        word-wrap: break-word;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 4px
+      }
+
+      pre code {
+        padding: 0;
+        font-size: inherit;
+        color: inherit;
+        white-space: normal;
+        border-radius: 0
+      }
+
+      @-ms-viewport {
+        width: device-width;
+      }
+
+      @viewport {
+        width: device-width;
+      }
+
+      .hljs-link {
+        color: #f5871f
+      }
+
+      .hljs-bullet,
+      .hljs-string {
+        color: #718c00
+      }
+    </style>
+  </head>
+
+  <body>
+    <script type="text/javascript" src="../js/default.js"></script>
+
+    <hr>
+    <h1 id="intro">Intro</h1>
+    <p>In order to modify the main page, you have to modify the corresponding files under this directory. Download all
+      .md files. Open the one you need to edit - each .md file is related to each panel on the HydroShare.</p>
+    <p>For example, if you want to edit the link under &quot;Administrative&quot;, then you need to open
+      &quot;1_Administrative.md&quot; file with Notepad. </p>
+    <hr>
+    <h2 id="update-the-md-files">Update the .md Files</h2>
+    <h4 id="lists-and-links-">Lists and Links:</h4>
+    <p>List item example in html:</p>
+    <ul>
+      <link rel="stylesheet" type="text/css" href="../css/default.css?v=1.1" />
+      <li><a href="http://pq.bchydro.bc.ca:99/index.php">E13 Desk Booking</a></li>
+    </ul>
+    <p>in .md file:</p>
+    <pre><code><span class="hljs-bullet">* </span>[<span class="hljs-string">E13 Desk Booking</span>](<span
+              class="hljs-link">http://pq.bchydro.bc.ca:99/index.php</span>)
+      </code></pre>
+    <p>Indented list item example in html:</p>
+    <ul>
+      <li><a href="/sites/de/sites/de/DELT/Forms/AllItems.aspx"><abbr
+                title="Distribution Engineering Leadership Team">DELT</abbr></a>
+        <ul>
+          <li><a href="/sites/de/Business_Review/Forms/AllItems.aspx">Business Review<new></new></a></li>
+        </ul>
+      </li>
+    </ul>
+    <p>in .md files:</p>
+    <pre><code>
+        <div class='hljs-code'><span class="hljs-bullet">* </span>[<span class="hljs-string">&lt;abbr
+            title="Distribution Engineering
+            Leadership Team"&gt;DELT&lt;/abbr&gt;</span>](<span
+                class="hljs-link">/sites/de/sites/de/DELT/Forms/AllItems.aspx "Distribution Engineering Team
+            Leads-DELT"</span>)</div>
+        <div class='hljs-code'>
+          <span class="hljs-bullet"> ** </span>[<span class="hljs-string">Business
+            Review<code>&lt;new&gt;&lt;/new&gt;</code></span>](<span
+                class="hljs-link">/sites/de/Business_Review/Forms/AllItems.aspx</span>)
+        </div>
+      </code></pre>
+    <blockquote>
+      <p><code>[ ]</code> contains the text description of your choice for the link; <code>( )</code> includes the
+        actual <strong>url</strong> of the link, e.g. <code>https://</code>, <code>file:\\\</code>,etc.;</p>
+      <p>For indented list, adding either a space <code>' '</code> or a star <code>*</code> works</p>
+      <p><strong>Note</strong>: If the link is from network drive, like <code>J:\\Engineering\Distribution\CHARGE
+          CODES\F24\</code> This is not a properly decoded format. Paste this link into your broswer, and press enter.
+        Copy the new link in the search bar. It should look like this:
+        <code>(file:///)J://Engineering/Distribution/CHARGE%20CODES/F24/</code> with and without <code>file:///</code>
+        are both fine
+      </p>
+    </blockquote>
+    <h4 id="abbreviations-">Abbreviations:</h4>
+    <p>In the above example:</p>
+    <blockquote>
+      <p><code>[ ]</code> other than <code>DELT</code>, it is wrapped around with <code>&lt;abbr
+          title=&quot;Distribution Engineering Leadership Team&quot;&gt;DELT&lt;/abbr&gt;</code>. This is to show the
+        full name of this abbriviation in html. </p>
+    </blockquote>
+    <h4 id="new-and-updated-items-">New and Updated Items:</h4>
+    <p>For new link item or updated link item:</p>
+    <blockquote>
+      <p>Inside <code>[ ]</code>, add tags <code>&lt;new&gt;&lt;/new&gt;</code> in the end for new link items, add
+        <code>&lt;update&gt;&lt;/update&gt;</code> for updated link items. This is not conventional mark down syntax,
+        this is for html rendering purpose
+      </p>
+    </blockquote>
+    <hr>
+    <h2 id="make-html-code">Make HTML Code</h2>
+    <hr>
+    <p>Once you have edited the .md files, click <a
+         href="/sites/de/sites/de/Site Assets/html/Markdown2HTML.html">Here</a>.
+      Choose the all <code>.md</code> files that you just downloaded and edited, then click on <code>Submit</code>. The
+      html code will be generated. You can preview the results from there. Click on <code>Copy HTML Code</code>, then
+      paste it to HydroShare to replace all the existing code.</p>
+  </body>
+
+</html>

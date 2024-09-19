@@ -1,0 +1,247 @@
+<html lang="EN">
+
+	<head>
+		<meta name="viewport" content="width=device-width" , initial-scale=1.0,
+					maximum-scale=1.0" />
+		<meta charset="utf-8" />
+		<title>Aspen Feeder Relay Query Tool</title>
+		<style>
+			* {
+				box-sizing: border-box;
+				/* color: black; */
+				/* margin: 0 10px; */
+				/* margin: 10px; */
+				/* padding: 10px; */
+			}
+
+			div {
+				margin: 10px;
+			}
+
+			body {
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 1.382rem;
+				background: #FFF;
+			}
+
+			#code-container,
+			#render-container,
+			#file-container,
+			#search-container {
+				width: 800px;
+				max-width: 90%;
+				margin: auto;
+				border: 1px solid #d0d0d0;
+				background-color: #f3f3f3;
+				padding: 20px, 20px;
+				display: block;
+				margin: auto;
+				/* align-self: normal; */
+			}
+
+			#search-container input {
+				padding: 10px 10px;
+				margin: 10px 10px;
+				border-radius: 0px;
+				border-style: inset;
+				background-color: white;
+				border-width: 2px;
+				border-color: #d0d0d0;
+				font-size: 1.382rem;
+			}
+
+			#search-container input:valid {
+				background-color: #dcf1da;
+			}
+
+			#search-container input:invalid {
+				background-color: #fedad0;
+			}
+
+			input[type="text"]:focus-visible,
+			input[type="text"]:focus-within,
+			input[type="text"]:focus {
+				outline: grey solid 1px;
+				border-radius: 0px;
+			}
+
+
+			.container {
+				max-width: 1000px;
+				width: 90%;
+				padding: 15px;
+				display: block;
+				box-sizing: border-box;
+				margin: auto;
+				padding: 20px;
+			}
+
+			#search-container label {
+				padding: 10px 10px;
+				font-weight: bold;
+				align-content: center;
+				text-align: right;
+			}
+
+			.button {
+				transition-duration: 0.4s;
+				cursor: pointer;
+				padding: 10px 10px;
+				margin: 10px 10px 10px 0;
+				font-weight: bold;
+				font-size: 1.382rem;
+			}
+
+			.button1 {
+				background-color: white;
+				color: black;
+				border: 2px solid #04AA6D;
+			}
+
+			.button1:hover {
+				background-color: #04AA6D;
+				color: white;
+			}
+
+			.button2 {
+				background-color: white;
+				color: black;
+				border: 2px solid #008CBA;
+			}
+
+			.button2:hover {
+				background-color: #008CBA;
+				color: white;
+			}
+
+			.section {
+				padding: 10px 20px;
+			}
+
+			.preview {
+				width: 65%;
+				align-content: center;
+			}
+
+			.preview_box {
+				display: inline-block;
+				border: 1px solid #ddd;
+				text-decoration: none;
+				display: flex;
+				flex-wrap: nowrap;
+				justify-content: space-between;
+				background-color: white;
+				vertical-align: middle;
+			}
+
+			form {
+				display: block;
+				padding: 5rem 0;
+			}
+
+			#warning {
+				color: #fa4616;
+				font-size: 0.8rem;
+			}
+
+			fieldset {
+				width: 40%;
+				margin: auto;
+			}
+
+			legend {
+				font-size: 1.2rem;
+			}
+
+			video {
+				/* margin: auto; */
+				/* padding: 0px; */
+				/* box-sizing: content-box; */
+				display: block;
+				flex-direction: column;
+				align-content: stretch;
+				align-items: center;
+				justify-content: space-around;
+			}
+		</style>
+	</head>
+
+	<body>
+		<form action="./aspen.html#" class="container">
+			<fieldset id="search-container">
+				<legend>PN Info Query from ASPEN</legend>
+				<div class="preview_box">
+					<label for="feeder-input">Feeder ID:</label>
+					<input class="preview" type="text" name="feeder-input" id="feeder-input" placeholder="e.g. CSQ 12F72"
+								 pattern="^\w{3}\s(4|12|25|35)(F)\d{2,3}\w?" required title="please follow the pattern " />
+					<button class="button button2" type="button" name="button_1" id="submit_1">Search</button>
+					<em id="warning"></em>
+				</div>
+				<br />
+				<small>
+					<div>Drag the following link to your bookmark bar on your browser, and click it when you are in the result
+						window (<mark>Updated: 2024-09-17</mark>)
+						<ul>
+							<li><a title="output"
+									 href='javascript:!function(){let e="SV3";const t=(e,t)=>{let r=[t];Array.from(e.rows).forEach((e=>{if("highlight"!=e.id){let l=e.querySelectorAll("td");if(l.length>=2){let o=l[2].innerText.trim();o.startsWith("SV")&&(t.includes(o)?r.push(l[3].textContent):e.remove())}}})),equations=r.join("+"),Array.from(e.rows).forEach((e=>{if("highlight"!=e.id){let t=e.querySelectorAll("td");if(t.length>=2){let r=t[2].innerText.trim();const l=r.slice(-1),o=r.slice(-2);"TD"===o||"TC"===o?r=r.slice(0,-2):["P","C","D"].includes(l)&&(r=r.slice(0,-1));const n=["51P1TC","51PTC"],i={"50P2":"67P2","50P3":"67P3","50P4":"67P4"};-1!==equations.indexOf(r)||n.includes(r)||(i[r]&&equations.includes(i[r])?console.log(r):e.remove())}}}))},r=()=>"\n"+"-".repeat(140)+"\n",l=(e,t)=>{const r=new Blob([t],{type:"text/plain"});let l=e[0].textContent.split(" "),o=`${l[0]} ${l[1]}`+" PN Info.txt",n=document.createElement("a");n.href=URL.createObjectURL(r),n.download=o,n.click(),URL.revokeObjectURL(n.href)},o=e=>{let t="";const r={G:"GND ",P:"PHS ",Q:"NEG ",N:"NEU"},l=e.charAt(2);if(r[l]&&(t+=r[l]),/^50P[234]/.test(e))t="Definite Time Pick Up(A)";else if(/^67P[234]/.test(e))t="Definite Time Delay(s)";else{/^50/.test(e)?t+="Inst. Overcurrent ":/^51/.test(e)&&(t+="Timed Overcurrent ");const r={P:"Pick Up(A)",C:"Curve",TD:"Time Dial(s)",TC:"Torque Control"},l=e.slice(-1),o=e.slice(-2);r[o]?t+=r[o]:r[l]&&(t+=r[l])}return/^50[PG]5/.test(e)&&(t+=" (Live Line)"),/^SV\d?\w+/.test(e)&&(t="_Trip Equation"),t},n=e=>{let t=Array.from(e.querySelectorAll("tr:has(td)"));t.sort(((e,t)=>{let r=e.querySelectorAll("td")[4].innerText,l=t.querySelectorAll("td")[4].innerText;return r.localeCompare(l)})),t.forEach((t=>e.appendChild(t)))},i=e=>{Array.from(e.rows).forEach(((e,t)=>{let r=e.querySelectorAll("td");t>1&&r.length>=2&&(r[0]?.remove(),r[1]?.remove(),r[5]?.remove())})),e.rows[1]&&(e.rows[1].querySelectorAll("td")[0].rowSpan=e.rows.length-1,e.rows[1].querySelectorAll("td")[1].rowSpan=e.rows.length-1,e.rows[1].querySelectorAll("td")[5].rowSpan=e.rows.length-1),e.rows[0]&&(e.rows[0].querySelectorAll("th")[0].textContent="PROTECTION",e.rows[0].querySelectorAll("th")[4].textContent="DEVICE",e.rows[0].querySelectorAll("th")[5].textContent="NOTE",e.rows[0].querySelectorAll("th")[5].setAttribute("width","15%"))},s=e=>{e.style.fontFamily="monospace",document.getElementById("highlight").style.fontWeight="bold";let t=e.outerHTML.replaceAll("\n","<br style="mso-data-placement:same-cell;"/>").replaceAll("<td","<td style="vertical-align: top;"");window.location.href="data:application/vnd.ms-excel;base64,"+window.btoa(t)};let c=document.querySelector("#OutputScroll table table:last-of-type");if(c){c.id="myTable",(e=>{Array.from(e.querySelectorAll("*")).forEach((e=>{for(e.style.cssText="";e.attributes.length>0;)e.removeAttribute(e.attributes[0].name)}))})(c),e=((e,t)=>(Array.from(e.rows).forEach((e=>{let r=Array.from(e.cells);""===e.innerText.trim()?e.remove():"TR"===r[2].innerText.trim()&&t!==r[3].innerText.trim()&&(t=r[3].innerText.trim(),console.log(t))})),t))(c,e);let a=c.querySelectorAll("tr:has(td)");c.querySelectorAll("td[nowrap]");a.length<10?((e,t)=>{let o=r();Array.from(t).forEach((t=>{Array.from(t.cells).forEach(((t,l)=>{let n=document.createElement("tr"),i=t.cloneNode(!0);i.style.whiteSpace="break-spaces",n.appendChild(i),e.appendChild(n),o+=t.textContent+(l%5==4?r()+"\n":"\n")})),t.remove()}));let n=e.querySelector("tr:has(th)");n&&n.remove(),e.style.fontFamily="monospace",l(t[0].cells,o)})(c,a):((e=>{Array.from(e.rows).forEach((e=>{let t=Array.from(e.cells),r=e.insertCell(-1),l=t[t.length-1];r.outerHTML=l.outerHTML}))})(c),((e,r)=>{console.log(r);let l="";Array.from(e.rows).forEach((e=>{let t=Array.from(e.cells);if(t.length>=5){const n=t[2].innerText.trim();let i=o(n);n===r&&(e.id="highlight",t[3].classList.add("equation"),t[3].id="equation",l=t[3].textContent),t[4].innerText=i.trim()}})),t(e,l),n(e),i(e),s(e)})(c,e))}}();'>ASPEN
+									Result Download</a>
+							</li>
+						</ul>
+					</div>
+				</small><br />
+				<hr />
+				<footer>
+					<small>Thanks <em>Joel McFaul</em> for the original idea. Please report issues to <a
+							 href="mailto:kan.tang@bchydro.com">Kan Tang</a>
+					</small>
+				</footer>
+			</fieldset>
+		</form>
+		<div id='file-container'>
+			<video width="800" controls>
+				<source src="../../SiteAssets/video/0905.mp4" type="video/mp4">
+			</video>
+		</div>
+		<script>
+			const button_1 = document.getElementById('submit_1')
+			const reg = /\w{3}\s((4)|(12)|(25)|(35))(F)\d{2,3}\w?/
+			var input = document.getElementById('feeder-input')
+
+			// Execute a function when the user presses a key on the keyboard
+			input.addEventListener('keypress', function (event) {
+				// If the user presses the "Enter" key on the keyboard
+				if (event.key === 'Enter') {
+					// Cancel the default action, if needed
+					event.preventDefault()
+					// Trigger the button element with a click
+					button_1.click()
+				}
+			})
+
+			button_1.onclick = () => {
+				const feeder_id = document.getElementById('feeder-input').value
+				console.log(feeder_id)
+
+				//check all the select statements and submit the appropriate SQL statement
+				const address_1 = `SELECT TR.S01 AS DEVICE,TQ.RELAYTYPE AS RELAY, TT.SETTINGNAME AS ELEMENT, CASE WHEN TT.SETTINGNAME NOT LIKE '%25D' AND TT.SETTINGNAME NOT LIKE '%25C' AND TS.SETTING<>'OFF' THEN UPPER(TS.SETTING*(SELECT TS.SETTING FROM TSETTING1 TS,TSETTYPE1 TT WHERE TR.S01 LIKE '${feeder_id}%25'AND TR.RELAYTYPE LIKE 'SEL%25'AND TR.ID=TQ.RELAYID AND TQ.ID=TS.REQUESTID AND TT.RELAYTYPE=TQ.RELAYTYPE AND TT.ROWNUMBER=TS.ROWNUMBER AND TS.GROUPNAME='1'AND TT.SETTINGNAME='CTR')) WHEN TT.SETTINGNAME LIKE '67%25D' AND TS.SETTING<>'OFF' THEN UPPER(TS.SETTING/60) ELSE TS.SETTING END AS SETTING,TQ.M01 AS MEMO FROM TSETTING1 TS,TSETTYPE1 TT,TRELAY TR,TREQUEST TQ WHERE TR.S01 LIKE '${feeder_id}%25'AND TR.RELAYTYPE LIKE 'SEL%25'AND TR.ID=TQ.RELAYID AND TQ.ID=TS.REQUESTID AND TT.RELAYTYPE=TQ.RELAYTYPE AND TT.ROWNUMBER=TS.ROWNUMBER AND TS.GROUPNAME='1'AND UPPER(TQ.S02)='IN SERVICE' AND TT.SETTINGNAME IN('51P1P','51P1TD','51P1C','50P1P','50P2P','50P3P','50P4P','50P5P','67P2D','67P3D','67P4D','51G1P','51G1TD','51G1C','50G1P','50G5P','51PP','51PTD','51PC','51GP','51GTD','51GC','51P','51TD','51C','50L','50H','51NP','51NTD','51NC','50NL','50NH','51QP','51QTD','51QC','50Q') UNION ALL SELECT TR.S01 AS DEVICE,TR.S04 AS RELAY,TR.S06 AS VENDER, TQ.RELAYTYPE, TQ.M01 AS MEMO FROM TRELAY TR, TREQUEST TQ WHERE TR.S01 LIKE '${feeder_id}%25' AND UPPER(TR.RELAYTYPE) LIKE 'ELECTRO%25' AND TR.ID = TQ.RELAYID AND UPPER(TQ.S02)='IN SERVICE'`
+
+				let address_2 = `SELECT R.S01 AS DEVICE,Q.RELAYTYPE AS RELAY,T.SETTINGNAME AS ELEMENT,CASE WHEN T.SETTINGNAME NOT LIKE'%25D'AND T.SETTINGNAME NOT LIKE'%25C'AND S.GROUPNAME='1'AND S.SETTING<>'OFF'THEN UPPER(S.SETTING*(SELECT S.SETTING FROM TSETTING1 S,TSETTYPE1 T WHERE R.S01 LIKE'${feeder_id}%25'AND R.RELAYTYPE LIKE'SEL%25'AND R.ID=Q.RELAYID AND Q.ID=S.REQUESTID AND T.RELAYTYPE=Q.RELAYTYPE AND T.ROWNUMBER=S.ROWNUMBER AND S.GROUPNAME='1'AND T.SETTINGNAME='CTR'))WHEN T.SETTINGNAME LIKE'67%25D'AND S.GROUPNAME='1'AND S.SETTING<>'OFF'THEN UPPER(S.SETTING/60)ELSE S.SETTING END AS SETTING,Q.M01 AS MEMO FROM TSETTING1 S,TSETTYPE1 T,TRELAY R,TREQUEST Q WHERE R.S01 LIKE'${feeder_id}%25'AND R.RELAYTYPE LIKE'SEL%25'AND R.ID=Q.RELAYID AND Q.ID=S.REQUESTID AND T.RELAYTYPE=Q.RELAYTYPE AND T.ROWNUMBER=S.ROWNUMBER AND UPPER(Q.S02)='IN SERVICE'AND((S.GROUPNAME ='1'AND T.SETTINGNAME IN('51P1P','51P1TD','51P1C','50P1P','50P2P','50P3P','50P4P','50P5P','67P2D','67P3D','67P4D','51G1P','51G1TD','51G1C','50G1P','50G5P','51PP','51PTD','51PC','51GP','51GTD','51GC','51P','51TD','51C','50L','50H','51NP','51NTD','51NC','50NL','50NH','51QP','51QTD','51QC','50Q'))OR(S.GROUPNAME='L1'AND (T.SETTINGNAME LIKE 'SV%25'OR T.SETTINGNAME IN('51P1TC','TR','51PTC'))))UNION ALL SELECT R.S01 AS DEVICE,R.S04 AS RELAY,R.S06 AS VENDER,Q.RELAYTYPE,Q.M01 AS MEMO FROM TRELAY R,TREQUEST Q WHERE R.S01 LIKE'${feeder_id}%25'AND UPPER(R.RELAYTYPE)LIKE'ELECTRO%25'AND R.ID=Q.RELAYID AND UPPER(Q.S02)='IN SERVICE'`
+
+				let textArea = document.createElement("textarea");
+				textArea.innerText = address_2;
+				address_2 = textArea.value;
+				textArea.remove();
+
+				if (reg.test(feeder_id)) {
+					url_1 = 'http://kdcssweb1/aspen/rdbweb.exe?db=aspendb.udl&ln=BCHYDRO&cmd=editsql&execoption=Execute&st=' + address_2 + `&feeder=${feeder_id}`
+					const context_1 = window.open(url_1, '_blank')
+				} else {
+					document.getElementById('warning').innerHTML =
+						'Please use the correct format!'
+					console.log('warning')
+				}
+			}
+		</script>
+	</body>
+
+</html>
