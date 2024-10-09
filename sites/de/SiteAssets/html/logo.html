@@ -1,0 +1,227 @@
+<style>
+  :root {
+    --letter-height: 100px;
+    --letter-width: 100px;
+  }
+
+  .container {
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -300px;
+    margin-top: -300px;
+    z-index: 2;
+  }
+
+  .letter-container {
+    height: 250px;
+    width: 250px;
+    background-color: rgb(255, 255, 255);
+    display: grid;
+    border: 20px solid rgb(255, 255, 255);
+    border-radius: 50%;
+    z-index: 2;
+  }
+
+  .letter-container.two {
+    height: 250px;
+    width: 250px;
+    background-color: rgb(255, 255, 255);
+    display: grid;
+    border: 20px solid black;
+    border-radius: 50%;
+    z-index: 2;
+    position: absolute;
+    border-bottom-color: white;
+    transform: rotate(30deg);
+  }
+
+  .letter {
+    height: var(--letter-height);
+    width: var(--letter-width);
+    background-color: transparent;
+    z-index: 2;
+  }
+
+  .letter-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .end {
+    align-items: end;
+
+  }
+
+  .start {
+    align-items: start;
+
+  }
+
+  .circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgb(255, 255, 255);
+    border: 20px solid red;
+    box-sizing: border-box;
+    z-index: -2;
+  }
+
+  .circle.big {
+    box-sizing: border-box;
+    width: 110%;
+    height: 110%;
+  }
+
+  .diag {
+    transform: rotate(-45deg);
+    top: -75px !important;
+    height: 140px !important;
+    right: 29px;
+  }
+
+  .diag-2 {
+    transform: rotate(-45deg);
+    left: 10px;
+    top: -84px !important;
+  }
+
+  .stick {
+    width: 20px;
+    background-color: black;
+    height: 55px;
+    position: relative;
+
+    z-index: 1;
+  }
+
+  .left {
+    float: left;
+  }
+
+  .right {
+    float: right;
+  }
+
+  .bottom {
+    top: -50px;
+
+  }
+
+  .top {
+
+    top: -160px;
+    height: 90px !important;
+  }
+
+  .bar {
+    height: 20px;
+    width: 110px;
+    position: relative;
+    right: 25px;
+    background-color: black;
+    top: -60px;
+  }
+
+  .bar.white {
+    background-color: white;
+    width: 50px;
+    right: -50px;
+    height: 40px;
+  }
+
+  .stick.white {
+    background-color: white;
+    z-index: 0;
+    height: 50px !important;
+    right: 40px;
+    top: -39px !important;
+    border-bottom-left-radius: 50%;
+    border-bottom: 8px solid white;
+  }
+
+  .triangle {
+    position: absolute;
+    height: 115px;
+    width: 125px;
+    top: 237px;
+    left: 193px;
+    background-color: white;
+    float: right;
+    z-index: 1;
+    transform: rotate(45deg);
+  }
+
+  .triangle.two {
+    position: absolute;
+    height: 50px;
+    width: 45px;
+    top: 239px;
+    left: 162px;
+    background-color: white;
+    float: right;
+    z-index: 0;
+    transform: rotate(45deg);
+  }
+
+  .blue {
+    background-color: rgb(255, 255, 255);
+  }
+
+  .red {
+    background-color: rgb(255, 255, 255);
+
+  }
+
+  .position {
+    position: relative;
+    top: -20px;
+    right: 5px;
+  }
+
+  .position-2 {
+    position: relative;
+    top: 10px;
+    right: 5px;
+  }
+</style>
+
+<body>
+  <div class='container'>
+    <div class='triangle'></div>
+    <div class='triangle two'></div>
+    <div class='letter-container two'></div>
+    <div class='letter-container'>
+      <div class='letter-row end'>
+        <div class='letter'>
+          <div class='circle'></div>
+          <div class='bar'></div>
+          <div class='bar white'></div>
+
+        </div>
+        <div class='letter position-2'>
+          <div class='circle big red'></div>
+          <div class='stick left top'></div>
+
+        </div>
+      </div>
+      <div class='letter-row start'>
+        <div class='letter position'>
+          <div class='circle big blue'></div>
+          <div class='stick left bottom'></div>
+          <div class='stick right bottom diag'></div>
+          <div class='stick white right bottom diag'></div>
+
+        </div>
+        <div class='letter'>
+          <div class='circle'></div>
+          <div class='stick right bottom diag-2'></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

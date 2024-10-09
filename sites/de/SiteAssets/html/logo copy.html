@@ -1,0 +1,111 @@
+<style>
+  :root {
+    --table--width: 300px;
+    --table--height: 150px;
+  }
+
+  .container {
+    position: absolute;
+    background-color: rgb(255, 255, 255);
+    height: 320px;
+    width: 320px;
+    left: 0px;
+    top: 0px;
+    border-radius: 100%;
+    border: 10px solid rgb(255, 255, 255);
+  }
+
+  .table-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: calc(var(--table--width)/-2);
+    margin-top: calc(var(--table--height)/-2);
+    background-color: rgb(255, 255, 255);
+  }
+
+  table {
+    max-width: var(--table--width);
+    min-height: var(--table--height);
+    border-spacing: 0px;
+    border-collapse: collapse;
+    border: 10px solid rgb(0, 0, 0);
+  }
+
+  td {
+    width: 50px;
+    height: 40px;
+    border: 10px solid rgb(0, 0, 0);
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .no-right {
+    border-right: none;
+  }
+
+  .no-left {
+    border-left: none;
+  }
+
+  .no-top {
+    border-top: none;
+  }
+
+  .no-bottom {
+    border-bottom: none;
+  }
+
+  .bar {
+    position: relative;
+    height: 0;
+    width: 0;
+    top: -10px;
+    border-left: 23px solid transparent;
+    border-top: 23px solid black;
+    float: right;
+  }
+
+  .blue,
+  .green,
+  .red {
+    background-color: white;
+  }
+</style>
+
+<body>
+  <div class='container'>
+    <table class='table-container'>
+      <tr>
+        <td class='no-bottom blue'>
+          <div class='bar'></div>
+        </td>
+        <td class='no-right no-bottom green'></td>
+        <td class='no-left no-right no-bottom green'></td>
+        <td class='no-left no-bottom green'>
+          <div class='bar'></div>
+        </td>
+        <td class='no-right no-bottom red'></td>
+        <td class='no-left no-bottom no-top no-right red'>
+          <div class='bar'></div>
+        </td>
+      </tr>
+      <tr>
+        <td class='no-top no-bottom blue'></td>
+        <td class='no-top green'></td>
+        <td class='no-top green'></td>
+        <td class='no-top green'></td>
+        <td class='no-top red'></td>
+        <td class='no-top red'></td>
+      </tr>
+      <tr>
+        <td class='no-top no-right blue'></td>
+        <td class='no-left no-right blue'></td>
+        <td class='no-left no-right blue'></td>
+        <td class='no-left no-right blue'></td>
+        <td class='no-left no-right blue'></td>
+        <td class='no-left blue'></td>
+      </tr>
+    </table>
+  </div>
+</body>

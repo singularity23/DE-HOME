@@ -1,0 +1,53 @@
+<script>
+  const saveDataButton = document.getElementById("saveData");
+  const abbrs = document.querySelectorAll("abbr");
+  abbrs.forEach(function (abbr) {
+    abbr.parentElement.title = abbr.title + "-" + abbr.innerText;
+  });
+
+  var n = 0;
+  saveDataButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    const box_html = document.querySelectorAll(".box");
+    box_html.forEach(function (h) {
+      saveHtmlAsMarkdown(h);
+    });
+  });
+
+  function saveHtmlAsMarkdown(html) {
+    n += 1;
+    // Convert HTML to Markdown using Turndown
+    const turndownService = new TurndownService();
+    const markdown = turndownService.turndown(html.outerHTML);
+    console.log(markdown);
+    // Create a Blob with the markdown data
+    const blob = new Blob([markdown], { type: "text/markdown" });
+    const text = blob.text();
+    console.log(text);
+    const reg = /(?:\w{1}.+\w{1})/g;
+    // Create a link element for downloading the file
+    var title = html.querySelector(".box-head").textContent.trim();
+    const found = title.match(reg);
+    console.log(found);
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = n + "_" + found + ".md";
+    console.log(link.download);
+
+    // Trigger the download
+    link.click();
+  }
+</script>
+<ul class="btn-grp">
+  <li class="btn-grp__item">
+    <button class="btn btn--primary" id="saveData" type="submit">Save</button>
+  </li>
+  <li class="btn-grp__item">
+    <label for="fileInput">Load</label>
+    <input class="filebutton" type="file" id="fileInput">
+    <button class="btn btn--primary" id="loadData" type="button">Upload</button>
+  </li>
+  <li class="btn-grp__item">
+    <button class="btn btn--secondary" id="printData" type="button">Print</button>
+  </li>
+</ul>
