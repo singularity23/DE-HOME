@@ -443,6 +443,11 @@ div.popup.show {
   display: block;
 }
 
+img[alt="logo"] {
+  position: absolute;
+  margin-left: 8px;
+}
+
 
 @media only screen and (800px <=width <=1440px) {
   section {

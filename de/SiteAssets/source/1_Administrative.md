@@ -1,6 +1,5 @@
 Administrative​
 
-*   [DE Org Chart](https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/OrgCharts/Engineering%20Design%20D-Engineering.pdf)​​​​​​
 *   [Engineering HydroShare](https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Home.aspx)
 *   [Engineering Resources &amp; Templates​](https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Engineering.aspx)
 *   [Charge Codes F24](file:///J:/Engineering/Distribution/CHARGE%20CODES/F24)
