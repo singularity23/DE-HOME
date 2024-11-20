@@ -11,3 +11,4 @@ Administrative​
 *   [Employee Onboarding](https://hydroshare.bchydro.bc.ca/sites/de/DE%20Employee%20Onoboarding/Forms/AllItems.aspx)
 *   [<abbr title="Online Performance Planning &amp; Review Application">OPPRA</abbr>](https://w3oppra.bchydro.bc.ca/hrperf/)
 *   [Employee Connect](https://hydrosap.bchydro.bc.ca/irj/portal/)
+*   [CLRA Solution Office<new date="2025-01-31">new</new> ](https://hw.bchydro.bc.ca/p/clra-solution-office/Pages/Home.aspx)

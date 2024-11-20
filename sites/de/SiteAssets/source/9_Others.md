@@ -8,6 +8,7 @@
     *   [ServiceNow](https://bchydro.service-now.com/sp/)
 *   Site Visit & Trip
     *   [Worki​​ng Alone &amp; Journey Management​<new date="2024-11-29">new</new>](https://hw.bchydro.bc.ca/basicpage/working-alone)
+    *   [DE Specific Working Alone Procedure<new></new>](J:\Engineering\Distribution\1 Safety\Working Alone or in Isolation Program\0 CURRENT WORK ALONE PROCEDURE)
     *   [Business Travel​​](https://hw.bchydro.bc.ca/p/travel/Pages/Home.aspx)
     *   [Engineering - Field Work & Travel Form<new date="2024-12-04"></new>](https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form.pdf)
     *   [Engineering Expense Claim Template<new date="2024-12-04"></new>](https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Resources/Engineering%20Expense%20Claim%20Template.xlsx?d=w478c44664106465e8709a9391e65e56a)

@@ -17,3 +17,4 @@ Useful Links
     *   [<abbr title="Site Information System">SIS</abbr>](http://w3ecm/sis/)
     *   [Major Outage Briefing Note](file:///J:/Engineering/Distribution/1%20Reporting/10000%20Customer%20Hours%20Lost%20Reports)
     *   [Feeder Limits Database<update date="2024-11-29">update</update>](https://hydroshare.bchydro.bc.ca/sites/doperation/SitePages/Home.aspx)
+    *   [PowerOn Remote<new></new>](https://poweronremote.bchydro.bc.ca/poweronremote/)
