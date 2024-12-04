@@ -7,7 +7,7 @@ Useful Links
     *   [<abbr title="Planet Alteration Tracking">PAT</abbr>](https://kdcbchpoweb2.bchydro.bc.ca:7004/pat/)
     *   [Wiki<abbr title="Distribution Instructions">DI</abbr>](http://edmbchwiki1/di/index.php/Main_Page)
 *   Projects
-    *   [<abbr title="Strategic Portfolio Optimization Tool">SPOT</abbr>](http://kdcssweb1/fetbch/usr/userindex.aspx)
+    *   [<abbr title="Strategic Portfolio Optimization Tool">SPOT</abbr><update></update>](https://kdcsswebp1.bchydro.bc.ca/fetbch/usr/userindex.aspx)
     *   [<abbr title="Program &amp; Contract Management">PCM</abbr> Info Center](https://edmppmprt1.bchydro.bc.ca/pcm_ic/pcmic.htm)
     *   [<abbr title="Project &amp; Portfolio Management">PPM</abbr>&nbsp;Info Center​](https://edmppmprt1.bchydro.bc.ca/ppmic/_ppmic_home.htm)​
 *   [Revenue Metering​](https://hw.bchydro.bc.ca/basicpage/Revenue-Metering)

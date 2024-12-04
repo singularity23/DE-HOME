@@ -12,3 +12,4 @@ Administrative​
 *   [<abbr title="Online Performance Planning &amp; Review Application">OPPRA</abbr>](https://w3oppra.bchydro.bc.ca/hrperf/)
 *   [Employee Connect](https://hydrosap.bchydro.bc.ca/irj/portal/)
 *   [CLRA Solution Office<new date="2025-01-31">new</new> ](https://hw.bchydro.bc.ca/p/clra-solution-office/Pages/Home.aspx)
+*   [RDE Request Tracker<new></new>](https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338)
