@@ -77,7 +77,7 @@ html {
   background-color: var(--box-background-color);
   border-top: 6px solid var(--box-border-color);
   padding: 8px;
-  min-height: 500px;
+  min-height: 600px;
   font-size: 1rem;
   min-width: 400px;
 }

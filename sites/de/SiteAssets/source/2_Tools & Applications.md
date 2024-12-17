@@ -14,5 +14,6 @@ Tools & Applications
 *   Databases
     *   [<abbr title="Energy Analytics Solution">EAS</abbr>](https://eas.bchydro.bc.ca/home/index.html)
     *   [Distribution Planning (Tableau<sup>®</sup>)](https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home)​​
+    *   [Distribution Planning Record Documents<new></new>](https://hydroshare.bchydro.bc.ca/sites/distplan/DPRD/SitePages/Home.aspx?RootFolder=%2Fsites%2Fdistplan%2FDPRD%2FShared%20Documents%2FRDP&FolderCTID=0x012000D5EEE1F381027E4E89B2E794D6118D86&View=%7BEF36BA26%2D5104%2D45A5%2D99B6%2D28741059F1EC%7D)
     *   [Substation Feeder Load Research Tool (SAS<sup>®</sup>)](https://kdcsasva1.bchydro.bc.ca:8343/SASLogon)
     *   [BCH ArcGIS<sup>®</sup>](https://kdcesriweb1.bchydro.adroot.bchydro.bc.ca/gisportal/home/index.html)
