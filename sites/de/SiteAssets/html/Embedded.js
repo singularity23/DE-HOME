@@ -10,7 +10,7 @@ document.getElementById('searchButton').addEventListener('click', () => {
   }, 6e3)
   const S = (E) => {
     let T = ''
-    const S = { G: 'GND ', P: 'PHS ', Q: 'NEG ', N: 'NEU' },
+    const S = { G: 'GND ', P: 'PHS ', Q: 'NEG ', N: 'NEU ' },
       N = E.charAt(2)
     if ((S[N] && (T += S[N]), /^50P[234]/.test(E)))
       T = 'Definite Time Pick Up(A)'
