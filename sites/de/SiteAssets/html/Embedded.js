@@ -24,6 +24,8 @@ document.getElementById('searchButton').addEventListener('click', () => {
           C: 'Curve',
           TD: 'Time Dial',
           TC: 'Torque Control',
+          L: 'Low Set',
+          H: 'High Set',
         },
         N = E.slice(-1),
         R = E.slice(-2)
