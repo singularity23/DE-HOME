@@ -46,6 +46,6 @@ document.getElementById('searchButton').addEventListener('click', () => {
     } else {
       document.body.style.fontFamily = 'monospace'
     }
-    alert('query completed')
+    alert('Query Completed')
   }
 })
