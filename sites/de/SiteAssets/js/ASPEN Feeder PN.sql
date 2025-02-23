@@ -91,7 +91,7 @@ WHERE
       )
     )
     OR (
-      S.GROUPNAME LIKE "*"
+      S.GROUPNAME = "L1"
       AND (
         (
           T.SETTINGNAME LIKE (
@@ -110,7 +110,7 @@ WHERE
               AND T.RELAYTYPE = Q.RELAYTYPE
               AND T.ROWNUMBER = S.ROWNUMBER
               AND S.GROUPNAME = 'L1'
-              AND T.SETTINGNAME LIKE 'TR*'
+              AND T.SETTINGNAME = 'TR'
               AND UPPER(Q.S02) = 'IN SERVICE'
           )
         )
