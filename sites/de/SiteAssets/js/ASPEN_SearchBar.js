@@ -5,5 +5,3 @@ typeof switchEditor === 'function' && switchEditor()
 const searchBar = document.createElement('div')
 searchBar.innerHTML = searchBar_html
 document.body.insertBefore(searchBar, document.body.firstChild)
-
-document.head.innerHTML += '<meta http-equiv="Content-Security-Policy" content="default-src *; style-src \'self\' *.bchydro.bc.ca/* \'unsafe-inline\'; script-src \'self\' *.bchydro.bc.ca/* \'unsafe-inline\' \'unsafe-eval\'"></meta>'
