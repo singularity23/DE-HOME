@@ -8,10 +8,10 @@
     *   [ServiceNow](https://bchydro.service-now.com/sp/)
 *   Site Visit & Trip
     *   [Worki​​ng Alone &amp; Journey Management​<new date="2024-11-29">new</new>](https://hw.bchydro.bc.ca/basicpage/working-alone)
-    *   [DE Specific Working Alone Procedure<new></new>](J:\Engineering\Distribution\1 Safety\Working Alone or in Isolation Program\0 CURRENT WORK ALONE PROCEDURE)
+    *   [DE Specific Working Alone Procedure<new date="2025-04-01"></new>](J:\Engineering\Distribution\1 Safety\Working Alone or in Isolation Program\0 CURRENT WORK ALONE PROCEDURE)
     *   [Business Travel​​](https://hw.bchydro.bc.ca/p/travel/Pages/Home.aspx)
     *   [Engineering - Field Work & Travel Form<new date="2024-12-04"></new>](https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form.pdf)
-    *   [Engineering Expense Claim Template<new date="2025-04-01"></new>](https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20&%20Documents/Engineering%20Expense%20Claim%20Template.xlsx)
+    *   [Engineering Expense Claim Template<update date="2025-07-01"></update>](https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20&%20Documents/Engineering%20Expense%20Claim%20Template.xlsx)
 *   Vehicle Booking
     *   [Edmonds Office](https://hydroshare.bchydro.bc.ca/sites/de/Lists/Regional%20DE%20Pool%20Vehicle/calendar.aspx)
     *   [Victoria Office](https://hydroshare.bchydro.bc.ca/sites/de/Lists/Victoria%20Pool%20Vehicle%20%2019S71/calendar.aspx)
