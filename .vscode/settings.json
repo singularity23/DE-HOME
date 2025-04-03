@@ -1,3 +1,4 @@
 {
-  "vscode-edge-devtools.headless": false
+  "vscode-edge-devtools.headless": false,
+  "editor.fontFamily": "JetBrains Mono, Roboto Mono, Cascadia Code, SF Mono,  Source Code Pro, Fira Code,  JetBrains Mono,  Consolas, 'Courier New', monospace"
 }

@@ -1,8 +1,8 @@
 function changeLayout() {
   const mainBodies = document.querySelectorAll('td[valign="top"][width="70%"]')
-  mainBodies.forEach((td) => (td.style.width = '85%'))
+  mainBodies.forEach(td => (td.style.width = '85%'))
   const sideBars = document.querySelectorAll('td[valign="top"][width="30%"]')
-  sideBars.forEach((td) => (td.style.width = '15%'))
+  sideBars.forEach(td => (td.style.width = '15%'))
   const hds = document.getElementById('s4-titlerow')
   hds && (hds.style.minHeight = '45px')
   const icon = document.getElementById('favicon')
@@ -12,8 +12,8 @@ function changeLayout() {
 }
 
 function removeZerowidth() {
-  document.querySelectorAll('.ms-rtestate-field').forEach((ele) => {
-    ele.querySelectorAll('br').forEach((br) => br.remove())
+  document.querySelectorAll('.ms-rtestate-field').forEach(ele => {
+    ele.querySelectorAll('br').forEach(br => br.remove())
   })
 }
 
@@ -47,7 +47,7 @@ function tagUpdate() {
   let futureDate = new Date(currentDate)
   futureDate.setMonth(currentDate.getMonth() + 3)
   let updateDateString = futureDate.toLocaleDateString()
-  document.querySelectorAll('new, update').forEach((tag) => {
+  document.querySelectorAll('new, update').forEach(tag => {
     if (!tag.getAttribute('date')) {
       tag.textContent = tag.tagName.toLowerCase()
       tag.setAttribute('date', updateDateString)
@@ -60,26 +60,39 @@ function tagUpdate() {
 }
 
 function handleLinks() {
-  document.querySelectorAll('div.box ul li a').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const linkUrl = link.href
-      if (linkUrl.startsWith('file:')) {
-        event.preventDefault()
-        const copiedText = decodeURI(linkUrl).replace(/\s/g, ' ')
-        navigator.clipboard.writeText(copiedText)
-        const inHtml = `<div>"<strong>${copiedText}</strong>"</div>\n <div>has been copied to the clipboard.</div>`
-        console.log('The link is copied to clipboard: ' + copiedText)
-        showPopup(inHtml)
-      } else {
-        event.preventDefault()
-        if (isValidUrl(linkUrl)) {
-          window.open(linkUrl, '_blank')
-        } else {
-          console.error('Invalid URL: ' + linkUrl)
-        }
-      }
-    })
-  })
+	document.querySelectorAll("div.box ul li a").forEach((link) => {
+		link.addEventListener("click", (event) => {
+			const linkUrl = link.href;
+			console.log(linkUrl);
+			if (linkUrl.startsWith("file:")) {
+				event.preventDefault();
+				const copiedText = decodeURI(linkUrl).replace(/\s/g, " ");
+				navigator.clipboard.writeText(copiedText);
+				const inHtml = `<div>"<strong>${copiedText}</strong>"</div>\n <div>has been copied to the clipboard.</div>`;
+				console.log("The link is copied to clipboard: " + copiedText);
+				showPopup(inHtml);
+			} else {
+				event.preventDefault();
+				if (isValidUrl(linkUrl)) {
+					const fname = decodeURI(linkUrl).split('?')[0].split('/').pop();
+					console.log(fname);
+					if (fname.match(/^.*\.(pdf|docx)$/i)) {
+						let ele = document.createElement("a");
+						ele.href = linkUrl;
+						ele.download = fname;
+						document.body.appendChild(ele);
+						console.log(ele);
+						ele.click();
+						document.body.removeChild(ele);
+					} else {
+						window.open(linkUrl, "_blank");
+					}
+				} else {
+					console.error("Invalid URL: " + linkUrl);
+				}
+			}
+		});
+	});
 }
 
 function isValidUrl(url) {
