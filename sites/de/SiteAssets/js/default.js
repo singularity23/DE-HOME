@@ -77,13 +77,8 @@ function handleLinks() {
 					const fname = decodeURI(linkUrl).split('?')[0].split('/').pop();
 					console.log(fname);
 					if (fname.match(/^.*\.(pdf|docx)$/i)) {
-						let ele = document.createElement("a");
-						ele.href = linkUrl;
-						ele.download = fname;
-						document.body.appendChild(ele);
-						console.log(ele);
-						ele.click();
-						document.body.removeChild(ele);
+						dlink = 'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/download.aspx?SourceUrl='
+						window.open(dlink+linkUrl, "_blank");
 					} else {
 						window.open(linkUrl, "_blank");
 					}
