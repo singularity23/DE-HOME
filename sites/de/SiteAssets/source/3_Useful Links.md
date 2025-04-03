@@ -7,7 +7,7 @@ Useful Links
     *   [<abbr title="Planet Alteration Tracking">PAT</abbr>](https://kdcbchpoweb2.bchydro.bc.ca:7004/pat/)
     *   [Wiki<abbr title="Distribution Instructions">DI</abbr>](http://edmbchwiki1/di/index.php/Main_Page)
 *   Projects
-    *   [<abbr title="Strategic Portfolio Optimization Tool">SPOT</abbr><update></update>](https://kdcsswebp1.bchydro.bc.ca/fetbch/usr/userindex.aspx)
+    *   [<abbr title="Strategic Portfolio Optimization Tool">SPOT</abbr><update date="2025-04-01"></update>](https://kdcsswebp1.bchydro.bc.ca/fetbch/usr/userindex.aspx)
     *   [<abbr title="Program &amp; Contract Management">PCM</abbr> Info Center](https://edmppmprt1.bchydro.bc.ca/pcm_ic/pcmic.htm)
     *   [<abbr title="Project &amp; Portfolio Management">PPM</abbr>&nbsp;Info Center​](https://edmppmprt1.bchydro.bc.ca/ppmic/_ppmic_home.htm)​
 *   [Revenue Metering​](https://hw.bchydro.bc.ca/basicpage/Revenue-Metering)
@@ -17,4 +17,5 @@ Useful Links
     *   [<abbr title="Site Information System">SIS</abbr>](http://w3ecm/sis/)
     *   [Major Outage Briefing Note](file:///J:/Engineering/Distribution/1%20Reporting/10000%20Customer%20Hours%20Lost%20Reports)
     *   [Feeder Limits Database<update date="2024-11-29">update</update>](https://hydroshare.bchydro.bc.ca/sites/doperation/SitePages/Home.aspx)
-    *   [PowerOn Remote<new></new>](https://poweronremote.bchydro.bc.ca/poweronremote/)
+    *   [PowerOn Remote<new date="2025-04-01"></new>](https://poweronremote.bchydro.bc.ca/poweronremote/)
+    *   [<abbr title="Distribution Asset Sustainment and Maintenance">DASM</abbr> HydroShare<new date="2025-07-01"></new>](https://hydroshare.bchydro.bc.ca/sites/distplan/dasm/SitePages/Home.aspx)
