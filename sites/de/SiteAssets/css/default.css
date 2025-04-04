@@ -450,10 +450,20 @@ img[alt="logo"] {
 }
 
 
-@media only screen and (800px <=width <=1440px) {
+@media only screen and (900px <=width <=1440px) {
   section {
     grid-template-columns: auto auto;
   }
+
+  .ms-fullWidth  {
+    width:100%;
+  }
+
+  #contentBox {
+    margin-left: 230px !important;
+    max-width: calc(100% - 220px) !important;
+    box-sizing: border-box !important;
+}
 
   .dev {
     text-align: left;
@@ -479,7 +489,7 @@ img[alt="logo"] {
 
 }
 
-@media only screen and (width <=800px) {
+@media only screen and (width <=900px) {
   section {
     grid-template-columns: 100%;
   }
@@ -490,6 +500,16 @@ img[alt="logo"] {
 
   div.sidebar {
     display: none;
+  }
+
+  .ms-fullWidth {
+    max-width: 100%;
+  }
+
+  #contentBox {
+    margin-left:0px !important;
+    box-sizing: border-box !important;
+    width:100% !important;
   }
 
   #DeltaPlaceHolderPageTitleInTitleArea {
