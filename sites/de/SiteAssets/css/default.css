@@ -265,7 +265,8 @@ div#MSOZoneCell_WebPartWPQ3, div#MSOZoneCell_WebPartWPQ6 {
 }
 
 #contentBox {
-  margin-left: 230px;
+  margin-left: 230px !important;
+  width:1690px !important;
 }
 
 #sideNavBox {
