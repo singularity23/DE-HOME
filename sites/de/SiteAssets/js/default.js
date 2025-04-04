@@ -1,193 +1,199 @@
-function changeLayout() {
-  const mainBodies = document.querySelectorAll('td[valign="top"][width="70%"]')
-  mainBodies.forEach(td => (td.style.width = '85%'))
-  const sideBars = document.querySelectorAll('td[valign="top"][width="30%"]')
-  sideBars.forEach(td => (td.style.width = '15%'))
-  const hds = document.getElementById('s4-titlerow')
-  hds && (hds.style.minHeight = '45px')
-  const icon = document.getElementById('favicon')
-  icon &&
-    (icon.href =
-      'https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/img/favicon.ico')
+// Constants
+const ICON_URL =
+  'https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/img/favicon.ico'
+const LOGO_URL = 'https://hw.bchydro.bc.ca/Documents/BC%20Hydro%204C%20logo.jpg'
+const DOWNLOAD_URL_PREFIX =
+  'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/download.aspx?SourceUrl='
+
+// Helper Functions
+function qS (selector, scope = document) {
+  return scope.querySelector(selector)
 }
 
-function removeZerowidth() {
-  document.querySelectorAll('.ms-rtestate-field').forEach(ele => {
-    ele.querySelectorAll('br').forEach(br => br.remove())
-  })
+function qSA (selector, scope = document) {
+  return scope.querySelectorAll(selector)
 }
 
-function showPopup(msg) {
-	const popup = document.querySelector(".popup");
-	popup.querySelector(".popup-content").innerHTML = msg;
-	popup.classList.add("show");
-
-	setTimeout(() => {
-		popup.classList.remove("show");
-	}, 4000); // 3000 milliseconds = 3 seconds
+function setAttributes (el, attrs) {
+  Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]))
 }
 
-function changeLogoTitle() {
-	const logo = document.querySelector("#ctl00_onetidHeadbnnr2");
-	logo &&
-		logo.setAttribute(
-			"src",
-			"https://hw.bchydro.bc.ca/Documents/BC%20Hydro%204C%20logo.jpg"
-		);
-	const title = document.querySelector("#DeltaPlaceHolderPageTitleInTitleArea");
-	title && (title.textContent = title.textContent.trim());
-	const content = document.querySelector(
-		"#ctl00_PlaceHolderMain_ctl01__ControlWrapper_RichHtmlField"
-	);
-	content && content.firstChild && content.firstChild.remove();
+// Debounce (clearly documented)
+function debounce (func, wait = 100) {
+  let timeout
+  return (...args) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
 }
 
-function tagUpdate() {
-  let currentDate = new Date()
-  let futureDate = new Date(currentDate)
-  futureDate.setMonth(currentDate.getMonth() + 3)
-  let updateDateString = futureDate.toLocaleDateString()
-  document.querySelectorAll('new, update').forEach(tag => {
-    if (!tag.getAttribute('date')) {
+// Core Functions
+function changeLayout () {
+  qSA('td[valign="top"][width="70%"]').forEach(td => (td.style.width = '85%'))
+  qSA('td[valign="top"][width="30%"]').forEach(td => (td.style.width = '15%'))
+
+  const hds = qS('#s4-titlerow')
+  if (hds) hds.style.minHeight = '45px'
+
+  const icon = qS('#favicon')
+  if (icon) icon.href = ICON_URL
+}
+
+function removeZerowidth () {
+  qSA('.ms-rtestate-field br').forEach(br => br.remove())
+}
+
+function showPopup (msg) {
+  const popup = qS('.popup')
+  if (!popup) return
+
+  const content = qS('.popup-content', popup)
+  if (content) content.innerHTML = msg
+
+  popup.classList.add('show')
+  setTimeout(() => popup.classList.remove('show'), 4000)
+}
+
+function changeLogoTitle () {
+  const logo = qS('#ctl00_onetidHeadbnnr2')
+  if (logo) logo.src = LOGO_URL
+
+  const title = qS('#DeltaPlaceHolderPageTitleInTitleArea')
+  if (title) title.textContent = title.textContent.trim()
+
+  const content = qS(
+    '#ctl00_PlaceHolderMain_ctl01__ControlWrapper_RichHtmlField'
+  )
+  if (content?.firstChild) content.firstChild.remove()
+}
+
+function tagUpdate () {
+  const futureDate = new Date()
+  futureDate.setMonth(futureDate.getMonth() + 3)
+  const updateDateString = futureDate.toLocaleDateString()
+
+  qSA('new, update').forEach(tag => {
+    const tagDate = tag.getAttribute('date')
+    const currentDate = new Date()
+
+    if (!tagDate) {
+      setAttributes(tag, { date: updateDateString })
       tag.textContent = tag.tagName.toLowerCase()
-      tag.setAttribute('date', updateDateString)
-    } else if (new Date() >= new Date(tag.getAttribute('date'))) {
+    } else if (currentDate >= new Date(tagDate)) {
       tag.remove()
-    } else if (new Date() < new Date(tag.getAttribute('date'))) {
+    } else {
       tag.textContent = tag.tagName.toLowerCase()
     }
   })
 }
 
-function handleLinks() {
-	document.querySelectorAll("div.box ul li a").forEach((link) => {
-		link.addEventListener("click", (event) => {
-			const linkUrl = link.href;
-			console.log(linkUrl);
-			if (linkUrl.startsWith("file:")) {
-				event.preventDefault();
-				const copiedText = decodeURI(linkUrl).replace(/\s/g, " ");
-				navigator.clipboard.writeText(copiedText);
-				const inHtml = `<div>"<strong>${copiedText}</strong>"</div>\n <div>has been copied to the clipboard.</div>`;
-				console.log("The link is copied to clipboard: " + copiedText);
-				showPopup(inHtml);
-			} else {
-				event.preventDefault();
-				if (isValidUrl(linkUrl)) {
-					const fname = decodeURI(linkUrl).split('?')[0].split('/').pop();
-					console.log(fname);
-					if (fname.match(/^.*\.(pdf|docx)$/i)) {
-						dlink = 'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/download.aspx?SourceUrl='
-						window.open(dlink+linkUrl, "_blank");
-					} else {
-						window.open(linkUrl, "_blank");
-					}
-				} else {
-					console.error("Invalid URL: " + linkUrl);
-				}
-			}
-		});
-	});
+function handleLinks () {
+  document.body.addEventListener('click', event => {
+    const link = event.target.closest('div.box ul li a')
+    if (!link) return
+
+    event.preventDefault()
+    const linkUrl = link.href
+
+    if (linkUrl.startsWith('file:')) {
+      const copiedText = decodeURI(linkUrl).replace(/\s/g, ' ')
+      navigator.clipboard.writeText(copiedText)
+      const inHtml = `<div><strong>${copiedText}</strong></div><div>has been copied to clipboard.</div>`
+      showPopup(inHtml)
+    } else if (isValidUrl(linkUrl)) {
+      const fname = decodeURI(linkUrl).split('?')[0].split('/').pop()
+      if (/^.*\.(pdf|docx)$/i.test(fname)) {
+        window.open(DOWNLOAD_URL_PREFIX + linkUrl, '_blank')
+      } else {
+        window.open(linkUrl, '_blank')
+      }
+    } else {
+      console.error(`Invalid URL: ${linkUrl}`)
+    }
+  })
 }
 
-function isValidUrl(url) {
-	// Basic URL validation
-	try {
-		new URL(url);
-		return true;
-	} catch (_) {
-		return false;
-	}
+function isValidUrl (url) {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
 }
 
-function scrollHandler() {
-	const hand = document.querySelector("#s4-workspace");
-	if (!hand) {
-		return;
-	}
-	hand.onscroll = debounce(() => {
-		const totalHeight = Math.round(hand.scrollTop + hand.clientHeight) + 10;
-		console.log(window.outerWidth);
-		if (window.outerWidth < 1440) {
-			const feedbackSection = document.querySelector(".right-section");
-			feedbackSection.style.bottom =
-				totalHeight >= hand.scrollHeight ? "160px" : "10px";
-			refresh();
-		}
-	}, 100); // debounced to reduce the frequency of executions
+function scrollHandler () {
+  const hand = qS('#s4-workspace')
+  if (!hand) return
+
+  hand.onscroll = debounce(() => {
+    const totalHeight = Math.round(hand.scrollTop + hand.clientHeight) + 10
+    const feedbackSection = qS('.right-section')
+
+    if (window.outerWidth < 1440 && feedbackSection) {
+      feedbackSection.style.bottom =
+        totalHeight >= hand.scrollHeight ? '160px' : '10px'
+      refresh()
+    }
+  })
 }
 
-function getCurrentYear() {
-	const yearElement = document.querySelector("#year");
-	if (yearElement) {
-		const currentYear = new Date().getFullYear();
-		yearElement.firstChild.textContent = currentYear;
-	}
+function getCurrentYear () {
+  const yearElement = qS('#year')
+  if (yearElement) {
+    yearElement.firstChild.textContent = new Date().getFullYear()
+  }
 }
 
-function removeBreadcrumb() {
-	const breadcrumb = document.querySelector(".ms-breadcrumb-top");
-	breadcrumb && breadcrumb.remove();
-	const pagingLine = document.querySelector("td.ms-bottompagingline1");
-	pagingLine && pagingLine.remove();
+function removeBreadcrumb () {
+  ;['.ms-breadcrumb-top', 'td.ms-bottompagingline1'].forEach(selector => {
+    const el = qS(selector)
+    el && el.remove()
+  })
 }
 
-function resizeWindow() {
-	window.addEventListener("resize", () => {
-		let innerwidth =
-			window.innerWidth ||
-			document.documentElement.clientWidth ||
-			document.body.clientWidth;
-		let sideNav = document.querySelector("#sideNavBox");
-		let contentBox = document.querySelector("#contentBox");
-		if (innerwidth < 800 && sideNav && contentBox) {
-			//sideNav.style.display = "none";
-			contentBox.style.marginLeft = "0px";
-			contentBox.style.width = innerwidth;
-		} else {
-			contentBox.style.width = innerwidth;
-		}
-	});
+function resizeWindow () {
+  window.addEventListener(
+    'resize',
+    debounce(() => {
+      const width = window.innerWidth || document.documentElement.clientWidth
+      const contentBox = qS('#contentBox')
+      if (contentBox) {
+        contentBox.style.width = `${width}px`
+        if (width < 800) {
+          contentBox.style.marginLeft = '0'
+        }
+      }
+    })
+  )
 }
 
-function firstListener() {
-	const editButton = document.getElementById(
-		"Ribbon.EditingTools.CPEditTab.Markup.Html.Menu.Html.EditSource-Large"
-	);
-	editButton && editButton.addEventListener("click", secondListener);
+function firstListener () {
+  qS(
+    '#Ribbon\\.EditingTools\\.CPEditTab\\.Markup\\.Html\\.Menu\\.Html\\.EditSource-Large'
+  )?.addEventListener('click', secondListener)
 }
 
-function secondListener() {
-	const editor = document.querySelector("#PropertyEditor");
-	if (editor) {
-		editor.value = editor.value.replace(/(?<=\n\s)\s+/gm, "");
-	}
+function secondListener () {
+  const editor = qS('#PropertyEditor')
+  if (editor) editor.value = editor.value.replace(/(?<=\n\s)\s+/gm, '')
 }
 
-const webpart = document.getElementById("MSOZoneCell_WebPartWPQ6");
-webpart &&
-	webpart.addEventListener("click", () => setTimeout(firstListener, 500));
+qS('#MSOZoneCell_WebPartWPQ6')?.addEventListener('click', () =>
+  setTimeout(firstListener, 500)
+)
 
-function debounce(func, wait) {
-	let timeout;
-	return (...args) => {
-		clearTimeout(timeout);
-		timeout = setTimeout(() => func.apply(this, args), wait);
-	};
+// Initialization
+function refresh () {
+  changeLogoTitle()
+  removeZerowidth()
+  changeLayout()
+  tagUpdate()
+  handleLinks()
+  scrollHandler()
+  getCurrentYear()
+  removeBreadcrumb()
+  resizeWindow()
 }
 
-function refresh() {
-	changeLogoTitle();
-	removeZerowidth();
-	changeLayout();
-	tagUpdate();
-	handleLinks();
-	scrollHandler();
-	getCurrentYear();
-	removeBreadcrumb();
-	resizeWindow();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-	refresh();
-});
+document.addEventListener('DOMContentLoaded', refresh)
