@@ -284,6 +284,10 @@ h2.ms-webpart-titleText {
   width: 1710px !important;
 }
 
+.ms-fullscreenmode #sideNavBox {
+    display: inherit;
+}
+
 #sideNavBox {
   float: left;
   padding: 0 10px 0 5px;
