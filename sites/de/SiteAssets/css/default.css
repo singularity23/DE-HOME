@@ -285,7 +285,7 @@ h2.ms-webpart-titleText {
 }
 
 .ms-fullscreenmode #sideNavBox {
-    display: inherit;
+    display: inherit !important;
 }
 
 #sideNavBox {
