@@ -4,6 +4,7 @@ const ICON_URL =
 const LOGO_URL = 'https://hw.bchydro.bc.ca/Documents/BC%20Hydro%204C%20logo.jpg'
 const DOWNLOAD_URL_PREFIX =
   'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/download.aspx?SourceUrl='
+const PREFIX = '/sites/de/'
 
 // Helper Functions
 function qS (selector, scope = document) {
@@ -102,7 +103,7 @@ function handleLinks () {
       showPopup(inHtml)
     } else if (isValidUrl(linkUrl)) {
       const fname = decodeURI(linkUrl).split('?')[0].split('/').pop()
-      if (/^.*\.(pdf|docx)$/i.test(fname)) {
+      if (/^.*\.(pdf|docx)$/i.test(fname) && linkUrl.includes(PREFIX)) {
         window.open(DOWNLOAD_URL_PREFIX + linkUrl, '_blank')
       } else {
         window.open(linkUrl, '_blank')

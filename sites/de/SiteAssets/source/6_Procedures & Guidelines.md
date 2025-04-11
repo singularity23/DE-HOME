@@ -12,4 +12,6 @@
 *   [Voltage Conversion Guide](file:///J:/Engineering/Distribution/Voltage%20Conversion%20Related%20%20Documents/VC%20Presentation%20-%20Feb%202017)
 *   [Protection Coordination Guideline](https://hydroshare.bchydro.bc.ca/sites/distplan/OfficialRelease/CircuitProtectionCoordinationGuideline_R02-BCH-DSR-2014-1002.pdf)​​
 *   [Distribution Automation Deployment Strategies](https://hw.bchydro.bc.ca/basicpage/Distribution-Automation-Deployment-Strategies)
-*   [DESRT Process - Planning & Engineering Tasks](https://hydroshare.bchydro.bc.ca/sites/distplan/Lists/SharedDocuments/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf)
+*   Capacity Review Process
+    *   [DESRT Process - Planning & Engineering Tasks](https://hydroshare.bchydro.bc.ca/sites/distplan/Lists/SharedDocuments/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf)
+    *   [Unconfirmed Load Review Form<new date="2025-07-10"></new>](https://hydroshare.bchydro.bc.ca/sites/cc/DDCCWorkSmartPublishedAssets/F23QW01-Implement-QSL-Integrated-Planning/DDCC%20Work%20Smart%20-%20Unconfirmed%20Load%20Requirements%20Form.pdf)

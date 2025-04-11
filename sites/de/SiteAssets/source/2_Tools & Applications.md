@@ -10,7 +10,7 @@ Tools & Applications
 *   Drawings
     *   [McLaren Drawings Search](https://w3ecm.bchydro.bc.ca/search/searchDist.html)
     *   [Grid Ops Diagrams Data](file:///Q:/Field%2520Reference%2520Info/Grid%2520Ops%2520Diagrams%2520Data)
-    *   [<abbr title="Operations Drafting and Drawing Management">ODDM</abbr> Drop Off Library](https://hydroshare.bchydro.bc.ca/sites/ODDM/ODDM%20Drop%20Off%20Library/Forms/AllItems.aspx)
+    *   [DE CADD Drafting Request<new date="2025-07-10"></new>](https://cadd-engserv-bchydro.atlassian.net/servicedesk/customer/portals)
 *   Databases
     *   [<abbr title="Energy Analytics Solution">EAS</abbr>](https://eas.bchydro.bc.ca/home/index.html)
     *   [Distribution Planning (Tableau<sup>®</sup>)](https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home)​​

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Read Text File from URL</title>
+  </head>
+  <body>
+    <h1>Read Text File from URL</h1>
+    <button id="loadText">Load Text File</button>
+    <div
+      id="output"
+      style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px"></div>
+
+    <div
+      id="output1"
+      style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px"></div>
+
+    <div
+      id="output2"
+      style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px"></div>
+
+    <div
+      id="output3"
+      style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px"></div>
+
+    <script>
+      const SQLUrl = '/sites/de/SiteAssets/js/ASPEN Feeder PN.txt'
+      const scriptUrl = '/sites/de/SiteAssets/js/ASPEN_Query.js'
+      let output = document.getElementById('output')
+      let output1 = document.getElementById('output1')
+      let output2 = document.getElementById('output2')
+      let output3 = document.getElementById('output3')
+      var obj;
+      
+      function minifyCode(sql) {
+        return sql
+          .replace(/--.*$/gm, '') // Remove single-line comments
+          .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+          .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with a single space
+          .trim() // Remove leading and trailing spaces
+      }
+      
+      async function fetchData(url) {
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin'
+            });
+            const output = await response.text();
+            return output;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function renderData() {
+      const data = await fetchData(SQLUrl);
+      console.log(data)
+      output.innerText = data;
+      output1.innerText = minifyCode(data);
+
+      const data1 = await fetchData(scriptUrl);
+      console.log(data1)
+      output2.innerText = data1;
+      output3.innerText = data1.replace('ToBeReplaced', minifyCode(data)).replace(/`/gm, '\\`')
+    }
+
+    renderData();
+     
+    </script>
+  </body>
+</html>
