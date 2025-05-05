@@ -14,6 +14,6 @@ Administrative​
 *   [<abbr title="Contingent Labour Resource Augmentation">CLRA</abbr> Solution Office<new date="2025-01-31"></new>](https://hw.bchydro.bc.ca/p/clra-solution-office/Pages/Home.aspx)
 *   [RDE Request Tracker<new date="2025-04-01"></new>](https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338)
 *   DE Base Accountability
-*   *   [Core Pathway<new date="2025-08-05">](/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Core%20Pathway%20rev0.pdf)
-*   *   [Technical Pathway<new date="2025-08-05">](/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Technical%20Pathway%20rev0.pdf)
-*   *   [Leadership Pathway<new date="2025-08-05">](/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Leadership%20Pathway%20rev0.pdf)
+    *   [Core Pathway<new date="2025-08-05">](/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Core%20Pathway%20rev0.pdf)
+    *   [Technical Pathway<new date="2025-08-05">](/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Technical%20Pathway%20rev0.pdf)
+    *   [Leadership Pathway<new date="2025-08-05">](/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Leadership%20Pathway%20rev0.pdf)
