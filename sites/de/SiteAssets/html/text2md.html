@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Read and Process Text Files</title>
+    <style>
+      .output {
+        white-space: pre-wrap;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Read and Process Text Files</h1>
+    <div id="Administrative" class="output"></div>
+
+    <script>
+      (async () => {
+        // 1) Fetch directory listing
+        const dirRes = await fetch('/sites/de/SiteAssets/source/');
+        if (!dirRes.ok) {
+          console.error('Directory fetch failed:', dirRes.status);
+          return;
+        }
+        const dirHtml = await dirRes.text();
+        const doc     = new DOMParser().parseFromString(dirHtml, 'text/html');
+        const txtLinks = Array.from(doc.querySelectorAll('a'))
+          .map(a => a.href)
+          .filter(href => href.endsWith('.txt'));
+      
+        // 2) Helper to add months to a YYYY-MM-DD string
+        function addMonths(ymd, months) {
+          const [y, m, d] = ymd.split('-').map(n => parseInt(n, 10));
+          // JS Date: month is 0-based
+          const dt = new Date(y, m - 1 + months, d);
+          const yy = dt.getFullYear();
+          const mm = String(dt.getMonth() + 1).padStart(2, '0');
+          const dd = String(dt.getDate()).padStart(2, '0');
+          return `${yy}-${mm}-${dd}`;
+        }
+      
+        // 3) Parse & transform one line into your markdown, using date+3mo
+        function transformRecord(line, isFirst) {
+          const parts = line.split(',').map(p => p.trim());
+          // parts: [ idx, composite, type, dateOrig, link, logoText, logoSrc, logoLink ]
+          const idx = parts[0] || '';
+          const composite = parts[1] || '';
+          const type      = (parts[2] || '').toLowerCase();       // "update" or "new" or ""
+          const dateOrig  = parts[3] || '';
+          const dateUsed  = dateOrig ? addMonths(dateOrig, 3) : '';
+          const link      = parts[4] || '';
+          const logoText  = parts[5] || '';
+          const logoSrc   = parts[6] || '';
+          const logoLink  = parts[7] || '';
+          console.log(composite);
+      
+          // Extract code, description, trailing text from "CODE(desc) trailing"
+          let code = '', desc = '', trailing = '';
+          const m = composite.match(/^([^(]+)\(([^)]+)\)(.*)$/);
+          console.log(m)
+          if (m) {
+            code     = m[1].trim();
+            desc     = m[2].trim();
+            trailing = m[3].trim();
+          } else {
+            code = composite;
+          }
+
+          console.log(code);
+
+          const indent = (idx == 1) ? '*' : '  *';
+          const openTag  = type ? `<${type} date="${dateUsed}">`  : '';
+          const closeTag = type ? `</${type}>`                   : '';
+          let md1 = '', md2 = '', md3 = '', md = '';
+
+
+          md1 = desc ? `<abbr title="${desc}">${code}</abbr>` : `${code}`;
+          md2 = trailing ? ` ${trailing}` : '';
+          md3 = dateOrig ? `${openTag}${closeTag}` : '';
+          md = link ? `${indent} [${md1}${md2}${md3}](${link})` : `${indent} ${md1}${md2}${md3}`;
+          console.log(md);
+          if (logoText && logoSrc && logoLink) {
+            md += `[![${logoText}](${logoSrc})](${logoLink})`;
+          }
+
+          return md;
+
+        }
+      
+        // 4) Process each .txt file
+        for (const url of txtLinks) {
+          const name = url.split('/').pop().replace(/\.txt$/, '');
+          let container = document.getElementById(name);
+      
+          // create placeholder if missing
+          if (!container) {
+            container = document.createElement('div');
+            container.id        = name;
+            container.className = 'output';
+            container.style.whiteSpace = 'pre-wrap';
+            container.style.fontFamily = 'monospace';
+            const allOut = document.querySelectorAll('.output');
+            if (allOut.length) allOut[allOut.length - 1].after(container);
+            else             document.body.appendChild(container);
+          }
+      
+          // fetch file & split lines
+          const res = await fetch(url);
+          if (!res.ok) {
+            container.textContent = `Error loading ${name}.txt: ${res.status}`;
+            continue;
+          }
+          const raw   = await res.text();
+          const lines = raw.split(/\r?\n/).filter(l => l.trim());
+          if (lines.length < 2) {
+            container.textContent = 'No data to transform';
+            continue;
+          }
+      
+          // build markdown block
+          const [ head, ...records ] = lines;
+          const mdLines = [ head, '' ];
+          records.forEach((ln, i) => {
+            mdLines.push(transformRecord(ln, i === 0));
+          });
+      
+          // inject
+          container.textContent = mdLines.join('\n');
+          let md = container.textContent;
+          const blob = new Blob([md], { type: 'text/markdown' });
+          const a    = document.createElement('a');
+          const dl_url  = URL.createObjectURL(blob);
+          a.href        = dl_url;
+          a.download = `${name}.md`;
+          document.body.appendChild(a);
+          //a.click();
+
+        }
+      })();
+    </script>
+  </body>
+</html>

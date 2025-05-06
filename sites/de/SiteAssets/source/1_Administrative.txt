@@ -1,0 +1,20 @@
+Administrative​
+
+1, Engineering HydroShare, , , https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Home.aspx, , , ,
+1, Engineering Resources & Templates​, , , https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Engineering.aspx, , , ,
+1, Charge Codes F25, , , file:///J:/Engineering/Distribution/CHARGE%20CODES/F25, , , ,
+1, E13 Desk Booking​, , , http://pq.bchydro.bc.ca:99/index.php, , , ,
+1, DELT(Distribution Engineering Team Leads), , , https://hydroshare.bchydro.bc.ca/sites/de/DELT/Forms/AllItems.aspx, , , ,
+2, Business Review​, , , https://hydroshare.bchydro.bc.ca/sites/de/Business_Review/Forms/AllItems.aspx, , , ,
+2, ScoreCard​, , , https://hydroshare.bchydro.bc.ca/sites/de/DE_SCORECARD/Forms/AllItems.aspx, , , ,
+2, Leadership Team Advisory Site​, , , https://hydroshare.bchydro.bc.ca/sites/distributionengineeringadvisories/SitePages/Home.aspx, , , ,
+1, Employee Onboarding​, , , https://hydroshare.bchydro.bc.ca/sites/de/DE%20Employee%20Onoboarding/Forms/AllItems.aspx, , , ,
+1, OPPRA(Online Performance Planning & Review Application), , , https://w3oppra.bchydro.bc.ca/hrperf/, , , ,
+1, Employee Connect, , , https://hydrosap.bchydro.bc.ca/irj/portal/, , , ,
+1, CLRA(Contingent Labour Resource Augmentation) Solution Office, new, 2025-01-31, https://hw.bchydro.bc.ca/p/clra-solution-office/Pages/Home.aspx, , , ,
+1, RDE Request Tracker, new, 2025-01-01, https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338, , , ,
+1, DE Base Accountability, , , , , , , ,
+2, Core Pathway, new, 2025-05-05, /sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Core%20Pathway%20rev0.pdf, , , ,
+2, Technical Pathway, new, 2025-05-05, /sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Technical%20Pathway%20rev0.pdf, , , ,
+2, Leadership Pathway, new, 2025-05-05, /sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Leadership%20Pathway%20rev0.pdf, , , ,
+
