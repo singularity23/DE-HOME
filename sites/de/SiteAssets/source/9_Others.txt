@@ -1,0 +1,18 @@
+​​Others
+
+1, Flood Plan Revision, , , file:///J:/Engineering/Distribution/DE%20Flood%20Plan, , , 
+1, Telematics, , , https://hw.bchydro.bc.ca/basicpage/telematics, , , 
+1, Branded Templates, , , https://hw.bchydro.bc.ca/basicpage/templates, , , 
+1, IT Services, , , , , , 
+2, Application Portal, , , http://bchap/esd, , , 
+2, ServiceNow, , , https://bchydro.service-now.com/sp/, , , 
+1, Site Visit & Trip, , , , , , 
+2, Worki​​ng Alone &amp; Journey Management​, New, 2024-08-29, https://hw.bchydro.bc.ca/basicpage/working-alone, , , 
+2, DE Specific Working Alone Procedure, New, 2025-01-01, J:\Engineering\Distribution\1 Safety\Working Alone or in Isolation Program\0 CURRENT WORK ALONE PROCEDURE, , , 
+2, Business Travel​​, , , https://hw.bchydro.bc.ca/p/travel/Pages/Home.aspx, , , 
+2, Engineering - Field Work & Travel Form, New, 2024-09-04, https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form.pdf, , , 
+2, Engineering Expense Claim Template, Update, 2025-04-01, https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20&%20Documents/Engineering%20Expense%20Claim%20Template.xlsx, , , 
+1, Vehicle Booking, , , , , , 
+2, Edmonds Office, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/Regional%20DE%20Pool%20Vehicle/calendar.aspx, , , 
+2, Victoria Office, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/Victoria%20Pool%20Vehicle%20%2019S71/calendar.aspx, , , 
+2, Vernon Office, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/Vernon%20Pool%20Vehicle%20%2019S03/calendar.aspx, , , 

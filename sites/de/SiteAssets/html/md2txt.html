@@ -53,35 +53,216 @@
         const level = isNested ? 2 : 1;
 
         // strip all leading spaces and asterisks
-        line = line.replace(/^\s*\*+\s*/, '');
+        line = encodeURIComponent((line).replace(/^\s*\*+\s*/, ''));
+        
+        // Decode the line after encoding
+        line = decodeURIComponent(line);
 
         // a) Full pattern: <abbr>…</abbr>optional trailing text + <update|new> tag + link + optional logo
-        let re = /\[([^<\]]+?)(?:<abbr[^>]*>([^<]+)<\/abbr>(?:([^<]*?)<(new|update)\s+date="([^"]+)"[^>]*>.*?<\\(?:new|update)>)?)?\]\(([^)]+)\)(?:\s*\[\!\[([^]]+)\]\(([^)]+)\)\]\(([^)]+)\))?/i;
-        let m = re.exec(line);
-        console.log(m);
-        if (m) {
-          const [
-            , code, desc, trailing,
-            tagType, dateUsed, url,
-            logoText = '', logoSrc = '', logoLink = ''
-          ] = m;
-          const dateOrig = dateUsed ? subtractMonths(dateUsed, -3) : '';
-          const type = tagType ? tagType[0].toUpperCase() + tagType.slice(1).toLowerCase() : '';
-          const composite = desc ? `${code}(${desc})${trailing}`.trim() : code.trim();
-          return [level, composite, type, dateOrig, url, logoText, logoSrc, logoLink];
+        if (line.includes('logo')) {
+          console.log('logo found');
+          re = /\[(.*\s?)<abbr\s+title="([^"]+)">([^<]+)<\/abbr>\]\(([^)]+)\)\s*\[!\[([^]]+)\]\(([^)]+)\)\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, preText = '', title, abbreviation, url, logo, logoSrc, logoLink] = m;
+            console.log(title);
+            const composite = title ? `${preText}${abbreviation}(${title})` : '';
+            return [level, composite, '', '', url, logo, logoSrc, logoLink];
+          }
+
+          re = /^\[([^\]<]+?)(?:<(?:(update|new)) date="([^"]+)"><\/\2>)?\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [, rawTitle, tagType, dateUsed = '', url] = m;
+            const dateOrig = dateUsed ? subtractMonths(dateUsed, -3) : '';
+            const type = tagType
+              ? tagType[0].toUpperCase() + tagType.slice(1).toLowerCase()
+              : '';
+            return [level, rawTitle.trim(), type, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[<abbr\s+title="([^"]+)">([^<]+)<\/abbr>\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, abbreviation, url] = m;
+            console.log(title);
+            const composite = title ? `${abbreviation}(${title})` : '';
+
+            return [level, composite, '', '', url, '', '', ''];
+          }
+
+          re = /(?:([^\[]*?)\s*)?\[<abbr\s+title="([^"]+)">([^<]+)<\/abbr>([^<]*)<(?:(new|update))\s+date="([^"]+)"><\/\5>\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, preText = '', title, abbreviation, trailingtext = '', tagType, date, url] = m;
+            console.log(title);
+            const composite = title ? `${preText}${abbreviation}(${title})${trailingtext}` : '';
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, composite, tagType, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[(.+?)<(?:(new|update))\s+date="([^"]+)">\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, tagType, date, url] = m;
+            console.log(title);
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, title, tagType, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[<abbr\s+title="([^"]+)">([^<]+)<\/abbr>([^<]*)\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, abbreviation, trailingtext, url] = m;
+            console.log(title);
+            const composite = title ? `${abbreviation}(${title})${trailingtext}` : '';
+            return [level, composite, '', '', url, '', '', ''];
+          }
+
+          re = /\[(.+?)\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, url] = m;
+            console.log(title);
+            return [level, title, '', '', url, '', '', ''];
+          }
+
+          re = /\[(.+?)<(?:(new|update))\s+date="([^"]+)">.*?<\/\2>\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, tagType, date, url] = m;
+            console.log(title);
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, title, tagType, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[(.+?)\s*&amp;\s*<abbr\s+title="([^"]+)">([^<]+)<\/abbr>\]\(([^)]+)\)\s*\[!\[([^]]+)\]\(([^)]+)\)\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, tagType, date, url] = m;
+            console.log(title);
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, title, tagType, dateOrig, url, '', '', ''];
+          }
+
+
+        } else {
+
+          re = /^\[([^\]<]+?)(?:<(?:(update|new)) date="([^"]+)"><\/\2>)?\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [, rawTitle, tagType, dateUsed = '', url] = m;
+            const dateOrig = dateUsed ? subtractMonths(dateUsed, -3) : '';
+            const type = tagType
+              ? tagType[0].toUpperCase() + tagType.slice(1).toLowerCase()
+              : '';
+            return [level, rawTitle.trim(), type, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[<abbr\s+title="([^"]+)">([^<]+)<\/abbr>\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, abbreviation, url] = m;
+            console.log(title);
+            const composite = title ? `${abbreviation}(${title})` : '';
+
+            return [level, composite, '', '', url, '', '', ''];
+          }
+
+          re = /(?:([^\[]*?)\s*)?\[<abbr\s+title="([^"]+)">([^<]+)<\/abbr>([^<]*)<(?:(new|update))\s+date="([^"]+)"><\/\5>\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, preText = '', title, abbreviation, trailingtext = '', tagType, date, url] = m;
+            console.log(title);
+            const composite = title ? `${preText}${abbreviation}(${title})${trailingtext}` : '';
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, composite, tagType, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[(.+?)<(?:(new|update))\s+date="([^"]+)">\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, tagType, date, url] = m;
+            console.log(title);
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, title, tagType, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[<abbr\s+title="([^"]+)">([^<]+)<\/abbr>([^<]*)\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, abbreviation, trailingtext, url] = m;
+            console.log(title);
+            const composite = title ? `${abbreviation}(${title})${trailingtext}` : '';
+            return [level, composite, '', '', url, '', '', ''];
+          }
+
+          re = /\[(.+?)\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, url] = m;
+            console.log(title);
+            return [level, title, '', '', url, '', '', ''];
+          }
+
+          re = /\[(.+?)<(?:(new|update))\s+date="([^"]+)">.*?<\/\2>\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, tagType, date, url] = m;
+            console.log(title);
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, title, tagType, dateOrig, url, '', '', ''];
+          }
+
+          re = /\[(.+?)\s*&amp;\s*<abbr\s+title="([^"]+)">([^<]+)<\/abbr>\]\(([^)]+)\)\s*\[!\[([^]]+)\]\(([^)]+)\)\]\(([^)]+)\)/i;
+          m = re.exec(line);
+          console.log(m);
+          if (m) {
+            const [
+              fullMatch, title, tagType, date, url] = m;
+            console.log(title);
+            const dateOrig = date ? subtractMonths(date, -3) : '';
+            return [level, title, tagType, dateOrig, url, '', '', ''];
+          }
+
+
+
         }
 
         // b) Simple link with optional inline <new> or <update> in the text
-        re = /^\[([^\]<]+?)(?:<(?:(update|new)) date="([^"]+)"><\/\2>)?\]\(([^)]+)\)/i;
-        m = re.exec(line);
-        if (m) {
-          const [, rawTitle, tagType, dateUsed = '', url] = m;
-          const dateOrig = dateUsed ? subtractMonths(dateUsed, -3) : '';
-          const type = tagType
-            ? tagType[0].toUpperCase() + tagType.slice(1).toLowerCase()
-            : '';
-          return [level, rawTitle.trim(), type, dateOrig, url, '', '', ''];
-        }
+
+
 
         // c) No bracket/link at all → treat the entire text as the title, no URL
         const composite = line.trim();

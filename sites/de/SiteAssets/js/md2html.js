@@ -69,9 +69,11 @@ window.onload = () => {
     const box = document.createElement('div')
     box.classList.add('box')
     box.innerHTML = markdown
+    console.log(box)
 
     const temp_box = (boxList[index] = document.createElement('div'))
     const ptag = box.querySelector('p')
+    console.log(ptag)
     const dtag = document.createElement('div')
 
     dtag.classList.add('box-head')

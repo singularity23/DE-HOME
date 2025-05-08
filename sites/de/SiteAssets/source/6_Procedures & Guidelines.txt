@@ -1,0 +1,18 @@
+​Procedures & Guidelines
+
+1, External Design &amp; Engineering DBR(Design Business Requirements), , , https://edmppmprt1.bchydro.bc.ca/DBR/Home.htm, , , 
+2, EDQA(External Design Quality Assurance), new, 2024-09-09, https://edmppmprt1.bchydro.bc.ca/DBR/Stakeholder-Engagement/Internal/EDQA.htm, , , 
+1, Owner's Engineering Guide, Update, 2025-04-01, https://w3ecm.bchydro.bc.ca/fglob/ViewDocumentContentBySeriesId.do?guid=%7B1059ECC4-3B1D-409B-BA0B-98B14FF8B2DF%7D, , , 
+2, Design Review Comment Sheet, Update, 2025-04-01, https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Sheet%20-%20Distribution%20Engineering.docx?d=w6ead9d330136412390bead5f1499a1f8, , , 
+2, Design Review Evaluation Form, Update, 2025-04-01, https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155, , , 
+2, DE Project Completion Form, Update, 2025-04-01, https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf, , , 
+2, OE​ Revie​w Evaluation Summary, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews, , , 
+1, CI​​PD(Capital Infrastructure Project Delivery) Guide, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DISTRIBUTION_ENGINEERING_CIPD_GUIDE_REV0_2023-06-02.pdf, , , 
+1, Voltage Management Guideline, , , https://hydroshare.bchydro.bc.ca/sites/distplan/OfficialRelease/Voltage_Management_BCH-DSR-2014-1001.pdf, , , 
+1, Voltage Conversion Guide, , , file:///J:/Engineering/Distribution/Voltage%20Conversion%20Related%20%20Documents/VC%20Presentation%20-%20Feb%202017, , , 
+1, Protection Coordination Guideline, , , https://hydroshare.bchydro.bc.ca/sites/distplan/OfficialRelease/CircuitProtectionCoordinationGuideline_R02-BCH-DSR-2014-1002.pdf, , , 
+1, Distribution Automation Deployment Strategies, , , https://hw.bchydro.bc.ca/basicpage/Distribution-Automation-Deployment-Strategies, , , 
+1, Capacity Review Process, , , , , , 
+2, DESRT Process - Planning & Engineering Tasks, , , https://hydroshare.bchydro.bc.ca/sites/distplan/Lists/SharedDocuments/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf, , , 
+2, Unconfirmed Load Review Form, New, 2025-04-10, https://hydroshare.bchydro.bc.ca/sites/cc/DDCCWorkSmartPublishedAssets/F23QW01-Implement-QSL-Integrated-Planning/DDCC%20Work%20Smart%20-%20Unconfirmed%20Load%20Requirements%20Form.pdf, , , 
+1, Distribution Connection Variance Request Guide, New, 2025-05-05, https://app.bchydro.com/content/dam/BCHydro/customer-portal/documents/distribution/info-packages/customer-guide-to-variance-requests.pdf, , , 
