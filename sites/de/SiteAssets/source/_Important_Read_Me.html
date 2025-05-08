@@ -300,18 +300,28 @@
     <p>In order to modify the main page, you have to modify the corresponding files under this directory. Download all
       .md files. Open the one you need to edit - each .md file is related to each panel on the HydroShare.</p>
     <p>For example, if you want to edit the link under &quot;Administrative&quot;, then you need to open
-      &quot;1_Administrative.md&quot; file with Notepad. </p>
+      &quot;1_Administrative.txt&quot; file with Notepad. </p>
     <hr>
-    <h2 id="update-the-md-files">Update the .md Files</h2>
+    <h2 id="update-the-md-files">Update the .txt Files</h2>
+    <blockquote>
+      <p>In general, each entry consists of eight inputs:</p>
+      <p><h3>Indent, Title, New or Update, Date, Link, Icon, Icon Source, Icon Link</h3></p>
+      <p><strong>Indent</strong>: use 1 for the first level indent, use 2 for second level indent.</p>
+      <p><strong>Title</strong>: The description of the link you are going to add</p>
+      <p><strong>New or Update</strong>: This is optional - if you want to make it more popping out for users, you can input "new" or "update", or you can choose not to input anything</p>
+      <p><strong>Date</strong>: used together with the "new" or "update" input, keep it empty if the last input is empty</p>
+      <p><strong>Link</strong>: The url link of the document/directory you want to point to</p>
+      <p><strong>Icon, Icon Source, Icon Link</strong>: These three need to be used in conjunction, you won't need them for most of the time</p>
+
+    </blockquote>
     <h4 id="lists-and-links-">Lists and Links:</h4>
     <p>List item example in html:</p>
     <ul>
       <link rel="stylesheet" type="text/css" href="../css/default.css?v=1.1" />
       <li><a href="http://pq.bchydro.bc.ca:99/index.php">E13 Desk Booking</a></li>
     </ul>
-    <p>in .md file:</p>
-    <pre><code><span class="hljs-bullet">* </span>[<span class="hljs-string">E13 Desk Booking</span>](<span
-              class="hljs-link">http://pq.bchydro.bc.ca:99/index.php</span>)
+    <p>in .txt file:</p>
+    <pre><code><span class="hljs-bullet">1, E13 Desk Booking, , , http://pq.bchydro.bc.ca:99/index.php, , , , </span>
       </code></pre>
     <p>Indented list item example in html:</p>
     <ul>
@@ -322,18 +332,13 @@
         </ul>
       </li>
     </ul>
-    <p>in .md files:</p>
-    <pre><code>
-        <div class="hljs-code"><span class="hljs-bullet">* </span>[<span class="hljs-string">&lt;abbr
-            title="Distribution Engineering
-            Leadership Team"&gt;DELT&lt;/abbr&gt;</span>](<span
-                class="hljs-link">/sites/de/sites/de/DELT/Forms/AllItems.aspx</span>)</div>
-        <div class="hljs-code">
-          <span class="hljs-bullet"> ** </span>[<span class="hljs-string">Business
-            Review<code>&lt;new&gt;&lt;/new&gt;</code></span>](<span
-                class="hljs-link">/sites/de/Business_Review/Forms/AllItems.aspx</span>)
-        </div>
-      </code></pre>
+    <p>in .txt files:</p>
+    <pre><code><p class="hljs-bullet">1, DELT(Distribution Engineering Leadership Team), , , /sites/de/sites/de/DELT/Forms/AllItems.aspx, , , , </p>
+      <p class="hljs-bullet">2, Business Review, new, "yyyy-mm-dd", http://pq.bchydro.bc.ca:99/index.php, , , , </p>
+
+
+      
+    </code></pre>
     <blockquote>
       <p><code>[ ]</code> contains the text description of your choice for the link; <code>( )</code> includes the
         actual <strong>url</strong> of the link, e.g. <code>https://</code>, <code>file:\\\</code>,etc.;</p>
