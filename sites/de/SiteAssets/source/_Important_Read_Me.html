@@ -19,7 +19,7 @@
       body {
         margin: auto;
         padding: 40px;
-        width: 70%;
+        width: 40%;
       }
 
       html {
@@ -304,14 +304,15 @@
     <hr>
     <h2 id="update-the-md-files">Update the .txt Files</h2>
     <blockquote>
-      <p>In general, each entry consists of eight inputs:</p>
-      <p><h3>Indent, Title, New or Update, Date, Link, Icon, Icon Source, Icon Link</h3></p>
-      <p><strong>Indent</strong>: use 1 for the first level indent, use 2 for second level indent.</p>
-      <p><strong>Title</strong>: The description of the link you are going to add</p>
-      <p><strong>New or Update</strong>: This is optional - if you want to make it more popping out for users, you can input "new" or "update", or you can choose not to input anything</p>
-      <p><strong>Date</strong>: used together with the "new" or "update" input, keep it empty if the last input is empty</p>
-      <p><strong>Link</strong>: The url link of the document/directory you want to point to</p>
-      <p><strong>Icon, Icon Source, Icon Link</strong>: These three need to be used in conjunction, you won't need them for most of the time</p>
+      <p>In general, each entry consists of eight inputs, separated by comma:</p>
+      <h3><code>Indent Level(1), Title(2), Tag(3), Date(4), Link(5), Icon(6), Icon Source(7), Icon Link(8)</code></h3>
+
+      <p><strong>1. Indent Level</strong>: use <code>1</code> for the first level indent, use <code>2</code> for second level indent.</p>
+      <p><strong>2. Title</strong>: The description of the link you are going to add</p>
+      <p><strong>3. Tag</strong>: This is optional - but you have two entries to choose <code>new</code> or <code>update</code></p>
+      <p><strong>4. Date</strong>: <code>format: yyyy-mm-dd </code>used together with the <code>new</code> or <code>update</code> input, keep it empty if the last input is empty</p>
+      <p><strong>5. Link</strong>: The url link of the document/directory you want to point to - J drive link works as well</p>
+      <p><strong>6. Icon, Icon Source, Icon Link</strong>: These three need to be used in conjunction, you won't need them for most of the time</p>
 
     </blockquote>
     <h4 id="lists-and-links-">Lists and Links:</h4>
@@ -336,41 +337,25 @@
     <pre><code><p class="hljs-bullet">1, DELT(Distribution Engineering Leadership Team), , , /sites/de/sites/de/DELT/Forms/AllItems.aspx, , , , </p>
       <p class="hljs-bullet">2, Business Review, new, "yyyy-mm-dd", http://pq.bchydro.bc.ca:99/index.php, , , , </p>
 
-
-      
     </code></pre>
-    <blockquote>
-      <p><code>[ ]</code> contains the text description of your choice for the link; <code>( )</code> includes the
-        actual <strong>url</strong> of the link, e.g. <code>https://</code>, <code>file:\\\</code>,etc.;</p>
-      <p>For indented list, adding either a space <code>' '</code> or a star <code>*</code> works</p>
-      <p><strong>Note</strong>: If the link is from network drive, like <code>J:\\Engineering\Distribution\CHARGE
-          CODES\F24\</code> This is not a properly decoded format. Paste this link into your broswer, and press enter.
-        Copy the new link in the search bar. It should look like this:
-        <code>(file:///)J://Engineering/Distribution/CHARGE%20CODES/F24/</code> with and without <code>file:///</code>
-        are both fine
-      </p>
-    </blockquote>
+   
     <h4 id="abbreviations-">Abbreviations:</h4>
     <p>In the above example:</p>
     <blockquote>
-      <p><code>[ ]</code> other than <code>DELT</code>, it is wrapped around with <code>&lt;abbr
-          title=&quot;Distribution Engineering Leadership Team&quot;&gt;DELT&lt;/abbr&gt;</code>. This is to show the
-        full name of this abbriviation in html. </p>
+      <p><code>( )</code> is used behind the abbreviation <code>DELT</code>, to indicate the full name when your mouse hover over the abbreviation.</p>
     </blockquote>
     <h4 id="new-and-updated-items-">New and Updated Items:</h4>
     <p>For new link item or updated link item:</p>
     <blockquote>
-      <p>Inside <code>[ ]</code>, add tags <code>&lt;new&gt;&lt;/new&gt;</code> in the end for new link items, add
-        <code>&lt;update&gt;&lt;/update&gt;</code> for updated link items. This is not conventional mark down syntax,
-        this is for html rendering purpose
+      <p>This is optional, however, the tag (column 3) and date (column 4) need to be used in conjunction. 
       </p>
     </blockquote>
     <hr>
     <h2 id="make-html-code">Make HTML Code</h2>
     <hr>
     <p>Once you have edited the .md files, click <a
-         href="../html/Markdown2HTML.html">Here</a>.
-      Choose the all <code>.md</code> files that you just downloaded and edited, then click on <code>Submit</code>. The
+         href="../html/txt2html.html">Here</a>.
+      Choose the all <code>.txt</code> files that you just downloaded and edited, then click on <code>Submit</code>. The
       html code will be generated. You can preview the results from there. Click on <code>Copy HTML Code</code>, then
       paste it to HydroShare to replace all the existing code.</p>
   </body>
