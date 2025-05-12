@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <head>
-  <title>Markdown to HTML Converter</title>
+  <title>Textfiles to HTML Converter</title>
   <style>
     * {
       box-sizing: border-box;
@@ -202,10 +202,12 @@
 </head>
 
 <body>
-  <script type="text/javascript" src="../js/txt2html.js"></script>
-  <script type="text/javascript" src="../js/default.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/turndown/dist/turndown.min.js"></script>
+  <script src="../js/default.js"></script>
+  <script src="../js/txt2html.js"></script>
+  <script src="../js/marked.min.js"></script>
+  <script src="../js/turndown.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/turndown/dist/turndown.min.js"></script>
 
   <form action="#" class="container">
     <div id="file-container">
@@ -213,7 +215,7 @@
         <h3>File Selection</h3>
         <div class="preview_box">
           <label for="fileInput">Choose</label>
-          <input class="filebutton" type="file" id="fileInput" accept=".txt" multiple />
+          <input class="filebutton" type="file" id="fileInput" accept=".txt" multiple>
           <div class="preview">
             <p>No files selected</p>
           </div>
@@ -235,7 +237,7 @@
       </div>
     </div>
     <div id="render-container">
-      <link rel="stylesheet" type="text/css" href="../css/default.css?v=1.1" />
+      <link rel="stylesheet" type="text/css" href="../css/default.css?v=1.1">
       <div class="section">
         <h3>Rendered HTML</h3>
 

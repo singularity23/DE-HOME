@@ -7,7 +7,7 @@
 2, Design Review Evaluation Form, Update, 2025-04-01, https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155, , , 
 2, DE Project Completion Form, Update, 2025-04-01, https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf, , , 
 2, OE​ Revie​w Evaluation Summary, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews, , , 
-1, CI​​PD(Capital Infrastructure Project Delivery) Guide, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DISTRIBUTION_ENGINEERING_CIPD_GUIDE_REV0_2023-06-02.pdf, , , 
+1, CIPD(Capital Infrastructure Project Delivery) Guide, , , https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DISTRIBUTION_ENGINEERING_CIPD_GUIDE_REV0_2023-06-02.pdf, , , 
 1, Voltage Management Guideline, , , https://hydroshare.bchydro.bc.ca/sites/distplan/OfficialRelease/Voltage_Management_BCH-DSR-2014-1001.pdf, , , 
 1, Voltage Conversion Guide, , , file:///J:/Engineering/Distribution/Voltage%20Conversion%20Related%20%20Documents/VC%20Presentation%20-%20Feb%202017, , , 
 1, Protection Coordination Guideline, , , https://hydroshare.bchydro.bc.ca/sites/distplan/OfficialRelease/CircuitProtectionCoordinationGuideline_R02-BCH-DSR-2014-1002.pdf, , , 

@@ -415,6 +415,7 @@ update, new {
   color: var(--box-highlight-color);
   font-variant-caps: all-petite-caps;
   font-weight: 600;
+  font-family: "brand-font-light", Arial, sans-serif;
 }
 
 tr.ms-viewheadertr.ms-vhltr {
