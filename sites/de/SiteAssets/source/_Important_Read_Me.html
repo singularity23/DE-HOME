@@ -1,363 +1,386 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <meta charset="utf-8">
-    <title>Important Read Me</title>
-    <style>
-      /*!
+<head>
+  <meta charset="utf-8">
+  <title>Important Read Me</title>
+  <style>
+    /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)
  * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-      /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+    /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 
-      hr {
-        border: 0
-      }
+    hr {
+      border: 0
+    }
 
-      body {
-        margin: auto;
-        padding: 40px;
-        width: 40%;
-      }
+    body {
+      margin: auto;
+      padding: 40px;
+      width: 40%;
+    }
 
-      html {
-        font-family: sans-serif;
-        -webkit-text-size-adjust: 100%;
-        -ms-text-size-adjust: 100%
-      }
+    html {
+      font-family: sans-serif;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%
+    }
 
-      a {
-        background-color: transparent
-      }
+    a {
+      background-color: transparent
+    }
 
-      a:active,
-      a:hover {
-        outline: 0
-      }
+    a:active,
+    a:hover {
+      outline: 0
+    }
 
-      strong {
-        font-weight: 700
-      }
+    strong {
+      font-weight: 700
+    }
 
-      h1 {
-        margin: .67em 0
-      }
+    h1 {
+      margin: .67em 0
+    }
 
-      hr {
-        height: 0;
-        -webkit-box-sizing: content-box;
-        -moz-box-sizing: content-box;
-        box-sizing: content-box
-      }
+    hr {
+      height: 0;
+      -webkit-box-sizing: content-box;
+      -moz-box-sizing: content-box;
+      box-sizing: content-box
+    }
 
+    pre {
+      overflow: auto
+    }
+
+    code,
+    pre {
+      font-size: 1em
+    }
+
+    /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
+    @media print {
+
+      blockquote,
       pre {
-        overflow: auto
-      }
-
-      code,
-      pre {
-        font-size: 1em
-      }
-
-      /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
-      @media print {
-
-        blockquote,
-        pre {
-          page-break-inside: avoid
-        }
-
-        *,
-        :after,
-        :before {
-          color: #000 !important;
-          text-shadow: none !important;
-          background: 0 0 !important;
-          -webkit-box-shadow: none !important;
-          box-shadow: none !important
-        }
-
-        a,
-        a:visited {
-          text-decoration: underline
-        }
-
-        a[href]:after {
-          content: " (" attr(href) ")"
-        }
-
-        abbr[title]:after {
-          content: " (" attr(title) ")"
-        }
-
-        blockquote,
-        pre {
-          border: 1px solid #999
-        }
-
-        h2,
-        p {
-          orphans: 3;
-          widows: 3
-        }
-
-        h2 {
-          page-break-after: avoid
-        }
-      }
-
-      body {
-        background-color: #fff
-      }
-
-      @font-face {
-        font-family: 'Glyphicons Halflings';
-        src: url(../fonts/glyphicons-halflings-regular.eot);
-        src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),
-          url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'),
-          url(../fonts/glyphicons-halflings-regular.woff) format('woff'),
-          url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'),
-          url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
+        page-break-inside: avoid
       }
 
       *,
       :after,
       :before {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box
+        color: #000 !important;
+        text-shadow: none !important;
+        background: 0 0 !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important
       }
 
-      html {
-        font-size: 10px;
-        -webkit-tap-highlight-color: transparent
-      }
-
-      body {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #333
-      }
-
-      a {
-        color: #337ab7;
-        text-decoration: none
-      }
-
-      a:focus,
-      a:hover {
-        color: #23527c;
+      a,
+      a:visited {
         text-decoration: underline
       }
 
-      a:focus {
-        outline: -webkit-focus-ring-color auto 5px;
-        outline-offset: -2px
+      a[href]:after {
+        content: " (" attr(href) ")"
       }
 
-      hr {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        border-top: 1px solid #eee
+      abbr[title]:after {
+        content: " (" attr(title) ")"
       }
 
-      h1,
+      blockquote,
+      pre {
+        border: 1px solid #999
+      }
+
       h2,
-      h4 {
-        font-family: inherit;
-        font-weight: 500;
-        line-height: 1.1;
-        color: inherit
-      }
-
-      h1,
-      h2 {
-        margin-top: 20px;
-        margin-bottom: 10px
-      }
-
-      h4 {
-        margin-top: 10px;
-        margin-bottom: 10px
-      }
-
-      h1 {
-        font-size: 36px
-      }
-
-      h2 {
-        font-size: 30px
-      }
-
-      h4 {
-        font-size: 18px
-      }
-
       p {
-        margin: 0 0 10px
+        orphans: 3;
+        widows: 3
       }
 
-      pre {
-        line-height: 1.42857143
+      h2 {
+        page-break-after: avoid
       }
+    }
 
-      pre code {
-        background-color: transparent
-      }
+    body {
+      background-color: #fff
+    }
 
-      ul {
-        margin-top: 0
-      }
+    @font-face {
+      font-family: 'Glyphicons Halflings';
+      src: url(../fonts/glyphicons-halflings-regular.eot);
+      src: url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),
+        url(../fonts/glyphicons-halflings-regular.woff2) format('woff2'),
+        url(../fonts/glyphicons-halflings-regular.woff) format('woff'),
+        url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'),
+        url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')
+    }
 
-      blockquote p:last-child,
-      ul ul {
-        margin-bottom: 0
-      }
+    *,
+    :after,
+    :before {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box
+    }
 
-      ul {
-        margin-bottom: 10px
-      }
+    html {
+      font-size: 10px;
+      -webkit-tap-highlight-color: transparent
+    }
 
-      abbr[title] {
-        cursor: help;
-        border-bottom: 1px dotted #777
-      }
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.42857143;
+      color: #333
+    }
 
-      blockquote {
-        padding: 10px 20px;
-        margin: 0 0 20px;
-        font-size: 14.5px;
-        border-left: 5px solid #eee
-      }
+    a {
+      color: #337ab7;
+      text-decoration: none
+    }
 
-      pre {
-        display: block;
-        color: #333
-      }
+    a:focus,
+    a:hover {
+      color: #23527c;
+      text-decoration: underline
+    }
 
-      code {
-        padding: 2px 4px;
-        font-size: 90%
-      }
+    a:focus {
+      outline: -webkit-focus-ring-color auto 5px;
+      outline-offset: -2px
+    }
 
-      code,
-      pre {
-        font-family: Menlo, Monaco, Consolas, "Courier New", monospace
-      }
+    hr {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border-top: 1px solid #eee
+    }
 
-      code {
-        color: #c7254e;
-        background-color: #f9f2f4;
-        border-radius: 4px
-      }
+    h1,
+    h2,
+    h4 {
+      font-family: inherit;
+      font-weight: 500;
+      line-height: 1.1;
+      color: inherit
+    }
 
-      pre {
-        padding: 9.5px;
-        margin: 0 0 10px;
-        font-size: 13px;
-        word-break: break-all;
-        word-wrap: break-word;
-        background-color: #f5f5f5;
-        border: 1px solid #ccc;
-        border-radius: 4px
-      }
+    h1,
+    h2 {
+      margin-top: 20px;
+      margin-bottom: 10px
+    }
 
-      pre code {
-        padding: 0;
-        font-size: inherit;
-        color: inherit;
-        white-space: normal;
-        border-radius: 0
-      }
+    h4 {
+      margin-top: 10px;
+      margin-bottom: 10px
+    }
 
-      @-ms-viewport {
-        width: device-width;
-      }
+    h1 {
+      font-size: 36px
+    }
 
-      @viewport {
-        width: device-width;
-      }
+    h2 {
+      font-size: 30px
+    }
 
-      .hljs-link {
-        color: #f5871f
-      }
+    h4 {
+      font-size: 18px
+    }
 
-      .hljs-bullet,
-      .hljs-string {
-        color: #718c00
-      }
-    </style>
-  </head>
+    p {
+      margin: 0 0 10px
+    }
 
-  <body>
-    <script type="text/javascript" src="../js/default.js"></script>
+    pre {
+      line-height: 1.42857143
+    }
 
-    <hr>
-    <h1 id="intro">Intro</h1>
-    <p>In order to modify the main page, you have to modify the corresponding files under this directory. Download all
-      .md files. Open the one you need to edit - each .md file is related to each panel on the HydroShare.</p>
-    <p>For example, if you want to edit the link under &quot;Administrative&quot;, then you need to open
-      &quot;1_Administrative.txt&quot; file with Notepad. </p>
-    <hr>
-    <h2 id="update-the-md-files">Update the .txt Files</h2>
-    <blockquote>
-      <p>In general, each entry consists of eight inputs, separated by comma:</p>
-      <h3><code>Indent Level(1), Title(2), Tag(3), Date(4), Link(5), Icon(6), Icon Source(7), Icon Link(8)</code></h3>
+    pre code {
+      background-color: transparent
+    }
 
-      <p><strong>1. Indent Level</strong>: use <code>1</code> for the first level indent, use <code>2</code> for second level indent.</p>
-      <p><strong>2. Title</strong>: The description of the link you are going to add</p>
-      <p><strong>3. Tag</strong>: This is optional - but you have two entries to choose <code>new</code> or <code>update</code></p>
-      <p><strong>4. Date</strong>: <code>format: yyyy-mm-dd </code>used together with the <code>new</code> or <code>update</code> input, keep it empty if the last input is empty</p>
-      <p><strong>5. Link</strong>: The url link of the document/directory you want to point to - J drive link works as well</p>
-      <p><strong>6. Icon, Icon Source, Icon Link</strong>: These three need to be used in conjunction, you won't need them for most of the time</p>
+    ul {
+      margin-top: 0
+    }
 
-    </blockquote>
-    <h4 id="lists-and-links-">Lists and Links:</h4>
-    <p>List item example in html:</p>
-    <ul>
-      <link rel="stylesheet" type="text/css" href="../css/default.css?v=1.1" />
-      <li><a href="http://pq.bchydro.bc.ca:99/index.php">E13 Desk Booking</a></li>
-    </ul>
-    <p>in .txt file:</p>
-    <pre><code><span class="hljs-bullet">1, E13 Desk Booking, , , http://pq.bchydro.bc.ca:99/index.php, , , , </span>
+    blockquote p:last-child,
+    ul ul {
+      margin-bottom: 0
+    }
+
+    ul {
+      margin-bottom: 10px
+    }
+
+    abbr[title] {
+      cursor: help;
+      border-bottom: 1px dotted #777
+    }
+
+    blockquote {
+      padding: 10px 20px;
+      margin: 0 0 20px;
+      font-size: 14.5px;
+      border-left: 5px solid #eee
+    }
+
+    pre {
+      display: block;
+      color: #333
+    }
+
+    code {
+      padding: 2px 4px;
+      font-size: 90%
+    }
+
+    code,
+    pre {
+      font-family: Menlo, Monaco, Consolas, "Courier New", monospace
+    }
+
+    code {
+      color: #c7254e;
+      background-color: #f9f2f4;
+      border-radius: 4px
+    }
+
+    pre {
+      padding: 9.5px;
+      margin: 0 0 10px;
+      font-size: 13px;
+      word-break: break-all;
+      word-wrap: break-word;
+      background-color: #f5f5f5;
+      border: 1px solid #ccc;
+      border-radius: 4px
+    }
+
+    pre code {
+      padding: 0;
+      font-size: inherit;
+      color: inherit;
+      white-space: normal;
+      border-radius: 0
+    }
+
+    @-ms-viewport {
+      width: device-width;
+    }
+
+    @viewport {
+      width: device-width;
+    }
+
+    .hljs-link {
+      color: #f5871f
+    }
+
+    .hljs-bullet,
+    .hljs-string {
+      color: #718c00
+    }
+
+    new, update {
+      color: #c7254e;
+      vertical-align: super;
+      font-size: 80%;
+      background-color: #f9f2f4;
+      border-radius: 4px
+    }
+
+    .hljs-tag {
+      color: #0000ff
+    }
+
+    .hljs-strong {
+      font-weight: bold
+    }
+
+    .hljs-emphasis {
+      font-style: italic
+    }
+
+  </style>
+</head>
+
+<body>
+  <script src="../js/default.js"></script>
+
+  <hr>
+  <h1 id="intro">Intro</h1>
+  <p>In order to modify the main page, you have to modify the corresponding files under this directory. Download all
+    .md files. Open the one you need to edit - each .md file is related to each panel on the HydroShare.</p>
+  <p>For example, if you want to edit the link under &quot;Administrative&quot;, then you need to open
+    &quot;1_Administrative.txt&quot; file with Notepad. </p>
+  <hr>
+  <h2 id="update-the-md-files">Update the .txt Files</h2>
+  <blockquote>
+    <p>In general, each entry consists of eight inputs, separated by comma:</p>
+    <h3><code>Indent Level(1), Title(2), Tag(3), Date(4), Link(5), Icon(6), Icon Source(7), Icon Link(8)</code></h3>
+
+    <p><strong>1. Indent Level</strong>: use <code>1</code> for the first level indent, use <code>2</code> for second
+      level indent.</p>
+    <p><strong>2. Title</strong>: The description of the link you are going to add</p>
+    <p><strong>3. Tag</strong>: This is optional - but you have two entries to choose <code>new</code> or
+      <code>update</code></p>
+    <p><strong>4. Date</strong>: <code>format: yyyy-mm-dd </code>used together with the <code>new</code> or
+      <code>update</code> input, keep it empty if the last input is empty</p>
+    <p><strong>5. Link</strong>: The url link of the document/directory you want to point to - J drive link works as
+      well</p>
+    <p><strong>6. Icon, 7. Icon Source, 8. Icon Link</strong>: These three need to be used in conjunction, you won't
+      need them for most of the time</p>
+
+  </blockquote>
+  <h4 id="lists-and-links-">Lists and Links:</h4>
+  <p>List item example in html:</p>
+  <ul>
+    <li><a href="http://pq.bchydro.bc.ca:99/index.php">E13 Desk Booking</a></li>
+  </ul>
+  <p>in .txt file:</p>
+  <pre><code><span class="hljs-bullet">1, E13 Desk Booking, , , http://pq.bchydro.bc.ca:99/index.php, , , , </span>
       </code></pre>
-    <p>Indented list item example in html:</p>
-    <ul>
-      <li><a href="/sites/de/sites/de/DELT/Forms/AllItems.aspx"><abbr
-                title="Distribution Engineering Leadership Team">DELT</abbr></a>
-        <ul>
-          <li><a href="/sites/de/Business_Review/Forms/AllItems.aspx">Business Review<new></new></a></li>
-        </ul>
-      </li>
-    </ul>
-    <p>in .txt files:</p>
-    <pre><code><p class="hljs-bullet">1, DELT(Distribution Engineering Leadership Team), , , /sites/de/sites/de/DELT/Forms/AllItems.aspx, , , , </p>
-      <p class="hljs-bullet">2, Business Review, new, "yyyy-mm-dd", http://pq.bchydro.bc.ca:99/index.php, , , , </p>
-
-    </code></pre>
-   
-    <h4 id="abbreviations-">Abbreviations:</h4>
-    <p>In the above example:</p>
-    <blockquote>
-      <p><code>( )</code> is used behind the abbreviation <code>DELT</code>, to indicate the full name when your mouse hover over the abbreviation.</p>
-    </blockquote>
-    <h4 id="new-and-updated-items-">New and Updated Items:</h4>
-    <p>For new link item or updated link item:</p>
-    <blockquote>
-      <p>This is optional, however, the tag (column 3) and date (column 4) need to be used in conjunction. 
-      </p>
-    </blockquote>
-    <hr>
-    <h2 id="make-html-code">Make HTML Code</h2>
-    <hr>
-    <p>Once you have edited the .md files, click <a
-         href="../html/txt2html.html">Here</a>.
-      Choose the all <code>.txt</code> files that you just downloaded and edited, then click on <code>Submit</code>. The
-      html code will be generated. You can preview the results from there. Click on <code>Copy HTML Code</code>, then
-      paste it to HydroShare to replace all the existing code.</p>
-  </body>
+  <p>Indented list item example in html:</p>
+  <ul>
+    <li><a href="/sites/de/sites/de/DELT/Forms/AllItems.aspx"><abbr
+          title="Distribution Engineering Leadership Team">DELT</abbr></a>
+      <ul>
+        <li><a href="/sites/de/Business_Review/Forms/AllItems.aspx">Business Review</a><sup><new date="2028-05-02"></new></sup></li>
+      </ul>
+    </li>
+  </ul>
+  <p>in .txt files:</p>
+  <pre><code><span class="hljs-bullet">1, DELT(Distribution Engineering Leadership Team), , , /sites/de/sites/de/DELT/Forms/AllItems.aspx, , , ,</span>
+    <div></div>
+  <span class="hljs-bullet">2, Business Review, new, "yyyy-mm-dd", http://pq.bchydro.bc.ca:99/index.php, , , ,  </span></code></pre>
+  <h4 id="abbreviations-">Abbreviations:</h4>
+  <p>In the above example:</p>
+  <blockquote>
+    <p><code>( )</code> is used behind the abbreviation <code>DELT</code>, to indicate the full name when your mouse
+      hover over the abbreviation.</p>
+  </blockquote>
+  <h4 id="new-and-updated-items-">New and Updated Items:</h4>
+  <p>For new link item or updated link item:</p>
+  <blockquote>
+    <p>This is optional, however, the tag (column 3) and date (column 4) need to be used in conjunction.
+    </p>
+  </blockquote>
+  <hr>
+  <h2 id="make-html-code">Make HTML Code</h2>
+  <hr>
+  <p>Once you have edited the .md files, click <a href="../html/txt2html.html">Here</a>.
+    Choose the all <code>.txt</code> files that you just downloaded and edited, then click on <code>Submit</code>. The
+    html code will be generated. You can preview the results from there. Click on <code>Copy HTML Code</code>, then
+    paste it to HydroShare to replace all the existing code.</p>
+</body>
 
 </html>

@@ -50,21 +50,25 @@ window.onload = () => {
   const convertToFileUrl = path =>
     `file:///${encodeURI(path.replace(/\\/g, '/'))}`
 
-  const handleFile = (file, index) => {
-    const reader = new FileReader()
-    reader.onload = e => {
-      const content = validateUrls(e.target.result)
-      if (content) {
-        const lines = content.split(/\r?\n/).filter(Boolean)
-        const [head, ...records] = lines
-        const mdLines = [head, '', ...records.map(transformRecord)]
-        const md = mdLines.join('\n')
+  const handleFile = async (file, index) => {
+    const fileResponse = await fetch(file.ServerRelativeUrl, {
+      method: 'GET',
+      headers: {
+        Accept: 'text/plain',
+      },
+    })
+    const content = await fileResponse.text()
+    console.log(`Contents of ${file.Name}:`, content)
 
-        const dataInfo = marked.parse(validateUrls(md))
-        renderHTML(file.name, dataInfo, index)
-      }
+    if (content) {
+      const lines = content.split(/\r?\n/).filter(Boolean)
+      const [head, ...records] = lines
+      const mdLines = [head, '', ...records.map(transformRecord)]
+      const md = mdLines.join('\n')
+
+      const dataInfo = marked.parse(validateUrls(md))
+      renderHTML(file.name, dataInfo, index)
     }
-    reader.readAsText(file)
   }
 
   const renderHTML = (name, dataInfo, idx) => {
@@ -130,22 +134,6 @@ window.onload = () => {
     return match ? [pretext, code, desc, trailing] : ['', composite, '', '']
   }
 
-  loadDataButton.addEventListener('click', evt => {
-    evt.preventDefault()
-    state.fileList.sort((a, b) => {
-      const nameA = a.name.toUpperCase() 
-      const nameB = b.name.toUpperCase() 
-      if (nameA < nameB) {
-        return -1
-      }
-      if (nameA > nameB) {
-        return 1
-      }
-      return 0
-    })
-    state.fileList.forEach((file, index) => handleFile(file, index))
-  })
-
   updateButton.addEventListener('click', evt => {
     evt.preventDefault()
     htmlRender.innerHTML = htmlCode.value
@@ -157,4 +145,40 @@ window.onload = () => {
     navigator.clipboard.writeText(htmlCode.value)
     alert('HTML code copied to clipboard')
   })
+
+  const folderUrl = '/sites/de/SiteAssets/source'
+
+  async function getTxtFilesFromSharePointFolder () {
+    const endpoint = `https://hydroshare.bchydro.bc.ca/sites/de/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files`
+
+    const response = await fetch(endpoint, {
+      method: 'GET',
+
+      headers: {
+        Accept: 'application/json;odata=verbose',
+      },
+    })
+
+    const data = await response.json()
+
+    const txtFiles = data.d.results.filter(file => file.Name.endsWith('.txt'))
+
+    state.fileList = Array.from(txtFiles).sort()
+
+    state.fileList.sort((a, b) => {
+      const nameA = a.Name.toUpperCase() // ignore upper and lowercase
+      const nameB = b.Name.toUpperCase() // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1
+      }
+      if (nameA > nameB) {
+        return 1
+      }
+      return 0
+    })
+
+    state.fileList.forEach((file, index) => handleFile(file, index))
+  }
+
+  getTxtFilesFromSharePointFolder()
 }

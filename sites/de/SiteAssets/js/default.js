@@ -76,6 +76,8 @@ function tagUpdate () {
   qSA('new, update').forEach(tag => {
     const tagDate = tag.getAttribute('date')
     const currentDate = new Date()
+    console.log(tagDate)
+    console.log(currentDate)
 
     if (!tagDate) {
       setAttributes(tag, { date: updateDateString })
@@ -85,55 +87,61 @@ function tagUpdate () {
     } else {
       tag.textContent = tag.tagName.toLowerCase()
     }
+    console.log(tag)
   })
 }
 
-function handleLinks() {
-  document.body.addEventListener('click', (event) => {
-    const link = event.target.closest('div.box ul li a');
-    
-    if (!link) return;
+function handleLinks () {
+  document.body.addEventListener('click', event => {
+    const link = event.target.closest('div.box ul li a')
 
-    event.preventDefault();
-    const linkUrl = link.href;
+    if (!link) return
+
+    event.preventDefault()
+    const linkUrl = link.href
 
     if (linkUrl.startsWith('file:')) {
-      const copiedText = decodeURI(linkUrl).replace(/\s/g, ' ');
-      navigator.clipboard.writeText(copiedText).then(() => {
-        const inHtml = `<div><strong>${copiedText}</strong></div><div>has been copied to clipboard.</div>`;
-        showPopup(inHtml);
-      }).catch((err) => {
-        console.error('Failed to copy text to clipboard:', err);
-      });
+      const copiedText = decodeURI(linkUrl).replace(/\s/g, ' ')
+      navigator.clipboard
+        .writeText(copiedText)
+        .then(() => {
+          const inHtml = `<div><strong>${copiedText}</strong></div><div>has been copied to clipboard.</div>`
+          showPopup(inHtml)
+        })
+        .catch(err => {
+          console.error('Failed to copy text to clipboard:', err)
+        })
     } else if (isValidUrl(linkUrl)) {
-      const link = `${DOWNLOAD_URL_PREFIX}${linkUrl}`;
-      checkLinkHealth(link).then((isHealthy) => {
+      const link = `${DOWNLOAD_URL_PREFIX}${linkUrl}`
+      checkLinkHealth(link).then(isHealthy => {
         if (isHealthy) {
-          const fname = decodeURI(linkUrl).split('?')[0].split('/').pop();
+          const fname = decodeURI(linkUrl).split('?')[0].split('/').pop()
           if (/^.*\.(pdf|docx)$/i.test(fname) && linkUrl.includes(PREFIX)) {
-            window.open(link, '_blank');
+            window.open(link, '_blank')
           } else {
-            window.open(linkUrl, '_blank');
+            window.open(linkUrl, '_blank')
           }
         } else {
-          console.error(`Unhealthy or inaccessible URL: ${linkUrl}`);
-          showPopup(`<div><strong>${linkUrl}</strong></div><div>is not accessible.</div>`);
+          console.error(`Unhealthy or inaccessible URL: ${linkUrl}`)
+          showPopup(
+            `<div><strong>${linkUrl}</strong></div><div>is not accessible.</div>`
+          )
         }
-      });
+      })
     } else {
-      console.error(`Invalid URL: ${linkUrl}`);
+      console.error(`Invalid URL: ${linkUrl}`)
     }
-  });
+  })
 }
 
 // Helper function to check if a link is healthy
-function checkLinkHealth(url) {
+function checkLinkHealth (url) {
   return fetch(url, { method: 'HEAD' })
-    .then((response) => {
-      console.log(response); // Log the response for debugging
-      return response.ok; // Returns true if status is 200-299
+    .then(response => {
+      console.log(response) // Log the response for debugging
+      return response.ok // Returns true if status is 200-299
     })
-    .catch(() => false); // Returns false if the request fails
+    .catch(() => false) // Returns false if the request fails
 }
 
 function isValidUrl (url) {

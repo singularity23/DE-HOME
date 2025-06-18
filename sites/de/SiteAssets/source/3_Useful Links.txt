@@ -4,7 +4,7 @@ Useful Links
 2, PQ(Power Quality)web, , , http://pq.bchydro.bc.ca/index.php, , , 
 2, DS(Distribution Standards)wiki, , , http://edmbchwiki1/dist/standards/index.php/Main_Page, , , 
 1, Design, , , , , , 
-2, PAT(Planet Alteration Tracking), , , https://kdcbchpoweb2.bchydro.bc.ca:7004/pat/, , , 
+2, PAT(Planet Alteration Tracking), , , https://kdcbchpoweb1.bchydro.bc.ca:7004/pat/, , , 
 2, WikiDI(Distribution Instructions), , , http://edmbchwiki1/di/index.php/Main_Page, , , 
 1, Projects, , , , , , 
 2, SPOT(Strategic Portfolio Optimization Tool), update, 2025-01-01, https://kdcsswebp1.bchydro.bc.ca/fetbch/usr/userindex.aspx, , , 

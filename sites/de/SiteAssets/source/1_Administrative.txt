@@ -16,4 +16,5 @@ Administrative​
 1, DE Base Accountability, , , , , , 
 2, Core Pathway, new, 2025-05-05, /sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Core%20Pathway%20rev0.pdf, , , 
 2, Technical Pathway, new, 2025-05-05, /sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Technical%20Pathway%20rev0.pdf, , , 
-2, Leadership Pathway, new, 2025-05-05, /sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Leadership%20Pathway%20rev0.pdf, , , 
+2, Leadership Pathway, new, 2025-05-05, /sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Leadership%20Pathway%20rev0.pdf, , ,
+1, DE SharePoint Editor Tool, , , https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/txt2html.html, , , 
