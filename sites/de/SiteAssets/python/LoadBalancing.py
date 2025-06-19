@@ -2,18 +2,17 @@ import locale
 import traceback
 import math
 import time
-from datetime import datetime
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple
 from dataclasses import dataclass
 from enum import Enum
-from cympy import *
+from cympy import study, enums, sim, rm, app, GetInputParameter
 
 # Constants
 MINIMUM_CURRENT = 1.0
-LOAD_FACTOR = 1.1
+MULTIPLIER = 1.1
 DEFAULT_LOCALE = ("us_CA", "utf8")
 CELL_FORMAT_COLOR = 14737632
-CHECK_METER_NAME = "CHECK_METER" 
+CHECK_METER_NAME = "CHECK_METER"
 
 
 @dataclass
@@ -210,7 +209,8 @@ class LoadBalancing:
         self.sections = {}
         self.counter = 0
         self.format = "{} ph: {:>7.2f}A, {:>7.2f}% PF, {:>7.2f}% unbalance"
-        self.separator = "—" * len(self.format.format("A", self.IA, self.PFA, 0))
+        self.separator = "—" * \
+            len(self.format.format("A", self.IA, self.PFA, 0))
 
     def __repr__(self):
         """
@@ -218,7 +218,8 @@ class LoadBalancing:
         """
         self.sections = CombineDicts(self.sections_down, self.sections_up)
 
-        string = "//".join([f"Load Balancing has been run {self.counter} time(s)"])
+        string = "//".join(
+            [f"Load Balancing has been run {self.counter} time(s)"])
         if self.sections:
             string += "//Sections available for load transfer:"
             for key, value in self.sections.items():
@@ -234,7 +235,7 @@ class LoadBalancing:
     def GetSinglePhaseSections(self, node_id: str) -> Tuple[Dict, Dict]:
         """Retrieve single-phase sections in the network"""
         dict_down = self.RunCYMEIteration(node_id)
-        dict_all = self.RunCYMEIteration(self.network_id)
+        dict_all = self.RunCYMEIteration(str(self.network_id))
 
         dict_up = {
             phase: {
@@ -249,10 +250,12 @@ class LoadBalancing:
 
     def RunCYMEIteration(self, node_id: str) -> Dict:
         """Get single phase sections for load transfer"""
-        dict_sec = {phase.value: {} for phase in PhaseType if len(phase.value) == 1}
+        dict_sec = {phase.value: {}
+                    for phase in PhaseType if len(phase.value) == 1}
         self.LF.Run([self.network_id])
 
-        iterator = study.NetworkIterator(node_id, enums.IterationOption.Downstream)
+        iterator = study.NetworkIterator(
+            node_id, enums.IterationOption.Downstream)
         while iterator.Next():
             if not self._is_valid_section(iterator):
                 continue
@@ -306,7 +309,8 @@ class LoadBalancing:
         del temp_idiff[ph_high]
 
         sorted_idiff = dict(
-            sorted(temp_idiff.items(), key=lambda item: abs(item[1]), reverse=True)
+            sorted(temp_idiff.items(), key=lambda item: abs(
+                item[1]), reverse=True)
         )
 
         sol = {}
@@ -347,7 +351,8 @@ class LoadBalancing:
                         enums.DeviceType.Recloser,
                         enums.DeviceType.Switch,
                     }:
-                        device.SetValue(self._connected_phase[phase], "ClosedPhase")
+                        device.SetValue(
+                            self._connected_phase[phase], "ClosedPhase")
                         device_list.append(
                             [phase, device.DeviceNumber, device.DeviceType]
                         )
@@ -400,7 +405,8 @@ class LoadBalancing:
                         new_peaks = peak_loads[:]
                         new_peaks[i] -= load
                         new_peaks[j] += load
-                        imbalance = sum(abs(l - avg_load) for l in new_peaks)
+                        imbalance = sum(abs(peak - avg_load)
+                                        for peak in new_peaks)
 
                         if imbalance < best_balance - tolerance:
                             best_balance = imbalance
@@ -423,14 +429,16 @@ class LoadBalancing:
     def SetFeederDemand(self):
         """Initialize the demand meter for the network"""
         try:
-            self.mm_device = study.GetDevice(self.network_id, enums.DeviceType.Breaker)
+            self.mm_device = study.GetDevice(
+                self.network_id, enums.DeviceType.Breaker)
         except Exception as e:
             raise LoadBalancingError(
                 f"No Breaker found for the network: {self.network_id}. Error: {str(e)}"
             )
 
         try:
-            self.main_meter = study.GetMeter(self.network_id, enums.DeviceType.Breaker)
+            self.main_meter = study.GetMeter(
+                self.network_id, enums.DeviceType.Breaker)
         except Exception as e:
             raise LoadBalancingError(
                 f"No Meter found for the network: {self.network_id}. Error: {str(e)}"
@@ -441,7 +449,7 @@ class LoadBalancing:
             self.main_meter.DemandB.Value1,
             self.main_meter.DemandC.Value1,
         )
-        if LOAD_FACTOR * sum([self.IA, self.IB, self.IC]) > sum(
+        if MULTIPLIER * sum([self.IA, self.IB, self.IC]) > sum(
             [IA_import, IB_import, IC_import]
         ):
             self.UpdateMeter(
@@ -477,7 +485,7 @@ class LoadBalancing:
                 enums.Location.To,
                 True,
             )
-        except:
+        except Exception:
             self.cm_device = study.GetDevice(
                 "CHECK_METER", enums.DeviceType.Miscellaneous
             )
@@ -559,14 +567,16 @@ class LoadBalancing:
         Run one pass of load balancing using a section selection method.
         """
         pre_num = study.GetModificationsCount()
-        self.sections_down, self.sections_up = self.GetSinglePhaseSections(node_id)
+        self.sections_down, self.sections_up = self.GetSinglePhaseSections(
+            node_id)
 
         if not self.sections_down and not self.sections_up:
             raise RuntimeError("No single phase branches found")
 
         print(f"Single Phase Sections: {picks_method.__name__}")
 
-        picks_down, self.sections_down = picks_method(self.sections_down, *picks_args)
+        picks_down, self.sections_down = picks_method(
+            self.sections_down, *picks_args)
         # print(*picks_args)
         _IA = _IB = _IC = _IN = _PFA = _PFB = _PFC = _Iunb = 0
 
@@ -590,7 +600,8 @@ class LoadBalancing:
                 _PFC,
             )
 
-        picks_up, self.sections_up = picks_method(self.sections_up, _IA, _IB, _IC)
+        picks_up, self.sections_up = picks_method(
+            self.sections_up, _IA, _IB, _IC)
 
         rows += self.TransferLoad(picks_up)
 
@@ -614,8 +625,9 @@ class LoadBalancing:
                 _PFC,
             )
 
-        print(f"\n@ MAIN_METER:")
-        _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(self.network_id)
+        print("\n@ MAIN_METER:")
+        _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
+            self.network_id)
         self.PrintLoad(_IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
         self.UpdateMeter(
             self.mm_device,
@@ -630,7 +642,8 @@ class LoadBalancing:
 
         if self.network_id != node_id:
             print(f"\n@ {node_id}")
-            _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(node_id)
+            _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
+                node_id)
             self.PrintLoad(_IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
 
         self.MakeReport(IA, IB, IC, _IA, _IB, _IC, rows)
@@ -649,7 +662,8 @@ class LoadBalancing:
         """
         LB = LoadBalancing(network=self.network_id)
         if self.network_id not in study.ListNetworks():
-            raise RuntimeError("The feeder loaded in the study is not correct!")
+            raise RuntimeError(
+                "The feeder loaded in the study is not correct!")
 
         print(f"Feeder: {self.network_id}, before balancing:")
 
@@ -673,10 +687,11 @@ class LoadBalancing:
 
         if LB.CM == 1:
             print(f"\n@ {CHECK_METER_NAME}")
-            IA, IB, IC, IN, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(CHECK_METER_NAME)
+            IA, IB, IC, IN, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(
+                CHECK_METER_NAME)
             LB.PrintLoad(IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
 
-        print(f"\n@ MAIN_METER:")
+        print("\n@ MAIN_METER:")
         IA, IB, IC, IN, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(LB.network_id)
         LB.PrintLoad(IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
 
@@ -692,14 +707,14 @@ class LoadBalancing:
         # print(LB.IA, LB.IB, LB.IC, LB.PFA, LB.PFB, LB.PFC)
         LB.counter += 1
         print(LB.separator)
-        print(f"Load balancing method #1:")
+        print("Load balancing method #1:")
 
         LB._RunBalancingIteration(
             _study_node, IA, IB, IC, LB.PickSections, (IA, IB, IC)
         )
         LB.counter += 1
         print(LB.separator)
-        print(f"Load balancing method #2:")
+        print("Load balancing method #2:")
 
         LB._RunBalancingIteration(
             _study_node, IA, IB, IC, LB.PickSections_2, (IA, IB, IC)
