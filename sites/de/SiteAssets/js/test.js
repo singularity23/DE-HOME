@@ -67,7 +67,7 @@ window.onload = () => {
       const md = mdLines.join('\n')
 
       const dataInfo = marked.parse(validateUrls(md))
-      renderHTML(file.name, dataInfo, index)
+      renderHTML(file.Name, dataInfo, index)
     }
   }
 

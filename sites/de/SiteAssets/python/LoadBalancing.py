@@ -1,7 +1,9 @@
 import locale
+import os
 import traceback
 import math
 import time
+from datetime import datetime
 from typing import List, Dict, Tuple
 from dataclasses import dataclass
 from enum import Enum
@@ -10,7 +12,6 @@ from cympy import study, enums, sim, rm, app, GetInputParameter
 # Constants
 MINIMUM_CURRENT = 1.0
 MULTIPLIER = 1.1
-DEFAULT_LOCALE = ("us_CA", "utf8")
 CELL_FORMAT_COLOR = 14737632
 CHECK_METER_NAME = "CHECK_METER"
 
@@ -46,12 +47,11 @@ def CombineDicts(dict1, dict2):
     """
     Merge values from dict2 into dict1 for matching keys using .update().
     """
-
     for key in dict1:
         if key in dict2:
             dict1[key].update(dict2[key])
 
-        return dict1
+    return dict1
 
 
 def QueryWithFallback(query_func, keyword_list: List[str], *args) -> List:
@@ -73,12 +73,14 @@ def QueryWithFallback(query_func, keyword_list: List[str], *args) -> List:
 
 def QueryDevices(keyword_list: List[str], dev_number: str, dev_type: str) -> List:
     """Query device information"""
-    return QueryWithFallback(study.QueryInfoDevice, keyword_list, dev_number, dev_type)
+    return QueryWithFallback(
+        study.QueryInfoDevice, keyword_list, dev_number, dev_type, 2
+    )
 
 
 def QueryNodes(keyword_list: List[str], node_id: str) -> List:
     """Query node information"""
-    return QueryWithFallback(study.QueryInfoNode, keyword_list, node_id)
+    return QueryWithFallback(study.QueryInfoNode, keyword_list, node_id, 2)
 
 
 def ClosestSumOfSubset(nums: List[float], target: float) -> Tuple[float, List[int]]:
@@ -121,14 +123,20 @@ def GetTarget(dictionary: Dict, target: float) -> List:
     return [(keys[i], nums[i]) for i in indices if keys[i] != "empty"]
 
 
+def _write_and_print(file, message: str):
+    """
+    Helper function to write and print messages.
+    """
+    print(message)
+    file.write(message + "\n")
+
+
 class LoadBalancing:
     """Class for performing load balancing on power networks"""
 
     def __init__(self, network=None, *args, **kwargs):
         """Initialize LoadBalancing instance"""
         self._initialize_parameters()
-        if network is not None:
-            self.network_id = network
         self._initialize_meters()
         self._initialize_variables()
 
@@ -151,6 +159,7 @@ class LoadBalancing:
             "PFB_CM",
             "PFC_CM",
             "Iteration",
+            "Report_Location",
         ]
         values = list(map(GetInputParameter, params))
 
@@ -171,10 +180,12 @@ class LoadBalancing:
             self.PFB_CM,
             self.PFC_CM,
             self.itr,
+            self.file_dir,
         ) = values
 
     def _initialize_meters(self):
         """Initialize meter objects"""
+        self.meters = []
         self.main_meter = sim.Meter()
         self.check_meter = sim.Meter()
         self.mm_device = None
@@ -186,7 +197,8 @@ class LoadBalancing:
             "IAout",
             "IBout",
             "ICout",
-            "Ineutral",
+            "IneutralOut",
+            "IBal",
             "IUnbalA",
             "IUnbalB",
             "IUnbalC",
@@ -209,8 +221,12 @@ class LoadBalancing:
         self.sections = {}
         self.counter = 0
         self.format = "{} ph: {:>7.2f}A, {:>7.2f}% PF, {:>7.2f}% unbalance"
-        self.separator = "—" * \
-            len(self.format.format("A", self.IA, self.PFA, 0))
+        self.separator = "—" * len(self.format.format("A", self.IA, self.PFA, 0))
+        self._current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self._file_name = (
+            f"LoadBalancing_{self.network_id}_{self._current_datetime}.txt"
+        )
+        self._file_path = os.path.join(str(self.file_dir), str(self._file_name))
 
     def __repr__(self):
         """
@@ -218,10 +234,9 @@ class LoadBalancing:
         """
         self.sections = CombineDicts(self.sections_down, self.sections_up)
 
-        string = "//".join(
-            [f"Load Balancing has been run {self.counter} time(s)"])
+        string = "//".join([f"Load Balancing has been run {self.counter} time(s)"])
         if self.sections:
-            string += "//Sections available for load transfer:"
+            string += "//Sections after load transfer:"
             for key, value in self.sections.items():
                 string += f"//\n{self.separator}\n"
                 string += f"//{key} Phase:\n"
@@ -250,17 +265,28 @@ class LoadBalancing:
 
     def RunCYMEIteration(self, node_id: str) -> Dict:
         """Get single phase sections for load transfer"""
-        dict_sec = {phase.value: {}
-                    for phase in PhaseType if len(phase.value) == 1}
+        dict_sec = {phase.value: {} for phase in PhaseType if len(phase.value) == 1}
         self.LF.Run([self.network_id])
 
-        iterator = study.NetworkIterator(
-            node_id, enums.IterationOption.Downstream)
+        iterator = study.NetworkIterator(node_id, enums.IterationOption.Downstream)
         while iterator.Next():
-            if not self._is_valid_section(iterator):
-                continue
+            Section = iterator.GetSection()
+            Phase = iterator.GetPhase()
 
-            self._process_section_devices(iterator, dict_sec)
+            for Device in iterator.GetDevices():
+                ismeter = study.QueryInfoDevice(
+                    "IsMeter", Device.DeviceNumber, Device.DeviceType
+                )
+                if ismeter == "Yes" and Device not in self.meters:
+                    self.meters.append(Device)
+
+                if not self._is_valid_section(iterator):
+                    continue
+
+                if Device.DeviceType == enums.DeviceType.Transformer:
+                    continue
+
+                self._process_section_devices(Phase, Section, Device, dict_sec)
 
         return dict_sec
 
@@ -271,34 +297,28 @@ class LoadBalancing:
             and iterator.GetFromPhase() == enums.Phase.ABC
         )
 
-    def _process_section_devices(self, iterator, dict_sec):
+    def _process_section_devices(self, Phase, Section, Device, dict_sec):
         """Process devices in a section"""
-        Section = iterator.GetSection()
-        Phase = iterator.GetPhase()
 
-        for Device in iterator.GetDevices():
-            if Device.DeviceType == enums.DeviceType.Transformer:
-                continue
+        currents = QueryDevices(
+            ["IAout", "IBout", "ICout"],
+            Device.DeviceNumber,
+            enums.DeviceType.AllDevices,
+        )
 
-            currents = QueryDevices(
-                ["IAout", "IBout", "ICout"],
-                Device.DeviceNumber,
-                enums.DeviceType.AllDevices,
-            )
-
-            for ph, current in zip("ABC", currents):
-                if (
-                    Phase == getattr(enums.Phase, ph)
-                    and isinstance(current, float)
-                    and current > MINIMUM_CURRENT
-                ):
-                    dict_sec[ph][Section] = current
+        for ph, current in zip("ABC", currents):
+            if (
+                Phase == getattr(enums.Phase, ph)
+                and isinstance(current, float)
+                and current > MINIMUM_CURRENT
+            ):
+                dict_sec[ph][Section] = current
 
     def PickSections(
-        self, sec_dict: Dict, ImaxA: float, ImaxB: float, ImaxC: float
+        self, sec_dict: Dict, ImaxA: float, ImaxB: float, ImaxC: float, IBal: float
     ) -> Tuple[Dict, Dict]:
         """Pick sections for load transfer based on current imbalances"""
-        Iavg = (ImaxA + ImaxB + ImaxC) / 3
+        Iavg = IBal or (ImaxA + ImaxB + ImaxC) / 3
         Idiff = {k: v - Iavg for k, v in zip("ABC", [ImaxA, ImaxB, ImaxC])}
 
         if not sec_dict:
@@ -309,8 +329,7 @@ class LoadBalancing:
         del temp_idiff[ph_high]
 
         sorted_idiff = dict(
-            sorted(temp_idiff.items(), key=lambda item: abs(
-                item[1]), reverse=True)
+            sorted(temp_idiff.items(), key=lambda item: abs(item[1]), reverse=True)
         )
 
         sol = {}
@@ -334,7 +353,7 @@ class LoadBalancing:
 
         return sol, sec_dict
 
-    def TransferLoad(self, dict_sect: Dict) -> List:
+    def TransferLoad(self, file, dict_sect: Dict) -> List:
         """Transfer load between sections and update device properties"""
         device_list = []
         report_rows = []
@@ -351,8 +370,7 @@ class LoadBalancing:
                         enums.DeviceType.Recloser,
                         enums.DeviceType.Switch,
                     }:
-                        device.SetValue(
-                            self._connected_phase[phase], "ClosedPhase")
+                        device.SetValue(self._connected_phase[phase], "ClosedPhase")
                         device_list.append(
                             [phase, device.DeviceNumber, device.DeviceType]
                         )
@@ -366,8 +384,9 @@ class LoadBalancing:
                         rm.StringCell(phase),
                     ]
                 )
-                print(
-                    f"Change {'[' + section.ID + ']':<12} {current:>5.2f}A  from {old_phase:>2} ph to {phase:>2} ph"
+                _write_and_print(
+                    file,
+                    f"Change {'[' + section.ID + ']':<12} {current:>5.2f}A  from {old_phase:>2} ph to {phase:>2} ph",
                 )
 
         self._update_devices(device_list)
@@ -384,13 +403,22 @@ class LoadBalancing:
                     self._connected_phase[ph], "ClosedPhase", dev_num, dev_type
                 )
 
-    def PickSections_2(self, sec_dict: Dict, ImaxA: float, ImaxB: float, ImaxC: float, tolerance=1e-1, max_moves=5,) -> tuple[Dict, Dict]:
+    def PickSections_2(
+        self,
+        sec_dict: Dict,
+        ImaxA: float,
+        ImaxB: float,
+        ImaxC: float,
+        IBal: float,
+        tolerance=1e-1,
+        max_moves=5,
+    ) -> tuple[Dict, Dict]:
         """Alternative method to pick sections for load transfer using iterative balancing"""
         phase_branches = {k: v.copy() for k, v in sec_dict.items()}
         phase_names = list(phase_branches.keys())
         picks = {k: [] for k in phase_names}
         peak_loads = [ImaxA, ImaxB, ImaxC]
-        avg_load = sum(peak_loads) / 3
+        avg_load = IBal or sum(peak_loads) / 3
 
         for _ in range(max_moves):
             best_move = None
@@ -405,8 +433,7 @@ class LoadBalancing:
                         new_peaks = peak_loads[:]
                         new_peaks[i] -= load
                         new_peaks[j] += load
-                        imbalance = sum(abs(peak - avg_load)
-                                        for peak in new_peaks)
+                        imbalance = sum(abs(peak - avg_load) for peak in new_peaks)
 
                         if imbalance < best_balance - tolerance:
                             best_balance = imbalance
@@ -424,21 +451,19 @@ class LoadBalancing:
             else:
                 break
 
-        return picks, sec_dict
+        return picks, phase_branches
 
     def SetFeederDemand(self):
         """Initialize the demand meter for the network"""
         try:
-            self.mm_device = study.GetDevice(
-                self.network_id, enums.DeviceType.Breaker)
+            self.mm_device = study.GetDevice(self.network_id, enums.DeviceType.Breaker)
         except Exception as e:
             raise LoadBalancingError(
                 f"No Breaker found for the network: {self.network_id}. Error: {str(e)}"
             )
 
         try:
-            self.main_meter = study.GetMeter(
-                self.network_id, enums.DeviceType.Breaker)
+            self.main_meter = study.GetMeter(self.network_id, enums.DeviceType.Breaker)
         except Exception as e:
             raise LoadBalancingError(
                 f"No Meter found for the network: {self.network_id}. Error: {str(e)}"
@@ -500,11 +525,11 @@ class LoadBalancing:
         Build and show a custom report comparing pre/post balancing values.
         """
         report = rm.CustomReport(
-            f"SummaryReport_{self.counter}",
+            f"SummaryReport_{self.network_id}_{self._current_datetime}",
             ["NetworkID", "Phase", "Before (A)", "After (A)"],
         )
         cf = rm.CellFormat()
-        cf.BackColor = 14737632
+        cf.BackColor = CELL_FORMAT_COLOR
         cf.Bold = True
         rows = [
             [
@@ -537,55 +562,59 @@ class LoadBalancing:
             report.AddRow(row)
         report.Show()
 
-    def GetLoadFlow(self, node_id):
+    def GetLoadFlow(self, node_dev):
         """
         Run load flow and return current, PF, and unbalance data.
         """
 
         self.LF.Run([self.network_id])
 
-        IA, IB, IC, IN, IunbA, IunbB, IunbC, PFA, PFB, PFC = QueryNodes(
-            self._variables, node_id
+        IA, IB, IC, IN, IBal, IunbA, IunbB, IunbC, PFA, PFB, PFC = QueryNodes(
+            self._variables, node_dev
         )
-        # IN = (IA**2 + IB**2 + IC**2 - IA * IB - IB * IC - IC * IA) ** 0.5
-        Iunb = {"A": IunbA, "B": IunbB, "C": IunbC}
-        return [IA, IB, IC, IN, PFA, PFB, PFC, Iunb]
+        # IN1 = (IA**2 + IB**2 + IC**2 - IA * IB - IB * IC - IC * IA) ** 0.5
 
-    def PrintLoad(self, IA, IB, IC, IN, PFA, PFB, PFC, Iunb):
+        # print(IN1)
+        Iunb = {"A": IunbA, "B": IunbB, "C": IunbC}
+        return [IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb]
+
+    def PrintLoad(self, file, IA, IB, IC, IN, PFA, PFB, PFC, Iunb):
         """
         Print current, PF, and unbalance values in formatted view.
         """
-        print("")
-        print(self.format.format("A", IA, PFA, Iunb["A"]))
-        print(self.format.format("B", IB, PFB, Iunb["B"]))
-        print(self.format.format("C", IC, PFC, Iunb["C"]))
-        print("IN: {:>9.2f}A".format(IN))
-        print("")
+        _write_and_print(file, "")
+        _write_and_print(file, self.format.format("A", IA, PFA, Iunb["A"]))
+        _write_and_print(file, self.format.format("B", IB, PFB, Iunb["B"]))
+        _write_and_print(file, self.format.format("C", IC, PFC, Iunb["C"]))
+        _write_and_print(file, "IN: {:>9.2f}A".format(IN))
+        _write_and_print(file, "")
 
-    def _RunBalancingIteration(self, node_id, IA, IB, IC, picks_method, picks_args):
+    def _RunBalancingIteration(
+        self, file, node_id, IA, IB, IC, IBal, picks_method, picks_args
+    ):
         """
         Run one pass of load balancing using a section selection method.
         """
         pre_num = study.GetModificationsCount()
-        self.sections_down, self.sections_up = self.GetSinglePhaseSections(
-            node_id)
+        self.meters = []
+        self.sections_down, self.sections_up = self.GetSinglePhaseSections(node_id)
 
         if not self.sections_down and not self.sections_up:
             raise RuntimeError("No single phase branches found")
 
-        print(f"Single Phase Sections: {picks_method.__name__}")
+        _write_and_print(file, f"Single Phase Sections: {picks_method.__name__}")
 
-        picks_down, self.sections_down = picks_method(
-            self.sections_down, *picks_args)
-        # print(*picks_args)
-        _IA = _IB = _IC = _IN = _PFA = _PFB = _PFC = _Iunb = 0
+        picks_down, self.sections_down = picks_method(self.sections_down, *picks_args)
+        # print(self.sections_down)
+        # _write_and_print(file, *picks_args)
+        _IA = _IB = _IC = _IN = _IBal = _PFA = _PFB = _PFC = _Iunb = 0
 
-        rows = self.TransferLoad(picks_down)
-        # print(picks_down)
+        rows = self.TransferLoad(file, picks_down)
+        # _write_and_print(file, picks_down)
         self.LF.Run([self.network_id])
 
         if node_id != self.network_id:
-            _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
+            _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
                 self.network_id
             )
 
@@ -600,23 +629,24 @@ class LoadBalancing:
                 _PFC,
             )
 
-        picks_up, self.sections_up = picks_method(
-            self.sections_up, _IA, _IB, _IC)
-
-        rows += self.TransferLoad(picks_up)
-
-        print("")
-        print(f"\nFeeder: {self.network_id}, after balancing:")
-
-        if self.CM == 1:
-            print(f"\n@ {CHECK_METER_NAME}")
-            _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
-                CHECK_METER_NAME
+            picks_up, self.sections_up = picks_method(
+                self.sections_up, _IA, _IB, _IC, _IBal
             )
-            self.PrintLoad(_IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
+            # print(self.sections_up)
+            rows += self.TransferLoad(file, picks_up)
+
+        _write_and_print(file, "")
+        _write_and_print(file, f"\nFeeder: {self.network_id}, after balancing:")
+        #print(self.meters)
+        for meter in self.meters:
+            _write_and_print(file, f"\n@ Meter: {meter.DeviceNumber}")
+            _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
+                study.QueryInfoDevice('ToNodeId', meter.DeviceNumber, meter.DeviceType)
+            )
+            self.PrintLoad(file, _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
             self.UpdateMeter(
-                self.cm_device,
-                self.check_meter,
+                meter,
+                study.GetMeter(meter.DeviceNumber, meter.DeviceType),
                 _IA,
                 _IB,
                 _IC,
@@ -625,34 +655,41 @@ class LoadBalancing:
                 _PFC,
             )
 
-        print("\n@ MAIN_METER:")
-        _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
-            self.network_id)
-        self.PrintLoad(_IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
-        self.UpdateMeter(
-            self.mm_device,
-            self.main_meter,
-            _IA,
-            _IB,
-            _IC,
-            _PFA,
-            _PFB,
-            _PFC,
-        )
-
-        if self.network_id != node_id:
-            print(f"\n@ {node_id}")
-            _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
-                node_id)
-            self.PrintLoad(_IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
+        # _write_and_print(file, "\n@ MAIN_METER:")
+        # _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(self.network_id)
+        # self.PrintLoad(file, _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
+        # self.UpdateMeter(
+        #     self.mm_device,
+        #     self.main_meter,
+        #     _IA,
+        #     _IB,
+        #     _IC,
+        #     _PFA,
+        #     _PFB,
+        #     _PFC,
+        # )
 
         self.MakeReport(IA, IB, IC, _IA, _IB, _IC, rows)
+
+        if self.network_id != node_id:
+            _write_and_print(file, f"\n@ {node_id}")
+            _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
+                node_id
+            )
+            self.PrintLoad(file, _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
 
         self.LA.Run([self.network_id])
 
         for t in str(self).split("//"):
-            print(t.strip())
-        print(self.separator)
+            _write_and_print(file, t.strip())
+        _write_and_print(file, self.separator)
+
+        modifications = study.ListModifications()
+        _write_and_print(file, "\nModifications made during the balancing process:")
+
+        for idx, modification in enumerate(modifications):
+            _write_and_print(file, f"{idx + 1}: {modification}")
+
         pst_num = study.GetModificationsCount()
         study.Undo(pst_num - pre_num)
 
@@ -660,67 +697,75 @@ class LoadBalancing:
         """
         Main logic to initialize, run two balancing methods, and report results.
         """
-        LB = LoadBalancing(network=self.network_id)
-        if self.network_id not in study.ListNetworks():
-            raise RuntimeError(
-                "The feeder loaded in the study is not correct!")
+        with open(self._file_path, "w") as file:
 
-        print(f"Feeder: {self.network_id}, before balancing:")
+            LB = LoadBalancing(network=self.network_id)
+            if self.network_id not in study.ListNetworks():
+                raise RuntimeError("The feeder loaded in the study is not correct!")
 
-        count = study.GetModificationsCount()
-        LB.SetFeederDemand()
+            _write_and_print(file, f"Feeder: {self.network_id}, before balancing:")
 
-        if LB.CM == 1:
-            LB.AddCheckMeter(
-                CHECK_METER_NAME,
-                LB.IA_CM,
-                LB.IB_CM,
-                LB.IC_CM,
-                LB.PFA_CM,
-                LB.PFB_CM,
-                LB.PFC_CM,
+            count = study.GetModificationsCount()
+            LB.SetFeederDemand()
+
+            if LB.CM == 1:
+                LB.AddCheckMeter(
+                    CHECK_METER_NAME,
+                    LB.IA_CM,
+                    LB.IB_CM,
+                    LB.IC_CM,
+                    LB.PFA_CM,
+                    LB.PFB_CM,
+                    LB.PFC_CM,
+                )
+
+            LB.LA.Run([LB.network_id])
+
+            IA = IB = IC = IN = IBal = PFA = PFB = PFC = Iunb = 0
+
+            # for meter in self.meters:
+            #     _write_and_print(file, f"\n@ {meter.DeviceNumber}")
+            #     IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(meter.DeviceNumber)
+            #     LB.PrintLoad(file, IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
+
+            _write_and_print(file, "\n@ MAIN_METER:")
+            IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(LB.network_id)
+            LB.PrintLoad(file, IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
+
+            _study_node = LB.Node[LB.Option]
+
+            if LB.network_id != _study_node:
+                _write_and_print(file, f"\n@ {_study_node}")
+                IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(_study_node)
+                LB.PrintLoad(file, IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
+
+            LB.IA, LB.IB, LB.IC, LB.PFA, LB.PFB, LB.PFC = IA, IB, IC, PFA, PFB, PFC
+
+            # _write_and_print(file, LB.IA, LB.IB, LB.IC, LB.PFA, LB.PFB, LB.PFC)
+            LB.counter += 1
+            _write_and_print(file, LB.separator)
+            _write_and_print(file, "Load balancing method #1:")
+
+            LB._RunBalancingIteration(
+                file, _study_node, IA, IB, IC, IBal, LB.PickSections, (IA, IB, IC, IBal)
+            )
+            LB.counter += 1
+            _write_and_print(file, LB.separator)
+            _write_and_print(file, "Load balancing method #2:")
+
+            LB._RunBalancingIteration(
+                file,
+                _study_node,
+                IA,
+                IB,
+                IC,
+                IBal,
+                LB.PickSections_2,
+                (IA, IB, IC, IBal),
             )
 
-        LB.LA.Run([LB.network_id])
-
-        IA = IB = IC = IN = PFA = PFB = PFC = Iunb = 0
-
-        if LB.CM == 1:
-            print(f"\n@ {CHECK_METER_NAME}")
-            IA, IB, IC, IN, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(
-                CHECK_METER_NAME)
-            LB.PrintLoad(IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
-
-        print("\n@ MAIN_METER:")
-        IA, IB, IC, IN, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(LB.network_id)
-        LB.PrintLoad(IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
-
-        _study_node = LB.Node[LB.Option]
-
-        if LB.network_id != _study_node:
-            print(f"\n@ {_study_node}")
-            IA, IB, IC, IN, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(_study_node)
-            LB.PrintLoad(IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
-
-        LB.IA, LB.IB, LB.IC, LB.PFA, LB.PFB, LB.PFC = IA, IB, IC, PFA, PFB, PFC
-
-        # print(LB.IA, LB.IB, LB.IC, LB.PFA, LB.PFB, LB.PFC)
-        LB.counter += 1
-        print(LB.separator)
-        print("Load balancing method #1:")
-
-        LB._RunBalancingIteration(
-            _study_node, IA, IB, IC, LB.PickSections, (IA, IB, IC)
-        )
-        LB.counter += 1
-        print(LB.separator)
-        print("Load balancing method #2:")
-
-        LB._RunBalancingIteration(
-            _study_node, IA, IB, IC, LB.PickSections_2, (IA, IB, IC)
-        )
-        del LB
-        study.Undo(study.GetModificationsCount() - count)
+            del LB
+            study.Undo(study.GetModificationsCount() - count)
 
 
 if __name__ == "__main__":
