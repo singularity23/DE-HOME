@@ -5,14 +5,83 @@ import math
 import time
 from datetime import datetime
 from typing import List, Dict, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from cympy import study, enums, sim, rm, app, GetInputParameter
+from executing import Source
 
 # Constants
-MINIMUM_CURRENT = 5.0
+MINIMUM_CURRENT = 1.0
 MULTIPLIER = 1.1
 CELL_FORMAT_COLOR = 14737632
+CHECK_METER_NAME = "CHECK_METER"
+FORMAT = "{} ph: {:>7.2f}A, {:>7.2f}% PF, {:>7.2f}% unbalance"
+PHASES = "ABC"
+
+
+@dataclass
+class NodeValue:
+    """Store load-related values"""
+
+    node_id: str
+    IA: float
+    IB: float
+    IC: float
+    IN: float = field(init=False)
+    IBal: float
+    PFA: float
+    PFB: float
+    PFC: float
+    IunbA: float
+    IunbB: float
+    IunbC: float
+
+    def __post_init__(self):
+        """Calculate neutral current based on phase currents"""
+        self.IN = (
+            self.IA**2
+            + self.IB**2
+            + self.IC**2
+            - self.IA * self.IB
+            - self.IB * self.IC
+            - self.IC * self.IA
+        ) ** 0.5
+
+    def log(self, file):
+        """
+        Print current, PF, and unbalance values in formatted view.
+        """
+        _write_and_print(file, "")
+        _write_and_print(file, FORMAT.format("A", self.IA, self.PFA, self.IunbA))
+        _write_and_print(file, FORMAT.format("B", self.IB, self.PFB, self.IunbB))
+        _write_and_print(file, FORMAT.format("C", self.IC, self.PFC, self.IunbC))
+        _write_and_print(file, "IN: {:>9.2f}A".format(self.IN))
+        _write_and_print(file, "")
+
+
+@dataclass
+class StudyPoint:
+    """Store study point-related values"""
+
+    Nodes: list[NodeValue] = []
+
+    def add(self, element):
+        self.Nodes.append(element)
+
+
+@dataclass
+class SinglePhaseSections:
+    sections: Dict[str, Dict] = field(default_factory=lambda: {ph: {} for ph in PHASES})
+
+
+
+@dataclass
+class PhaseValues:
+    """Store phase-related values"""
+
+    A: float
+    B: float
+    C: float
 
 
 class PhaseType(Enum):
@@ -113,7 +182,7 @@ def GetTarget(dictionary: Dict, target: float) -> List:
     return [(keys[i], nums[i]) for i in indices if keys[i] != "empty"]
 
 
-def _log(file, message: str):
+def _write_and_print(file, message: str):
     """
     Helper function to write and print messages.
     """
@@ -127,41 +196,46 @@ class LoadBalancing:
     def __init__(self, network=None, *args, **kwargs):
         """Initialize LoadBalancing instance"""
         self._initialize_parameters()
-        self._initialize_simulation()
+        self._initialize_simulations()
         self._initialize_variables()
         self._initialize_study_points()
-        self._initialize_documentation()
 
     def _initialize_parameters(self):
         """Initialize parameters from input"""
         params = [
             "NetworkID",
+            "Point_of_Study",
             "ImaxA",
             "ImaxB",
             "ImaxC",
             "PFA",
             "PFB",
             "PFC",
+            "Iteration",
             "Report_Location",
         ]
         values = list(map(GetInputParameter, params))
 
         (
             self.network_id,
+            self.study_point,
             self.IA,
             self.IB,
             self.IC,
             self.PFA,
             self.PFB,
             self.PFC,
+            self.itr,
             self.file_dir,
         ) = values
 
-    def _initialize_simulation(self):
+    def _initialize_simulations(self):
         """Initialize meter objects"""
         self.meters = []
         self.main_meter = sim.Meter()
+        self.check_meter = sim.Meter()
         self.mm_device = None
+        self.cm_device = None
         self.LA = sim.LoadAllocation()
         self.LF = sim.LoadFlow()
 
@@ -183,13 +257,9 @@ class LoadBalancing:
         self._connected_phase = {
             phase.value: getattr(enums.Phase, phase.value) for phase in PhaseType
         }
+
         self.sections = {}
         self.counter = 0
-        self.study_points = []
-        self.sections_list = []
-        self.new_sections_list = []
-
-    def _initialize_documentation(self):
         self.format = "{} ph: {:>7.2f}A, {:>7.2f}% PF, {:>7.2f}% unbalance"
         self.separator = "—" * len(self.format.format("A", self.IA, self.PFA, 0))
         self._current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -198,10 +268,14 @@ class LoadBalancing:
         )
         self._file_path = os.path.join(str(self.file_dir), str(self._file_name))
 
+        self.sections_list = []
+        self.new_sections_list = []
+
     def _initialize_study_points(self):
-        self.study_points = [
+        self.study_point_ids = [
             node.ID for node in study.ListNodes() if node.ID.startswith("STUDY_POINT")
         ]
+        self.study_point_ids.append(self.network_id)
 
     def __repr__(self):
         """
@@ -225,19 +299,17 @@ class LoadBalancing:
                         )
         return string
 
-    def GetSinglePhaseSections(self) -> list[Dict]:
+    def GetSinglePhaseSections(self) -> List[Dict]:
         """Retrieve single-phase sections in the network"""
         dict_list = []
 
-        for point in self.study_points:
+        for point in self.study_point_ids:
             dict_list.append(self.RunCYMEIteration(point))
-
-        dict_list.append(self.RunCYMEIteration(str(self.network_id)))
 
         grouped_dict_list = []
         filtered = {}
 
-        grouped_dict_list.append(dict_list[0])
+        grouped_dict_list.append((self.study_point_ids[0], dict_list[0]))
 
         for i in range(1, len(dict_list)):
             previous_keys = {
@@ -254,13 +326,13 @@ class LoadBalancing:
                 for phase in ["A", "B", "C"]
             }
 
-            grouped_dict_list.append(filtered)
+            grouped_dict_list.append((self.study_point_ids[i], filtered))
 
         return grouped_dict_list
 
-    def RunCYMEIteration(self, node_id: str) -> Dict:
+    def RunCYMEIteration(self, node_id: str) -> Dict[str, Dict]:
         """Get single phase sections for load transfer"""
-        dict_sec = {phase.value: {} for phase in PhaseType if len(phase.value) == 1}
+        dict = SinglePhaseSections()
         self.LF.Run([self.network_id])
 
         iterator = study.NetworkIterator(node_id, enums.IterationOption.Downstream)
@@ -281,9 +353,9 @@ class LoadBalancing:
                 if Device.DeviceType == enums.DeviceType.Transformer:
                     continue
 
-                self._process_section_devices(Phase, Section, Device, dict_sec)
+                self._process_section_devices(Phase, Section, Device, dict.sections)
 
-        return dict_sec
+        return dict.sections
 
     def _is_valid_section(self, iterator) -> bool:
         """Check if section is valid for processing"""
@@ -301,7 +373,7 @@ class LoadBalancing:
             enums.DeviceType.AllDevices,
         )
 
-        for ph, current in zip("ABC", currents):
+        for ph, current in zip(PHASES, currents):
             if (
                 Phase == getattr(enums.Phase, ph)
                 and isinstance(current, float)
@@ -315,6 +387,7 @@ class LoadBalancing:
         """Pick sections for load transfer based on current imbalances"""
         Iavg = IBal or (ImaxA + ImaxB + ImaxC) / 3
         Idiff = {k: v - Iavg for k, v in zip("ABC", [ImaxA, ImaxB, ImaxC])}
+        print(Iavg)
         if not sec_dict:
             return {}, sec_dict
 
@@ -327,24 +400,24 @@ class LoadBalancing:
         )
 
         sol = {}
-        temp = []
         for key, value in sorted_idiff.items():
             if math.ceil(value) < 0:
-                sol[key] = GetTarget(sec_dict[ph_high], value)
-                # sol[key] = temp
-                # print(f'temp: {temp}')
-                if sol[key]:
-                    for i, j in sol[key]:
-                        sec_dict[ph_high].pop(i, None)
-                        sec_dict[key][i] = j
-            elif math.floor(value) > 0:
-                temp += GetTarget(sec_dict[key], value)
-                sol[ph_high] = temp
+                temp = GetTarget(sec_dict[ph_high], value)
+                sol[key] = temp
                 if temp:
                     for i, j in temp:
-                        sec_dict[key].pop(i, None)
-                        sec_dict[ph_high][i] = j
-        # print(f'sol: {sol}')
+                        if i != "empty":
+                            sec_dict[ph_high].pop(i, None)
+                            sec_dict[key][i] = j
+            elif math.floor(value) > 0:
+                results = GetTarget(sec_dict[key], value)
+                sol[ph_high] = results
+                if results:
+                    for i, j in results:
+                        if i != "empty":
+                            sec_dict[key].pop(i, None)
+                            sec_dict[ph_high][i] = j
+
         return sol, sec_dict
 
     def TransferLoad(self, file, dict_sect: Dict) -> List:
@@ -378,7 +451,7 @@ class LoadBalancing:
                         rm.StringCell(phase),
                     ]
                 )
-                _log(
+                _write_and_print(
                     file,
                     f"Change {'[' + section.ID + ']':<12} {current:>5.2f}A  from {old_phase:>2} ph to {phase:>2} ph",
                 )
@@ -408,7 +481,7 @@ class LoadBalancing:
         max_moves=5,
     ) -> tuple[Dict, Dict]:
         """Alternative method to pick sections for load transfer using iterative balancing"""
-        phase_branches = {k: v for k, v in sec_dict.items()}
+        phase_branches = {k: v.copy() for k, v in sec_dict.items()}
         phase_names = list(phase_branches.keys())
         picks = {k: [] for k in phase_names}
         peak_loads = [ImaxA, ImaxB, ImaxC]
@@ -532,7 +605,7 @@ class LoadBalancing:
             report.AddRow(row)
         report.Show()
 
-    def GetLoadFlow(self, node_dev):
+    def GetLoadFlow(self, node_id: str) -> List[float]:
         """
         Run load flow and return current, PF, and unbalance data.
         """
@@ -540,61 +613,56 @@ class LoadBalancing:
         self.LF.Run([self.network_id])
 
         IA, IB, IC, IN, IBal, IunbA, IunbB, IunbC, PFA, PFB, PFC = QueryNodes(
-            self._variables, node_dev
+            self._variables, node_id
         )
-
-        IN = (IA**2 + IB**2 + IC**2 - IA * IB - IB * IC - IC * IA) ** 0.5
-
+        # IN = (IA**2 + IB**2 + IC**2 - IA * IB - IB * IC - IC * IA) ** 0.5
         # print(IN1)
-        Iunb = {"A": IunbA, "B": IunbB, "C": IunbC}
-        return [IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb]
+        return [IA, IB, IC, IN, IBal, PFA, PFB, PFC, IunbA, IunbB, IunbC]
 
-    def PrintLoad(self, file, IA, IB, IC, IN, PFA, PFB, PFC, Iunb):
-        """
-        Print current, PF, and unbalance values in formatted view.
-        """
-        _log(file, "")
-        _log(file, self.format.format("A", IA, PFA, Iunb["A"]))
-        _log(file, self.format.format("B", IB, PFB, Iunb["B"]))
-        _log(file, self.format.format("C", IC, PFC, Iunb["C"]))
-        _log(file, "IN: {:>9.2f}A".format(IN))
-        _log(file, "")
-
-    def _RunBalancingIteration(self, file, IA, IB, IC, IBal, picks_method):
+    def _RunBalancingIteration(self, file, IA, IB, IC, IBal, picks_method, picks_args):
         """
         Run one pass of load balancing using a section selection method.
         """
         pre_num = study.GetModificationsCount()
-        self.new_sections_list = []
+
         self.sections_list = self.GetSinglePhaseSections()
 
-        _points_list = self.study_points.copy()
-        _points_list.append(self.network_id)
 
         if not self.sections_list:
             raise RuntimeError("No single phase branches found")
 
-        _log(file, f"Single Phase Sections: {picks_method.__name__}")
+        _write_and_print(file, f"Single Phase Sections: {picks_method.__name__}")
 
-        # print(_points_list)
 
         rows = []
-        for point, sections in zip(_points_list, self.sections_list):
-            _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(point)
-            # print(IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb)
+        for point, sections in self.sections_list:
+            IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = self.GetLoadFlow(point)
+            print(IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb)
 
-            picks, sections = picks_method(sections, _IA, _IB, _IC, _IBal)
+            picks, sections = picks_method(sections, IA, IB, IC, IBal)
             self.new_sections_list.append(sections)
 
+            # print(self.sections_down)
+            # _write_and_print(file, *picks_args)
+            # _IA = _IB = _IC = _IN = _IBal = _PFA = _PFB = _PFC = _Iunb = 0
             rows += self.TransferLoad(file, picks)
+            # _write_and_print(file, picks_down)
+            # self.LF.Run([self.network_id])
 
+            # _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(point)
+
+            # picks_up, self.sections_up = picks_method(
+            #     self.sections_up, _IA, _IB, _IC, _IBal
+            # )
+            # # print(self.sections_up)
+            # rows += self.TransferLoad(file, picks_up)
         self.LF.Run([self.network_id])
 
-        _log(file, "")
-        _log(file, f"\nFeeder: {self.network_id}, after balancing:")
+        _write_and_print(file, "")
+        _write_and_print(file, f"\nFeeder: {self.network_id}, after balancing:")
         # print(self.meters)
         for meter in self.meters:
-            _log(file, f"\n@ Meter: {meter.DeviceNumber}")
+            _write_and_print(file, f"\n@ Meter: {meter.DeviceNumber}")
             _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
                 study.QueryInfoDevice("ToNodeId", meter.DeviceNumber, meter.DeviceType)
             )
@@ -609,27 +677,41 @@ class LoadBalancing:
                 _PFB,
                 _PFC,
             )
+
             if meter.DeviceNumber == self.network_id:
                 self.MakeReport(IA, IB, IC, _IA, _IB, _IC, rows)
 
         for study_point in self.study_points:
-            _log(file, f"\n@ {study_point}")
+            _write_and_print(file, f"\n@ {study_point}")
             _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
                 study_point
             )
             self.PrintLoad(file, _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
+        # _write_and_print(file, "\n@ MAIN_METER:")
+        # _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(self.network_id)
+        # self.PrintLoad(file, _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
+        # self.UpdateMeter(
+        #     self.mm_device,
+        #     self.main_meter,
+        #     _IA,
+        #     _IB,
+        #     _IC,
+        #     _PFA,
+        #     _PFB,
+        #     _PFC,
+        # )
 
         self.LA.Run([self.network_id])
 
         for t in str(self).split("//"):
-            _log(file, t.strip())
-        _log(file, self.separator)
+            _write_and_print(file, t.strip())
+        _write_and_print(file, self.separator)
 
         modifications = study.ListModifications()
-        _log(file, "\nModifications made during the balancing process:")
+        _write_and_print(file, "\nModifications made during the balancing process:")
 
         for idx, modification in enumerate(modifications):
-            _log(file, f"{idx + 1}: {modification}")
+            _write_and_print(file, f"{idx + 1}: {modification}")
 
         pst_num = study.GetModificationsCount()
         study.Undo(pst_num - pre_num)
@@ -640,53 +722,61 @@ class LoadBalancing:
         """
         with open(self._file_path, "w") as file:
 
+            LB = LoadBalancing(network=self.network_id)
             if self.network_id not in study.ListNetworks():
                 raise RuntimeError("The feeder loaded in the study is not correct!")
 
-            _log(file, f"Feeder: {self.network_id}, before balancing:")
+            _write_and_print(file, f"Feeder: {self.network_id}, before balancing:")
 
             count = study.GetModificationsCount()
-            self.SetFeederDemand()
+            LB.SetFeederDemand()
 
-            self.LA.Run([self.network_id])
+            LB.LA.Run([LB.network_id])
 
             IA = IB = IC = IN = IBal = PFA = PFB = PFC = Iunb = 0
 
             # for meter in self.meters:
-            #     _log(file, f"\n@ {meter.DeviceNumber}")
+            #     _write_and_print(file, f"\n@ {meter.DeviceNumber}")
             #     IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = LB.GetLoadFlow(meter.DeviceNumber)
             #     LB.PrintLoad(file, IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
 
-            _log(file, "\n@ MAIN_METER:")
-            IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = self.GetLoadFlow(
-                self.network_id
+            _write_and_print(file, "\n@ MAIN_METER:")
+            SourceNode = NodeValue(
+                str(LB.network_id), *LB.GetLoadFlow(str(LB.network_id))
             )
-            self.PrintLoad(file, IA, IB, IC, IN, PFA, PFB, PFC, Iunb)
+            SourceNode.log(file)
+            StudyPoints = StudyPoint()
 
-            def calculated(x):
-                return float(study.QueryInfoNode("IBal", x, 2))
+            for study_point_id in self.study_point_ids:
+                _write_and_print(file, f"\n@ {study_point_id}")
+                StudyNode = NodeValue(study_point_id, *LB.GetLoadFlow(study_point_id))
+                StudyNode.log(file)
+                StudyPoints.add(StudyNode)
 
-            self.study_points = sorted(self.study_points, key=calculated)
+            StudyPoints.add(SourceNode)
+            # _write_and_print(file, LB.IA, LB.IB, LB.IC, LB.PFA, LB.PFB, LB.PFC)
+            LB.counter += 1
+            _write_and_print(file, LB.separator)
+            _write_and_print(file, "Load balancing method #1:")
 
-            for study_point in self.study_points:
-                _log(file, f"\n@ {study_point}")
-                _IA, _IB, _IC, _IN, _IBal, _PFA, _PFB, _PFC, _Iunb = self.GetLoadFlow(
-                    study_point
-                )
-                self.PrintLoad(file, _IA, _IB, _IC, _IN, _PFA, _PFB, _PFC, _Iunb)
+            LB._RunBalancingIteration(
+                file, IA, IB, IC, IBal, LB.PickSections, (IA, IB, IC, IBal)
+            )
+            LB.counter += 1
+            _write_and_print(file, LB.separator)
+            _write_and_print(file, "Load balancing method #2:")
 
-            # _log(file, LB.IA, LB.IB, LB.IC, LB.PFA, LB.PFB, LB.PFC)
-            self.counter += 1
-            _log(file, self.separator)
-            _log(file, "Load balancing method #1:")
+            LB._RunBalancingIteration(
+                file,
+                IA,
+                IB,
+                IC,
+                IBal,
+                LB.PickSections_2,
+                (IA, IB, IC, IBal),
+            )
 
-            self._RunBalancingIteration(file, IA, IB, IC, IBal, self.PickSections)
-            self.counter += 1
-            _log(file, self.separator)
-            _log(file, "Load balancing method #2:")
-
-            self._RunBalancingIteration(file, IA, IB, IC, IBal, self.PickSections_2)
-
+            del LB
             study.Undo(study.GetModificationsCount() - count)
 
 
@@ -704,9 +794,7 @@ if __name__ == "__main__":
         # Instantiate LoadBalancing with required parameters fetched internally
         lb = LoadBalancing()
         lb.Run()
-        del lb
     except Exception:
         traceback.print_exc()
-
     print("Execution Time: {}s".format(time.time() - start))
     # app.ActivateRefresh(True)

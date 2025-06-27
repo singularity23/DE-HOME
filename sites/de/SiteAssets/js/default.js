@@ -3,8 +3,9 @@ const ICON_URL =
   'https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/img/favicon.ico'
 const LOGO_URL = 'https://hw.bchydro.bc.ca/Documents/BC%20Hydro%204C%20logo.jpg'
 const DOWNLOAD_URL_PREFIX =
-  'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/download.aspx?SourceUrl='
+  'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/download.aspx?SourceUrl='
 const PREFIX = '/sites/de/'
+const SUFFIX = '?download=1'
 
 // Helper Functions
 function qS (selector, scope = document) {
@@ -112,10 +113,11 @@ function handleLinks () {
           console.error('Failed to copy text to clipboard:', err)
         })
     } else if (isValidUrl(linkUrl)) {
-      const link = `${DOWNLOAD_URL_PREFIX}${linkUrl}`
+      const originalUrl = decodeURI(linkUrl).split('?')[0]
+      const link = `${DOWNLOAD_URL_PREFIX}${originalUrl}${SUFFIX}`
       checkLinkHealth(link).then(isHealthy => {
         if (isHealthy) {
-          const fname = decodeURI(linkUrl).split('?')[0].split('/').pop()
+          const fname = originalUrl.split('/').pop()
           if (/^.*\.(pdf|docx)$/i.test(fname) && linkUrl.includes(PREFIX)) {
             window.open(link, '_blank')
           } else {
