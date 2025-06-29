@@ -619,7 +619,7 @@ class LoadBalancing:
         # print(IN1)
         return [IA, IB, IC, IN, IBal, PFA, PFB, PFC, IunbA, IunbB, IunbC]
 
-    def _RunBalancingIteration(self, file, IA, IB, IC, IBal, picks_method, picks_args):
+    def _RunBalancingIteration(self, file, study_points, picks_method):
         """
         Run one pass of load balancing using a section selection method.
         """
@@ -636,16 +636,17 @@ class LoadBalancing:
 
         rows = []
         for point, sections in self.sections_list:
-            IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = self.GetLoadFlow(point)
-            print(IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb)
-
-            picks, sections = picks_method(sections, IA, IB, IC, IBal)
-            self.new_sections_list.append(sections)
-
+            for study_point in study_points.Nodes:
+                if study_point.node_id == point:
+                    study_point.log(file)
+                    IA, IB, IC, IBal = study_point.IA, study_point.IB, study_point.IC, study_point.IBal
+                    picks, sections = picks_method(sections, IA, IB, IC, IBal)
+                    self.new_sections_list.append(sections)
+                    rows += self.TransferLoad(file, picks)
             # print(self.sections_down)
             # _write_and_print(file, *picks_args)
             # _IA = _IB = _IC = _IN = _IBal = _PFA = _PFB = _PFC = _Iunb = 0
-            rows += self.TransferLoad(file, picks)
+            
             # _write_and_print(file, picks_down)
             # self.LF.Run([self.network_id])
 
