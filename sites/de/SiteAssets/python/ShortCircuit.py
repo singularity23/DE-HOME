@@ -1,20 +1,19 @@
 # by Kan Tang @2024-11-06
 # fix the url encode issue by Kan @2024-11-19
+# minor improvements @2025-07-04
 
 import math
 import locale
 import os
-import sys
+import cympy
 import textwrap
 import traceback
 import webbrowser
-import math
 import time
 
 from urllib.parse import quote
 from datetime import datetime
-from cympy import app as App, eq as Eqt, sim as Sim
-from cympy.study import *
+from cympy import app as App, eq as Eqt, sim as Sim, study as Std
 
 
 def calculate_impedance(Z, X_R_Ratio, KVLL, KVA):
@@ -30,7 +29,7 @@ def calculate_impedance(Z, X_R_Ratio, KVLL, KVA):
     #   tuple: Calculated resistance (R) and reactance (X) in ohms.
 
     Z_ohms_Mag = (Z * 10 * KVLL**2) / KVA
-    R = math.sqrt(Z_ohms_Mag**2) / (1 + X_R_Ratio**2)
+    R = math.sqrt(Z_ohms_Mag**2 / (1 + X_R_Ratio**2))
     X = X_R_Ratio * R
     return R, X
 
@@ -64,11 +63,11 @@ def QueryWithFallback(query_func, keyword_list, *args):
 
 
 def QueryDevices(keyword_list, dev_num, dev_type):
-    return QueryWithFallback(QueryInfoDevice, keyword_list, dev_num, dev_type)
+    return QueryWithFallback(Std.QueryInfoDevice, keyword_list, dev_num, dev_type)
 
 
 def QueryNodes(keyword_list, node_id):
-    return QueryWithFallback(QueryInfoNode, keyword_list, node_id)
+    return QueryWithFallback(Std.QueryInfoNode, keyword_list, node_id)
 
 
 def GetValueEquipment(keyword_list, eq_id, eq_type):
@@ -102,7 +101,7 @@ def SetSourceValue(value_property_setlist, source_id):
     #       to be set.
     for set in value_property_setlist:
         value, property = set
-        SetValueTopo(value, property, source_id)
+        Std.SetValueTopo(value, property, source_id)
 
 
 class ShortCircuitStudy:
@@ -145,13 +144,14 @@ class ShortCircuitStudy:
 
     ITERATION_UPSTREAM = cympy.enums.IterationOption.Upstream
     ITERATION_STOPONOPEN = cympy.enums.IterationRestriction.StopOnOpen
+    LEN_UNIT = App.GetKeyword("Length").Unit
     TABLE_HEADER_FORMAT = (
         "\n {:<56}{:>8}{:>11}{:>9}{:>8}{:>8}{:>8}{:>10}{:>8}{:>8}{:>8}"
     )
     TABLE_ROW_FORMAT = "\n {:<56}{:>8.1f}{:>11.1f}{:>9.4f}{:>8.4f}{:>8.4f}{:>8.4f}{:>10.4f}{:>8.4f}{:>8.4f}{:>8.4f}"
     IMPEDANCE_UNIT = "Ohms"
     PREFAULT_VOLTAGE = "OperatingVoltage"
-    FAULT_VALUES = {"0": [0, 0, 0, 0], "1": [40, 0, 8, 0]}
+    FAULT_VALUES = {False: [0, 0, 0, 0], True: [40, 0, 8, 0]}
     TABLE_VARIABLES = [
         "R1ohm",
         "X1ohm",
@@ -169,8 +169,10 @@ class ShortCircuitStudy:
         #   related to power system analysis. It also sets the locale for numeric formatting.
         self.SourceName, self.NetworkID = [""] * 2
         self.NominalVoltage, self.OperatingVoltage = [12.47, 12.6]
-        self.FaultPoints, self.SC_Sim, self.PCC = [None] * 3
-        self.NewFeeder, self.FaultImpedance = [0, 1]
+        self.FaultPoints = []
+        self.SC_Sim = None
+        self.PCC = ""
+        self.NewFeeder, self.FaultImpedance = [False, True]
         self.LenUnit = "m"
         self.LGFaultResistance, self.LGFaultReactance = [40, 0]
         self.LLLFaultResistance, self.LLLFaultReactance = [8, 0]
@@ -187,22 +189,8 @@ class ShortCircuitStudy:
         #   Raises ValueError if essential inputs like 'Fault_Point' are missing.
         print("- Read input parameters")
 
-        parameter_names = [
-            "Fault_Point",
-            "PCC",
-            "Source_R0",
-            "Source_X0",
-            "Source_R1",
-            "Source_X1",
-            "Source_RX",
-            "New_Feeder",
-            "Fault_Resistance",
-            "Report_Location",
-        ]
-
         (
             Point,
-            Connection,
             self.Source_R0,
             self.Source_X0,
             self.Source_R1,
@@ -211,21 +199,32 @@ class ShortCircuitStudy:
             self.NewFeeder,
             self.FaultImpedance,
             self.Path,
-        ) = map(cympy.GetInputParameter, parameter_names)
+            self.SetSource
+        ) = map(
+            cympy.GetInputParameter,
+            [
+                "Fault_Point",
+                "Source_R0",
+                "Source_X0",
+                "Source_R1",
+                "Source_X1",
+                "Source_RX",
+                "New_Feeder",
+                "Impedance_Fault",
+                "Report_Location",
+                "Source_Impedance",
+            ],
+        )
 
         try:
-            nodes = ListNodes()
-            point_nodes = [node for node in nodes if node.ID.startswith(Point)]
-            connection_node = next((node for node in nodes if node.ID == Connection), None)
+            points = [node for node in Std.ListNodes() if node.ID.startswith(Point)]
         except Exception as e:
             raise ValueError("Error: No circuits loaded") from e
+        else:
+            self.FaultPoints = points
+            if not self.FaultPoints:
+                raise ValueError("Error: No 'Fault_Point' defined")
 
-        self.FaultPoints = point_nodes
-        if not self.FaultPoints:
-            raise ValueError("Error: No 'Fault_Point' defined")
-            
-        self.PCC = connection_node or self.FaultPoints[0]
- 
     def SetupEnv(self, fault_point):
         #   Sets up the environment required for conducting the power system study.
         #   It includes determining the network ID, source equipment, length units, report filename,
@@ -233,21 +232,17 @@ class ShortCircuitStudy:
         #   Throws ValueError if the nominal voltage setting is incorrect.
         print("- Setup study enviroment")
 
-        self.NetworkID = QueryInfoNode("$NetworkId$", fault_point)
+        self.NetworkID = Std.QueryInfoNode("$NetworkId$", fault_point)
 
         self.source_eq = Eqt.GetEquipment(
             self.NetworkID, cympy.enums.EquipmentType.Substation
         )
 
         self.SourceName = (
-            QueryInfoNode("$UpstreamSourceNodeID$", fault_point) or self.NetworkID
+            Std.QueryInfoNode("$UpstreamSourceNodeID$", fault_point) or self.NetworkID
         )
 
-        self.LenUnit = App.GetKeyword("Length").Unit
 
-        current_datetime = datetime.now().strftime("%Y-%m-%d-h%Hm%Ms%S")
-        file_name = f"SC-Report-{self.SourceName}-{current_datetime}.txt"
-        self.Rep_Loc = os.path.join(self.Path, file_name)
 
         self.table_header_1 = "\n {:<56}{:>8}{:>11}  |{:-^31}||{:-^31}|".format(
             f"Circuits: {self.NetworkID}",
@@ -259,8 +254,8 @@ class ShortCircuitStudy:
 
         self.table_header_2 = self.TABLE_HEADER_FORMAT.format(
             "Equipment Type",
-            f"{self.LenUnit}",
-            f"to Sub{self.LenUnit}",
+            f"{self.LEN_UNIT}",
+            f"to Sub{self.LEN_UNIT}",
             "R1",
             "X1",
             "R0",
@@ -271,7 +266,12 @@ class ShortCircuitStudy:
             "Thev_X0",
         )
         self.table_separator = "\n" + "—" * len(self.table_header_1)
+        self.GetFileName(self.SourceName)
 
+    def GetFileName(self, source_name):
+        current_datetime = datetime.now().strftime("%Y-%m-%d-h%Hm%Ms%S")
+        file_name = f"SC-Report-{source_name}-{current_datetime}.txt"
+        self.Rep_Loc = os.path.join(str(self.Path), file_name)
         # Setup operating votlage for the study
 
     def SetSourceEquivalent(self):
@@ -282,38 +282,73 @@ class ShortCircuitStudy:
         self.NominalVoltage, self.OperatingVoltage = GetValueEquipment(
             VOLTAGE_LIST, self.NetworkID, cympy.enums.EquipmentType.Substation
         )
-        _EQT_DATABASE = ["Sources[0].EquivalentSourceModels[0].EquivalentSource.", ["1", "2", "3"]]
-        _USER_DEFINED = ["", ["A", "B", "C"]]
+
+        txt_1 = "Sources[0].EquivalentSourceModels[0].EquivalentSource."
+        txt_2 = ""
+        nums_1 = ["1", "2", "3"]
+        nums_2 = ["A", "B", "C"]
 
         def _common_list(pretext, nums):
-            volts_div_sqrt3 = self.OperatingVoltage / 3**0.5
             set_common_list = [
-                (volts_div_sqrt3, f"{pretext}OperatingVoltage{nums[0]}"),
-                (volts_div_sqrt3, f"{pretext}OperatingVoltage{nums[1]}"),
-                (volts_div_sqrt3, f"{pretext}OperatingVoltage{nums[2]}"),
-                (True, f"{pretext}UseSecondLevelImpedance"),
-                (self.IMPEDANCE_UNIT, f"{pretext}ImpedanceUnit"),
-                (self.Source_R0, f"{pretext}SecondLevelR0"),
-                (self.Source_X0, f"{pretext}SecondLevelX0"),
-                (self.Source_R1, f"{pretext}SecondLevelR1"),
-                (self.Source_X1, f"{pretext}SecondLevelX1"),
-                (self.Source_R1, f"{pretext}SecondLevelR2"),
-                (self.Source_X1, f"{pretext}SecondLevelX2"),
+                (
+                    self.OperatingVoltage / 3**0.5,
+                    f"{pretext}OperatingVoltage{nums[0]}",
+                ),
+                (
+                    self.OperatingVoltage / 3**0.5,
+                    f"{pretext}OperatingVoltage{nums[1]}",
+                ),
+                (
+                    self.OperatingVoltage / 3**0.5,
+                    f"{pretext}OperatingVoltage{nums[2]}",
+                ),
+                (
+                    True,
+                    f"{pretext}UseSecondLevelImpedance",
+                ),  # from top to here - device
+                (
+                    self.IMPEDANCE_UNIT,
+                    f"{pretext}ImpedanceUnit",
+                ),  # from here to bottom - equipment
+                (
+                    self.Source_R0,
+                    f"{pretext}SecondLevelR0",
+                ),
+                (
+                    self.Source_X0,
+                    f"{pretext}SecondLevelX0",
+                ),
+                (
+                    self.Source_R1,
+                    f"{pretext}SecondLevelR1",
+                ),
+                (
+                    self.Source_X1,
+                    f"{pretext}SecondLevelX1",
+                ),
+                (
+                    self.Source_R1,
+                    f"{pretext}SecondLevelR2",
+                ),
+                (
+                    self.Source_X1,
+                    f"{pretext}SecondLevelX2",
+                ),
             ]
+
             return set_common_list
-    
         try:
-            self.source_dev = GetDevice(self.NetworkID, cympy.enums.DeviceType.Source)
-            set_list = _common_list(_USER_DEFINED[0], _USER_DEFINED[1])
+            self.source_dev = Std.GetDevice(self.NetworkID, cympy.enums.DeviceType.Source)
+            set_list = _common_list(txt_2, nums_2)
             SetValueDevEqt(set_list[:4], self.source_dev)
             SetValueDevEqt(set_list[4:], self.source_eq)
         except Exception:
             # From source equipment database
-            set_list = _common_list(_EQT_DATABASE[0], _EQT_DATABASE[1])
+            set_list = _common_list(txt_1, nums_1)
             SetSourceValue(set_list, self.SourceName)
 
 
-        RX_List = ListDevices(cympy.enums.DeviceType.SeriesReactor, self.NetworkID)
+        RX_List = Std.ListDevices(cympy.enums.DeviceType.SeriesReactor, self.NetworkID)
         if len(RX_List):
             RX_Device = RX_List[0]
 
@@ -321,7 +356,7 @@ class ShortCircuitStudy:
                 "RX_{:n}_{:.3f}".format(self.Reactor_I, self.Reactor_X), "DeviceID"
             )
 
-            RX_Eq = cympy.eq.GetEquipment(
+            RX_Eq = Eqt.GetEquipment(
                 RX_Device.EquipmentID, RX_Device.EquipmentType
             )
             #print(RX_Eq.GetValue("ReactanceOhms"))
@@ -351,18 +386,19 @@ class ShortCircuitStudy:
             self.SC_Sim.GetValue("ParametersConfigurations.Count")
         )
 
-        active_config_id = self.SC_Sim.GetValue("ActiveConfigurationID")
-        config = next(
-            (i for i in range(config_count) if active_config_id == self.SC_Sim.GetValue(f"ParametersConfigurations[{i}].ConfigID")),
-            None
-        )
-        if config is not None:
-            (
-                self.LGFaultResistance,
-                self.LGFaultReactance,
-                self.LLLFaultResistance,
-                self.LLLFaultReactance,
-            ) = self.FAULT_VALUES.get(self.FaultImpedance, [0, 0, 0, 0])
+        config = [
+            i
+            for i in range(config_count)
+            if self.SC_Sim.GetValue("ActiveConfigurationID")
+            == self.SC_Sim.GetValue(f"ParametersConfigurations[{i}].ConfigID")
+        ][0]
+
+        (
+            self.LGFaultResistance,
+            self.LGFaultReactance,
+            self.LLLFaultResistance,
+            self.LLLFaultReactance,
+        ) = self.FAULT_VALUES.get(self.FaultImpedance, [0, 0, 0, 0])
 
         pretxt = f"ParametersConfigurations[{config}]."
 
@@ -396,7 +432,7 @@ class ShortCircuitStudy:
         return info_fromNode, info_toNode
 
     def FeederMode(self, fault_point):
-        iterator = NetworkIterator(
+        iterator = Std.NetworkIterator(
             fault_point,
             self.ITERATION_UPSTREAM,
             self.ITERATION_STOPONOPEN,
@@ -485,9 +521,7 @@ class GetDevEquipment:
 
     def __init__(self, **kwargs):
         self.Device = kwargs.get("Device")
-        self.DeviceObj = self.Device.GetObjType()
-        self.toPhase = kwargs.get("toPhase")
-        self.fromPhase = kwargs.get("fromPhase")
+        self.DeviceObj = self.Device.GetObjType() if self.Device is not None else None
 
         (
             self.R1TN,
@@ -499,7 +533,7 @@ class GetDevEquipment:
             self.R0TNpu,
             self.X0TNpu,
             self.TN_Distance,
-        ) = kwargs.get("info_toNode")
+        ) = kwargs.get("info_toNode") or (0, 0, 0, 0, 0, 0, 0, 0, 0)
 
         (
             self.R1FN,
@@ -511,7 +545,7 @@ class GetDevEquipment:
             self.R0FNpu,
             self.X0FNpu,
             self.FN_Distance,
-        ) = kwargs.get("info_fromNode")
+        ) = kwargs.get("info_fromNode") or (0, 0, 0, 0, 0, 0, 0, 0, 0)
 
         self.Length = self.FN_Distance - self.TN_Distance
         self.Nameplate = f"{self.DeviceObj}: {self.Device.EquipmentID}"
@@ -523,6 +557,8 @@ class GetDevEquipment:
             self.X0FN - self.X0TN,
         )
 
+        self.toPhase = kwargs.get("toPhase")
+        self.fromPhase = kwargs.get("fromPhase")
 
     def InfoTable(self, NetworkParam):
         _DEVICE_INFO = [
@@ -611,11 +647,13 @@ class GetDevCables(GetDevEquipment):
             config["DEV_INFO"], self.Device.EquipmentID, config["EqType"]
         )
 
-        for attr, value in zip(config["attributes"], values):
+        attributes = config["attributes"]
+
+        for attr, value in zip(attributes, values):
             setattr(self, attr, value)
 
         if self.Device.DeviceType == 10:
-            self.ParaRun = QueryInfoDevice(
+            self.ParaRun = Std.QueryInfoDevice(
                 "CableNbParallel", self.Device.DeviceNumber, self.Device.DeviceType
             )
             if self.ParaRun:
@@ -689,6 +727,7 @@ class GetDevCables(GetDevEquipment):
             2 * self.R0c * self.R0, 4
         ):
             raise ValueError("Error: the device impedance is not correct")
+   
 
     def StoreInfo(self, SCReport):
         def _write_info(label, value):
@@ -715,7 +754,6 @@ class GetDevCables(GetDevEquipment):
         if self.Device.DeviceType == 10:
             _write_info("Impedances Note:", textwrap.fill(self.ImpNote, 100))
         _write_info("Comments:", content)
-
 
 
 class GetDevReactors(GetDevEquipment):
@@ -767,7 +805,7 @@ class GetProtection(GetDevEquipment):
         self.Length = 0
         self.R1, self.X1, self.R0, self.X0 = 0, 0, 0, 0
 
-        self.prot_instrument_list = ListInstruments(
+        self.prot_instrument_list = Std.ListInstruments(
             cympy.enums.InstrumentType.AllInstruments, self.Device.DeviceNumber
         )
 
@@ -1230,7 +1268,7 @@ class GetSource:
             )
 
         SCReport.write("\nComments:")
-        if not cympy.eq.GetEquipment(self.SourceName, self.EqType) or not GetDevice(
+        if not Eqt.GetEquipment(self.SourceName, self.EqType) or not Std.GetDevice(
             self.SourceName, cympy.enums.DeviceType.Source
         ):
             SCReport.write("User Defined Source Equivalent")
@@ -1238,7 +1276,7 @@ class GetSource:
             SCReport.write(
                 "\n"
                 + textwrap.fill(
-                    cympy.eq.GetValue("Comments", self.SourceName, self.EqType), 100
+                    Eqt.GetValue("Comments", self.SourceName, self.EqType), 100
                 )
             )
 
@@ -1295,7 +1333,7 @@ class EmissionStudy:
     #     PATH (str): URL path for the study.
     #     METHOD (int): Method value for the study.
     #     SECTION (int): Section value for the study.
-    #     PF_TABLE (dict): Dictionary mapping customer types to power factors.
+    #     POWER_FACTORS (dict): Dictionary mapping customer types to power factors.
     #     FEEDER (dict): Dictionary mapping feeder IDs to voltage values.
     #     CONNECTION_TYPE (dict): Dictionary mapping connection types to codes.
     #     DISTURBING_LOAD (dict): Dictionary mapping disturbing load options to values.
@@ -1325,31 +1363,31 @@ class EmissionStudy:
     PATH = "http://pq.bchydro.bc.ca:100/pqtools_MVresults.php?"
     METHOD = 2
     SECTION = 0
-    PF_TABLE = {
+    POWER_FACTORS = {
         "Residential": 1.00,
         "Commercial": 0.96,
         "Industrial": 0.94,
         "Non-Buildings": 0.99,
         "Temporary": 0.92,
     }
-    FEEDER = {
+    FEEDER_LIMITS = {
         "4": [4.16, 2.16],
         "12": [12.47, 6.48],
         "25": [24.94, 12.96],
     }
-    CONNECTION_TYPE = {
+    CONNECTION_TYPES = {
         "1PH": 1,
         "3PH Y": 34,
         "3PH D": 33,
     }
-    DISTURBING_LOAD = {
+    DISTURBING_LOADS = {
         "YES": 2,
         "NO": 3,
     }
     SPOT_DEV_TYPE = cympy.enums.DeviceType.SpotLoad
 
-    def __init__(self, PCC, network_id, data):
-        self.PCC = PCC
+    def __init__(self, POI, network_id, data):
+        self.POI = POI
         self.FeederID = network_id
         self.Distance = round(data["Distance"], 2)
         (self.R1, self.X1, self.R0, self.X0) = (
@@ -1360,7 +1398,7 @@ class EmissionStudy:
         )
         self.FeederLimit = 6.48
         self.KVLL = 12.47
-        self.LoadMVA = 0
+        self.CustLoadMVA = 0
         self.EstimatedLVMVA = 0
         self.ConnectionType = 34
         self.DisturbingLoad = 3
@@ -1371,7 +1409,7 @@ class EmissionStudy:
             self.Customer_Type,
             self.Connection,
             self.Disturbing,
-            self.LoadMW,
+            self.CustLoadMW,
             self.EmissionStudy,
         ) = map(
             cympy.GetInputParameter,
@@ -1385,15 +1423,20 @@ class EmissionStudy:
         )
 
     def GetVariables(self):
-        self.PowerFactor = self.PF_TABLE[self.Customer_Type]
-        self.PhaseCount = QueryNodes(["PhaseCount"], self.PCC)[0]
-        self.KVLL, self.FeederLimit = self.FEEDER[self.FeederID[4:6]]
-        self.LoadMVA = round(self.LoadMW / self.PowerFactor, 4)
+        self.PowerFactor = self.POWER_FACTORS[str(self.Customer_Type)]
+        self.ConnectionType = self.CONNECTION_TYPES[str(self.Connection)]
+        self.DisturbingLoad = self.DISTURBING_LOADS[str(self.Disturbing)]
+        self.PhaseCount = QueryNodes(["PhaseCount"], self.POI)[0]
+        self.KVLL, self.FeederLimit = self.FEEDER_LIMITS[self.FeederID[4:6]]
+
         self.CalculateLoads()
         self.SetVariables()
 
     def CalculateLoads(self):
-        SpotLoads = ListDevices(self.SPOT_DEV_TYPE, self.FeederID)
+        self.CustLoadMVA = round(self.CustLoadMW / self.PowerFactor, 2)
+
+        SpotLoads = Std.ListDevices(self.SPOT_DEV_TYPE, self.FeederID)
+
         self.MVLoad = sum(
             QueryDevices(["SpotKVAT"], Spot.DeviceNumber, self.SPOT_DEV_TYPE)[0]
             for Spot in SpotLoads
@@ -1405,16 +1448,19 @@ class EmissionStudy:
             if "INT_" not in Spot.DeviceNumber
         )
 
-        _TotalMVA = (self.MVLoad + self.LVLoad) / 1000 + self.LoadMVA
+        self.EstimatedLVMVA = self.LVLoadRatio = 0
+        _TotalMVA = (self.MVLoad + self.LVLoad) / 1000 + self.CustLoadMVA
         if _TotalMVA > self.FeederLimit:
             print("Warning: The load will be over the feeder limit")
-            self.FeederLimit = 8.64
-        self.LVLoadRatio = self.LVLoad / (1000 * _TotalMVA)
-        self.EstimatedLVMVA = round(self.LVLoadRatio * self.FeederLimit, 4)
+            self.EstimatedLVMVA = round(
+                self.FeederLimit - self.CustLoadMVA - self.MVLoad / 1000, 2
+            )
+        else:
+            self.LVLoadRatio = self.LVLoad / (1000 * _TotalMVA)
+            self.EstimatedLVMVA = round(self.LVLoadRatio * self.FeederLimit, 2)
 
     def SetVariables(self):
-        self.ConnectionType = self.CONNECTION_TYPE[self.Connection]
-        self.DisturbingLoad = self.DISTURBING_LOAD[self.Disturbing]
+
         self._Variables = [
             f"f={self.METHOD}",
             f"section={self.SECTION}",
@@ -1428,7 +1474,7 @@ class EmissionStudy:
             f"phase={self.PhaseCount}",
             f"St={self.FeederLimit}",
             f"cPh={self.ConnectionType}",
-            f"Si={self.LoadMVA}",
+            f"Si={self.CustLoadMVA}",
             f"alpha={self.DisturbingLoad}",
             f"Slv={self.EstimatedLVMVA}",
         ]
@@ -1455,12 +1501,12 @@ class EmissionStudy:
             ["Connection Type:", self.Connection],
             ["Customer Type:", self.Customer_Type],
             ["Power Factor:", self.PowerFactor],
-            ["Current MV Load (MVA):", round(self.MVLoad / 1000, 4)],
-            ["Customer Demand (MW):", round(self.LoadMW, 4)],
-            ["Customer Demand (MVA):", round(self.LoadMVA, 4)],
-            ["Current LV Load (MVA):", round(self.LVLoad / 1000, 4)],
-            ["Percentage of LV Load %:", round(self.LVLoadRatio * 100, 4)],
-            ["Max. LV Load (MVA):", round(self.EstimatedLVMVA, 4)],
+            ["Current MV Load (MVA):", round(self.MVLoad / 1000, 2)],
+            ["Customer Demand (MW):", round(self.CustLoadMW, 2)],
+            ["Customer Demand (MVA):", round(self.CustLoadMVA, 2)],
+            ["Current LV Load (MVA):", round(self.LVLoad / 1000, 2)],
+            ["Percentage of LV Load %:", round(self.LVLoadRatio * 100, 2)],
+            ["Max. LV Load (MVA):", round(self.EstimatedLVMVA, 2)],
             ["Disturbing Load:", self.Disturbing],
             ["Link to Report:", f"\n{_link}"],
         ]
@@ -1470,18 +1516,19 @@ class EmissionStudy:
 
 
 def main():
-    if not ListNetworks:
+    if not Std.ListNetworks:
         raise ValueError("Error: No study is loaded")
 
     SC = ShortCircuitStudy()
     SC.GetInputs()
     file = ""
 
-    count = GetModificationsCount()
+    count = Std.GetModificationsCount()
     for point in SC.FaultPoints:
         fault_point_id = point.ID
         SC.SetupEnv(fault_point_id)
-        SC.SetSourceEquivalent()
+        if SC.SetSource:
+            SC.SetSourceEquivalent()
         SC.ConfigSC()
         file = SC.Rep_Loc
         if SC.NewFeeder == "1":
@@ -1493,7 +1540,7 @@ def main():
         FP.InfoTable(SC.network_param)
         FP.EqData(SC.equipment_list)
 
-        itr = NetworkIterator(
+        itr = Std.NetworkIterator(
             fault_point_id,
             SC.ITERATION_UPSTREAM,
             SC.ITERATION_STOPONOPEN,
@@ -1512,26 +1559,24 @@ def main():
             for Device in DeviceList:
                 DeviceHandler(SC, Device, info_toNode, info_fromNode, Phase, FromPhase)
                 # Source
-            if QueryInfoNode("IsSourceNode", Node.ID) == "Yes":
+            if Std.QueryInfoNode("IsSourceNode", Node.ID) == "Yes":
                 SourceEquivalent = GetSource(SC.SourceName, info_toNode)
                 SourceEquivalent.EqData(SC.equipment_list)
                 SourceEquivalent.InfoTable(SC.network_param)
 
-        point_cc_id = SC.PCC.ID
-        PCC = GetPoint(point_cc_id)
-        ES = EmissionStudy(point_cc_id, SC.NetworkID, PCC.data)
+        ES = EmissionStudy(fault_point_id, SC.NetworkID, FP.data)
         ES.ReadInputs()
-        if ES.EmissionStudy == "1":
+        if ES.EmissionStudy:
             ES.GetVariables()
             # Report to text file
         with open(file, "w") as Report:
             SC.MakeReport(Report, SC.network_param, SC.equipment_list)
-            if ES.EmissionStudy == "1":
+            if ES.EmissionStudy:
                 ES.GetReport(Report)
         FP.GenerateForm(SC.NetworkID)
 
 #    del SC, FP, ES, PCC
-#    Undo(GetModificationsCount() - count)
+    Std.Undo(Std.GetModificationsCount() - count)
 
 
 if __name__ == "__main__":
@@ -1544,5 +1589,5 @@ if __name__ == "__main__":
     except Exception:
         traceback.print_exc()
     finally:
-        ActivateModifications(True)
+        App.ActivateRefresh(True)
     print("Excution Time: {}s".format(time.time() - start))
