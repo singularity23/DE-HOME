@@ -1,3 +1,9 @@
+# """
+# Update @ 2025-05-29
+# Update @ 2025-06-27: Add function to balance not only the feeder, but the downstream of point of studies of choices
+# Update @ 2025-07-28: Add error handling for LoadAllocation methods between KVA and KWH
+# """
+
 import locale
 import os
 import traceback
@@ -11,6 +17,7 @@ from cympy import study, enums, sim, rm, app, GetInputParameter
 # Constants
 MULTIPLIER = 1.1
 CELL_FORMAT_COLOR = 14737632
+ALLOCATION_METHODS = ["KVAMethod", "KWHMethod"]
 
 
 # Enum for phase types
@@ -223,10 +230,17 @@ class LoadBalancing:
         String summary of sections available for load transfer.
         Combines all section lists and formats them for display.
         """
-        for i in range(len(self.sections_list) - 1):
-            self.sections = CombineDicts(
-                self.sections_list[0], self.sections_list[i + 1]
-            )
+        n = len(self.sections_list)
+        if n == 1:
+            self.sections = self.sections_list[0]
+        elif n > 1:
+            for i in range(len(self.sections_list) - 1):
+                self.sections = CombineDicts(
+                    self.sections_list[0], self.sections_list[i + 1]
+                )
+        else:
+            raise LoadBalancingError("No solution")
+
         string = "//".join([f"Load Balancing has been run {self.counter} time(s)"])
         if self.sections:
             string += "//Sections after load transfer:"
@@ -240,6 +254,13 @@ class LoadBalancing:
                         )
         return string
 
+    def ChangeAllocationMethod(self):
+        active_method = self.LA.GetValue("Method")
+        if active_method == ALLOCATION_METHODS[0]:
+            self.LA.SetValue(ALLOCATION_METHODS[1], "Method")
+        else:
+            self.LA.SetValue(ALLOCATION_METHODS[0], "Method")
+
     def GetSinglePhaseSections(self) -> list[Dict]:
         """
         Retrieve single-phase sections in the network.
@@ -249,8 +270,6 @@ class LoadBalancing:
         for point in self.study_points:
             dict_list.append(self.RunCYMEIteration(point))
         dict_list.append(self.RunCYMEIteration(str(self.network_id)))
-
-        # group single phase branches accordingly for each point of study, groups should be muntually exclusive, to avoid moving the same branch back and forth
         grouped_dict_list = []
         filtered = {}
         grouped_dict_list.append(dict_list[0])
@@ -285,7 +304,6 @@ class LoadBalancing:
                 ismeter = study.QueryInfoDevice(
                     "IsMeter", Device.DeviceNumber, Device.DeviceType
                 )
-                # look for created check meters
                 if ismeter == "Yes" and Device not in self.meters:
                     self.meters.append(Device)
                 if not self._is_valid_section(iterator):
@@ -332,42 +350,30 @@ class LoadBalancing:
         """
         Iavg = IBal or (ImaxA + ImaxB + ImaxC) / 3
         Idiff = {k: v - Iavg for k, v in zip("ABC", [ImaxA, ImaxB, ImaxC])}
-
         if not sec_dict:
             return {}, sec_dict
-            _log("No single phase branches available")
-
-        from_phase = max(
-            Idiff, key=lambda k: abs(Idiff[k])
-        )  # find the phase with largest imblance current
-
-        temp_idiff = Idiff.copy()  # {phase: imbalance current}
-        del temp_idiff[from_phase]
-
+        ph_high = max(Idiff, key=lambda k: abs(Idiff[k]))
+        temp_idiff = Idiff.copy()
+        del temp_idiff[ph_high]
         sorted_idiff = dict(
-            sorted(
-                temp_idiff.items(), key=lambda item: abs(item[1]), reverse=True
-            )  # sort by imbalance current
+            sorted(temp_idiff.items(), key=lambda item: abs(item[1]), reverse=True)
         )
         sol = {}
         temp = []
-        for to_phase, value in sorted_idiff.items():
-            if math.ceil(value) < 0:  # phase with abs largest imbalance
-
-                sol[to_phase] = GetTarget(sec_dict[from_phase], value)
-                if sol[to_phase]:
-                    for i, j in sol[
-                        to_phase
-                    ]:  # i - single phase branch, j - branch current
-                        sec_dict[from_phase].pop(i, None)
-                        sec_dict[to_phase][i] = j
+        for key, value in sorted_idiff.items():
+            if math.ceil(value) < 0:
+                sol[key] = GetTarget(sec_dict[ph_high], value)
+                if sol[key]:
+                    for i, j in sol[key]:
+                        sec_dict[ph_high].pop(i, None)
+                        sec_dict[key][i] = j
             elif math.floor(value) > 0:
-                temp += GetTarget(sec_dict[to_phase], value)  # the other two phases
-                sol[from_phase] = temp
+                temp += GetTarget(sec_dict[key], value)
+                sol[ph_high] = temp
                 if temp:
                     for i, j in temp:
-                        sec_dict[to_phase].pop(i, None)
-                        sec_dict[from_phase][i] = j
+                        sec_dict[key].pop(i, None)
+                        sec_dict[ph_high][i] = j
         return sol, sec_dict
 
     def TransferLoad(self, file, dict_sect: Dict) -> List:
@@ -647,7 +653,18 @@ class LoadBalancing:
             _log(file, f"Feeder: {self.network_id}, before balancing:")
             count = study.GetModificationsCount()
             self.SetFeederDemand()
-            self.LA.Run([self.network_id])
+
+            try:
+                self.LA.Run([self.network_id])
+            except Exception as e:
+                _log(
+                    file,
+                    f"Error running LoadAllocation: {e}. Attempting another allocation method",
+                )
+            else:
+                self.ChangeAllocationMethod()
+                self.LA.Run([self.network_id])
+
             IA = IB = IC = IN = IBal = PFA = PFB = PFC = Iunb = 0
             _log(file, "\n@ MAIN_METER:")
             IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb = self.GetLoadFlow(
@@ -688,5 +705,7 @@ if __name__ == "__main__":
         del lb
     except Exception:
         traceback.print_exc()
+    finally:
+        app.ActivateRefresh(True)
     print("Execution Time: {}s".format(time.time() - start))
     # app.ActivateRefresh(True)

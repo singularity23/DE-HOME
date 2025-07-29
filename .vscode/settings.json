@@ -1,6 +1,10 @@
 {
   "vscode-edge-devtools.headless": false,
-  "editor.fontFamily": "Cascadia Code, SF Mono, Fira Code, Roboto Mono, JetBrains Mono,  Consolas, 'Courier New', monospace, Source Code Pro, ",
+  "editor.fontFamily": "JetBrains Mono NL, Alma Mono, Roboto Mono, Cascadia Mono, SF Mono Regular, Fira Code, JetBrains Mono",
   "liveServer.settings.port": 5550,
-  "editor.wordWrap": "bounded"
+  "editor.wordWrap": "bounded",
+  "editor.defaultFormatter": "ms-python.black-formatter",
+  "files.autoSave": "onWindowChange",
+  "editor.formatOnSave": true,
+  "editor.fontVariations": true
 }
