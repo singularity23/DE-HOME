@@ -1,5 +1,6 @@
 {
   "vscode-edge-devtools.headless": false,
+<<<<<<< HEAD
   "editor.fontFamily": "JetBrains Mono NL, Alma Mono, Roboto Mono, Cascadia Mono, SF Mono Regular, Fira Code, JetBrains Mono",
   "liveServer.settings.port": 5550,
   "editor.wordWrap": "bounded",
@@ -7,4 +8,9 @@
   "files.autoSave": "onWindowChange",
   "editor.formatOnSave": true,
   "editor.fontVariations": true
+=======
+  "editor.fontFamily": "Cascadia Code, SF Mono,  Source Code Pro, Fira Code, Roboto Mono, JetBrains Mono,  Consolas, 'Courier New', monospace",
+  "liveServer.settings.port": 5550,
+  "editor.wordWrap": "bounded"
+>>>>>>> dc430462252648087deb1aa9f143a48637e23783
 }
