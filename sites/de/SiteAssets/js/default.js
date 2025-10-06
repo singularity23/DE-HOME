@@ -20,6 +20,15 @@ function setAttributes (el, attrs) {
   Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]))
 }
 
+//set announcement
+function setAnnouncement () {
+  const fullmode = qS('body.ms-backgroundImage.ms-fullscreenmode')
+  const focused = qS('body.ms-backgroundImage')
+  if (!fullmode && focused) {
+    focused.classList.add('ms-fullscreenmode')
+  }
+}
+
 // Debounce (clearly documented)
 function debounce (func, wait = 100) {
   let timeout
@@ -218,6 +227,7 @@ qS('#MSOZoneCell_WebPartWPQ6')?.addEventListener('click', () =>
 
 // Initialization
 function refresh () {
+  setAnnouncement()
   changeLogoTitle()
   removeZerowidth()
   changeLayout()

@@ -29,7 +29,7 @@ def calculate_impedance(Z, X_R_Ratio, KVLL, KVA):
     #   tuple: Calculated resistance (R) and reactance (X) in ohms.
 
     Z_ohms_Mag = (Z * 10 * KVLL**2) / KVA
-    R = math.sqrt(Z_ohms_Mag**2 / (1 + X_R_Ratio**2))
+    R = math.sqrt(Z_ohms_Mag**2) / (1 + X_R_Ratio**2)
     X = X_R_Ratio * R
     return R, X
 
@@ -110,37 +110,6 @@ class ShortCircuitStudy:
     # circuit study, including reading inputs, configuring simulations, and generating
     # reports. It provides functionality to set source impedances, calculate fault values,
     # and manage the overall study environment.
-    # Attributes:
-    #   ITERATION_UPSTREAM (enum): cympy.enums iteration option.
-    #   ITERATION_STOPONOPEN (enum): cympy.enums iteration option.
-    #   TABLE_HEADER_FORMAT (str): Format string for the table header.
-    #   TABLE_ROW_FORMAT (str): Format string for the table rows.
-    #   IMPEDANCE_UNIT (str): Unit for impedance.
-    #   PREFAULT_VOLTAGE (str): Pre-fault voltage setting.
-    #   FAULT_VALUES (dict): Dictionary containing fault values.
-    #   TABLE_VARIABLES (list): List of table variables.
-    #   PCC (str): Power control center identifier.
-    #   FeederID (str): Identifier for the feeder.
-    #   Distance (float): Distance value for the study.
-    #   R1 (float): Resistance value for phase 1.
-    #   X1 (float): Reactance value for phase 1.
-    #   R0 (float): Resistance value for neutral.
-    #   X0 (float): Reactance value for neutral.
-    #   FeederLimit (float): Maximum allowable load for the feeder.
-    #   KVLL (float): Line-to-line voltage.
-    #   LoadMVA (float): Load in MVA.
-    #   EstimatedLVMVA (float): Estimated load in MVA.
-    #   ConnectionType (int): Code for the connection type.
-    #   DisturbingLoad (int): Code for disturbing load.
-    #   PhaseCount (int): Number of phases.
-    #   Customer_Type (str): Type of customer.
-    #   Connection (str): Type of connection.
-    #   Disturbing (str): Disturbing load status.
-    #   LoadMW (float): Load in MW.
-    #   MVLoad (float): Medium voltage load.
-    #   LVLoad (float): Low voltage load.
-    #   LVLoadRatio (float): Ratio of low voltage load to total load.
-    #   Variables (list): List of formatted variables for reporting.
 
     ITERATION_UPSTREAM = cympy.enums.IterationOption.Upstream
     ITERATION_STOPONOPEN = cympy.enums.IterationRestriction.StopOnOpen
@@ -172,7 +141,8 @@ class ShortCircuitStudy:
         self.FaultPoints = []
         self.SC_Sim = None
         self.PCC = ""
-        self.NewFeeder, self.FaultImpedance = [False, True]
+        self.FaultImpedance = True
+        self.NewFeeder, self.SetSource = ["No", "No"]
         self.LenUnit = "m"
         self.LGFaultResistance, self.LGFaultReactance = [40, 0]
         self.LLLFaultResistance, self.LLLFaultReactance = [8, 0]
@@ -197,9 +167,8 @@ class ShortCircuitStudy:
             self.Source_X1,
             self.Reactor_X,
             self.NewFeeder,
-            self.FaultImpedance,
             self.Path,
-            self.SetSource
+            self.SetSource,
         ) = map(
             cympy.GetInputParameter,
             [
@@ -210,7 +179,6 @@ class ShortCircuitStudy:
                 "Source_X1",
                 "Source_RX",
                 "New_Feeder",
-                "Impedance_Fault",
                 "Report_Location",
                 "Source_Impedance",
             ],
@@ -242,8 +210,6 @@ class ShortCircuitStudy:
             Std.QueryInfoNode("$UpstreamSourceNodeID$", fault_point) or self.NetworkID
         )
 
-
-
         self.table_header_1 = "\n {:<56}{:>8}{:>11}  |{:-^31}||{:-^31}|".format(
             f"Circuits: {self.NetworkID}",
             "Length",
@@ -272,7 +238,6 @@ class ShortCircuitStudy:
         current_datetime = datetime.now().strftime("%Y-%m-%d-h%Hm%Ms%S")
         file_name = f"SC-Report-{source_name}-{current_datetime}.txt"
         self.Rep_Loc = os.path.join(str(self.Path), file_name)
-        # Setup operating votlage for the study
 
     def SetSourceEquivalent(self):
 
@@ -337,8 +302,11 @@ class ShortCircuitStudy:
             ]
 
             return set_common_list
+
         try:
-            self.source_dev = Std.GetDevice(self.NetworkID, cympy.enums.DeviceType.Source)
+            self.source_dev = Std.GetDevice(
+                self.NetworkID, cympy.enums.DeviceType.Source
+            )
             set_list = _common_list(txt_2, nums_2)
             SetValueDevEqt(set_list[:4], self.source_dev)
             SetValueDevEqt(set_list[4:], self.source_eq)
@@ -346,7 +314,6 @@ class ShortCircuitStudy:
             # From source equipment database
             set_list = _common_list(txt_1, nums_1)
             SetSourceValue(set_list, self.SourceName)
-
 
         RX_List = Std.ListDevices(cympy.enums.DeviceType.SeriesReactor, self.NetworkID)
         if len(RX_List):
@@ -356,17 +323,15 @@ class ShortCircuitStudy:
                 "RX_{:n}_{:.3f}".format(self.Reactor_I, self.Reactor_X), "DeviceID"
             )
 
-            RX_Eq = Eqt.GetEquipment(
-                RX_Device.EquipmentID, RX_Device.EquipmentType
-            )
-            #print(RX_Eq.GetValue("ReactanceOhms"))
+            RX_Eq = Eqt.GetEquipment(RX_Device.EquipmentID, RX_Device.EquipmentType)
+            # print(RX_Eq.GetValue("ReactanceOhms"))
             if (
                 RX_Eq.GetValue("RatedCurrent") != self.Reactor_I
                 or RX_Eq.GetValue("ReactanceOhms") != self.Reactor_X
             ):
                 RX_Eq.SetValue(self.Reactor_I, "RatedCurrent")
                 RX_Eq.SetValue(self.Reactor_X, "ReactanceOhms")
-            #print(RX_Eq.GetValue("ReactanceOhms"))
+            # print(RX_Eq.GetValue("ReactanceOhms"))
 
     def ConfigSC(self):
         #   Configures the parameters for the short circuit (SC) simulation based on
@@ -376,11 +341,11 @@ class ShortCircuitStudy:
         print("- Config short circuit study")
 
         self.SC_Sim = Sim.ShortCircuit()
-        n = self.SC_Sim.GetValue('AnalysisNetworks.SelectedNetworks')
-        #print(n)
+        n = self.SC_Sim.GetValue("AnalysisNetworks.SelectedNetworks")
+        # print(n)
         for i in range(int(n)):
-            self.SC_Sim.SetValue('', f'AnalysisNetworks.SelectedNetworks[{i}]')
-        self.SC_Sim.SetValue(self.NetworkID, 'AnalysisNetworks.SelectedNetworks[0]')
+            self.SC_Sim.SetValue("", f"AnalysisNetworks.SelectedNetworks[{i}]")
+        self.SC_Sim.SetValue(self.NetworkID, "AnalysisNetworks.SelectedNetworks[0]")
 
         config_count = locale.atoi(
             self.SC_Sim.GetValue("ParametersConfigurations.Count")
@@ -487,36 +452,7 @@ class GetDevEquipment:
     # related to the device.
     # It provides methods to add device information to a network parameter list and to
     # include device data in a list of equipment based on specified conditions.
-    # Attributes:
-    #   BaseMVA (float): Base power in MVA for AC systems.
-    #   Device (object): The device for which equipment information is being retrieved.
-    #   DeviceObj (str): The type of the device object.
-    #   R1TN (float): Resistance for the terminal node.
-    #   X1TN (float): Reactance for the terminal node.
-    #   R0TN (float): Zero-sequence resistance for the terminal node.
-    #   X0TN (float): Zero-sequence reactance for the terminal node.
-    #   R1TNpu (float): Per unit resistance for the terminal node.
-    #   X1TNpu (float): Per unit reactance for the terminal node.
-    #   R0TNpu (float): Per unit zero-sequence resistance for the terminal node.
-    #   X0TNpu (float): Per unit zero-sequence reactance for the terminal node.
-    #   TN_Distance (float): Distance to the terminal node.
-    #   R1FN (float): Resistance for the from node.
-    #   X1FN (float): Reactance for the from node.
-    #   R0FN (float): Zero-sequence resistance for the from node.
-    #   X0FN (float): Zero-sequence reactance for the from node.
-    #   R1FNpu (float): Per unit resistance for the from node.
-    #   X1FNpu (float): Per unit reactance for the from node.
-    #   R0FNpu (float): Per unit zero-sequence resistance for the from node.
-    #   X0FNpu (float): Per unit zero-sequence reactance for the from node.
-    #   FN_Distance (float): Distance to the from node.
-    #   Length (float): Length between the from node and terminal node.
-    #   Nameplate (str): Nameplate information of the device.
-    #   R1 (float): Calculated resistance.
-    #   X1 (float): Calculated reactance.
-    #   R0 (float): Calculated zero-sequence resistance.
-    #   X0 (float): Calculated zero-sequence reactance.
-    #   toPhase (str): Phase to which the device is connected.
-    #   fromPhase (str): Phase from which the device is connected.
+
     BaseMVA = cympy.env.BasePower_AC_MVA
 
     def __init__(self, **kwargs):
@@ -597,6 +533,7 @@ class GetDevCables(GetDevEquipment):
                 "PositiveSequenceReactance",
                 "ZeroSequenceResistance",
                 "ZeroSequenceReactance",
+                "NominalRating",
                 "PhaseConductorID",
                 "NeutralConductorID",
                 "ConductorSpacingID",
@@ -607,6 +544,7 @@ class GetDevCables(GetDevEquipment):
                 "X1_db",
                 "R0_db",
                 "X0_db",
+                "Rating",
                 "PhCon",
                 "NeuCon",
                 "ConSpacing",
@@ -620,6 +558,7 @@ class GetDevCables(GetDevEquipment):
                 "PositiveSequenceReactance",
                 "ZeroSequenceResistance",
                 "ZeroSequenceReactance",
+                "NominalRating",
                 "ImpedancesNote",
                 "Comments",
             ],
@@ -628,6 +567,7 @@ class GetDevCables(GetDevEquipment):
                 "X1_db",
                 "R0_db",
                 "X0_db",
+                "Rating",
                 "ImpNote",
                 "Comments",
             ],
@@ -727,7 +667,6 @@ class GetDevCables(GetDevEquipment):
             2 * self.R0c * self.R0, 4
         ):
             raise ValueError("Error: the device impedance is not correct")
-   
 
     def StoreInfo(self, SCReport):
         def _write_info(label, value):
@@ -745,6 +684,7 @@ class GetDevCables(GetDevEquipment):
                 "Negative Sequence Z0:", self.R0_db, self.X0_db
             )
         )
+        SCReport.write("\n{:<25} {:<8.0f} amps".format("Nominal Rating:", self.Rating))
 
         content = textwrap.fill(f"{self.Comments}", 100)
         if self.Device.DeviceType == 11:
@@ -1142,18 +1082,18 @@ class GetPoint:
         )
         if primaryForm == "1":
             _date = datetime.now().strftime("%Y-%m-%d")
-            _prefaultLN = round(self.data['PrefaultVoltage']/math.sqrt(3),2)
-            _networkID = networkID.replace('_', ' ')
+            _prefaultLN = round(self.data["PrefaultVoltage"] / math.sqrt(3), 2)
+            _networkID = networkID.replace("_", " ")
 
             _variables = [
-                f'customer_name={quote(customerName)}',
-                f'service_address={quote(serviceAddress)}',
-                f'fault_location={faultLocation}',
-                f'equipment_id={EquipmentID}',
-                f'network_id={_networkID}',
+                f"customer_name={quote(customerName)}",
+                f"service_address={quote(serviceAddress)}",
+                f"fault_location={faultLocation}",
+                f"equipment_id={EquipmentID}",
+                f"network_id={_networkID}",
                 f'distance={"{:0.0f}".format(self.data["Distance"])}',
-                f'protection={quote(protection)}',
-                f'date={_date}',
+                f"protection={quote(protection)}",
+                f"date={_date}",
                 f'LLL={int(round(self.data["LLLamp"],-2))}',
                 f'LLG={int(round(self.data["LLGamp"],-2))}',
                 f'LL={int(round(self.data["LLamp"],-2))}',
@@ -1163,15 +1103,16 @@ class GetPoint:
                 f'R0={"{:.4f}".format(self.data["R0ohm"])}',
                 f'X0={"{:.4f}".format(self.data["X0ohm"])}',
                 f'prefault={self.data["PrefaultVoltage"]}',
-                f'prefaultLN={_prefaultLN}',
-                f'engineer={engineer}',
-                f'email={email}',
-                f'phone={phone}',
+                f"prefaultLN={_prefaultLN}",
+                f"engineer={engineer}",
+                f"email={email}",
+                f"phone={phone}",
             ]
-            _link = self._PATH + '?' + '&'.join(_variables)
+            _link = self._PATH + "?" + "&".join(_variables)
             print(_link)
 
             webbrowser.open_new(_link)
+
 
 class GetSource:
     # Initialize a GetSource object with source information and methods to interact with it.
@@ -1215,12 +1156,13 @@ class GetSource:
 
         self.R1TN, self.X1TN, self.R0TN, self.X0TN = info_toNode[:4]
 
-        #print(self.R1TN, self.X1TN, self.R0TN, self.X0TN)
+        # print(self.R1TN, self.X1TN, self.R0TN, self.X0TN)
         self.Nameplate = f"SourceEquivalent: {self.SourceName}"
 
     def InfoTable(self, NetworkParam):
         def sign(number):
-            return number*int(math.copysign(1, number))
+            return number * int(math.copysign(1, number))
+
         NetworkParam.append(
             [
                 self.Nameplate,
@@ -1396,6 +1338,7 @@ class EmissionStudy:
             data["R0ohm"],
             data["X0ohm"],
         )
+        self.StudyEmission = "No"
         self.FeederLimit = 6.48
         self.KVLL = 12.47
         self.CustLoadMVA = 0
@@ -1410,7 +1353,7 @@ class EmissionStudy:
             self.Connection,
             self.Disturbing,
             self.CustLoadMW,
-            self.EmissionStudy,
+            self.StudyEmission,
         ) = map(
             cympy.GetInputParameter,
             [
@@ -1421,6 +1364,7 @@ class EmissionStudy:
                 "Emission_Study",
             ],
         )
+        print(cympy.GetInputParameter("Emission_Study"))
 
     def GetVariables(self):
         self.PowerFactor = self.POWER_FACTORS[str(self.Customer_Type)]
@@ -1527,11 +1471,11 @@ def main():
     for point in SC.FaultPoints:
         fault_point_id = point.ID
         SC.SetupEnv(fault_point_id)
-        if SC.SetSource:
+        if SC.SetSource == "Yes":
             SC.SetSourceEquivalent()
         SC.ConfigSC()
         file = SC.Rep_Loc
-        if SC.NewFeeder == "1":
+        if SC.NewFeeder == "Yes":
             SC.FeederMode(fault_point_id)
 
         SC.SC_Sim.Run()
@@ -1566,16 +1510,17 @@ def main():
 
         ES = EmissionStudy(fault_point_id, SC.NetworkID, FP.data)
         ES.ReadInputs()
-        if ES.EmissionStudy:
+
+        if ES.StudyEmission == "Yes":
             ES.GetVariables()
-            # Report to text file
+        # Report to text file
         with open(file, "w") as Report:
             SC.MakeReport(Report, SC.network_param, SC.equipment_list)
-            if ES.EmissionStudy:
+            if ES.StudyEmission == "Yes":
                 ES.GetReport(Report)
         FP.GenerateForm(SC.NetworkID)
 
-#    del SC, FP, ES, PCC
+    #    del SC, FP, ES, PCC
     Std.Undo(Std.GetModificationsCount() - count)
 
 

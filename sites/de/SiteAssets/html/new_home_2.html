@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickLinks Hub - All Your Frequently Used Websites</title>
+  <style>
+    :root {
+      --primary-color: rgba(0, 79, 108, 0.8);
+      --secondary-color: rgba(0, 79, 108, 0.2);
+      --accent-color: #f59e0b;
+      --light-bg: #f5f3f2;
+      --card-bg: #ffffff;
+      --text-color: #3E3935;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --btn-color: rgba(5, 161, 198, 1);
+      --btn-hover: rgba(5, 161, 198, 0.2);
+      --btn-new: #E8927C;
+    }
+
+    /* ===== Custom Fonts ===== */
+    @font-face {
+      font-family: "brand-font-light";
+      src: url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot");
+      src: url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot?#iefix") format("embedded-opentype"),
+        url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff") format("woff"),
+        url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.ttf") format("truetype");
+      font-weight: 300;
+    }
+
+    @font-face {
+      font-family: "brand-font-regular";
+      src: url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot");
+      src: url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot?#iefix") format("embedded-opentype"),
+        url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff") format("woff"),
+        url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.ttf") format("truetype");
+      font-weight: 400;
+    }
+
+    @font-face {
+      font-family: "brand-font-medium";
+      src: url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot");
+      src: url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot?#iefix") format("embedded-opentype"),
+        url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff") format("woff"),
+        url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.ttf") format("truetype");
+      font-weight: 500;
+    }
+
+    @font-face {
+      font-family: "brand-font-black";
+      src: url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot");
+      src: url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot?#iefix") format("embedded-opentype"),
+        url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff") format("woff"),
+        url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.ttf") format("truetype");
+      font-weight: 900;
+    }
+
+    @font-face {
+      font-family: "brand-font-bold";
+      src: url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot");
+      src: url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot?#iefix") format("embedded-opentype"),
+        url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff") format("woff"),
+        url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.ttf") format("truetype");
+      font-weight: 700;
+    }
+
+    html {
+      font-size: 13px;
+      letter-spacing: 0.0446em;
+
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px 0;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: #64748b;
+      margin-bottom: 30px;
+    }
+
+    .search-container {
+      max-width: 500px;
+      margin: 0 auto 40px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 20px 16px 50px;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      font-size: 1rem;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 1.2rem;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .category-card {
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    .category-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      background: var(--primary-color);
+      color: white;
+      justify-content: space-between;
+    }
+
+    .category-title-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .category-title {
+      font-size: 1.5rem;
+      font-family: brand-font-bold, Arial, sans-serif;
+      font-weight: 700;
+    }
+
+    .add-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: red;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-left: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .subheader-section {
+      padding: 10px 25px;
+      background-color: var(--secondary-color);
+      border-bottom: 2px solid var(--secondary-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: -1;
+    }
+
+    .subheader-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+
+    .links-container {
+      padding: 15px 25px;
+      min-height: 50px;
+      transition: all 0.3s ease;
+    }
+
+    .links-container.drag-over {
+      background-color: #dbeafe;
+      border: 2px dashed #3b82f6;
+      transform: scale(1.05);
+    }
+
+    .link-btn {
+      display: block;
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border: none;
+      cursor: click;
+      position: relative;
+    }
+
+    .link-btn:active {
+      cursor: move;
+    }
+
+    .link-btn.dragging {
+      opacity: 1;
+      transform: scale(1.05);
+      z-index: 1000;
+      position: fixed;
+      margin-bottom: 0;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      cursor: move;
+      width: 300px;
+      background-color: var(--btn-color)
+    }
+
+    .link-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .link-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+      background-color: var(--btn-hover);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      color: var(--btn-color)
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .color-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .color-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s ease;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected {
+      border-color: #333;
+      transform: scale(1.1);
+    }
+
+    .submit-btn {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .add-category-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .add-category-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .drag-indicator {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      opacity: 0.7;
+      cursor: grab;
+      width: 20px;
+    }
+
+    .normal {
+      background-color: var(--btn-color)
+    }
+
+    .new {
+      background-color: var(--btn-new);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 20px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+
+    @media (max-width: 768px) {
+      .categories-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      .category-title {
+        font-size: 1.3rem;
+      }
+
+      .add-category-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .search-container {
+        margin-bottom: 30px;
+      }
+
+      .links-container,
+      .subheader-section {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>QuickLinks Hub</h1>
+      <p class="subtitle">All your frequently used websites in one place</p>
+
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search for websites or categories...">
+      </div>
+    </header>
+
+    <div class="categories-grid" id="categoriesContainer">
+      <!-- Categories will be dynamically inserted here -->
+    </div>
+
+    <footer>
+      <p>Quick access to all your favorite websites. Bookmark this page for easy access!</p>
+    </footer>
+  </div>
+
+  <!-- Add Category Modal -->
+  <div id="addCategoryModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Category</h2>
+        <button type="button" class="close-btn" onclick="closeModal('addCategoryModal')">&times;</button>
+      </div>
+      <form id="addCategoryForm">
+        <div class="form-group">
+          <label class="form-label" for="categoryName">Category Name</label>
+          <input type="text" id="categoryName" class="form-input" required>
+        </div>
+        <button type="submit" class="submit-btn">Add Category</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Subheader Modal -->
+  <div id="addSubheaderModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Subheader</h2>
+        <button type="button" class="close-btn" onclick="closeModal('addSubheaderModal')">&times;</button>
+      </div>
+      <form id="addSubheaderForm">
+        <input type="hidden" id="categoryIndex" value="">
+        <div class="form-group">
+          <label class="form-label" for="subheaderName">Subheader Name</label>
+          <input type="text" id="subheaderName" class="form-input" required>
+        </div>
+        <button type="submit" class="submit-btn">Add Subheader</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Link Modal -->
+  <div id="addLinkModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Link</h2>
+        <button type="button" class="close-btn" onclick="closeModal('addLinkModal')">&times;</button>
+      </div>
+      <form id="addLinkForm">
+        <input type="hidden" id="linkCategoryIndex" value="">
+        <input type="hidden" id="linkSubheaderIndex" value="">
+        <div class="form-group">
+          <label class="form-label" for="linkName">Link Name</label>
+          <input type="text" id="linkName" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="linkUrl">URL</label>
+          <input type="url" id="linkUrl" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Color</label>
+          <div class="color-selector">
+            <div class="color-option bg-google" data-color="bg-google"></div>
+            <div class="color-option bg-blue" data-color="bg-blue"></div>
+            <div class="color-option bg-teal" data-color="bg-teal"></div>
+            <div class="color-option bg-green" data-color="bg-green"></div>
+            <div class="color-option bg-purple" data-color="bg-purple"></div>
+            <div class="color-option bg-orange" data-color="bg-orange"></div>
+            <div class="color-option bg-red" data-color="bg-youtube"></div>
+            <div class="color-option bg-facebook" data-color="bg-facebook"></div>
+            <div class="color-option bg-github" data-color="bg-github"></div>
+          </div>
+          <input type="hidden" id="linkColor" value="bg-blue">
+        </div>
+        <button type="submit" class="submit-btn">Add Link</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Category Floating Button -->
+  <button type="button" class="add-category-btn" onclick="openModal('addCategoryModal')">+</button>
+
+  <script>
+    // Initialize color selection
+    document.addEventListener('DOMContentLoaded', function () {
+      const colorOptions = document.querySelectorAll('.color-option');
+      colorOptions.forEach(option => {
+        option.addEventListener('click', function () {
+          colorOptions.forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          document.getElementById('linkColor').value = this.dataset.color;
+        });
+      });
+
+      // Set default color
+      if (colorOptions.length > 0) {
+        colorOptions[0].classList.add('selected');
+        document.getElementById('linkColor').value = colorOptions[0].dataset.color;
+      }
+
+      // Initialize drag and drop functionality
+      initDragAndDrop();
+    });
+
+    // Data structure for categories with multiple subheaders and their links
+    let categories = [
+      {
+        name: 'Administrative Tools',
+
+        subheaders: [
+          {
+            title: 'HR & Employee Resources',
+            links: [
+              { name: 'Employee Onboarding', url: '#', class: 'normal' },
+              { name: 'Employee Connect', url: '#', class: 'normal' },
+              { name: 'Employee Team Advisory Site', url: '#', class: 'normal' },
+              { name: 'OPPRA', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Performance & Development',
+            links: [
+              { name: 'Business Review', url: '#', class: 'normal' },
+              { name: 'ScoreCard', url: '#', class: 'normal' },
+
+            ]
+          },
+          {
+            title: 'Operational Tools',
+            links: [
+              { name: 'Charge Codes', url: '#', class: 'normal' },
+              { name: 'E13 Desk Booking', url: '#', class: 'normal' },
+              { name: 'DELT', url: '#', class: 'normal' },
+              { name: 'CLRA Solution Office', url: '#', class: 'normal' },
+              { name: 'RDE Request Tracker', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'DE Base Accountability',
+            links: [
+              { name: 'Core Pathway', url: '#', class: 'normal' },
+              { name: 'Technical Pathway', url: '#', class: 'normal' },
+              { name: 'Leadership Pathway', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Engineering Tools',
+
+        subheaders: [
+          {
+            title: 'Design & Drafting',
+            links: [
+              { name: 'DesignHub', url: '#', class: 'normal' },
+              { name: 'DE CADD Drafting Request', url: '#', class: 'normal' },
+              { name: 'Drawings', url: '#', class: 'normal' },
+              { name: 'McLaren Drawings Search', url: '#', class: 'normal' },
+              { name: 'Grid Ops Diagrams Data', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Applications & Databases',
+            links: [
+              { name: 'IEDG Application Site', url: '#', class: 'normal' },
+              { name: 'AAG for IEDG', url: '#', class: 'normal' },
+              { name: 'ASPEN Relay Database™', url: '#', class: 'normal' },
+              { name: 'ASPEN PN Query', url: '#', class: 'normal' },
+              { name: 'P&C Bus Fault Summary', url: '#', class: 'normal' },
+              { name: 'Databases', url: '#', class: 'normal' },
+              { name: 'EAS', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Analytics & Reporting',
+            links: [
+              { name: 'Distribution Planning - Tableau®', url: '#', class: 'normal' },
+              { name: 'Distribution Planning Record Documents', url: '#', class: 'normal' },
+              { name: 'Feeder Load Research Tool - SAS®', url: '#', class: 'normal' },
+              { name: 'BCH ArcGIS®', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Useful Resources',
+
+        subheaders: [
+          {
+            title: 'Engineering Resources',
+            links: [
+              { name: 'Engineering HydroShare', url: '#', class: 'normal' },
+              { name: 'Engineering Resources & Templates', url: '#', class: 'normal' },
+              { name: 'Standards', url: '#', class: 'normal' },
+              { name: 'Design', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Operations & Maintenance',
+            links: [
+              { name: 'PQweb', url: '#', class: 'normal' },
+              { name: 'DSwiki', url: '#', class: 'normal' },
+              { name: 'WikiDI', url: '#', class: 'normal' },
+              { name: 'Projects', url: '#', class: 'normal' },
+              { name: 'SPOT', url: '#', class: 'normal' },
+              { name: 'CROW', url: '#', class: 'normal' },
+              { name: 'SIS', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Department Specific',
+            links: [
+              { name: 'PCM Info Center', url: '#', class: 'normal' },
+              { name: 'PPM Info Center', url: '#', class: 'normal' },
+              { name: 'Revenue Metering', url: '#', class: 'normal' },
+              { name: 'DR', url: '#', class: 'normal' },
+              { name: 'Operations', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Emergency & Monitoring',
+            links: [
+              { name: 'Major Outage Briefing Note', url: '#', class: 'normal' },
+              { name: 'Feeder Limits Database', url: '#', class: 'normal' },
+              { name: 'PowerOn Remote', url: '#', class: 'normal' },
+              { name: 'DASM HydroShare', url: '#', class: 'normal' },
+              { name: 'PAT', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Technical References',
+
+        subheaders: [
+          {
+            title: 'Learning & Development',
+            links: [
+              { name: 'Learning & Development', url: '#', class: 'normal' },
+              { name: 'DE Knowledge OneNote', url: '#', class: 'normal' },
+              { name: 'LMN Knowledge Sharing Sessions', url: '#', class: 'normal' },
+              { name: 'Conferences & Seminars', url: '#', class: 'normal' },
+              { name: 'BCH Library and Archives', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Technical Resources',
+            links: [
+              { name: 'Conductor Slap', url: '#', class: 'normal' },
+              { name: 'Technical Report', url: '#', class: 'normal' },
+              { name: 'Modelling / Calculator', url: '#', class: 'normal' },
+              { name: 'EATON® CYME', url: '#', class: 'normal' },
+              { name: 'Python Scripts for CYME', url: '#', class: 'normal' },
+              { name: 'Short Circuit Report', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Teams',
+
+        subheaders: [
+          {
+            title: 'Organizational Structure',
+            links: [
+              { name: 'DE Org Chart', url: '#', class: 'normal' },
+              { name: 'Lower Mainland North', url: '#', class: 'normal' },
+              { name: 'Lower Mainland South', url: '#', class: 'normal' },
+              { name: 'Interior & NIA', url: '#', class: 'normal' },
+              { name: 'Vancouver Island', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Project Teams',
+            links: [
+              { name: 'Projects Hydroshare', url: '#', class: 'normal' },
+              { name: 'Project A', url: '#', class: 'normal' },
+              { name: 'Project B', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Specialized Engineering',
+            links: [
+              { name: 'Distribution Civil Engineering', url: '#', class: 'normal' },
+              { name: 'DE Program Team', url: '#', class: 'normal' },
+              { name: 'Estimating', url: '#', class: 'normal' },
+              { name: 'Protection & Modelling', url: '#', class: 'normal' },
+              { name: 'Distribution Feeders', url: '#', class: 'normal' },
+              { name: 'Applied Engineering', url: '#', class: 'normal' },
+              { name: 'Non-Linear Analysis Team', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Procedures & Guidelines',
+
+        subheaders: [
+          {
+            title: 'Design & Engineering',
+            links: [
+              { name: 'External Design & Engineering DBR', url: '#', class: 'normal' },
+              { name: 'EDQA', url: '#', class: 'normal' },
+              { name: "Owner's Engineering Guide", url: '#', class: 'normal' },
+              { name: 'Design Review Comment Sheet', url: '#', class: 'normal' },
+              { name: 'Design Review Evaluation Form', url: '#', class: 'normal' },
+              { name: 'DE Project Completion Form', url: '#', class: 'normal' },
+              { name: 'OE Review Evaluation Summary', url: '#', class: 'normal' },
+              { name: 'CIPD Guide', url: '#', class: 'normal' },
+              { name: 'Voltage Management Guideline', url: '#', class: 'normal' },
+              { name: 'Voltage Conversion Guide', url: '#', class: 'normal' },
+              { name: 'Protection Coordination Guideline', url: '#', class: 'normal' },
+              { name: 'Distribution Automation Deployment Strategies', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Review Processes',
+            links: [
+              { name: 'Capacity Review Process', url: '#', class: 'normal' },
+              { name: 'DESRT Process - Planning & Engineering Tasks', url: '#', class: 'normal' },
+              { name: 'Unconfirmed Load Review Form', url: '#', class: 'normal' },
+              { name: 'Distribution Connection Variance Request Guide', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Professional Practice',
+
+        subheaders: [
+          {
+            title: 'Professional Development',
+            links: [
+              { name: 'Respectful Workplace Program', url: '#', class: 'normal' },
+              { name: 'PGA - EGBC Home', url: '#', class: 'normal' },
+              { name: 'EQBC Filing - Guides and References', url: '#', class: 'normal' },
+              { name: 'DESRT Memo Template', url: '#', class: 'normal' },
+              { name: 'CNS', url: '#', class: 'normal' },
+              { name: 'Signature Verification - verifiO', url: '#', class: 'normal' },
+              { name: 'Field Review Tracking', url: '#', class: 'normal' },
+              { name: 'SuccessFactors Learning', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Health & Safety',
+
+        subheaders: [
+          {
+            title: 'Safety Framework',
+            links: [
+              { name: 'Safety Framework', url: '#', class: 'normal' },
+              { name: 'SafeHub', url: '#', class: 'normal' },
+              { name: 'PSSP', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Safety by Design',
+            links: [
+              { name: 'Overhead Checklist', url: '#', class: 'normal' },
+              { name: 'Underground Checklist', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Safety Documentation',
+            links: [
+              { name: 'Safety Folder', url: '#', class: 'normal' },
+              { name: 'Reported Safety Incidents', url: '#', class: 'normal' },
+              { name: 'Asbestos', url: '#', class: 'normal' },
+              { name: 'Underground Asbestos Program', url: '#', class: 'normal' },
+              { name: 'AIS', url: '#', class: 'normal' },
+              { name: 'Emergency Response Plan', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Others',
+
+        subheaders: [
+          {
+            title: 'Administrative Procedures',
+            links: [
+              { name: 'Flood Plan Revision', url: '#', class: 'normal' },
+              { name: 'Telematics', url: '#', class: 'normal' },
+              { name: 'Branded Templates', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'IT Services',
+            links: [
+              { name: 'Application Portal', url: '#', class: 'normal' },
+              { name: 'ServiceNow', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Travel & Site Visits',
+            links: [
+              { name: 'Working Alone & Journey Management', url: '#', class: 'normal' },
+              { name: 'DE Specific Working Alone Procedure', url: '#', class: 'normal' },
+              { name: 'Business Travel', url: '#', class: 'normal' },
+              { name: 'Engineering - Field Work & Travel Form', url: '#', class: 'normal' },
+              { name: 'DE Travel Expense Submissions Guidelines', url: '#', class: 'normal' },
+              { name: 'Engineering Expense Claim Template', url: '#', class: 'normal' },
+            ]
+          },
+          {
+            title: 'Vehicle Booking',
+            links: [
+              { name: 'Edmonds #1 – Ford Escape – DE LM team', url: '#', class: 'normal' },
+              { name: 'Edmonds #2 – Toyota RAV4 – DE Civil team', url: '#', class: 'normal' },
+              { name: 'Victoria – DE VI team', url: '#', class: 'normal' },
+            ]
+          }
+        ]
+      }
+    ];
+
+    // Function to render categories
+    function renderCategories(categoriesToRender) {
+      const container = document.getElementById('categoriesContainer');
+      container.innerHTML = '';
+
+      categoriesToRender.forEach((category, categoryIndex) => {
+        const categoryCard = document.createElement('div');
+        categoryCard.className = 'category-card';
+
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.innerHTML = `
+                    <div class="category-title-container">
+                        <h2 class="category-title">${category.name}</h2>
+                    </div>
+                    <button class="add-btn" onclick="openAddSubheaderModal(${categoryIndex})">+</button>
+                `;
+
+        categoryCard.appendChild(header);
+
+        // Add each subheader section with its links
+        category.subheaders.forEach((subheader, subheaderIndex) => {
+          const subheaderSection = document.createElement('div');
+          subheaderSection.className = 'subheader-section';
+
+          const subheaderTitle = document.createElement('div');
+          subheaderTitle.className = 'subheader-title';
+          subheaderTitle.textContent = subheader.title;
+
+          const addLinkBtn = document.createElement('button');
+          addLinkBtn.className = 'add-btn';
+          addLinkBtn.textContent = '+';
+          addLinkBtn.onclick = function () {
+            openAddLinkModal(categoryIndex, subheaderIndex);
+          };
+
+          subheaderSection.appendChild(subheaderTitle);
+          subheaderSection.appendChild(addLinkBtn);
+          categoryCard.appendChild(subheaderSection);
+
+          const linksContainer = document.createElement('div');
+          linksContainer.className = 'links-container';
+          linksContainer.dataset.categoryIndex = categoryIndex;
+          linksContainer.dataset.subheaderIndex = subheaderIndex;
+
+          subheader.links.forEach((link, linkIndex) => {
+            const linkBtn = document.createElement('a');
+            linkBtn.href = link.url;
+            linkBtn.target = '_blank';
+            linkBtn.className = `link-btn ${link.class}`;
+            linkBtn.textContent = link.name;
+
+            // Add drag handle indicator
+            const dragIndicator = document.createElement('span');
+            dragIndicator.className = 'drag-indicator';
+            dragIndicator.innerHTML = '⋮';
+            linkBtn.appendChild(dragIndicator);
+
+            // Set data attributes for drag and drop
+            linkBtn.dataset.categoryIndex = categoryIndex;
+            linkBtn.dataset.subheaderIndex = subheaderIndex;
+            linkBtn.dataset.linkIndex = linkIndex;
+
+            // Make draggable
+            linkBtn.draggable = true;
+
+            linksContainer.appendChild(linkBtn);
+          });
+
+          categoryCard.appendChild(linksContainer);
+        });
+
+        container.appendChild(categoryCard);
+      });
+
+      // Re-initialize drag and drop after rendering
+      initDragAndDrop();
+    }
+
+    // Initialize drag and drop functionality
+    function initDragAndDrop() {
+      const linkBtns = document.querySelectorAll('.link-btn');
+      const linksContainers = document.querySelectorAll('.links-container');
+
+      // Add event listeners for drag start
+      linkBtns.forEach(btn => {
+        btn.addEventListener('dragstart', handleDragStart);
+        btn.addEventListener('dragend', handleDragEnd);
+      });
+
+      // Add event listeners for drag over, drag enter, drag leave, and drop
+      linksContainers.forEach(container => {
+        container.addEventListener('dragover', handleDragOver);
+        container.addEventListener('dragenter', handleDragEnter);
+        container.addEventListener('dragleave', handleDragLeave);
+        container.addEventListener('drop', handleDrop);
+      });
+    }
+
+    // Drag and drop event handlers
+    let draggedItem = null;
+
+    function handleDragStart(e) {
+      draggedItem = e.target;
+      setTimeout(() => {
+        e.target.classList.add('dragging');
+      }, 0);
+
+      // Store data in dataTransfer for cross-browser compatibility
+      e.dataTransfer.setData('text/plain', 'dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+      draggedItem = null;
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDragEnter(e) {
+      if (e.target.classList.contains('links-container')) {
+        e.target.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      if (e.target.classList.contains('links-container')) {
+        e.target.classList.remove('drag-over');
+      }
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const targetContainer = e.target.closest('.links-container');
+
+      if (targetContainer && draggedItem) {
+        targetContainer.classList.remove('drag-over');
+
+        // Get source and target indices
+        const sourceCategoryIndex = parseInt(draggedItem.dataset.categoryIndex);
+        const sourceSubheaderIndex = parseInt(draggedItem.dataset.subheaderIndex);
+        const sourceLinkIndex = parseInt(draggedItem.dataset.linkIndex);
+
+        const targetCategoryIndex = parseInt(targetContainer.dataset.categoryIndex);
+        const targetSubheaderIndex = parseInt(targetContainer.dataset.subheaderIndex);
+
+        // Move the link in the data structure
+        const linkToMove = categories[sourceCategoryIndex].subheaders[sourceSubheaderIndex].links[sourceLinkIndex];
+
+        // Remove from source
+        categories[sourceCategoryIndex].subheaders[sourceSubheaderIndex].links.splice(sourceLinkIndex, 1);
+
+        // Add to target
+        categories[targetCategoryIndex].subheaders[targetSubheaderIndex].links.push(linkToMove);
+
+        // Re-render
+        renderCategories(categories);
+      }
+    }
+
+    // Initial render
+    renderCategories(categories);
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function (e) {
+      const searchTerm = e.target.value.toLowerCase();
+
+      if (searchTerm === '') {
+        renderCategories(categories);
+        return;
+      }
+
+      const filteredCategories = categories.map(category => {
+        // Filter subheaders based on search term
+        const filteredSubheaders = category.subheaders.map(subheader => {
+          return {
+            ...subheader,
+            links: subheader.links.filter(link =>
+              link.name.toLowerCase().includes(searchTerm) ||
+              subheader.title.toLowerCase().includes(searchTerm)
+            )
+          };
+        }).filter(subheader =>
+          subheader.links.length > 0 ||
+          subheader.title.toLowerCase().includes(searchTerm) ||
+          category.name.toLowerCase().includes(searchTerm)
+        );
+
+        return {
+          ...category,
+          subheaders: filteredSubheaders
+        };
+      }).filter(category => category.subheaders.length > 0);
+
+      renderCategories(filteredCategories);
+    });
+
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    function openAddSubheaderModal(categoryIndex) {
+      document.getElementById('categoryIndex').value = categoryIndex;
+      openModal('addSubheaderModal');
+    }
+
+    function openAddLinkModal(categoryIndex, subheaderIndex) {
+      document.getElementById('linkCategoryIndex').value = categoryIndex;
+      document.getElementById('linkSubheaderIndex').value = subheaderIndex;
+      openModal('addLinkModal');
+    }
+
+    // Form submissions
+    document.getElementById('addCategoryForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const categoryName = document.getElementById('categoryName').value;
+
+      categories.push({
+        name: categoryName,
+
+        subheaders: []
+      });
+
+      renderCategories(categories);
+      closeModal('addCategoryModal');
+      this.reset();
+    });
+
+    document.getElementById('addSubheaderForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const categoryIndex = parseInt(document.getElementById('categoryIndex').value);
+      const subheaderName = document.getElementById('subheaderName').value;
+
+      if (!categories[categoryIndex].subheaders) {
+        categories[categoryIndex].subheaders = [];
+      }
+
+      categories[categoryIndex].subheaders.push({
+        title: subheaderName,
+        links: []
+      });
+
+      renderCategories(categories);
+      closeModal('addSubheaderModal');
+      this.reset();
+    });
+
+    document.getElementById('addLinkForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const categoryIndex = parseInt(document.getElementById('linkCategoryIndex').value);
+      const subheaderIndex = parseInt(document.getElementById('linkSubheaderIndex').value);
+      const linkName = document.getElementById('linkName').value;
+      const linkUrl = document.getElementById('linkUrl').value;
+      const linkColor = document.getElementById('linkColor').value;
+
+      categories[categoryIndex].subheaders[subheaderIndex].links.push({
+        name: linkName,
+        url: linkUrl,
+        class: linkColor
+      });
+
+      renderCategories(categories);
+      closeModal('addLinkModal');
+      this.reset();
+    });
+
+    // Close modals when clicking outside
+    window.addEventListener('click', function (event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

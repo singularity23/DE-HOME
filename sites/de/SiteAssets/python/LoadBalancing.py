@@ -10,14 +10,15 @@ import traceback
 import math
 import time
 from datetime import datetime
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional, Any
 from enum import Enum
 from cympy import study, enums, sim, rm, app, GetInputParameter
 
 # Constants
 MULTIPLIER = 1.1
 CELL_FORMAT_COLOR = 14737632
-ALLOCATION_METHODS = ["KVAMethod", "KWHMethod"]
+ALLOCATION_METHODS: tuple[str, str] = ("KVAMethod", "KWHMethod")
+PHASES: tuple[str, str, str] = ("A", "B", "C")
 
 
 # Enum for phase types
@@ -53,31 +54,58 @@ def CombineDicts(dict1, dict2):
     return result
 
 
-def QueryWithFallback(query_func, keyword_list: List[str], *args) -> List:
+def QueryWithFallback(
+    query_func,
+    keyword_list: List[str],
+    *args,
+) -> List[Optional[float] | str]:
     """
     Run query_func on each keyword; return results with float conversion fallback.
     Used for querying device/node values, converting to float if possible.
     Handles empty strings and invalid float values gracefully.
     """
-    results = []
-    for key in keyword_list:
-        result = None
+    def try_parse_float(value: Any) -> Optional[float]:
+        if value is None:
+            return None
+        text = str(value).strip()
+        if text == "":
+            return None
         try:
-            result = query_func(key, *args)
-            results.append(locale.atof(result))
+            return locale.atof(text)
         except Exception:
-            results.append(result)
+            try:
+                return float(text)
+            except Exception:
+                return None
+
+    results: List[Optional[float] | str] = []
+    for key in keyword_list:
+        raw_value: Any = None
+        try:
+            raw_value = query_func(key, *args)
+        except Exception:
+            results.append(None)
+            continue
+
+        parsed = try_parse_float(raw_value)
+        if parsed is None and isinstance(raw_value, str) and raw_value.strip() != "":
+            # Preserve non-numeric non-empty strings for callers that expect text
+            results.append(raw_value)
+        else:
+            results.append(parsed)
     return results
 
 
-def QueryDevices(keyword_list: List[str], dev_number: str, dev_type: str) -> List:
+def QueryDevices(
+    keyword_list: List[str], dev_number: str, dev_type: str
+) -> List[Optional[float] | str]:
     """Query device information using QueryWithFallback."""
     return QueryWithFallback(
         study.QueryInfoDevice, keyword_list, dev_number, dev_type, 2
     )
 
 
-def QueryNodes(keyword_list: List[str], node_id: str) -> List:
+def QueryNodes(keyword_list: List[str], node_id: str) -> List[Optional[float] | str]:
     """Query node information using QueryWithFallback."""
     return QueryWithFallback(study.QueryInfoNode, keyword_list, node_id, 2)
 
@@ -326,7 +354,7 @@ class LoadBalancing:
         grouped_dict_list = [dict_list[0]]
 
         # Process remaining dictionaries, filtering out previously seen sections
-        phases = ["A", "B", "C"]
+        phases = list(PHASES)
         for i in range(1, len(dict_list)):
             # Get all previously seen keys for each phase
             previous_keys = {
@@ -391,13 +419,13 @@ class LoadBalancing:
             Device.DeviceNumber,
             enums.DeviceType.AllDevices,
         )
-        for ph, current in zip("ABC", currents):
+        for ph, current in zip(PHASES, currents):
             if (
                 Phase == getattr(enums.Phase, ph)
-                and isinstance(current, float)
-                and current > self.MINIMUM_CURRENT
+                and isinstance(current, (int, float))
+                and float(current) > self.MINIMUM_CURRENT
             ):
-                dict_sec[ph][Section] = current
+                dict_sec[ph][Section] = float(current)
 
     def PickSections(
         self, sec_dict: Dict, ImaxA: float, ImaxB: float, ImaxC: float, IBal: float
