@@ -1,0 +1,310 @@
+[
+  {
+    "name": "Administrative Tools",
+    "subheaders": [
+      {
+        "title": "HR & Employee Resources",
+        "links": [
+          { "name": "Employee Onboarding", "url": "#", "info": "Training manuals for new engineers" },
+          { "name": "Employee Connect", "url": "#", "info": "###" },
+          { "name": "Employee Team Advisory Site", "url": "#", "info": "###" },
+          { "name": "OPPRA", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Performance & Development",
+        "links": [
+          { "name": "Business Review", "url": "#", "info": "###" },
+          { "name": "ScoreCard", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Operational Tools",
+        "links": [
+          { "name": "Charge Codes", "url": "#", "info": "###" },
+          { "name": "E13 Desk Booking", "url": "#", "info": "###" },
+          { "name": "DELT", "url": "#", "info": "###" },
+          { "name": "CLRA Solution Office", "url": "#", "info": "###" },
+          { "name": "RDE Request Tracker", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "DE Base Accountability",
+        "links": [
+          { "name": "Core Pathway", "url": "#", "info": "###" },
+          { "name": "Technical Pathway", "url": "#", "info": "###" },
+          { "name": "Leadership Pathway", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Engineering Tools",
+    "subheaders": [
+      {
+        "title": "Design & Drafting",
+        "links": [
+          { "name": "DesignHub", "url": "#", "info": "###" },
+          { "name": "DE CADD Drafting Request", "url": "#", "info": "###" },
+          { "name": "Drawings", "url": "#", "info": "###" },
+          { "name": "McLaren Drawings Search", "url": "#", "info": "###" },
+          { "name": "Grid Ops Diagrams Data", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Applications & Databases",
+        "links": [
+          { "name": "IEDG Application Site", "url": "#", "info": "###" },
+          { "name": "AAG for IEDG", "url": "#", "info": "###" },
+          { "name": "ASPEN Relay Database™", "url": "#", "info": "###" },
+          { "name": "ASPEN PN Query", "url": "#", "info": "###" },
+          { "name": "P&C Bus Fault Summary", "url": "#", "info": "###" },
+          { "name": "Databases", "url": "#", "info": "###" },
+          { "name": "EAS", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Analytics & Reporting",
+        "links": [
+          { "name": "Distribution Planning - Tableau®", "url": "#", "info": "###" },
+          { "name": "Distribution Planning Record Documents", "url": "#", "info": "###" },
+          { "name": "Feeder Load Research Tool - SAS®", "url": "#", "info": "###" },
+          { "name": "BCH ArcGIS®", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Useful Resources",
+    "subheaders": [
+      {
+        "title": "Engineering Resources",
+        "links": [
+          { "name": "Engineering HydroShare", "url": "#", "info": "###" },
+          { "name": "Engineering Resources & Templates", "url": "#", "info": "###" },
+          { "name": "Standards", "url": "#", "info": "###" },
+          { "name": "Design", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Operations & Maintenance",
+        "links": [
+          { "name": "PQweb", "url": "#", "info": "###" },
+          { "name": "DSwiki", "url": "#", "info": "###" },
+          { "name": "WikiDI", "url": "#", "info": "###" },
+          { "name": "Projects", "url": "#", "info": "###" },
+          { "name": "SPOT", "url": "#", "info": "###" },
+          { "name": "CROW", "url": "#", "info": "###" },
+          { "name": "SIS", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Department Specific",
+        "links": [
+          { "name": "PCM Info Center", "url": "#", "info": "###" },
+          { "name": "PPM Info Center", "url": "#", "info": "###" },
+          { "name": "Revenue Metering", "url": "#", "info": "###" },
+          { "name": "DR", "url": "#", "info": "###" },
+          { "name": "Operations", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Emergency & Monitoring",
+        "links": [
+          { "name": "Major Outage Briefing Note", "url": "#", "info": "###" },
+          { "name": "Feeder Limits Database", "url": "#", "info": "###" },
+          { "name": "PowerOn Remote", "url": "#", "info": "###" },
+          { "name": "DASM HydroShare", "url": "#", "info": "###" },
+          { "name": "PAT", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Technical References",
+    "subheaders": [
+      {
+        "title": "Learning & Development",
+        "links": [
+          { "name": "Learning & Development", "url": "#", "info": "###" },
+          { "name": "DE Knowledge OneNote", "url": "#", "info": "###" },
+          { "name": "LMN Knowledge Sharing Sessions", "url": "#", "info": "###" },
+          { "name": "Conferences & Seminars", "url": "#", "info": "###" },
+          { "name": "BCH Library and Archives", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Technical Resources",
+        "links": [
+          { "name": "Conductor Slap", "url": "#", "info": "###" },
+          { "name": "Technical Report", "url": "#", "info": "###" },
+          { "name": "Modelling / Calculator", "url": "#", "info": "###" },
+          { "name": "EATON® CYME", "url": "#", "info": "###" },
+          { "name": "Python Scripts for CYME", "url": "#", "info": "###" },
+          { "name": "Short Circuit Report", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Teams",
+    "subheaders": [
+      {
+        "title": "Organizational Structure",
+        "links": [
+          { "name": "DE Org Chart", "url": "#", "info": "###" },
+          { "name": "Lower Mainland North", "url": "#", "info": "###" },
+          { "name": "Lower Mainland South", "url": "#", "info": "###" },
+          { "name": "Interior & NIA", "url": "#", "info": "###" },
+          { "name": "Vancouver Island", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Project Teams",
+        "links": [
+          { "name": "Projects Hydroshare", "url": "#", "info": "###" },
+          { "name": "Project A", "url": "#", "info": "###" },
+          { "name": "Project B", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Specialized Engineering",
+        "links": [
+          { "name": "Distribution Civil Engineering", "url": "#", "info": "###" },
+          { "name": "DE Program Team", "url": "#", "info": "###" },
+          { "name": "Estimating", "url": "#", "info": "###" },
+          { "name": "Protection & Modelling", "url": "#", "info": "###" },
+          { "name": "Distribution Feeders", "url": "#", "info": "###" },
+          { "name": "Applied Engineering", "url": "#", "info": "###" },
+          { "name": "Non-Linear Analysis Team", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Procedures & Guidelines",
+    "subheaders": [
+      {
+        "title": "Design & Engineering",
+        "links": [
+          { "name": "External Design & Engineering DBR", "url": "#", "info": "###" },
+          { "name": "EDQA", "url": "#", "info": "###" },
+          { "name": "Owner's Engineering Guide", "url": "#", "info": "###" },
+          { "name": "Design Review Comment Sheet", "url": "#", "info": "###" },
+          { "name": "Design Review Evaluation Form", "url": "#", "info": "###" },
+          { "name": "DE Project Completion Form", "url": "#", "info": "###" },
+          { "name": "OE Review Evaluation Summary", "url": "#", "info": "###" },
+          { "name": "CIPD Guide", "url": "#", "info": "###" },
+          { "name": "Voltage Management Guideline", "url": "#", "info": "###" },
+          { "name": "Voltage Conversion Guide", "url": "#", "info": "###" },
+          { "name": "Protection Coordination Guideline", "url": "#", "info": "###" },
+          { "name": "Distribution Automation Deployment Strategies", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Review Processes",
+        "links": [
+          { "name": "Capacity Review Process", "url": "#", "info": "###" },
+          { "name": "DESRT Process - Planning & Engineering Tasks", "url": "#", "info": "###" },
+          { "name": "Unconfirmed Load Review Form", "url": "#", "info": "###" },
+          { "name": "Distribution Connection Variance Request Guide", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Professional Practice",
+    "subheaders": [
+      {
+        "title": "Professional Development",
+        "links": [
+          { "name": "Respectful Workplace Program", "url": "#", "info": "###" },
+          { "name": "PGA - EGBC Home", "url": "#", "info": "###" },
+          { "name": "EQBC Filing - Guides and References", "url": "#", "info": "###" },
+          { "name": "DESRT Memo Template", "url": "#", "info": "###" },
+          { "name": "CNS", "url": "#", "info": "###" },
+          { "name": "Signature Verification - verifiO", "url": "#", "info": "###" },
+          { "name": "Field Review Tracking", "url": "#", "info": "###" },
+          { "name": "SuccessFactors Learning", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Health & Safety",
+    "subheaders": [
+      {
+        "title": "Safety Framework",
+        "links": [
+          { "name": "Safety Framework", "url": "#", "info": "###" },
+          { "name": "SafeHub", "url": "#", "info": "###" },
+          { "name": "PSSP", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Safety by Design",
+        "links": [
+          { "name": "Overhead Checklist", "url": "#", "info": "###" },
+          { "name": "Underground Checklist", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Safety Documentation",
+        "links": [
+          { "name": "Safety Folder", "url": "#", "info": "###" },
+          { "name": "Reported Safety Incidents", "url": "#", "info": "###" },
+          { "name": "Asbestos", "url": "#", "info": "###" },
+          { "name": "Underground Asbestos Program", "url": "#", "info": "###" },
+          { "name": "AIS", "url": "#", "info": "###" },
+          { "name": "Emergency Response Plan", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Others",
+    "subheaders": [
+      {
+        "title": "Administrative Procedures",
+        "links": [
+          { "name": "Flood Plan Revision", "url": "#", "info": "###" },
+          { "name": "Telematics", "url": "#", "info": "###" },
+          { "name": "Branded Templates", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "IT Services",
+        "links": [
+          { "name": "Application Portal", "url": "#", "info": "###" },
+          { "name": "ServiceNow", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Travel & Site Visits",
+        "links": [
+          { "name": "Working Alone & Journey Management", "url": "#", "info": "###" },
+          { "name": "DE Specific Working Alone Procedure", "url": "#", "info": "###" },
+          { "name": "Business Travel", "url": "#", "info": "###" },
+          { "name": "Engineering - Field Work & Travel Form", "url": "#", "info": "###" },
+          { "name": "DE Travel Expense Submissions Guidelines", "url": "#", "info": "###" },
+          { "name": "Engineering Expense Claim Template", "url": "#", "info": "###" }
+        ]
+      },
+      {
+        "title": "Vehicle Booking",
+        "links": [
+          {
+            "name": "Edmonds #1 – Ford Escape – DE LM team",
+            "url": "#",
+            "class": "normal",
+            "info": "example",
+            "sub_url": "###",
+            "sub_name": "sub"
+          },
+          { "name": "Edmonds #2 – Toyota RAV4 – DE Civil team", "url": "#", "info": "###" },
+          { "name": "Victoria – DE VI team", "url": "#", "info": "###" }
+        ]
+      }
+    ]
+  }
+]

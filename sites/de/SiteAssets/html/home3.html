@@ -9,79 +9,82 @@
     :root {
       --primary-color: rgba(0, 79, 108, 0.8);
       --secondary-color: rgba(0, 79, 108, 0.2);
-      --accent-color: #f59e0b;
+      --box-font-color: #ffffff;
+      --box-background-color: #f5f3f2;
+      --link-color: rgb(5, 161, 198);
+      --box-text-color: #05a1c6;
+      --box-text-sublink: rgba(62, 57, 53, 0.3);
+      --box-text-sub: rgba(62, 57, 53, 0.5);
+      --link-highlight-color: rgb(250, 70, 22, 1);
+      --box-abbr-color: #004f6c;
+      --box-webpart-color: rgb(72, 167, 57);
       --light-bg: #f5f3f2;
-      --card-bg: #ffffff;
-      --text-color: #3E3935;
+      --card-bg: #f5f3f2;
+      --text-color: rgb(62, 57, 53);
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      --btn-color: rgba(5, 161, 198, 1);
-      --btn-hover: rgba(5, 161, 198, 0.2);
-      --btn-new: #E8927C;
     }
 
-    /* ===== Custom Fonts ===== */
     @font-face {
-      font-family: "brand-font-light";
-      src: url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot");
-      src: url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot?#iefix") format("embedded-opentype"),
-        url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff") format("woff"),
-        url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.ttf") format("truetype");
+      font-family: 'brand-font-light';
+      src: url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot');
+      src: url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff') format('woff'),
+        url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.ttf') format('truetype');
       font-weight: 300;
     }
 
     @font-face {
-      font-family: "brand-font-regular";
-      src: url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot");
-      src: url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot?#iefix") format("embedded-opentype"),
-        url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff") format("woff"),
-        url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.ttf") format("truetype");
+      font-family: 'brand-font-regular';
+      src: url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot');
+      src: url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff') format('woff'),
+        url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.ttf') format('truetype');
       font-weight: 400;
     }
 
     @font-face {
-      font-family: "brand-font-medium";
-      src: url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot");
-      src: url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot?#iefix") format("embedded-opentype"),
-        url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff") format("woff"),
-        url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.ttf") format("truetype");
+      font-family: 'brand-font-medium';
+      src: url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot');
+      src: url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff') format('woff'),
+        url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.ttf') format('truetype');
       font-weight: 500;
     }
 
     @font-face {
-      font-family: "brand-font-black";
-      src: url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot");
-      src: url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot?#iefix") format("embedded-opentype"),
-        url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff") format("woff"),
-        url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.ttf") format("truetype");
+      font-family: 'brand-font-black';
+      src: url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot');
+      src: url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff') format('woff'),
+        url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.ttf') format('truetype');
       font-weight: 900;
     }
 
     @font-face {
-      font-family: "brand-font-bold";
-      src: url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot");
-      src: url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot?#iefix") format("embedded-opentype"),
-        url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff") format("woff"),
-        url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.ttf") format("truetype");
+      font-family: 'brand-font-bold';
+      src: url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot');
+      src: url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff') format('woff'),
+        url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.ttf') format('truetype');
       font-weight: 700;
-    }
-
-    html {
-      font-size: 13px;
-      letter-spacing: 0.0446em;
-
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, 'Lucida Grande', Helvetica, 'Heiti SC', 'microsoft yahei', Verdana, sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.0446em;
+      line-height: 1.628em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+
     }
 
     body {
       background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-      color: var(--text-color);
       min-height: 100vh;
       padding: 20px;
     }
@@ -93,9 +96,8 @@
 
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 10px;
       padding: 20px 0;
-      position: relative;
     }
 
     h1 {
@@ -118,6 +120,7 @@
       max-width: 500px;
       margin: 0 auto 40px;
       position: relative;
+      transform: translateY(50%)
     }
 
     .search-input {
@@ -145,195 +148,138 @@
       font-size: 1.2rem;
     }
 
-    .edit-mode-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-      color: white;
-      border: none;
-      padding: 10px 20px;
+    .links.panel {
+      margin-bottom: 20px;
+      padding: 1px;
       border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow);
-    }
-
-    .edit-mode-toggle:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--hover-shadow);
-    }
-
-    .categories-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 30px;
-      margin-bottom: 40px;
-    }
-
-    .category-card {
       background: var(--card-bg);
-      border-radius: 16px;
       box-shadow: var(--shadow);
-      overflow: hidden;
-      transition: all 0.3s ease;
-      min-height: 600px;
     }
 
-    .category-card:hover {
-      transform: translateY(-5px);
+    .links.panel:hover {
       box-shadow: var(--hover-shadow);
     }
 
-    .category-header {
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-      color: white;
-      justify-content: space-between;
-      position: relative;
+    .panel-heading {
+      padding: 15px 30px;
+      font-size: 18px;
+      font-family: 'brand-font-bold';
+      border-bottom: 2px groove var(--secondary-color);
+      border-radius: 4px 4px 0 0;
+      color: var(--text-color);
+      font-variant: small-caps;
+      text-transform: uppercase;
+      line-height: 1.6em;
     }
 
-    .category-title-container {
-      display: flex;
-      align-items: center;
+    .panel-body {
+      padding: 10px;
     }
 
-    .category-icon {
-      font-size: 1.8rem;
-      margin-right: 12px;
+    .links dl {
+      border-bottom: 1px inset var(--secondary-color);
+      padding: 10px 0;
     }
 
-    .category-title {
-      font-size: 1.5rem;
-      font-weight: 700;
+    .links dl:last-child {
+      border: 0;
+      padding-bottom: 0;
     }
 
-    .menu-btn {
-      background: rgba(255, 0, 0, 0.2);
-      border: none;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      margin-left: 10px;
-      transition: all 0.3s ease;
-      display: none;
-    }
-
-    .menu-btn.show {
+    .links dt a {
       display: inline-block;
-    }
-
-    .menu-btn:hover {
-      background: rgba(255, 0, 0, 0.3);
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      z-index: 1000;
-      min-width: 150px;
-      display: none;
-      right: 20px;
-      top: 100%;
-      margin-top: 5px;
-    }
-
-    .dropdown-menu.show {
-      display: block;
-    }
-
-    .dropdown-item {
-      padding: 10px 15px;
-      display: block;
+      margin: 10px;
+      color: var(--box-text-sub);
+      font-size: 15px;
+      cursor: default;
+      font-family: 'brand-font-medium';
       text-decoration: none;
-      color: #334155;
-      font-size: 0.9rem;
-      transition: background-color 0.2s ease;
+      text-wrap: pretty;
+      height: 7rem;
+      line-height: 1.372em;
     }
 
-    .dropdown-item:hover {
-      background-color: #f1f5f9;
-    }
-
-    .dropdown-item.delete {
-      color: #ef4444;
-    }
-
-    .dropdown-item.delete:hover {
-      background-color: #fee2e2;
-    }
-
-    .subheader-section {
-      padding: 10px 20px;
-      background-color: var(--light-bg);
-      border-bottom: 2px solid #e2e8f0;
-      border-top: 2px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .links dd,
+    .links dt {
+      min-width: 180px;
+      max-width: 220px;
+      padding: 10px;
       position: relative;
     }
 
-    .subheader-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      font-family: 'brand-font-bold', sans-serif;
-      color: #1e40af;
-      padding-bottom: 5px;
-
-    }
-
-    .links-container {
-      padding: 15px 25px 25px;
-      min-height: 50px;
-      border-radius: 8px;
-      position: relative;
-    }
-
-    .links-container.drag-over {
-      background-color: rgba(79, 70, 229, 0.1);
-      border: 2px dashed var(--primary-color);
-    }
-
-    .link-btn {
+    .links dd a {
       display: block;
-      width: 100%;
-      padding: 10px 15px;
-      margin-bottom: 5px;
-      border-radius: 5px;
-      color: white;
-      text-align: center;
-      text-decoration: none;
+      padding: 10px;
+      min-height: 7rem;
       transition: all 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      border: none;
-      cursor: pointer;
+      width: 100%;
+      background-color: 0;
+      border-radius: 4px;
+    }
+
+    .links dd a:hover {
+      background-color: var(--secondary-color);
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--link-color);
+      font-weight: 500;
+    }
+
+    a:hover {
+      color: var(--link-highlight-color);
+    }
+
+    .links dd .link-title {
       position: relative;
+      padding-bottom: 2px;
+      overflow: hidden;
+      display: block;
+      line-height: 1.4em;
+      text-wrap: pretty;
     }
 
-    .link-btn:last-child {
-      margin-bottom: 0;
+    .link-info {
+      display: block;
+      font-size: 12px;
+      color: var(--box-text-sub);
+      line-height: 1.3em;
+      text-wrap: pretty;
     }
 
-    .link-btn:hover {
-      transform: translateY(-2px);
-      opacity: 0.95;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    .link-info:hover {
+      text-decoration: none;
     }
 
-    .link-group {
-      position: relative;
-      margin-bottom: 5px;
+    .links dd .sub-link {
+      bottom: 2px;
+      left: 20px;
+      font-size: 12px;
+      color: var(--box-text-sublink);
+      line-height: 1.5em;
     }
 
+    .links dd .sub-link a {
+      font-size: 12px;
+      color: #999;
+      border-bottom-width: 1px;
+      padding-bottom: 2px;
+      border-bottom-style: dotted;
+      border-color: inherit;
+      display: inline;
+      padding: 0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 20px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -350,10 +296,10 @@
     .modal-content {
       background-color: white;
       padding: 30px;
-      border-radius: 12px;
       width: 90%;
       max-width: 500px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
     }
 
     .modal-header {
@@ -394,7 +340,7 @@
       width: 100%;
       padding: 12px;
       border: 2px solid #e2e8f0;
-      border-radius: 8px;
+      border-radius: 4px;
       font-size: 1rem;
       transition: border-color 0.3s ease;
     }
@@ -434,9 +380,9 @@
       color: white;
       border: none;
       padding: 12px 24px;
-      border-radius: 8px;
       font-size: 1rem;
       font-weight: 600;
+      border-radius: 4px;
       cursor: pointer;
       transition: all 0.3s ease;
       width: 100%;
@@ -462,14 +408,10 @@
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
       transition: all 0.3s ease;
-      display: none;
-      z-index: 100;
-    }
-
-    .add-category-btn.show {
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 100;
     }
 
     .add-category-btn:hover {
@@ -477,237 +419,48 @@
       box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
     }
 
-    .edit-controls {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: none;
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      /* 5 columns */
+      gap: 10px;
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
     }
 
-    .edit-controls.show {
-      display: block;
+    .item {
+      display: flex;
+      /*transition: all 0.3s ease;*/
     }
 
-    .edit-controls.show>button.menu-btn.show {
-      display: inline-block;
-      padding: 4px 4px;
-      font-size: 0.8rem;
-      background: #e2fee2;
-      color: #44ef44;
-
+    /* The first element (special one) */
+    .special {
+      grid-row: span 1;
+      height: auto;
+      /* auto-height, controlled by JS dynamically */
     }
 
-    .edit-controls.show>button.menu-btn.show.delete {
-      display: inline-block;
-      padding: 4px 4px;
-      font-size: 0.8rem;
-      background: #fee2e2;
-      color: #ef4444;
-      margin-left: 0px;
-    }
+    /* Responsive design */
 
+    @media (max-width: 1024px) {
+      .grid-container {
+        grid-template-columns: repeat(4, 1fr);
+      }
 
-
-    footer {
-      text-align: center;
-      margin-top: 50px;
-      padding: 20px;
-      color: #64748b;
-      font-size: 0.9rem;
-    }
-
-    /* Color classes for different links */
-    .bg-google {
-      background-color: #4285F4;
-    }
-
-    .bg-bing {
-      background-color: #00B8FF;
-    }
-
-    .bg-duckduckgo {
-      background-color: #FF8C2F;
-    }
-
-    .bg-yahoo {
-      background-color: #410093;
-    }
-
-    .bg-facebook {
-      background-color: #1877F2;
-    }
-
-    .bg-instagram {
-      background-color: #E1306C;
-    }
-
-    .bg-twitter {
-      background-color: #1DA1F2;
-    }
-
-    .bg-linkedin {
-      background-color: #0077B5;
-    }
-
-    .bg-tiktok {
-      background-color: #000000;
-    }
-
-    .bg-reddit {
-      background-color: #FF4500;
-    }
-
-    .bg-youtube {
-      background-color: #FF0000;
-    }
-
-    .bg-netflix {
-      background-color: #E50914;
-    }
-
-    .bg-disney {
-      background-color: #006E99;
-    }
-
-    .bg-hulu {
-      background-color: #1CE783;
-    }
-
-    .bg-twitch {
-      background-color: #9146FF;
-    }
-
-    .bg-amazon {
-      background-color: #FF9900;
-    }
-
-    .bg-ebay {
-      background-color: #8638E5;
-    }
-
-    .bg-walmart {
-      background-color: #0071CE;
-    }
-
-    .bg-target {
-      background-color: #CC0000;
-    }
-
-    .bg-etsy {
-      background-color: #F16592;
-    }
-
-    .bg-gmail {
-      background-color: #EA4335;
-    }
-
-    .bg-outlook {
-      background-color: #0078D4;
-    }
-
-    .bg-drive {
-      background-color: #15B243;
-    }
-
-    .bg-dropbox {
-      background-color: #0061FF;
-    }
-
-    .bg-notion {
-      background-color: #000000;
-    }
-
-    .bg-trello {
-      background-color: #0079BF;
-    }
-
-    .bg-cnn {
-      background-color: #CC0000;
-    }
-
-    .bg-bbc {
-      background-color: #A91E22;
-    }
-
-    .bg-nytimes {
-      background-color: #000000;
-    }
-
-    .bg-reuters {
-      background-color: #005E8C;
-    }
-
-    .bg-wikipedia {
-      background-color: #000000;
-    }
-
-    .bg-github {
-      background-color: #24292F;
-    }
-
-    .bg-stackoverflow {
-      background-color: #F48024;
-    }
-
-    .bg-mdn {
-      background-color: #005A9C;
-    }
-
-    .bg-npm {
-      background-color: #CB3837;
-    }
-
-    .bg-codepen {
-      background-color: #000000;
-    }
-
-    .bg-blue {
-      background-color: #0078D4;
-    }
-
-    .bg-teal {
-      background-color: #008080;
-    }
-
-    .bg-green {
-      background-color: #2E7D32;
-    }
-
-    .bg-purple {
-      background-color: #673AB7;
-    }
-
-    .bg-orange {
-      background-color: #FB8C00;
-    }
-
-    .normal {
-      background-color: var(--btn-color)
-    }
-
-    .new {
-      background-color: var(--btn-new);
+      .links dd {
+        min-width: 160px;
+        max-width: 180px;
+      }
     }
 
     @media (max-width: 768px) {
-      .categories-grid {
-        grid-template-columns: 1fr;
-      }
-
       h1 {
         font-size: 2.2rem;
       }
 
-      .category-title {
-        font-size: 1.3rem;
-      }
-
-      .edit-mode-toggle {
-        top: 10px;
-        right: 10px;
-        padding: 8px 16px;
-        font-size: 0.9rem;
+      .grid-container {
+        grid-template-columns: repeat(3, 1fr);
       }
 
       .add-category-btn {
@@ -719,7 +472,7 @@
       }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 500px) {
       body {
         padding: 10px;
       }
@@ -728,9 +481,8 @@
         margin-bottom: 30px;
       }
 
-      .links-container,
-      .subheader-section {
-        padding: 15px;
+      .grid-container {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   </style>
@@ -739,1083 +491,547 @@
 <body>
   <div class="container">
     <header>
-      <h1>QuickLinks Hub</h1>
-      <p class="subtitle">All your frequently used websites in one place</p>
 
       <div class="search-container">
         <span class="search-icon">🔍</span>
         <input type="text" class="search-input" id="searchInput" placeholder="Search for websites or categories...">
       </div>
-
-      <button type="button" class="edit-mode-toggle" id="editModeToggle">Edit Mode</button>
     </header>
-
-    <div class="categories-grid" id="categoriesContainer">
+    <div id="categoriesContainer">
       <!-- Categories will be dynamically inserted here -->
     </div>
-
     <footer>
       <p>Quick access to all your favorite websites. Bookmark this page for easy access!</p>
     </footer>
   </div>
 
-  <!-- Add Category Modal -->
-  <div id="addCategoryModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Add New Category</h2>
-        <button type="button" class="close-btn" onclick="closeModal('addCategoryModal')">&times;</button>
-      </div>
-      <form id="addCategoryForm">
-        <div class="form-group">
-          <label class="form-label" for="categoryName">Category Name</label>
-          <input type="text" id="categoryName" class="form-input" required>
-        </div>
-
-        <button type="submit" class="submit-btn">Add Category</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Add Subheader Modal -->
-  <div id="addSubheaderModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Add New Subheader</h2>
-        <button type="button" class="close-btn" onclick="closeModal('addSubheaderModal')">&times;</button>
-      </div>
-      <form id="addSubheaderForm">
-        <input type="hidden" id="categoryIndex" value="">
-        <div class="form-group">
-          <label class="form-label" for="subheaderName">Subheader Name</label>
-          <input type="text" id="subheaderName" class="form-input" required>
-        </div>
-        <button type="submit" class="submit-btn">Add Subheader</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Add Link Modal -->
-  <div id="addLinkModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Add New Link</h2>
-        <button type="button" class="close-btn" onclick="closeModal('addLinkModal')">&times;</button>
-      </div>
-      <form id="addLinkForm">
-        <input type="hidden" id="linkCategoryIndex" value="">
-        <input type="hidden" id="linkSubheaderIndex" value="">
-        <div class="form-group">
-          <label class="form-label" for="linkName">Link Name</label>
-          <input type="text" id="linkName" class="form-input" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="linkUrl">URL</label>
-          <input type="url" id="linkUrl" class="form-input" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Color</label>
-          <div class="color-selector">
-            <div class="color-option bg-google" data-color="bg-google"></div>
-            <div class="color-option bg-blue" data-color="bg-blue"></div>
-            <div class="color-option bg-teal" data-color="bg-teal"></div>
-            <div class="color-option bg-green" data-color="bg-green"></div>
-            <div class="color-option bg-purple" data-color="bg-purple"></div>
-            <div class="color-option bg-orange" data-color="bg-orange"></div>
-            <div class="color-option bg-red" data-color="bg-youtube"></div>
-            <div class="color-option bg-facebook" data-color="bg-facebook"></div>
-            <div class="color-option bg-github" data-color="bg-github"></div>
-          </div>
-          <input type="hidden" id="linkColor" value="bg-blue">
-        </div>
-        <button type="submit" class="submit-btn">Add Link</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Edit Category Modal -->
-  <div id="editCategoryModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Edit Category</h2>
-        <button type="button" class="close-btn" onclick="closeModal('editCategoryModal')">&times;</button>
-      </div>
-      <form id="editCategoryForm">
-        <input type="hidden" id="editCategoryIndex" value="">
-        <div class="form-group">
-          <label class="form-label" for="editCategoryName">Category Name</label>
-          <input type="text" id="editCategoryName" class="form-input" required>
-        </div>
-
-        <button type="submit" class="submit-btn">Update Category</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Edit Subheader Modal -->
-  <div id="editSubheaderModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Edit Subheader</h2>
-        <button type="button" class="close-btn" onclick="closeModal('editSubheaderModal')">&times;</button>
-      </div>
-      <form id="editSubheaderForm">
-        <input type="hidden" id="editCategoryIndexSub" value="">
-        <input type="hidden" id="editSubheaderIndex" value="">
-        <div class="form-group">
-          <label class="form-label" for="editSubheaderName">Subheader Name</label>
-          <input type="text" id="editSubheaderName" class="form-input" required>
-        </div>
-        <button type="submit" class="submit-btn">Update Subheader</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Edit Link Modal -->
-  <div id="editLinkModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Edit Link</h2>
-        <button type="button" class="close-btn" onclick="closeModal('editLinkModal')">&times;</button>
-      </div>
-      <form id="editLinkForm">
-        <input type="hidden" id="editLinkCategoryIndex" value="">
-        <input type="hidden" id="editLinkSubheaderIndex" value="">
-        <input type="hidden" id="editLinkIndex" value="">
-        <div class="form-group">
-          <label class="form-label" for="editLinkName">Link Name</label>
-          <input type="text" id="editLinkName" class="form-input" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="editLinkUrl">URL</label>
-          <input type="url" id="editLinkUrl" class="form-input" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Color</label>
-          <div class="color-selector">
-            <div class="color-option bg-google" data-color="bg-google"></div>
-            <div class="color-option bg-blue" data-color="bg-blue"></div>
-            <div class="color-option bg-teal" data-color="bg-teal"></div>
-            <div class="color-option bg-green" data-color="bg-green"></div>
-            <div class="color-option bg-purple" data-color="bg-purple"></div>
-            <div class="color-option bg-orange" data-color="bg-orange"></div>
-            <div class="color-option bg-red" data-color="bg-youtube"></div>
-            <div class="color-option bg-facebook" data-color="bg-facebook"></div>
-            <div class="color-option bg-github" data-color="bg-github"></div>
-          </div>
-          <input type="hidden" id="editLinkColor" value="bg-blue">
-        </div>
-        <button type="submit" class="submit-btn">Update Link</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Add Category Floating Button -->
-  <button type="button" class="add-category-btn" id="addCategoryBtn">+</button>
-
   <script>
-    // Data structure for categories with multiple subheaders and their links
-    let categories = [
-      {
-        name: 'Administrative',
-        subheaders: [
-          {
-            title: 'General Administrative',
-            links: [
-              { name: 'Charge Codes', url: 'file:///J:/Engineering/Distribution/CHARGE%20CODES', class: 'bg-blue' },
-              { name: 'E13 Desk Booking', url: 'http://pq.bchydro.bc.ca:99/index.php', class: 'bg-blue' },
-              { name: 'Employee Onboarding', url: 'https://hydroshare.bchydro.bc.ca/sites/de/DE%20Employee%20Onoboarding/Forms/AllItems.aspx', class: 'bg-blue' },
-              { name: 'OPPRA', url: 'https://w3oppra.bchydro.bc.ca/hrperf/', class: 'bg-blue' },
-              { name: 'Employee Connect', url: 'https://hydrosap.bchydro.bc.ca/irj/portal/', class: 'bg-blue' },
-              { name: 'CLRA Solution Office', url: 'https://hw.bchydro.bc.ca/p/clra-solution-office/Pages/Home.aspx', class: 'bg-blue' }
-            ]
-          },
-          {
-            title: 'DELT',
-            links: [
-              { name: 'DELT', url: 'https://hydroshare.bchydro.bc.ca/sites/de/DELT/Forms/AllItems.aspx', class: 'bg-blue' },
-              { name: 'Business Review', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Business_Review/Forms/AllItems.aspx', class: 'bg-blue' },
-              { name: 'ScoreCard', url: 'https://hydroshare.bchydro.bc.ca/sites/de/DE_SCORECARD/Forms/AllItems.aspx', class: 'bg-blue' },
-              { name: 'Leadership Team Advisory Site', url: 'https://hydroshare.bchydro.bc.ca/sites/distributionengineeringadvisories/SitePages/Home.aspx', class: 'bg-blue' }
-            ]
-          },
-          {
-            title: 'DE Base Accountability',
-            links: [
-              { name: 'Core Pathway', url: '/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Core%20Pathway%20rev0.pdf', class: 'bg-blue' },
-              { name: 'Technical Pathway', url: '/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Technical%20Pathway%20rev0.pdf', class: 'bg-blue' },
-              { name: 'Leadership Pathway', url: '/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Leadership%20Pathway%20rev0.pdf', class: 'bg-blue' }
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Tools & Applications',
-        subheaders: [
-          {
-            title: 'General Tools',
-            links: [
-              { name: 'IEDG Application Site', url: 'https://hydroshare.bchydro.bc.ca/sites/iedga/SitePages/Home.aspx', class: 'bg-teal' },
-              { name: 'AAG for IEDG', url: 'https://aag.bchydro.bc.ca/logon/LogonPoint/tmindex.html', class: 'bg-teal' },
-              { name: 'P&amp;C Bus Fault Summary', url: 'file:///J:/Engineering/Distribution/CYME/Development/Equipment%20Database/Source%20Equivalent', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'ASPEN',
-            links: [
-              { name: 'ASPEN Relay Database™', url: 'http://kdcssweb1/aspen/rdbweb.exe', class: 'bg-teal' },
-              { name: 'ASPEN PN Query', url: 'https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Aspen%20PN.html', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'Conductor Slap',
-            links: [
-              { name: 'Technical Report', url: 'http://edmbchpq1/files/EPRI/EPRI_3002014978.pdf', class: 'bg-blue' },
-              { name: 'Modelling / Calculator', url: 'http://distributionhandbook.com/calculators/mdpad.html?conductor_slapping.md', class: 'bg-blue' }
-            ]
-          },
-          {
-            title: 'CYME',
-            links: [
-              { name: 'EATON® CYME', url: 'file:///J:/Engineering/Distribution/CYME', class: 'bg-blue' },
-              { name: 'Short Circuit Report', url: 'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&amp;wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29', class: 'bg-blue' }
-            ]
-          }
 
-        ]
-      },
-      {
-        name: 'Analysis & Modeling',
-        subheaders: [
-          {
-            title: 'General Tools',
-            links: [
-              { name: 'DesignHub', url: 'https://designhub.bchydro.bc.ca/web/app', class: 'bg-teal' },
-              { name: 'JotForm', url: 'https://www.jotform.com/tables/220326998667067?st=bFFTdTNMRzRGNTFWWVFYMTVTcmFaVUcyM05YU2pHb0Rxc0lxY25QZWRzK2k5Ykt0aEo2L1NiTUF2dVp0cExtUXJlQnpONXV0d242Y0ZnQnpobkltWDF1WVJ2bnhrejc3Y1BqWTlCeDVGdFgvOEpBYnlkMk5PSHdNMUhvVWo4eXU=', class: 'bg-teal' },
-              { name: 'IEDG Application Site', url: 'https://hydroshare.bchydro.bc.ca/sites/iedga/SitePages/Home.aspx', class: 'bg-teal' },
-              { name: 'AAG for IEDG', url: 'https://aag.bchydro.bc.ca/logon/LogonPoint/tmindex.html', class: 'bg-teal' },
-              { name: 'P&amp;C Bus Fault Summary', url: 'file:///J:/Engineering/Distribution/CYME/Development/Equipment%20Database/Source%20Equivalent', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'ASPEN',
-            links: [
-              { name: 'ASPEN Relay Database™', url: 'http://kdcssweb1/aspen/rdbweb.exe', class: 'bg-teal' },
-              { name: 'ASPEN PN Query', url: 'https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Aspen%20PN.html', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'Conductor Slap',
-            links: [
-              { name: 'Technical Report', url: 'http://edmbchpq1/files/EPRI/EPRI_3002014978.pdf', class: 'bg-blue' },
-              { name: 'Modelling / Calculator', url: 'http://distributionhandbook.com/calculators/mdpad.html?conductor_slapping.md', class: 'bg-blue' }
-            ]
-          },
-          {
-            title: 'CYME',
-            links: [
-              { name: 'EATON® CYME', url: 'file:///J:/Engineering/Distribution/CYME', class: 'bg-blue' },
-              { name: 'Short Circuit Report', url: 'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&amp;wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29', class: 'bg-blue' }
-            ]
-          }
+    let categories =
+      // ...existing code...
+      [
+        {
+          name: 'Most Frequently Used',
+          subheaders: [
+            {
+              links: [
+                { name: 'E13 Desk Booking', url: '#', info: 'Book hoteling work station' },
+                { name: 'DesignHub', url: '#', info: 'Distribution design request to engineers' },
 
-        ]
-      },
-      {
-        name: 'Date & Visualization',
-        subheaders: [
-          {
-            title: 'Drawings',
-            links: [
-              { name: 'McLaren Drawings Search', url: 'https://w3ecm.bchydro.bc.ca/search/searchDist.html', class: 'bg-teal' },
-              { name: 'Grid Ops Diagrams Data', url: 'file:///Q:/Field%2520Reference%2520Info/Grid%2520Ops%2520Diagrams%2520Data', class: 'bg-teal' },
-              { name: 'DE CADD Drafting Request', url: 'https://cadd-engserv-bchydro.atlassian.net/servicedesk/customer/portals', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'Databases',
-            links: [
-              { name: 'EAS', url: 'https://eas.bchydro.bc.ca/home/index.html', class: 'bg-teal' },
-              { name: 'Distribution Planning - Tableau®', url: 'https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home', class: 'bg-teal' },
-              { name: 'Distribution Planning Record Documents', url: 'https://hydroshare.bchydro.bc.ca/sites/distplan/DPRD/SitePages/Home.aspx?RootFolder=%2Fsites%2Fdistplan%2FDPRD%2FShared%20Documents%2FRDP&amp;FolderCTID=0x012000D5EEE1F381027E4E89B2E794D6118D86&amp;View=%7BEF36BA26%2D5104%2D45A5%2D99B6%2D28741059F1EC%7D', class: 'bg-teal' },
-              { name: 'Feeder Load Research Tool - SAS®', url: 'https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/', class: 'bg-teal' },
-              { name: 'BCH ArcGIS®', url: 'https://kdcesriweb1.bchydro.adroot.bchydro.bc.ca/gisportal/home/index.html', class: 'bg-teal' }
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Operations',
-        subheaders: [
-          {
-            title: 'Design',
-            links: [
-              { name: 'PAT', url: 'https://kdcbchpoweb1.bchydro.bc.ca:7004/pat/', class: 'bg-green' },
-              { name: 'WikiDI', url: 'http://edmbchwiki1/di/index.php/Main_Page', class: 'bg-green' }
-            ]
-          },
-          {
-            title: 'Operations',
-            links: [
-              { name: 'CROW', url: 'http://crwbchprweb01/crow/Logging/log_index.aspx', class: 'bg-green' },
-              { name: 'SIS', url: 'http://w3ecm/sis/', class: 'bg-green' },
-              { name: 'Major Outage Briefing Note', url: 'file:///J:/Engineering/Distribution/1%20Reporting/10000%20Customer%20Hours%20Lost%20Reports', class: 'bg-green' },
-              { name: 'Feeder Limits Database', url: 'https://hydroshare.bchydro.bc.ca/sites/doperation/SitePages/Home.aspx', class: 'bg-green' },
-              { name: 'PowerOn Remote', url: 'https://poweronremote.bchydro.bc.ca/poweronremote/', class: 'bg-green' },
-              { name: 'DASM HydroShare', url: 'https://hydroshare.bchydro.bc.ca/sites/distplan/dasm/SitePages/Home.aspx', class: 'bg-green' }
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Integrated Planning',
-        subheaders: [
-          {
-            title: 'Planning',
-            links: [
+                { name: 'Employee Connect', url: '#', info: 'SAP Portal for employees' },
+                { name: 'CLRA Solution Office', url: '#', info: 'Timesheet & expense approval for CLRA' },
+                { name: 'OPPRA', url: '#', info: 'Online Performance Planning &amp; Review Application' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Administrative Tools',
+          subheaders: [
+            {
+              title: 'HR & Employee Resources',
+              links: [
+                { name: 'Employee Onboarding', url: '#', info: 'Training manuals for new engineers' },
+                { name: 'Employee Connect', url: '#', info: 'SAP Portal for employees' },
+                { name: 'CLRA Solution Office', url: '#', info: 'Timesheet & expense approval for CLRA' },
+                { name: 'OPPRA', url: '#', info: 'Online Performance Planning &amp; Review Application' },
+              ],
+            },
+            {
+              title: 'Performance & Development',
+              links: [
+                { name: 'Business Review', url: '#', info: 'DE leadership team business review folder' },
+                { name: 'ScoreCard', url: '#', info: 'DE monthly performance indicator' },
+              ],
+            },
+            {
+              title: 'Operational Tools',
+              links: [
+                { name: 'Charge Codes', url: '#', info: 'New & updated charge codes for each fisical year ' },
+                { name: 'E13 Desk Booking', url: '#', info: 'Book hoteling work station' },
+                { name: 'DELT', url: '#', info: 'DE leadership team documentations' },
+                { name: 'DELT Advisory Site', url: '#', info: 'New advisories & accouncements for DE' },
+                { name: 'RDE Request Tracker', url: '#', info: 'Program work request tracking spreadsheet' },
+              ],
+            },
+            {
+              title: 'DE Base Accountability',
+              links: [
+                { name: 'Core Pathway', url: '#', info: 'DE competency & accountabilities up to P3' },
+                {
+                  name: 'Technical Pathway',
+                  url: '#',
+                  info: 'DE compentency & accountabilities for specialist and principle engineers',
+                },
+                { name: 'Leadership Pathway', url: '#', info: 'DE competency & accoutabilities for team leads' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Engineering Tools',
+          subheaders: [
+            {
+              title: 'Design & Drafting',
+              links: [
+                {
+                  name: 'DE CADD Drafting Request',
+                  url: '#',
+                  info: 'Engineering drawing drafting request workflow & tracking',
+                },
+                { name: 'McLaren Drawings Search', url: '#', info: 'All engineering drawings repository' },
+                { name: 'Grid Ops Diagrams Data', url: '#', info: 'J drive for POCC, CLD, etc.' },
+              ],
+            },
+            {
+              title: 'Applications & Databases',
+              links: [
+                { name: 'IEDG Application Site', url: '#', info: 'To find useful information regarding IEDG' },
+                { name: 'AAG for IEDG', url: '#', info: 'Remote access to IEDG' },
+                { name: 'ASPEN Relay Database™', url: '#', info: 'To find protection system settings' },
+                {
+                  name: 'ASPEN PN Query',
+                  url: '#',
+                  info: 'Query tool used to extract settings for feeder protections',
+                },
+                {
+                  name: 'P&C Bus Fault Summary',
+                  url: '#',
+                  info: 'Newest spreadsheet to find source impedance of distribution feeders',
+                },
+                { name: 'EAS', url: '#', info: 'Metering data for customers' },
+              ],
+            },
+            {
+              title: 'Analytics & Reporting',
+              links: [
+                {
+                  name: 'Distribution Planning - Tableau®',
+                  url: '#',
+                  info: 'Useful planning databases - feeder capacity, max. demand, etc.',
+                },
+                {
+                  name: 'Distribution Planning Record Documents',
+                  url: '#',
+                  info: 'Repository for distribution planning memos',
+                },
+                {
+                  name: 'Feeder Load Research Tool - SAS®',
+                  url: '#',
+                  info: 'Database for feeder data - load factors, customer load profile, transformer data, etc.',
+                },
+                { name: 'BCH ArcGIS®', url: '#', info: 'Distribution planning GIS data' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Useful Resources',
+          subheaders: [
+            {
+              title: 'Engineering Resources',
+              links: [
+                { name: 'Engineering HydroShare', url: '#', info: 'HydroShare site for all engineering departments' },
+                {
+                  name: 'Engineering Resources & Templates',
+                  url: '#',
+                  info: 'Engineering guidelines & templates for memo, reports, etc. ',
+                },
+                { name: 'Standards', url: '#', info: 'All Engineering Standards' },
+              ],
+            },
+            {
+              title: 'Operations & Maintenance',
+              links: [
+                { name: 'PQweb', url: '#', info: 'Homepage for Power Quality Team' },
+                { name: 'DSwiki', url: '#', info: 'Homepage for Distribution Standards' },
+                { name: 'WikiDI', url: '#', info: 'Distribution design instructions & tarrifs' },
+                { name: 'Projects', url: '#', info: '###' },
+                { name: 'SPOT', url: '#', info: 'All related information regarding capital projects' },
+                { name: 'CROW', url: '#', info: 'Outage planning & status' },
+                { name: 'SIS', url: '#', info: 'Operating orders, diagrams, system information etc.' },
+              ],
+            },
+            {
+              title: 'Department Specific',
+              links: [
+                {
+                  name: 'PCM Info Center',
+                  url: '#',
+                  info: 'Information center for Project & Contract Management process',
+                },
+                { name: 'PPM Info Center', url: '#', info: 'Information ceter for Project & Porfolio Management' },
+                { name: 'Revenue Metering', url: '#', info: 'Everything about metering' },
+                { name: 'DR', url: '#', info: 'Distritution request to Transmission' },
+                { name: 'Operations', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Emergency & Monitoring',
+              links: [
+                {
+                  name: 'Major Outage Briefing Note',
+                  url: '#',
+                  info: 'Information and investigation of major outages',
+                },
+                { name: 'Feeder Limits Database', url: '#', info: 'Spreadsheet of technical limits of feeders' },
+                { name: 'PowerOn Remote', url: '#', info: '' },
+                { name: 'DASM HydroShare', url: '#', info: 'Distribution Asset Spare Management' },
+                { name: 'PAT', url: '#', info: 'Plant Alteration tracking tool' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Technical References',
+          subheaders: [
+            {
+              title: 'Learning & Development',
+              links: [
+                { name: 'Learning & Development', url: '#', info: 'L&D Committee J Drive repository' },
+                { name: 'DE Knowledge OneNote', url: '#', info: 'Knowledge shared among peers' },
+                { name: 'LMN Knowledge Sharing Sessions', url: '#', info: '###' },
+                { name: 'Conferences & Seminars', url: '#', info: 'Attended by our engineers' },
+                { name: 'BCH Library and Archives', url: '#', info: '' },
+              ],
+            },
+            {
+              title: 'Technical Resources',
+              links: [
+                { name: 'Conductor Slap', url: '#', info: '###' },
+                { name: 'Technical Report', url: '#', info: '###' },
+                { name: 'Modelling / Calculator', url: '#', info: '###' },
+                { name: 'EATON® CYME', url: '#', info: '###' },
+                { name: 'Python Scripts for CYME', url: '#', info: '###' },
+                { name: 'Short Circuit Report', url: '#', info: '###' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Teams',
+          subheaders: [
+            {
+              title: 'Organizational Structure',
+              links: [
+                { name: 'DE Org Chart', url: '#', info: '###' },
+                {
+                  name: 'Lower Mainland North',
+                  url: '#',
+                  info: '###',
+                  sub_links: [
+                    { url: '###', name: 'Members' },
+                    { url: '###', name: 'Assignment' },
+                  ],
+                },
+                { name: 'Lower Mainland South', url: '#', info: '###' },
+                { name: 'Interior & NIA', url: '#', info: '###' },
+                { name: 'Vancouver Island', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Project Teams',
+              links: [
+                { name: 'Projects Hydroshare', url: '#', info: '###' },
+                { name: 'Project A', url: '#', info: '###' },
+                { name: 'Project B', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Specialized Engineering',
+              links: [
+                { name: 'Distribution Civil Engineering', url: '#', info: '###' },
+                { name: 'DE Program Team', url: '#', info: '###' },
+                { name: 'Estimating', url: '#', info: '###' },
+                { name: 'Protection & Modelling', url: '#', info: '###' },
+                { name: 'Distribution Feeders', url: '#', info: '###' },
+                { name: 'Applied Engineering', url: '#', info: '###' },
+                { name: 'Non-Linear Analysis Team', url: '#', info: '###' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Procedures & Guidelines',
+          subheaders: [
+            {
+              title: 'Design & Engineering',
+              links: [
+                { name: 'External Design & Engineering DBR', url: '#', info: '###' },
+                { name: 'EDQA', url: '#', info: '###' },
+                { name: "Owner's Engineering Guide", url: '#', info: '###' },
+                { name: 'Design Review Comment Sheet', url: '#', info: '###' },
+                { name: 'Design Review Evaluation Form', url: '#', info: '###' },
+                { name: 'DE Project Completion Form', url: '#', info: '###' },
+                { name: 'OE Review Evaluation Summary', url: '#', info: '###' },
+                { name: 'CIPD Guide', url: '#', info: '###' },
+                { name: 'Voltage Management Guideline', url: '#', info: '###' },
+                { name: 'Voltage Conversion Guide', url: '#', info: '###' },
+                { name: 'Protection Coordination Guideline', url: '#', info: '###' },
+                { name: 'Distribution Automation Deployment Strategies', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Review Processes',
+              links: [
+                { name: 'Capacity Review Process', url: '#', info: '###' },
+                { name: 'DESRT Process - Planning & Engineering Tasks', url: '#', info: '###' },
+                { name: 'Unconfirmed Load Review Form', url: '#', info: '###' },
+                { name: 'Distribution Connection Variance Request Guide', url: '#', info: '###' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Professional Practice',
+          subheaders: [
+            {
+              title: 'Professional Development',
+              links: [
+                { name: 'Respectful Workplace Program', url: '#', info: '###' },
+                { name: 'PGA - EGBC Home', url: '#', info: '###' },
+                { name: 'EQBC Filing - Guides and References', url: '#', info: '###' },
+                { name: 'DESRT Memo Template', url: '#', info: '###' },
+                { name: 'CNS', url: '#', info: '###' },
+                { name: 'Signature Verification - verifiO', url: '#', info: '###' },
+                { name: 'Field Review Tracking', url: '#', info: '###' },
+                { name: 'SuccessFactors Learning', url: '#', info: '###' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Health & Safety',
+          subheaders: [
+            {
+              title: 'Safety Framework',
+              links: [
+                { name: 'Safety Framework', url: '#', info: '###' },
+                { name: 'SafeHub', url: '#', info: '###' },
+                { name: 'PSSP', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Safety by Design',
+              links: [
+                { name: 'Overhead Checklist', url: '#', info: '###' },
+                { name: 'Underground Checklist', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Safety Documentation',
+              links: [
+                { name: 'Safety Folder', url: '#', info: '###' },
+                { name: 'Reported Safety Incidents', url: '#', info: '###' },
+                { name: 'Asbestos', url: '#', info: '###' },
+                { name: 'Underground Asbestos Program', url: '#', info: '###' },
+                { name: 'AIS', url: '#', info: '###' },
+                { name: 'Emergency Response Plan', url: '#', info: '###' },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'Others',
+          subheaders: [
+            {
+              title: 'Administrative Procedures',
+              links: [
+                { name: 'Flood Plan Revision', url: '#', info: '###' },
+                { name: 'Telematics', url: '#', info: '###' },
+                { name: 'Branded Templates', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'IT Services',
+              links: [
+                { name: 'Application Portal', url: '#', info: '###' },
+                { name: 'ServiceNow', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Travel & Site Visits',
+              links: [
+                { name: 'Working Alone & Journey Management', url: '#', info: '###' },
+                { name: 'DE Specific Working Alone Procedure', url: '#', info: '###' },
+                { name: 'Business Travel', url: '#', info: '###' },
+                { name: 'Engineering - Field Work & Travel Form', url: '#', info: '###' },
+                { name: 'DE Travel Expense Submissions Guidelines', url: '#', info: '###' },
+                { name: 'Engineering Expense Claim Template', url: '#', info: '###' },
+              ],
+            },
+            {
+              title: 'Vehicle Booking',
+              links: [
+                {
+                  name: 'Edmonds #1 – Ford Escape – DE LM team',
+                  url: '#',
+                  class: 'normal',
+                  info: 'example',
+                },
+                { name: 'Edmonds #2 – Toyota RAV4 – DE Civil team', url: '#', info: '###' },
+                { name: 'Victoria – DE VI team', url: '#', info: '###' },
+              ],
+            },
+          ],
+        },
+      ];
 
-              { name: 'Voltage Management Guideline', url: 'https://hydroshare.bchydro.bc.ca/sites/distplan/OfficialRelease/Voltage_Management_BCH-DSR-2014-1001.pdf', class: 'bg-green' },
-              { name: 'Voltage Conversion Guide', url: 'file:///J:/Engineering/Distribution/Voltage%20Conversion%20Related%20%20Documents/VC%20Presentation%20-%20Feb%202017', class: 'bg-green' },
-              { name: 'Protection Coordination Guideline', url: 'https://hydroshare.bchydro.bc.ca/sites/distplan/OfficialRelease/CircuitProtectionCoordinationGuideline_R02-BCH-DSR-2014-1002.pdf', class: 'bg-green' },
-              { name: 'Distribution Automation Deployment Strategies', url: 'https://hw.bchydro.bc.ca/basicpage/Distribution-Automation-Deployment-Strategies', class: 'bg-green' }
-            ]
-          },
-
-          {
-            title: 'Standards',
-            links: [
-              { name: 'PQweb', url: 'http://pq.bchydro.bc.ca/index.php', class: 'bg-green' },
-              { name: 'DSwiki', url: 'http://edmbchwiki1/dist/standards/index.php/Main_Page', class: 'bg-green' }
-            ]
-          },
-          {
-            title: 'Shareholders',
-            links: [
-              { name: 'Revenue Metering', url: 'https://hw.bchydro.bc.ca/basicpage/Revenue-Metering', class: 'bg-green' },
-              { name: 'DR', url: 'https://hydroshare.bchydro.bc.ca/workgroup/d_requests/Lists/Contacts/AllItems.aspx', class: 'bg-green' },
-              { name: 'JotForm', url: 'https://www.jotform.com/tables/220326998667067?st=bFFTdTNMRzRGNTFWWVFYMTVTcmFaVUcyM05YU2pHb0Rxc0lxY25QZWRzK2k5Ykt0aEo2L1NiTUF2dVp0cExtUXJlQnpONXV0d242Y0ZnQnpobkltWDF1WVJ2bnhrejc3Y1BqWTlCeDVGdFgvOEpBYnlkMk5PSHdNMUhvVWo4eXU=', class: 'bg-teal' },
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Technical Resources',
-        subheaders: [
-          {
-            title: 'Learning & Development',
-            links: [
-              { name: 'Learning & Development', url: 'file:///J:/Engineering/Distribution/1%20Learning%20and%20Development%20Committee', class: 'bg-blue' },
-              { name: 'DE Knowledge OneNote', url: 'https://hydroshare.bchydro.bc.ca/sites/de/DEKnowledgeOneNote', class: 'bg-blue' },
-              { name: 'LMN Knowledge Sharing Sessions', url: 'https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%7BA9B67C3A-B947-49B5-B83E-91F5145BE183%7D&amp;file=1%20LMN%20OneNote&amp;action=default&amp;d=wa9b67c3ab94749b5b83e91f5145be183&amp;Source=https%3A%2F%2Fhydroshare%2Ebchydro%2Ebc%2Eca%2Fsites%2Fde%2FLMN%2520Share%2520Files%2FForms%2FAllItems%2Easpx&amp;RootFolder=%2fsites%2fde%2fLMN%20Share%20Files%2f1%20LMN%20OneNote', class: 'bg-blue' },
-              { name: 'Conferences & Seminars', url: 'file:///J:/Engineering/Distribution/1%20Conferences%20and%20Seminars', class: 'bg-blue' },
-              { name: 'BCH Library and Archives', url: 'https://hw.bchydro.bc.ca/p/bc-hydro-library-and-archives/Pages/Home.aspx', class: 'bg-blue' }
-            ]
-          },
-          {
-            title: 'Engineering Resources',
-            links: [
-              { name: 'Engineering HydroShare', url: 'https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Home.aspx', class: 'bg-green' },
-              { name: 'Engineering Resources & Templates', url: 'https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Engineering.aspx', class: 'bg-green' }
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Functional Teams',
-        subheaders: [
-          {
-            title: 'Organizational Structure',
-            links: [
-              { name: 'DE Org Chart', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Org%20Chart%20PDF/Engineering%20Design%20D-Engineering.pdf', class: 'bg-teal' },
-              { name: 'Lower Mainland North', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/LMN%20-%20Regional%20Area%20Substations.pdf', class: 'bg-teal' },
-              { name: 'Lower Mainland South', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/LMS%20-%20Regional%20Area%20Substations.pdf', class: 'bg-teal' },
-              { name: 'Interior & NIA', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/INT%20-%20Regional%20Area%20Substations.pdf', class: 'bg-teal' },
-              { name: 'Vancouver Island', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/VI%20-%20Regional%20Area%20Substations.pdf', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'Project Teams',
-            links: [
-              { name: 'Projects Hydroshare', url: 'https://hydroshare.bchydro.bc.ca/sites/DistributionEngineeringProjects/SitePages/Home.aspx', class: 'bg-teal' },
-              { name: 'Project A', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Projects%20A%20Team%20Member%20List.pdf', class: 'bg-teal' },
-              { name: 'Project B', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Projects%20B%20Team%20Member%20List.pdf', class: 'bg-teal' }
-            ]
-          },
-        ]
-      },
-      {
-        name: 'Technical Teams',
-        subheaders: [
-          {
-            title: 'Specialized Engineering',
-            links: [
-              { name: 'Distribution Civil Engineering', url: 'https://hydroshare.bchydro.bc.ca/sites/DCE/default.aspx', class: 'bg-teal' },
-              { name: 'DE Program Team', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Team%20Charter.pdf', class: 'bg-teal' },
-              { name: 'Estimating', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/Estimating.pdf', class: 'bg-teal' },
-              { name: 'Protection & Modelling', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Protection%20and%20Modeling%20Team.pdf', class: 'bg-teal' },
-              { name: 'Distribution Feeders', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Distribution%20Feeders%20Team.pdf', class: 'bg-teal' },
-              { name: 'Applied Engineering', url: 'https://hydroshare.bchydro.bc.ca/sites/applied_distribution_engineering/SitePages/Home.aspx', class: 'bg-teal' },
-              { name: 'Non-Linear Analysis Team', url: 'https://hydroshare.bchydro.bc.ca/sites/de/DEKnowledgeOneNote/Overhead%20Line%20Design%20%20(NLA)%20Team', class: 'bg-teal' }
-            ]
-          }
-        ]
-      },
-      {
-        name: 'DESRT',
-        subheaders: [
-          {
-            title: 'Website',
-            links: [
-              { name: 'DesignHub', url: 'https://designhub.bchydro.bc.ca/web/app', class: 'bg-teal' },
-            ]
-          },
-          {
-            title: 'Review Processes',
-            links: [
-              { name: 'Capacity Review Process', url: 'https://hydroshare.bchydro.bc.ca/sites/distplan/Lists/SharedDocuments/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf', class: 'bg-green' },
-              { name: 'DESRT Process - Planning & Engineering Tasks', url: 'https://hydroshare.bchydro.bc.ca/sites/distplan/Lists/SharedDocuments/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf', class: 'bg-green' },
-              { name: 'Unconfirmed Load Review Form', url: 'https://hydroshare.bchydro.bc.ca/sites/cc/DDCCWorkSmartPublishedAssets/F23QW01-Implement-QSL-Integrated-Planning/DDCC%20Work%20Smart%20-%20Unconfirmed%20Load%20Requirements%20Form.pdf', class: 'bg-green' },
-              { name: 'Distribution Connection Variance Request Guide', url: 'https://app.bchydro.com/content/dam/BCHydro/customer-portal/documents/distribution/info-packages/customer-guide-to-variance-requests.pdf', class: 'bg-green' }
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Professional Practice',
-        subheaders: [
-          {
-            title: 'Professional Development',
-            links: [
-              { name: 'Respectful Workplace Program', url: 'https://hw.bchydro.bc.ca/basicpage/respectful-workplace', class: 'bg-blue' },
-              { name: 'PGA - EGBC Home', url: 'https://hydroshare.bchydro.bc.ca/sites/PGA/SitePages/Home.aspx', class: 'bg-blue' },
-              { name: 'EGBC Filing - Guides and References', url: 'file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References', class: 'bg-blue' },
-              { name: 'DESRT Memo Template', url: 'https://hydroshare.bchydro.bc.ca/sites/PGA/_layouts/15/WopiFrame.aspx?sourcedoc=%7BE644A337-F1EE-4B8B-86EE-1625E9FAF170%7D&amp;file=DESRT%20Memo.docx&amp;action=default', class: 'bg-blue' },
-              { name: 'CNS', url: 'http://kdcssweb1/cns/Account/Login?ReturnUrl=%2Fcns%2F', class: 'bg-blue' },
-              { name: 'Signature Verification - verifiO', url: 'https://verifio.com/document', class: 'bg-blue' },
-              { name: 'Field Review Tracking', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/Field%20Review%20Tracking/Active%20Items.aspx', class: 'bg-blue' },
-              { name: 'SuccessFactors Learning', url: 'https://hcm17.sapsf.com/login?company=bchydro', class: 'bg-blue' }
-            ]
-          },
-
-        ]
-      },
-      {
-        name: 'Health & Safety',
-
-        subheaders: [
-          {
-            title: 'Safety Framework',
-            links: [
-              { name: 'Safety Framework', url: 'https://hw.bchydro.bc.ca/basicpage/safety-framework', class: 'bg-teal' },
-              { name: 'SafeHub', url: 'https://hydroshare.bchydro.bc.ca/sites/safehub/Home.aspx', class: 'bg-teal' },
-              { name: 'PSSP', url: 'https://hw.bchydro.bc.ca/basicpage/pssp', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'Safety by Design',
-            links: [
-              { name: 'Overhead Checklist', url: 'http://w3filenet/PRT.%7B98F4B82F-6171-426D-B48D-2B2190124244%7D', class: 'bg-teal' },
-              { name: 'Underground Checklist', url: 'http://w3filenet/PRT.%7BE9070D1A-584A-4C17-8912-4B7A37A233A1%7D', class: 'bg-teal' }
-            ]
-          },
-          {
-            title: 'Safety Documentation',
-            links: [
-              { name: 'Safety Folder', url: 'file:///J:/Engineering/Distribution/1%20Safety/1%20F21%20Safety/', class: 'bg-teal' },
-              { name: 'Reported Safety Incidents', url: 'file:///J:/Engineering/Distribution/1%20Administration/Safety%20Incidents%20DE', class: 'bg-teal' },
-              { name: 'Underground Asbestos Program', url: 'https://hydroshare.bchydro.bc.ca/workgroup/dist_underground_asb/Completed%20Inspections%20Forms/Forms/AllItems.aspx', class: 'bg-teal' },
-              { name: 'AIS', url: 'https://kdcssweb1.bchydro.bc.ca/AIS#/', class: 'bg-teal' },
-              { name: 'Emergency Response Plan', url: 'https://hydroshare.bchydro.bc.ca/sites/emergency_management/Plans/Emergency%20Response%20Plan%20-%20Engineering%20Design.pdf', class: 'bg-teal' }
-            ]
-          }
-        ]
-      },
-      {
-        name: 'Others',
-        subheaders: [
-          {
-            title: 'Administrative Procedures',
-            links: [
-              { name: 'Flood Plan Revision', url: 'file:///J:/Engineering/Distribution/DE%20Flood%20Plan', class: 'bg-green' },
-              { name: 'Telematics', url: 'https://hw.bchydro.bc.ca/basicpage/telematics', class: 'bg-green' },
-              { name: 'Branded Templates', url: 'https://hw.bchydro.bc.ca/basicpage/templates', class: 'bg-green' }
-            ]
-          },
-          {
-            title: 'IT Services',
-            links: [
-              { name: 'Application Portal', url: 'http://bchap/esd', class: 'bg-green' },
-              { name: 'ServiceNow', url: 'https://bchydro.service-now.com/sp/', class: 'bg-green' }
-            ]
-          }
-
-        ]
-      },
-      {
-        name: 'Projects & Programs',
-        subheaders: [
-          {
-            title: 'Design Review',
-            links: [
-              { name: 'External Design & Engineering DBR', url: 'https://edmppmprt1.bchydro.bc.ca/DBR/Home.htm', class: 'bg-green' },
-              { name: 'EDQA', url: 'https://edmppmprt1.bchydro.bc.ca/DBR/Stakeholder-Engagement/Internal/EDQA.htm', class: 'bg-green' },
-              { name: "Owner's Engineering Guide", url: 'https://w3ecm.bchydro.bc.ca/fglob/ViewDocumentContentBySeriesId.do?guid=%7B1059ECC4-3B1D-409B-BA0B-98B14FF8B2DF%7D', class: 'bg-green' },
-              { name: 'Design Review Comment Sheet', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Sheet%20-%20Distribution%20Engineering.docx?d=w6ead9d330136412390bead5f1499a1f8', class: 'bg-green' },
-              { name: 'Design Review Evaluation Form', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155', class: 'bg-green' },
-              { name: 'DE Project Completion Form', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf', class: 'bg-green' },
-              { name: 'OE Review Evaluation Summary', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews', class: 'bg-green' },
-              { name: 'CIPD Guide', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DISTRIBUTION_ENGINEERING_CIPD_GUIDE_REV0_2023-06-02.pdf', class: 'bg-green' },
-            ]
-          },
-          {
-            title: 'Management',
-            links: [
-              { name: 'SPOT', url: 'https://kdcsswebp1.bchydro.bc.ca/fetbch/usr/userindex.aspx', class: 'bg-green' },
-              { name: 'PCM Info Center', url: 'https://edmppmprt1.bchydro.bc.ca/pcm_ic/pcmic.htm', class: 'bg-green' },
-              { name: 'PPM Info Center', url: 'https://edmppmprt1.bchydro.bc.ca/ppmic/_ppmic_home.htm', class: 'bg-green' },
-              { name: 'RDE Request Tracker', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338', class: 'bg-blue' },
-            ]
-          }
-        ],
-      },
-      {
-        name: 'Travel & Site Visits',
-        subheaders: [
-          {
-            title: 'Guidelines & Requirements',
-            links: [
-              { name: 'Working Alone & Journey Management', url: 'https://hw.bchydro.bc.ca/basicpage/working-alone', class: 'bg-green' },
-              { name: 'DE Specific Working Alone Procedure', url: 'file:///J:/Engineering/Distribution/1%20Safety/Working%20Alone%20or%20in%20Isolation%20Program/0%20CURRENT%20WORK%20ALONE%20PROCEDURE', class: 'bg-green' },
-              { name: 'Business Travel', url: 'https://hw.bchydro.bc.ca/p/travel/Pages/Home.aspx', class: 'bg-green' },
-              { name: 'Engineering - Field Work & Travel Form', url: 'https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form.pdf', class: 'bg-green' },
-              { name: 'DE Travel Expense Submissions Guidelines', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20%26%20Documents/Distribution%20Engineering%20Business%20Expense%20Submissions-Draft.pdf', class: 'bg-green' },
-              { name: 'Engineering Expense Claim Template', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20&%20Documents/Engineering%20Expense%20Claim%20Template.xlsx', class: 'bg-green' }
-            ]
-          },
-          {
-            title: 'Vehicle Booking',
-            links: [
-              { name: 'Edmonds #1 – Ford Escape – DE LM team', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/Regional%20DE%20Pool%20Vehicle/calendar.aspx', class: 'bg-green' },
-              { name: 'Edmonds #2 – Toyota RAV4 – DE Civil team', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/Vernon%20Pool%20Vehicle%20%2019S03/calendar.aspx', class: 'bg-green' },
-              { name: 'Victoria – DE VI team', url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/Victoria%20Pool%20Vehicle%20%2019S71/calendar.aspx', class: 'bg-green' }
-            ]
-          }
-        ]
-      }
-    ];
-
-    // Initialize color selection
-    document.addEventListener('DOMContentLoaded', function () {
-      const colorOptions = document.querySelectorAll('.color-option');
-      colorOptions.forEach(option => {
-        option.addEventListener('click', function () {
-          colorOptions.forEach(opt => opt.classList.remove('selected'));
-          this.classList.add('selected');
-          // Update the correct hidden input based on which modal is open
-          const modals = ['addLinkModal', 'editLinkModal'];
-          for (let modal of modals) {
-            if (document.getElementById(modal).style.display === 'flex') {
-              document.getElementById(modal === 'addLinkModal' ? 'linkColor' : 'editLinkColor').value = this.dataset.color;
-              break;
-            }
-          }
-        });
-      });
-
-      // Set default color
-      if (colorOptions.length > 0) {
-        colorOptions[0].classList.add('selected');
-        document.getElementById('linkColor').value = colorOptions[0].dataset.color;
-        document.getElementById('editLinkColor').value = colorOptions[0].dataset.color;
-      }
-    });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function (e) {
-      const dropdowns = document.querySelectorAll('.dropdown-menu');
-      dropdowns.forEach(dropdown => {
-        if (!dropdown.contains(e.target) && !e.target.classList.contains('menu-btn')) {
-          dropdown.classList.remove('show');
-        }
-      });
-    });
-
-    // Edit mode state
-    let editMode = false;
-
-    // Toggle edit mode
-    document.getElementById('editModeToggle').addEventListener('click', function () {
-      editMode = !editMode;
-      this.textContent = editMode ? 'Exit Edit Mode' : 'Edit Mode';
-      this.style.background = editMode ?
-        'linear-gradient(90deg, #ef4444, #dc2626)' :
-        'linear-gradient(90deg, var(--primary-color), var(--secondary-color))';
-
-      // Show/hide menu buttons and edit controls
-      const menuBtns = document.querySelectorAll('.menu-btn');
-      const editControls = document.querySelectorAll('.edit-controls');
-      const addCategoryBtn = document.getElementById('addCategoryBtn');
-
-      if (editMode) {
-        menuBtns.forEach(btn => btn.classList.add('show'));
-        editControls.forEach(ctrl => ctrl.classList.add('show'));
-        addCategoryBtn.classList.add('show');
-      } else {
-        menuBtns.forEach(btn => btn.classList.remove('show'));
-        editControls.forEach(ctrl => ctrl.classList.remove('show'));
-        addCategoryBtn.classList.remove('show');
-      }
-
-      renderCategories(categories);
-    });
-
-
-    // Function to create dropdown menu
-    function createDropdownMenu(type, categoryIndex, subheaderIndex = null, linkIndex = null) {
-      const dropdown = document.createElement('div');
-      dropdown.className = 'dropdown-menu';
-      dropdown.dataset.type = type;
-      dropdown.dataset.categoryIndex = categoryIndex;
-      if (subheaderIndex !== null) dropdown.dataset.subheaderIndex = subheaderIndex;
-      if (linkIndex !== null) dropdown.dataset.linkIndex = linkIndex;
-
-      if (type === 'category') {
-        dropdown.innerHTML = `
-                    <a href="#" class="dropdown-item add-subheader" data-category="${categoryIndex}">Add Subheader</a>
-                    <a href="#" class="dropdown-item edit-category" data-category="${categoryIndex}">Change Category</a>
-                    <a href="#" class="dropdown-item delete delete-category" data-category="${categoryIndex}">Delete Category</a>
-                `;
-      } else if (type === 'subheader') {
-        dropdown.innerHTML = `
-                    <a href="#" class="dropdown-item add-link" data-category="${categoryIndex}" data-subheader="${subheaderIndex}">Add Link</a>
-                    <a href="#" class="dropdown-item edit-subheader" data-category="${categoryIndex}" data-subheader="${subheaderIndex}">Change Subheader</a>
-                    <a href="#" class="dropdown-item delete delete-subheader" data-category="${categoryIndex}" data-subheader="${subheaderIndex}">Delete Subheader</a>
-                `;
-      }
-      return dropdown;
-    }
-
-    // Function to create edit controls for links
-    function createLinkEditControls(categoryIndex, subheaderIndex, linkIndex) {
-      const editControls = document.createElement('div');
-      editControls.className = `edit-controls ${editMode ? 'show' : ''}`;
-      editControls.innerHTML = `
-                <button class="menu-btn ${editMode ? 'show' : ''}" 
-                        onclick="openEditLinkModal(${categoryIndex}, ${subheaderIndex}, ${linkIndex})">⊟</button>
-                <button class="menu-btn ${editMode ? 'show' : ''} delete" 
-                        onclick="deleteLink(${categoryIndex}, ${subheaderIndex}, ${linkIndex})">⊠</button>
-            `;
-      return editControls;
-    }
-
-    // Function to render categories
     function renderCategories(categoriesToRender) {
       const container = document.getElementById('categoriesContainer');
       container.innerHTML = '';
 
       categoriesToRender.forEach((category, categoryIndex) => {
-        const categoryCard = document.createElement('div');
-        categoryCard.className = 'category-card';
+        const panel = document.createElement('div');
+        panel.className = 'links panel';
 
-        const header = document.createElement('div');
-        header.className = 'category-header';
-        header.innerHTML = `
-                    <div class="category-title-container">
-                        <h2 class="category-title">${category.name}</h2>
-                    </div>
-                    <button class="menu-btn ${editMode ? 'show' : ''}" data-category="${categoryIndex}">⋮</button>
-                `;
+        const heading = document.createElement('div');
+        heading.className = 'panel-heading';
+        heading.textContent = category.name;
+        panel.appendChild(heading);
 
-        // Add dropdown menu for category
-        if (editMode) {
-          const categoryDropdown = createDropdownMenu('category', categoryIndex);
-          header.appendChild(categoryDropdown);
-        }
+        const body = document.createElement('div');
+        body.className = 'panel-body';
 
-        categoryCard.appendChild(header);
-
-        // Add each subheader section with its links
         category.subheaders.forEach((subheader, subheaderIndex) => {
-          const subheaderSection = document.createElement('div');
-          subheaderSection.className = 'subheader-section';
-
-          const subheaderTitle = document.createElement('div');
-          subheaderTitle.className = 'subheader-title';
-          subheaderTitle.textContent = subheader.title;
-
-          const menuBtn = document.createElement('button');
-          menuBtn.className = `menu-btn ${editMode ? 'show' : ''}`;
-          menuBtn.textContent = '⋮';
-          menuBtn.dataset.category = categoryIndex;
-          menuBtn.dataset.subheader = subheaderIndex;
-
-          // Add dropdown menu for subheader
-          if (editMode) {
-            const subheaderDropdown = createDropdownMenu('subheader', categoryIndex, subheaderIndex);
-            subheaderSection.appendChild(subheaderDropdown);
-          }
-
-          subheaderSection.appendChild(subheaderTitle);
-          subheaderSection.appendChild(menuBtn);
-          categoryCard.appendChild(subheaderSection);
-
-          const linksContainer = document.createElement('div');
-          linksContainer.className = 'links-container';
-          linksContainer.dataset.categoryIndex = categoryIndex;
-          linksContainer.dataset.subheaderIndex = subheaderIndex;
-
-          // Make the links container a drop target (only in edit mode)
-          if (editMode) {
-            linksContainer.addEventListener('dragover', function (e) {
-              e.preventDefault();
-              this.classList.add('drag-over');
-            });
-
-            linksContainer.addEventListener('dragleave', function (e) {
-              this.classList.remove('drag-over');
-            });
-
-            linksContainer.addEventListener('drop', function (e) {
-              e.preventDefault();
-              this.classList.remove('drag-over');
-
-              const draggedLinkData = JSON.parse(e.dataTransfer.getData('text/plain'));
-              const sourceCategoryIndex = draggedLinkData.categoryIndex;
-              const sourceSubheaderIndex = draggedLinkData.subheaderIndex;
-              const linkIndex = draggedLinkData.linkIndex;
-
-              const targetCategoryIndex = parseInt(this.dataset.categoryIndex);
-              const targetSubheaderIndex = parseInt(this.dataset.subheaderIndex);
-
-              // Move the link
-              const linkToMove = categories[sourceCategoryIndex].subheaders[sourceSubheaderIndex].links[linkIndex];
-              categories[targetCategoryIndex].subheaders[targetSubheaderIndex].links.push(linkToMove);
-
-              // Remove from original position
-              categories[sourceCategoryIndex].subheaders[sourceSubheaderIndex].links.splice(linkIndex, 1);
-
-              // Re-render
-              renderCategories(categories);
-            });
+          const dl = document.createElement('dl');
+          dl.className = 'grid-container';
+          if (subheader.title) {
+            const dt = document.createElement('dt');
+            dt.className = 'special';
+            const dtLink = document.createElement('a');
+            dtLink.href = '#nogo';
+            dtLink.target = '_blank';
+            dtLink.textContent = subheader.title;
+            dt.appendChild(dtLink);
+            dl.appendChild(dt);
           }
 
           subheader.links.forEach((link, linkIndex) => {
-            const linkBtn = document.createElement('a');
-            const linkGroup = document.createElement('div')
-            linkBtn.href = link.url;
-            linkBtn.target = '_blank';
-            linkBtn.className = `link-btn ${link.class}`;
-            linkBtn.textContent = link.name;
-            linkGroup.className = 'link-group';
-            linkGroup.appendChild(linkBtn)
-            // Add edit controls for links (only in edit mode)
-            if (editMode) {
-              const editControls = createLinkEditControls(categoryIndex, subheaderIndex, linkIndex);
-              linkGroup.appendChild(editControls);
+            const dd = document.createElement('dd');
+            dd.className = 'item';
+            const linkEl = document.createElement('a');
+            linkEl.href = link.url;
+            linkEl.target = '_blank';
+            linkEl.innerHTML = `<span class="link-title">${link.name}</span><span class="link-info">${link.info}</span>`;
+
+            linkEl.dataset.categoryIndex = categoryIndex;
+            linkEl.dataset.subheaderIndex = subheaderIndex;
+            linkEl.dataset.linkIndex = linkIndex;
+            linkEl.draggable = true;
+
+            dd.appendChild(linkEl);
+            dl.appendChild(dd);
+
+            if (link.sub_links) {
+              const sublinkContainer = document.createElement('span');
+              sublinkContainer.className = 'sub-link';
+              link.sub_links.forEach(sub_link => {
+                const sublinkEl = document.createElement('span');
+                sublinkEl.innerHTML = `| <a href="${sub_link.url}" target="_blank">${sub_link.name}</a> `;
+                sublinkContainer.appendChild(sublinkEl);
+              });
+              linkEl.appendChild(sublinkContainer);
             }
-
-            linksContainer.appendChild(linkGroup);
           });
-
-          categoryCard.appendChild(linksContainer);
+          body.appendChild(dl);
         });
 
-        container.appendChild(categoryCard);
+        panel.appendChild(body);
+        container.appendChild(panel);
       });
 
-      // Re-attach event listeners after re-rendering
-      attachEventListeners();
+      initDragAndDrop();
     }
 
-    // Function to attach event listeners to menu buttons and dropdown items
-    function attachEventListeners() {
-      // Category menu buttons
-      document.querySelectorAll('.category-header .menu-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          const categoryIndex = this.dataset.category;
-          const dropdown = this.parentElement.querySelector('.dropdown-menu');
-          if (dropdown) {
-            // Close all other dropdowns
-            document.querySelectorAll('.dropdown-menu').forEach(d => {
-              if (d !== dropdown) d.classList.remove('show');
-            });
-            dropdown.classList.toggle('show');
-          }
-        });
-      });
-
-      // Subheader menu buttons
-      document.querySelectorAll('.subheader-section .menu-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          const categoryIndex = this.dataset.category;
-          const subheaderIndex = this.dataset.subheader;
-          const dropdown = this.parentElement.querySelector('.dropdown-menu');
-          if (dropdown) {
-            // Close all other dropdowns
-            document.querySelectorAll('.dropdown-menu').forEach(d => {
-              if (d !== dropdown) d.classList.remove('show');
-            });
-            dropdown.classList.toggle('show');
-          }
-        });
-      });
-
-      // Dropdown item actions
-      document.querySelectorAll('.dropdown-item').forEach(item => {
-        item.addEventListener('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          if (this.classList.contains('add-subheader')) {
-            const categoryIndex = this.dataset.category;
-            openAddSubheaderModal(parseInt(categoryIndex));
-          } else if (this.classList.contains('edit-category')) {
-            const categoryIndex = this.dataset.category;
-            openEditCategoryModal(parseInt(categoryIndex));
-          } else if (this.classList.contains('delete-category')) {
-            const categoryIndex = this.dataset.category;
-            deleteCategory(parseInt(categoryIndex));
-          } else if (this.classList.contains('add-link')) {
-            const categoryIndex = this.dataset.category;
-            const subheaderIndex = this.dataset.subheader;
-            openAddLinkModal(parseInt(categoryIndex), parseInt(subheaderIndex));
-          } else if (this.classList.contains('edit-subheader')) {
-            const categoryIndex = this.dataset.category;
-            const subheaderIndex = this.dataset.subheader;
-            openEditSubheaderModal(parseInt(categoryIndex), parseInt(subheaderIndex));
-          } else if (this.classList.contains('delete-subheader')) {
-            const categoryIndex = this.dataset.category;
-            const subheaderIndex = this.dataset.subheader;
-            deleteSubheader(parseInt(categoryIndex), parseInt(subheaderIndex));
-          }
-
-          // Close the dropdown
-          this.closest('.dropdown-menu').classList.remove('show');
-        });
-      });
-    }
-
-    // Initial render
     renderCategories(categories);
 
-    // Search functionality
     document.getElementById('searchInput').addEventListener('input', function (e) {
-      const searchTerm = e.target.value.toLowerCase();
+      const searchTerm = e.target.value.toLowerCase().trim();
 
-      if (searchTerm === '') {
-        renderCategories(categories);
-        return;
+      // If search is empty, show all categories
+      if (!searchTerm) {
+        return renderCategories(categories);
       }
 
-      const filteredCategories = categories.map(category => {
-        // Filter subheaders based on search term
-        const filteredSubheaders = category.subheaders.map(subheader => {
-          return {
-            ...subheader,
-            links: subheader.links.filter(link =>
-              link.name.toLowerCase().includes(searchTerm) ||
-              subheader.title.toLowerCase().includes(searchTerm)
-            )
-          };
-        }).filter(subheader =>
-          subheader.links.length > 0 ||
-          subheader.title.toLowerCase().includes(searchTerm) ||
-          category.name.toLowerCase().includes(searchTerm)
-        );
+      // Filter categories based on search term
+      const filteredCategories = categories
+        .map(category => {
+          // Check if category name matches search
+          const categoryMatches = category.name.toLowerCase().includes(searchTerm);
 
-        return {
-          ...category,
-          subheaders: filteredSubheaders
-        };
-      }).filter(category => category.subheaders.length > 0);
+          // Filter subheaders
+          const filteredSubheaders = category.subheaders
+            .map(subheader => {
+              // Check if subheader title matches search
+              const subheaderMatches = subheader.title?.toLowerCase().includes(searchTerm);
+
+              // Filter links
+              const filteredLinks = subheader.links.filter(
+                link => link.name.toLowerCase().includes(searchTerm) || subheaderMatches || categoryMatches
+              );
+
+              return {
+                ...subheader,
+                links: filteredLinks,
+              };
+            })
+            .filter(
+              subheader =>
+                subheader.links.length > 0 || subheader.title?.toLowerCase().includes(searchTerm) || categoryMatches
+            );
+
+          return {
+            ...category,
+            subheaders: filteredSubheaders,
+          };
+        })
+        .filter(category => category.subheaders.length > 0);
 
       renderCategories(filteredCategories);
     });
 
-    // Modal functions
-    function openModal(modalId) {
-      document.getElementById(modalId).style.display = 'flex';
-    }
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
-    }
+    function resize() {
+      const containers = document.querySelectorAll('.grid-container');
 
-    function openAddSubheaderModal(categoryIndex) {
-      document.getElementById('categoryIndex').value = categoryIndex;
-      openModal('addSubheaderModal');
-    }
+      containers.forEach(container => {
+        const firstItem = container.querySelector('.special');
+        if (firstItem) {
+          containerWidth = container.clientWidth;
+          itemWidth = firstItem.clientWidth;
+          const actualTotal = Math.round(containerWidth / itemWidth) - 1;
+          console.log(containerWidth);
+          console.log(itemWidth);
+          console.log(actualTotal);
+          function adjustFirstItemSpan() {
+            const items = container.querySelectorAll('.item');
+            const total = items.length;
+            console.log(total);
+            // Number of rows = ceil(total / 5)
+            rows = Math.ceil(total / actualTotal);
+            console.log(rows);
 
-    function openAddLinkModal(categoryIndex, subheaderIndex) {
-      document.getElementById('linkCategoryIndex').value = categoryIndex;
-      document.getElementById('linkSubheaderIndex').value = subheaderIndex;
-      openModal('addLinkModal');
-    }
+            // First item spans N rows if >1
+            firstItem.style.gridRow = `span ${rows > 1 ? rows : 1}`;
 
-    function openEditCategoryModal(categoryIndex) {
-      document.getElementById('editCategoryIndex').value = categoryIndex;
-      document.getElementById('editCategoryName').value = categories[categoryIndex].name;
-      openModal('editCategoryModal');
-    }
+            // Set first item height dynamically (optional)
+            const singleHeight = 7; // matches CSS
+            firstItem.style.height = `${rows * singleHeight}rm + ${rows * 10}px`; // include gap
+          }
 
-    function openEditSubheaderModal(categoryIndex, subheaderIndex) {
-      document.getElementById('editCategoryIndexSub').value = categoryIndex;
-      document.getElementById('editSubheaderIndex').value = subheaderIndex;
-      document.getElementById('editSubheaderName').value = categories[categoryIndex].subheaders[subheaderIndex].title;
-      openModal('editSubheaderModal');
-    }
+          // Run initially
+          adjustFirstItemSpan();
 
-    function openEditLinkModal(categoryIndex, subheaderIndex, linkIndex) {
-      document.getElementById('editLinkCategoryIndex').value = categoryIndex;
-      document.getElementById('editLinkSubheaderIndex').value = subheaderIndex;
-      document.getElementById('editLinkIndex').value = linkIndex;
-      document.getElementById('editLinkName').value = categories[categoryIndex].subheaders[subheaderIndex].links[linkIndex].name;
-      document.getElementById('editLinkUrl').value = categories[categoryIndex].subheaders[subheaderIndex].links[linkIndex].url;
-      document.getElementById('editLinkColor').value = categories[categoryIndex].subheaders[subheaderIndex].links[linkIndex].class;
-      openModal('editLinkModal');
-    }
-
-    // Delete functions
-    function deleteCategory(categoryIndex) {
-      if (confirm('Are you sure you want to delete this category and all its contents?')) {
-        categories.splice(categoryIndex, 1);
-        renderCategories(categories);
-      }
-    }
-
-    function deleteSubheader(categoryIndex, subheaderIndex) {
-      if (confirm('Are you sure you want to delete this subheader and all its links?')) {
-        categories[categoryIndex].subheaders.splice(subheaderIndex, 1);
-        renderCategories(categories);
-      }
-    }
-
-    function deleteLink(categoryIndex, subheaderIndex, linkIndex) {
-      if (confirm('Are you sure you want to delete this link?')) {
-        categories[categoryIndex].subheaders[subheaderIndex].links.splice(linkIndex, 1);
-        renderCategories(categories);
-      }
-    }
-
-    // Form submissions
-    document.getElementById('addCategoryForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const categoryName = document.getElementById('categoryName').value;
-
-      categories.push({
-        name: categoryName,
-
-        subheaders: []
-      });
-
-      renderCategories(categories);
-      closeModal('addCategoryModal');
-      this.reset();
-    });
-
-    document.getElementById('addSubheaderForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const categoryIndex = parseInt(document.getElementById('categoryIndex').value);
-      const subheaderName = document.getElementById('subheaderName').value;
-
-      if (!categories[categoryIndex].subheaders) {
-        categories[categoryIndex].subheaders = [];
-      }
-
-      categories[categoryIndex].subheaders.push({
-        title: subheaderName,
-        links: []
-      });
-
-      renderCategories(categories);
-      closeModal('addSubheaderModal');
-      this.reset();
-    });
-
-    document.getElementById('addLinkForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const categoryIndex = parseInt(document.getElementById('linkCategoryIndex').value);
-      const subheaderIndex = parseInt(document.getElementById('linkSubheaderIndex').value);
-      const linkName = document.getElementById('linkName').value;
-      const linkUrl = document.getElementById('linkUrl').value;
-      const linkColor = document.getElementById('linkColor').value;
-
-      categories[categoryIndex].subheaders[subheaderIndex].links.push({
-        name: linkName,
-        url: linkUrl,
-        class: linkColor
-      });
-
-      renderCategories(categories);
-      closeModal('addLinkModal');
-      this.reset();
-    });
-
-    document.getElementById('editCategoryForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const categoryIndex = parseInt(document.getElementById('editCategoryIndex').value);
-      const categoryName = document.getElementById('editCategoryName').value;
-
-      categories[categoryIndex].name = categoryName;
-
-      renderCategories(categories);
-      closeModal('editCategoryModal');
-      this.reset();
-    });
-
-    document.getElementById('editSubheaderForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const categoryIndex = parseInt(document.getElementById('editCategoryIndexSub').value);
-      const subheaderIndex = parseInt(document.getElementById('editSubheaderIndex').value);
-      const subheaderName = document.getElementById('editSubheaderName').value;
-
-      categories[categoryIndex].subheaders[subheaderIndex].title = subheaderName;
-
-      renderCategories(categories);
-      closeModal('editSubheaderModal');
-      this.reset();
-    });
-
-    document.getElementById('editLinkForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const categoryIndex = parseInt(document.getElementById('editLinkCategoryIndex').value);
-      const subheaderIndex = parseInt(document.getElementById('editLinkSubheaderIndex').value);
-      const linkIndex = parseInt(document.getElementById('editLinkIndex').value);
-      const linkName = document.getElementById('editLinkName').value;
-      const linkUrl = document.getElementById('editLinkUrl').value;
-      const linkColor = document.getElementById('editLinkColor').value;
-
-      categories[categoryIndex].subheaders[subheaderIndex].links[linkIndex].name = linkName;
-      categories[categoryIndex].subheaders[subheaderIndex].links[linkIndex].url = linkUrl;
-      categories[categoryIndex].subheaders[subheaderIndex].links[linkIndex].class = linkColor;
-
-      renderCategories(categories);
-      closeModal('editLinkModal');
-      this.reset();
-    });
-
-    // Close modals when clicking outside
-    window.addEventListener('click', function (event) {
-      const modals = document.querySelectorAll('.modal');
-      modals.forEach(modal => {
-        if (event.target === modal) {
-          modal.style.display = 'none';
+          // Optional: auto-adjust when items are added or removed
+          const observer = new MutationObserver(adjustFirstItemSpan);
+          observer.observe(container, { childList: true });
         }
       });
-    });
+    }
 
-    // Add event listener for the floating add category button
-    document.getElementById('addCategoryBtn').addEventListener('click', function () {
-      openModal('addCategoryModal');
-    });
+    document.addEventListener('DOMContentLoaded', resize);
+    window.addEventListener('resize', resize);
   </script>
 </body>
 

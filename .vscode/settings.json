@@ -3,14 +3,19 @@
 <<<<<<< HEAD
   "editor.fontFamily": "JetBrains Mono NL, Alma Mono, Roboto Mono, Cascadia Mono, SF Mono Regular, Fira Code, JetBrains Mono",
   "liveServer.settings.port": 5550,
-  "editor.wordWrap": "bounded",
+  "editor.wordWrap": "wordWrapColumn",
   "editor.defaultFormatter": "ms-python.black-formatter",
   "files.autoSave": "onWindowChange",
   "editor.formatOnSave": true,
-  "editor.fontVariations": true
+  "editor.fontVariations": true,
+  "editor.wordWrapColumn": 120,
+
 =======
   "editor.fontFamily": "Cascadia Code, SF Mono,  Source Code Pro, Fira Code, Roboto Mono, JetBrains Mono,  Consolas, 'Courier New', monospace",
   "liveServer.settings.port": 5550,
-  "editor.wordWrap": "bounded"
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 120,
+  "prettier.printWidth": 120,
+
 >>>>>>> dc430462252648087deb1aa9f143a48637e23783
 }

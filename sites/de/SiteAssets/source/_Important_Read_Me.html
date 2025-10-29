@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -12,9 +12,6 @@
  */
     /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 
-    hr {
-      border: 0
-    }
 
     body {
       margin: auto;
@@ -45,12 +42,6 @@
       margin: .67em 0
     }
 
-    hr {
-      height: 0;
-      -webkit-box-sizing: content-box;
-      -moz-box-sizing: content-box;
-      box-sizing: content-box
-    }
 
     pre {
       overflow: auto
@@ -142,6 +133,12 @@
       color: #333
     }
 
+    footer {
+      font-size: 10px;
+
+      padding-bottom: 200px;
+    }
+
     a {
       color: #337ab7;
       text-decoration: none
@@ -161,7 +158,7 @@
     hr {
       margin-top: 20px;
       margin-bottom: 20px;
-      border-top: 1px solid #eee
+      border-top: 1px solid #a4a4a48c
     }
 
     h1,
@@ -290,7 +287,8 @@
       color: #718c00
     }
 
-    new, update {
+    new,
+    update {
       color: #c7254e;
       vertical-align: super;
       font-size: 80%;
@@ -309,7 +307,6 @@
     .hljs-emphasis {
       font-style: italic
     }
-
   </style>
 </head>
 
@@ -318,10 +315,10 @@
 
   <hr>
   <h1 id="intro">Intro</h1>
-  <p>In order to modify the main page, you have to modify the corresponding files under this directory. Download all
-    .md files. Open the one you need to edit - each .md file is related to each panel on the HydroShare.</p>
-  <p>For example, if you want to edit the link under &quot;Administrative&quot;, then you need to open
-    &quot;1_Administrative.txt&quot; file with Notepad. </p>
+  <p>In order to modify the main page, you have to modify the corresponding files under this directory. Download the
+    fo;file you need to edit - each .txt file is related to each panel on the HydroShare.</p>
+  <p>For example, if you want to edit the link under &quot;Administrative&quot;, then you need to download
+    &quot;1_Administrative.txt&quot; file and locally edit it with Notepad. </p>
   <hr>
   <h2 id="update-the-md-files">Update the .txt Files</h2>
   <blockquote>
@@ -332,9 +329,11 @@
       level indent.</p>
     <p><strong>2. Title</strong>: The description of the link you are going to add</p>
     <p><strong>3. Tag</strong>: This is optional - but you have two entries to choose <code>new</code> or
-      <code>update</code></p>
+      <code>update</code>
+    </p>
     <p><strong>4. Date</strong>: <code>format: yyyy-mm-dd </code>used together with the <code>new</code> or
-      <code>update</code> input, keep it empty if the last input is empty</p>
+      <code>update</code> input, keep it empty if the last input is empty
+    </p>
     <p><strong>5. Link</strong>: The url link of the document/directory you want to point to - J drive link works as
       well</p>
     <p><strong>6. Icon, 7. Icon Source, 8. Icon Link</strong>: These three need to be used in conjunction, you won't
@@ -354,13 +353,14 @@
     <li><a href="/sites/de/sites/de/DELT/Forms/AllItems.aspx"><abbr
           title="Distribution Engineering Leadership Team">DELT</abbr></a>
       <ul>
-        <li><a href="/sites/de/Business_Review/Forms/AllItems.aspx">Business Review</a><sup><new date="2028-05-02"></new></sup></li>
+        <li><a href="/sites/de/Business_Review/Forms/AllItems.aspx">Business Review</a><sup>
+            <new date="2028-05-02"></new>
+          </sup></li>
       </ul>
     </li>
   </ul>
   <p>in .txt files:</p>
   <pre><code><span class="hljs-bullet">1, DELT(Distribution Engineering Leadership Team), , , /sites/de/sites/de/DELT/Forms/AllItems.aspx, , , ,</span>
-    <div></div>
   <span class="hljs-bullet">2, Business Review, new, "yyyy-mm-dd", http://pq.bchydro.bc.ca:99/index.php, , , ,  </span></code></pre>
   <h4 id="abbreviations-">Abbreviations:</h4>
   <p>In the above example:</p>
@@ -376,11 +376,17 @@
   </blockquote>
   <hr>
   <h2 id="make-html-code">Make HTML Code</h2>
+
+  <p>Once you have edited the .txt files, re-upload it to this directory, it should override the existing .txt file.
+    Click <a href="https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/txt2html.html">here</a> you will
+    get the html code generated.The sharepoint site will update automatically</p>
   <hr>
-  <p>Once you have edited the .md files, click <a href="../html/txt2html.html">Here</a>.
-    Choose the all <code>.txt</code> files that you just downloaded and edited, then click on <code>Submit</code>. The
-    html code will be generated. You can preview the results from there. Click on <code>Copy HTML Code</code>, then
-    paste it to HydroShare to replace all the existing code.</p>
+  <footer>
+    <p>​​Maintained by
+      <a class="link" href="mailto:kan.tang@bchydro.com">Kan Tang</a> @
+      <span id="year">2024</span>
+    </p>
+  </footer>
 </body>
 
 </html>
