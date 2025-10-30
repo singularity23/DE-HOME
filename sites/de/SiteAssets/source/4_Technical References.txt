@@ -9,3 +9,5 @@ Technical References
 2, Technical&nbsp; Report, , , http://edmbchpq1/files/EPRI/EPRI_3002014978.pdf, , , 
 2, Modelling&nbsp;/ Calculator, , , http://distributionhandbook.com/calculators/mdpad.html?conductor_slapping.md, , , 
 1, EATON<sup>®</sup> CYME, , , file:///J:/Engineering/Distribution/CYME, , , 
+1, Python Scripts for CYME, , , , , ,
+2, Short Circuit Report, new, 2025-07-03, https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29, , ,

@@ -1,0 +1,333 @@
+/**** Colors ****/
+$arbutus: #fa4616;
+$grass: #50b848;
+$primary-ice: #ffffff;
+$primary-jay-100: #0074a4;
+$primary-sea-100: #05a1c6;
+$quartz: #fcd299;
+$sea: #10a3c8;
+$secondary-arbutus-100: #fa4616;
+$secondary-granite-100: #3e3935;
+$secondary-grass-100: #48a739;
+$secondary-hemlock-100: #046a38;
+$secondary-spruce-100: #004f6c;
+$secondary-stone-100: #9c948d;
+$secondary-sunset-100: #e8927c;
+$support-sand: #cbc4bc;
+$support-moss: #bcd19b;
+$support-quartz: #fcd299;
+$support-tide: #9adbe8;
+
+/**** Fonts ****/
+/** headlines-desktop-headline-1 **/
+$headlines-desktop-headline-1-font-family: 'GT Haptik', 'GTHaptikBold';
+$headlines-desktop-headline-1-font-size: 32px;
+$headlines-desktop-headline-1-letter-spacing: 0px;
+$headlines-desktop-headline-1-line-height: 38px;
+$headlines-desktop-headline-1-font-weight: 700;
+$headlines-desktop-headline-1-color: black;
+
+@mixin headlines-desktop-headline-1() {
+  font-family: $headlines-desktop-headline-1-font-family;
+  font-size: $headlines-desktop-headline-1-font-size;
+  letter-spacing: $headlines-desktop-headline-1-letter-spacing;
+  line-height: $headlines-desktop-headline-1-line-height;
+  font-weight: $headlines-desktop-headline-1-font-weight;
+  color: $headlines-desktop-headline-1-color;
+}
+/** headlines-desktop-headline-2 **/
+$headlines-desktop-headline-2-font-family: 'GT Haptik', 'GTHaptikBold';
+$headlines-desktop-headline-2-font-size: 24px;
+$headlines-desktop-headline-2-letter-spacing: 0px;
+$headlines-desktop-headline-2-line-height: 28px;
+$headlines-desktop-headline-2-font-weight: 700;
+$headlines-desktop-headline-2-color: black;
+
+@mixin headlines-desktop-headline-2() {
+  font-family: $headlines-desktop-headline-2-font-family;
+  font-size: $headlines-desktop-headline-2-font-size;
+  letter-spacing: $headlines-desktop-headline-2-letter-spacing;
+  line-height: $headlines-desktop-headline-2-line-height;
+  font-weight: $headlines-desktop-headline-2-font-weight;
+  color: $headlines-desktop-headline-2-color;
+}
+/** headlines-desktop-headline-3 **/
+$headlines-desktop-headline-3-font-family: 'GT Haptik', 'GTHaptikBold';
+$headlines-desktop-headline-3-font-size: 18px;
+$headlines-desktop-headline-3-letter-spacing: 0px;
+$headlines-desktop-headline-3-line-height: 24px;
+$headlines-desktop-headline-3-font-weight: 700;
+$headlines-desktop-headline-3-color: black;
+
+@mixin headlines-desktop-headline-3() {
+  font-family: $headlines-desktop-headline-3-font-family;
+  font-size: $headlines-desktop-headline-3-font-size;
+  letter-spacing: $headlines-desktop-headline-3-letter-spacing;
+  line-height: $headlines-desktop-headline-3-line-height;
+  font-weight: $headlines-desktop-headline-3-font-weight;
+  color: $headlines-desktop-headline-3-color;
+}
+/** headlines-desktop-headline-4 **/
+$headlines-desktop-headline-4-font-family: 'GT Haptik', 'GTHaptikBold';
+$headlines-desktop-headline-4-font-size: 13px;
+$headlines-desktop-headline-4-letter-spacing: 0px;
+$headlines-desktop-headline-4-line-height: 18px;
+$headlines-desktop-headline-4-font-weight: 700;
+$headlines-desktop-headline-4-color: black;
+
+@mixin headlines-desktop-headline-4() {
+  font-family: $headlines-desktop-headline-4-font-family;
+  font-size: $headlines-desktop-headline-4-font-size;
+  letter-spacing: $headlines-desktop-headline-4-letter-spacing;
+  line-height: $headlines-desktop-headline-4-line-height;
+  font-weight: $headlines-desktop-headline-4-font-weight;
+  color: $headlines-desktop-headline-4-color;
+}
+/** headlines-desktop-section-title **/
+$headlines-desktop-section-title-font-family: 'GT Haptik', 'GTHaptikBold';
+$headlines-desktop-section-title-font-size: 60px;
+$headlines-desktop-section-title-letter-spacing: 0px;
+$headlines-desktop-section-title-line-height: 100%;
+$headlines-desktop-section-title-font-weight: 700;
+$headlines-desktop-section-title-color: black;
+
+@mixin headlines-desktop-section-title() {
+  font-family: $headlines-desktop-section-title-font-family;
+  font-size: $headlines-desktop-section-title-font-size;
+  letter-spacing: $headlines-desktop-section-title-letter-spacing;
+  line-height: $headlines-desktop-section-title-line-height;
+  font-weight: $headlines-desktop-section-title-font-weight;
+  color: $headlines-desktop-section-title-color;
+}
+/** mobile-h1 **/
+$mobile-h1-font-family: 'GT Haptik', 'GTHaptikBold';
+$mobile-h1-font-size: 26px;
+$mobile-h1-letter-spacing: 0px;
+$mobile-h1-line-height: 30px;
+$mobile-h1-font-weight: 700;
+$mobile-h1-color: black;
+
+@mixin mobile-h1() {
+  font-family: $mobile-h1-font-family;
+  font-size: $mobile-h1-font-size;
+  letter-spacing: $mobile-h1-letter-spacing;
+  line-height: $mobile-h1-line-height;
+  font-weight: $mobile-h1-font-weight;
+  color: $mobile-h1-color;
+}
+/** mobile-h2 **/
+$mobile-h2-font-family: 'GT Haptik', 'GTHaptikBold';
+$mobile-h2-font-size: 20px;
+$mobile-h2-letter-spacing: 0px;
+$mobile-h2-line-height: 30px;
+$mobile-h2-font-weight: 700;
+$mobile-h2-color: black;
+
+@mixin mobile-h2() {
+  font-family: $mobile-h2-font-family;
+  font-size: $mobile-h2-font-size;
+  letter-spacing: $mobile-h2-letter-spacing;
+  line-height: $mobile-h2-line-height;
+  font-weight: $mobile-h2-font-weight;
+  color: $mobile-h2-color;
+}
+/** mobile-h3 **/
+$mobile-h3-font-family: 'GT Haptik', 'GTHaptikBold';
+$mobile-h3-font-size: 18px;
+$mobile-h3-letter-spacing: 0px;
+$mobile-h3-line-height: 26px;
+$mobile-h3-font-weight: 700;
+$mobile-h3-color: black;
+
+@mixin mobile-h3() {
+  font-family: $mobile-h3-font-family;
+  font-size: $mobile-h3-font-size;
+  letter-spacing: $mobile-h3-letter-spacing;
+  line-height: $mobile-h3-line-height;
+  font-weight: $mobile-h3-font-weight;
+  color: $mobile-h3-color;
+}
+/** mobile-h4 **/
+$mobile-h4-font-family: 'GT Haptik', 'GTHaptikBold';
+$mobile-h4-font-size: 14px;
+$mobile-h4-letter-spacing: 0px;
+$mobile-h4-line-height: 20px;
+$mobile-h4-font-weight: 700;
+$mobile-h4-color: black;
+
+@mixin mobile-h4() {
+  font-family: $mobile-h4-font-family;
+  font-size: $mobile-h4-font-size;
+  letter-spacing: $mobile-h4-letter-spacing;
+  line-height: $mobile-h4-line-height;
+  font-weight: $mobile-h4-font-weight;
+  color: $mobile-h4-color;
+}
+/** mobile-h5 **/
+$mobile-h5-font-family: 'Arial', 'Arial-BoldMT';
+$mobile-h5-font-size: 14px;
+$mobile-h5-letter-spacing: 0px;
+$mobile-h5-line-height: 20px;
+$mobile-h5-font-weight: 700;
+$mobile-h5-color: black;
+
+@mixin mobile-h5() {
+  font-family: $mobile-h5-font-family;
+  font-size: $mobile-h5-font-size;
+  letter-spacing: $mobile-h5-letter-spacing;
+  line-height: $mobile-h5-line-height;
+  font-weight: $mobile-h5-font-weight;
+  color: $mobile-h5-color;
+}
+/** mobile-h5-links **/
+$mobile-h5-links-font-family: 'Arial', 'Arial-BoldMT';
+$mobile-h5-links-font-size: 14px;
+$mobile-h5-links-letter-spacing: 0px;
+$mobile-h5-links-line-height: 20px;
+$mobile-h5-links-font-weight: 700;
+$mobile-h5-links-text-decoration: underline;
+$mobile-h5-links-color: black;
+
+@mixin mobile-h5-links() {
+  font-family: $mobile-h5-links-font-family;
+  font-size: $mobile-h5-links-font-size;
+  letter-spacing: $mobile-h5-links-letter-spacing;
+  line-height: $mobile-h5-links-line-height;
+  font-weight: $mobile-h5-links-font-weight;
+  text-decoration: $mobile-h5-links-text-decoration;
+  color: $mobile-h5-links-color;
+}
+/** paragraph-desktop-bullets **/
+$paragraph-desktop-bullets-font-family: 'Arial', 'ArialMT';
+$paragraph-desktop-bullets-font-size: 13px;
+$paragraph-desktop-bullets-letter-spacing: 0px;
+$paragraph-desktop-bullets-line-height: 24px;
+$paragraph-desktop-bullets-font-weight: 400;
+$paragraph-desktop-bullets-color: black;
+
+@mixin paragraph-desktop-bullets() {
+  font-family: $paragraph-desktop-bullets-font-family;
+  font-size: $paragraph-desktop-bullets-font-size;
+  letter-spacing: $paragraph-desktop-bullets-letter-spacing;
+  line-height: $paragraph-desktop-bullets-line-height;
+  font-weight: $paragraph-desktop-bullets-font-weight;
+  color: $paragraph-desktop-bullets-color;
+}
+/** paragraph-desktop-regular **/
+$paragraph-desktop-regular-font-family: 'Arial', 'ArialMT';
+$paragraph-desktop-regular-font-size: 13px;
+$paragraph-desktop-regular-letter-spacing: 0px;
+$paragraph-desktop-regular-line-height: 18px;
+$paragraph-desktop-regular-font-weight: 400;
+$paragraph-desktop-regular-color: black;
+
+@mixin paragraph-desktop-regular() {
+  font-family: $paragraph-desktop-regular-font-family;
+  font-size: $paragraph-desktop-regular-font-size;
+  letter-spacing: $paragraph-desktop-regular-letter-spacing;
+  line-height: $paragraph-desktop-regular-line-height;
+  font-weight: $paragraph-desktop-regular-font-weight;
+  color: $paragraph-desktop-regular-color;
+}
+/** paragraph-desktop-regular-bold **/
+$paragraph-desktop-regular-bold-font-family: 'Arial', 'Arial-BoldMT';
+$paragraph-desktop-regular-bold-font-size: 13px;
+$paragraph-desktop-regular-bold-letter-spacing: 0px;
+$paragraph-desktop-regular-bold-line-height: 18px;
+$paragraph-desktop-regular-bold-font-weight: 700;
+$paragraph-desktop-regular-bold-color: black;
+
+@mixin paragraph-desktop-regular-bold() {
+  font-family: $paragraph-desktop-regular-bold-font-family;
+  font-size: $paragraph-desktop-regular-bold-font-size;
+  letter-spacing: $paragraph-desktop-regular-bold-letter-spacing;
+  line-height: $paragraph-desktop-regular-bold-line-height;
+  font-weight: $paragraph-desktop-regular-bold-font-weight;
+  color: $paragraph-desktop-regular-bold-color;
+}
+/** paragraph-desktop-regular-uppercase **/
+$paragraph-desktop-regular-uppercase-font-family: 'Arial', 'Arial-BoldMT';
+$paragraph-desktop-regular-uppercase-font-size: 13px;
+$paragraph-desktop-regular-uppercase-letter-spacing: 0px;
+$paragraph-desktop-regular-uppercase-line-height: 18px;
+$paragraph-desktop-regular-uppercase-font-weight: 700;
+$paragraph-desktop-regular-uppercase-text-transform: uppercase;
+$paragraph-desktop-regular-uppercase-color: black;
+
+@mixin paragraph-desktop-regular-uppercase() {
+  font-family: $paragraph-desktop-regular-uppercase-font-family;
+  font-size: $paragraph-desktop-regular-uppercase-font-size;
+  letter-spacing: $paragraph-desktop-regular-uppercase-letter-spacing;
+  line-height: $paragraph-desktop-regular-uppercase-line-height;
+  font-weight: $paragraph-desktop-regular-uppercase-font-weight;
+  text-transform: $paragraph-desktop-regular-uppercase-text-transform;
+  color: $paragraph-desktop-regular-uppercase-color;
+}
+/** paragraph-desktop-inline-links **/
+$paragraph-desktop-inline-links-font-family: 'Arial', 'ArialMT';
+$paragraph-desktop-inline-links-font-size: 13px;
+$paragraph-desktop-inline-links-letter-spacing: 0px;
+$paragraph-desktop-inline-links-line-height: 18px;
+$paragraph-desktop-inline-links-font-weight: 400;
+$paragraph-desktop-inline-links-text-decoration: underline;
+$paragraph-desktop-inline-links-color: black;
+
+@mixin paragraph-desktop-inline-links() {
+  font-family: $paragraph-desktop-inline-links-font-family;
+  font-size: $paragraph-desktop-inline-links-font-size;
+  letter-spacing: $paragraph-desktop-inline-links-letter-spacing;
+  line-height: $paragraph-desktop-inline-links-line-height;
+  font-weight: $paragraph-desktop-inline-links-font-weight;
+  text-decoration: $paragraph-desktop-inline-links-text-decoration;
+  color: $paragraph-desktop-inline-links-color;
+}
+/** paragraph-mobile-links-inline **/
+$paragraph-mobile-links-inline-font-family: 'Arial', 'ArialMT';
+$paragraph-mobile-links-inline-font-size: 14px;
+$paragraph-mobile-links-inline-letter-spacing: 0px;
+$paragraph-mobile-links-inline-line-height: 20px;
+$paragraph-mobile-links-inline-font-weight: 400;
+$paragraph-mobile-links-inline-text-decoration: underline;
+$paragraph-mobile-links-inline-color: black;
+
+@mixin paragraph-mobile-links-inline() {
+  font-family: $paragraph-mobile-links-inline-font-family;
+  font-size: $paragraph-mobile-links-inline-font-size;
+  letter-spacing: $paragraph-mobile-links-inline-letter-spacing;
+  line-height: $paragraph-mobile-links-inline-line-height;
+  font-weight: $paragraph-mobile-links-inline-font-weight;
+  text-decoration: $paragraph-mobile-links-inline-text-decoration;
+  color: $paragraph-mobile-links-inline-color;
+}
+/** paragraph-mobile-regular **/
+$paragraph-mobile-regular-font-family: 'Arial', 'ArialMT';
+$paragraph-mobile-regular-font-size: 14px;
+$paragraph-mobile-regular-letter-spacing: 0px;
+$paragraph-mobile-regular-line-height: 20px;
+$paragraph-mobile-regular-font-weight: 400;
+$paragraph-mobile-regular-color: black;
+
+@mixin paragraph-mobile-regular() {
+  font-family: $paragraph-mobile-regular-font-family;
+  font-size: $paragraph-mobile-regular-font-size;
+  letter-spacing: $paragraph-mobile-regular-letter-spacing;
+  line-height: $paragraph-mobile-regular-line-height;
+  font-weight: $paragraph-mobile-regular-font-weight;
+  color: $paragraph-mobile-regular-color;
+}
+/** paragraph-mobile-regular-bold **/
+$paragraph-mobile-regular-bold-font-family: 'Arial', 'Arial-BoldMT';
+$paragraph-mobile-regular-bold-font-size: 14px;
+$paragraph-mobile-regular-bold-letter-spacing: 0px;
+$paragraph-mobile-regular-bold-line-height: 20px;
+$paragraph-mobile-regular-bold-font-weight: 700;
+$paragraph-mobile-regular-bold-color: black;
+
+@mixin paragraph-mobile-regular-bold() {
+  font-family: $paragraph-mobile-regular-bold-font-family;
+  font-size: $paragraph-mobile-regular-bold-font-size;
+  letter-spacing: $paragraph-mobile-regular-bold-letter-spacing;
+  line-height: $paragraph-mobile-regular-bold-line-height;
+  font-weight: $paragraph-mobile-regular-bold-font-weight;
+  color: $paragraph-mobile-regular-bold-color;
+}

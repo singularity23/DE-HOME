@@ -1,5 +1,7 @@
 Useful Links
 
+1, Engineering HydroShare, , , https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Home.aspx, , , 
+2, Engineering Resources &amp; Templates​, , , https://hydroshare.bchydro.bc.ca/sites/engineering/SitePages/Engineering.aspx, , , 
 1, Standards, , , , , , 
 2, PQ(Power Quality)web, , , http://pq.bchydro.bc.ca/index.php, , , 
 2, DS(Distribution Standards)wiki, , , http://edmbchwiki1/dist/standards/index.php/Main_Page, , , 
