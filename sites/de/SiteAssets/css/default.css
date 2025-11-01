@@ -9,6 +9,8 @@
   --box-highlight-color: #fa4616;
   --box-abbr-color: #004F6C;
   --box-webpart-color: #48A739;
+  --shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.15), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
+
 }
 
 /* ===== Custom Fonts ===== */
@@ -119,7 +121,7 @@ section .box-head {
   font-variant: small-caps;
   text-align: right;
   text-transform: uppercase;
-
+  box-shadow: var(--shadow);
 }
 
 /* ===== Typography and Lists ===== */
@@ -278,6 +280,7 @@ div#MSOZoneCell_WebPartWPQ6 {
   border: 8px solid var(--box-background-color);
   padding: 8px;
   display: table;
+  box-shadow: var(--shadow);
 }
 
 #MSOZoneCell_WebPartWPQ3 h2.ms-webpart-titleText>a {
@@ -483,7 +486,7 @@ div.dummy-bottom {
 
   #contentBox {
     margin-left: 210px !important;
-    max-width: calc(100% - 210px) !important;
+    max-width: calc(100% - 230px) !important;
   }
 
   div.right-section {

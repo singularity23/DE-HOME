@@ -32,7 +32,7 @@ window.onload = () => {
       },
     });
     const content = await fileResponse.text();
-    console.log(`Contents of ${file.Name}:`, content);
+    // console.log(`Contents of ${file.Name}:`, content);
 
     if (content) {
       const lines = content.split(/\r?\n/).filter(Boolean);
@@ -82,7 +82,7 @@ window.onload = () => {
     if (logoText && logoSrc && logoLink) {
       md += `[![${logoText}](${logoSrc})](${logoLink})`;
     }
-    console.log(md);
+    // console.log(md);
 
     return md;
   };
@@ -90,7 +90,7 @@ window.onload = () => {
   const parseComposite = composite => {
     const match = composite.match(/(.*)\(([^)]+)\)(.*)/);
     let [pretext, code, desc, trailing] = ['', '', '', ''];
-    console.log(match);
+    // console.log(match);
     if (match) {
       const abbrs = match[2].split(' ');
       const num_digits = abbrs.length;
