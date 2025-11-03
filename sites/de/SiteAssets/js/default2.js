@@ -222,17 +222,26 @@ function resize () {
     if (firstItem) {
       containerWidth = container.clientWidth;
       itemWidth = firstItem.clientWidth;
-      const actualTotal = Math.floor(containerWidth / itemWidth) - 1;
+      let actualTotal = Math.floor(containerWidth / itemWidth) - 1;
+
+      if (window.innerWidth > 1440) {
+        actualTotal = 4;
+      } else if (window.innerWidth <= 1440 && window.innerWidth > 1024) {
+        actualTotal = 3;
+      } else if (window.innerWidth <= 1024 && window.innerWidth > 768) {
+        actualTotal = 2;
+      } else if (window.innerWidth <= 768 && window.innerWidth > 480) {
+        actualTotal = 1;
+      } else {
+        actualTotal = Math.floor(containerWidth / itemWidth) - 1;
+      }
 
       function adjustFirstItemSpan () {
         const items = container.querySelectorAll('.item');
         const total = items.length;
         // Number of rows = ceil(total / 5)
-        if (itemWidth >= 220 && actualTotal > 4) {
-          rows = Math.ceil(total / 4);
-        } else {
-          rows = Math.ceil(total / actualTotal);
-        }
+        let rows = Math.ceil(total / actualTotal);
+
         // First item spans N rows if >1
         firstItem.style.gridRow = `span ${rows > 1 ? rows : 1}`;
 

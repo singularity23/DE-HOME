@@ -159,7 +159,7 @@ h1 {
 }
 
 .panel-heading {
-  padding: 15px 30px;
+  padding: 15px 20px;
   font-size: 18px;
   font-family: 'brand-font-bold';
   border-bottom: 2px groove var(--secondary-color);
@@ -186,7 +186,7 @@ h1 {
 
 .links dt a {
   display: inline-block;
-  margin: 5px 10px;
+  margin: 5px 10px 5px 5px;
   color: var(--text-subheader) !important;
   font-size: 15px;
   cursor: default;
@@ -492,7 +492,7 @@ footer {
 
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (min-width: 480px) and (max-width: 768px) {
   body {
     padding: 10px;
   }
@@ -503,5 +503,11 @@ footer {
 
   .grid-container {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: repeat(1, 1fr);
   }
 }
