@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const subheaderMatches = subheader.title?.toLowerCase().includes(searchTerm) || false;
 
                 const filteredLinks = (subheader.links || []).filter(
-                  link => link?.name?.toLowerCase().includes(searchTerm) || subheaderMatches || categoryMatches
+                  link => link?.name?.toLowerCase().includes(searchTerm) || link?.info?.toLowerCase().includes(searchTerm) || subheaderMatches || categoryMatches
                 );
 
                 return {
