@@ -475,7 +475,7 @@ div.dummy-bottom {
 /* ===== Responsive Media Queries ===== */
 
 /* Medium screens: 900px to 1440px */
-@media only screen and (min-width: 900px) and (max-width: 1440px) {
+@media only screen and (min-width: 1024px) and (max-width: 1440px) {
   section {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -505,7 +505,7 @@ div.dummy-bottom {
 }
 
 /* Small screens: up to 900px */
-@media only screen and (max-width: 900px) {
+@media only screen (min-width:480px) and (max-width: 1024px) {
   section {
     grid-template-columns: 100%;
   }
@@ -516,7 +516,7 @@ div.dummy-bottom {
 
   #contentBox {
     margin-left: 0 !important;
-    width: 100% !important;
+    width: calc(100% - 20px) !important;
   }
 
   #DeltaPlaceHolderPageTitleInTitleArea,
@@ -526,8 +526,8 @@ div.dummy-bottom {
 }
 
 /* Extra small screens: up to 430px */
-@media only screen and (max-width: 430px) {
+@media only screen and (max-width: 480px) {
   .box {
-    max-width: 430px;
+    max-width: 460px;
   }
 }
