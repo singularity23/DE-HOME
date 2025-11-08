@@ -91,7 +91,7 @@ WHERE
       )
     )
     OR (
-      S.GROUPNAME = "L1"
+      S.GROUPNAME = 'L1'
       AND (
         (
           T.SETTINGNAME LIKE (
@@ -118,7 +118,8 @@ WHERE
       )
     )
   )
-UNION ALL
+UNION
+ALL
 SELECT
   R.S01 AS DEVICE,
   R.S04 AS RELAY,

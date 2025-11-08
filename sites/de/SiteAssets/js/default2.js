@@ -1,265 +1,358 @@
-const folderUrl = '/sites/de/SiteAssets/link';
-const endpoint = `https://hydroshare.bchydro.bc.ca/sites/de/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files`;
+const CONFIG = {
+  folderUrl: '/sites/de/SiteAssets/link',
+  apiEndpoint: 'https://hydroshare.bchydro.bc.ca/sites/de/_api/web',
+  breakpoints: {
+    desktop: 1440,
+    laptop: 1024,
+    tablet: 768,
+    mobile: 480,
+  },
+};
+
 let categories = [];
 
+/**
+ * Fetches and processes files from the server
+ * @param {string} fileUrl - The API endpoint URL
+ * @returns {Promise<Array>} The processed file data
+ */
 const getFile = async fileUrl => {
-  const response = await fetch(fileUrl, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json;odata=verbose',
-    },
-  });
-  const data = await response.json();
-  const txtFiles = data.d.results.filter(file => file.Name.endsWith('.txt'));
-  if (txtFiles.length == 1) {
-    const results = await readFile(txtFiles[0]);
-    return results;
-    console.log(results);
+  try {
+    const response = await fetch(fileUrl, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json;odata=verbose',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const txtFiles = data.d.results.filter(file => file.Name.endsWith('.txt'));
+
+    if (txtFiles.length === 1) {
+      return await readFile(txtFiles[0]);
+    }
+
+    throw new Error('No valid text file found');
+  } catch (error) {
+    console.error('Error fetching file:', error);
+    return [];
   }
 };
 
+/**
+ * Reads and processes a text file
+ * @param {Object} txtFile - The text file object
+ * @returns {Promise<Array>} The processed categories
+ */
 const readFile = async txtFile => {
-  const fileResponse = await fetch(txtFile.ServerRelativeUrl, {
-    method: 'GET',
-    headers: {
-      Accept: 'text/plain',
-    },
-  });
-  const content = await fileResponse.text();
+  try {
+    const fileResponse = await fetch(txtFile.ServerRelativeUrl, {
+      method: 'GET',
+      headers: {
+        Accept: 'text/plain',
+      },
+    });
 
-  categories = eval(content);
-  renderCategories(categories);
+    if (!fileResponse.ok) {
+      throw new Error(`HTTP error! status: ${fileResponse.status}`);
+    }
+
+    const content = await fileResponse.text();
+    categories = JSON.parse(content); // Using JSON.parse instead of eval for security
+    renderCategories(categories);
+    return categories;
+  } catch (error) {
+    console.error('Error reading file:', error);
+    return [];
+  }
+};
+/**
+ * Creates a DOM element with attributes
+ * @param {string} tag - HTML tag name
+ * @param {Object} attrs - Attributes to set
+ * @returns {HTMLElement} The created element
+ */
+const createElement = (tag, attrs = {}) => {
+  const element = document.createElement(tag);
+  Object.entries(attrs).forEach(([key, value]) => {
+    if (key === 'className') {
+      element.className = value;
+    } else if (key === 'textContent') {
+      element.textContent = value;
+    } else {
+      element.setAttribute(key, value);
+    }
+  });
+  return element;
 };
 
-function renderCategories (categoriesToRender) {
+/**
+ * Renders the categories to the DOM
+ * @param {Array} categoriesToRender - Categories to display
+ */
+const renderCategories = categoriesToRender => {
+  const columns = getColumns();
   try {
-    // Get container with null check
     const container = document.getElementById('categoriesContainer');
-
-    // Validate container exists
-    if (!container) {
-      console.error('Categories container element not found');
-      return;
+    if (!container || !Array.isArray(categoriesToRender)) {
+      throw new Error('Invalid container or categories data');
     }
 
-    // Validate input
-    if (!Array.isArray(categoriesToRender)) {
-      console.error('Invalid categories data:', categoriesToRender);
-      return;
-    }
-
-    // Clear container safely
-    container.innerHTML = '';
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
 
     categoriesToRender.forEach((category, categoryIndex) => {
-      const panel = document.createElement('div');
-      panel.className = 'links panel';
+      const panel = createElement('div', { className: 'links panel' });
+      panel.appendChild(
+        createElement('div', {
+          className: 'panel-heading',
+          textContent: category.name,
+        })
+      );
 
-      const heading = document.createElement('div');
-      heading.className = 'panel-heading';
-      heading.textContent = category.name;
-      panel.appendChild(heading);
-
-      const body = document.createElement('div');
-      body.className = 'panel-body';
+      const body = createElement('div', { className: 'panel-body' });
 
       category.subheaders.forEach((subheader, subheaderIndex) => {
-        const dl = document.createElement('dl');
-        dl.className = 'grid-container';
+        const dl = createElement('dl', { className: 'grid-container' });
+        let dt;
         if (subheader.title) {
-          const dt = document.createElement('dt');
-          dt.className = 'special';
-          const dtLink = document.createElement('a');
-          dtLink.href = '#nogo';
-          dtLink.target = '_blank';
-          dtLink.textContent = subheader.title;
-          dt.appendChild(dtLink);
+          dt = createSubheaderTitle(subheader, categoryIndex, subheaderIndex);
           dl.appendChild(dt);
-          const len = subheader.links.length;
-          rows = Math.ceil(len / 4);
-          dt.style.gridRow = `span ${rows > 1 ? rows : 1}`;
         }
-
         subheader.links.forEach((link, linkIndex) => {
-          const dd = document.createElement('dd');
-          dd.className = 'item';
-          const linkEl = document.createElement('a');
-          linkEl.href = link.url;
-          linkEl.target = '_blank';
-          linkEl.innerHTML = `<span class="link-title">${link.name}</span><span class="link-info">${link.info}</span>`;
-
-          linkEl.dataset.categoryIndex = categoryIndex;
-          linkEl.dataset.subheaderIndex = subheaderIndex;
-          linkEl.dataset.linkIndex = linkIndex;
-
-          dd.appendChild(linkEl);
-          dl.appendChild(dd);
-
-          if (link.sub_links) {
-            const sublinkContainer = document.createElement('span');
-            sublinkContainer.className = 'sub-link';
-            link.sub_links.forEach(sub_link => {
-              const sublinkEl = document.createElement('span');
-              sublinkEl.innerHTML = `<b>|</b> <a href="${sub_link.url}" target="_blank">${sub_link.name}</a><span>&nbsp;</span>
-          `;
-              sublinkContainer.appendChild(sublinkEl);
-            });
-            linkEl.appendChild(sublinkContainer);
-          }
+          dl.appendChild(createLinkElement(link, categoryIndex, subheaderIndex, linkIndex));
         });
+
         body.appendChild(dl);
+        if (dt) {
+          adjustGridLayout(dl, dt, columns);
+        }
       });
 
       panel.appendChild(body);
-      container.appendChild(panel);
+      fragment.appendChild(panel);
     });
+
+    container.innerHTML = '';
+    container.appendChild(fragment);
   } catch (error) {
     console.error('Error rendering categories:', error);
   }
-}
+};
 
-// Ensure DOM is loaded before first render
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    getFile(endpoint);
-  } catch (error) {
-    console.error('Initial render failed:', error);
-  }
-});
+// Debounce function for resize events
+const debounceFunc = (func, wait) => {
+  let timeout;
+  return function executedFunction (...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
 
-// Wait for DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    // Get search input element
-    const searchInput = document.getElementById('searchInput');
-
-    // Validate search input exists
-    if (!searchInput) {
-      console.error('Search input element not found');
-      return;
-    }
-
-    // Add event listener with error handling
-    searchInput.addEventListener('input', function (e) {
-      try {
-        // Validate event and target
-        if (!e || !e.target) {
-          console.error('Invalid event object');
-          return;
-        }
-
-        const searchTerm = e.target.value.toLowerCase().trim();
-        //console.log('Search term:', searchTerm);
-
-        // If search is empty, show all categories
-        if (!searchTerm) {
-          return renderCategories(categories);
-        }
-
-        // Validate categories exists
-        if (!Array.isArray(categories)) {
-          console.error('Categories not properly initialized');
-          return;
-        }
-
-        // Filter categories based on search term
-        const filteredCategories = categories
-          .map(category => {
-            if (!category || typeof category !== 'object') {
-              return null;
-            }
-
-            const categoryMatches = category.name?.toLowerCase().includes(searchTerm) || false;
-
-            const filteredSubheaders = (category.subheaders || [])
-              .map(subheader => {
-                if (!subheader || typeof subheader !== 'object') {
-                  return null;
-                }
-
-                const subheaderMatches = subheader.title?.toLowerCase().includes(searchTerm) || false;
-
-                const filteredLinks = (subheader.links || []).filter(
-                  link => link?.name?.toLowerCase().includes(searchTerm) || link?.info?.toLowerCase().includes(searchTerm) || subheaderMatches || categoryMatches
-                );
-
-                return {
-                  ...subheader,
-                  links: filteredLinks,
-                };
-              })
-              .filter(Boolean) // Remove null entries
-              .filter(
-                subheader =>
-                  subheader.links.length > 0 || subheader.title?.toLowerCase().includes(searchTerm) || categoryMatches
-              );
-
-            return {
-              ...category,
-              subheaders: filteredSubheaders,
-            };
-          })
-          .filter(Boolean) // Remove null entries
-          .filter(category => category.subheaders.length > 0);
-
-        renderCategories(filteredCategories);
-      } catch (searchError) {
-        console.error('Error during search:', searchError);
-        // Fallback to showing all categories
-        renderCategories(categories);
-      }
-    });
-  } catch (initError) {
-    console.error('Error initializing search:', initError);
-  }
-});
-
-function resize () {
+// Optimized resize function
+const resize = debounceFunc(() => {
+  console.log('Resize event detected');
   const containers = document.querySelectorAll('.grid-container');
 
   containers.forEach(container => {
     const firstItem = container.querySelector('.special');
-    if (firstItem) {
-      containerWidth = container.clientWidth;
-      itemWidth = firstItem.clientWidth;
-      let actualTotal = Math.floor(containerWidth / itemWidth) - 1;
+    if (!firstItem) return;
+    const columns = getColumns();
 
-      if (window.innerWidth > 1440) {
-        actualTotal = 4;
-      } else if (window.innerWidth <= 1440 && window.innerWidth > 1024) {
-        actualTotal = 3;
-      } else if (window.innerWidth <= 1024 && window.innerWidth > 768) {
-        actualTotal = 2;
-      } else if (window.innerWidth <= 768 && window.innerWidth > 480) {
-        actualTotal = 1;
-      } else {
-        actualTotal = Math.floor(containerWidth / itemWidth) - 1;
-      }
-
-      function adjustFirstItemSpan () {
-        const items = container.querySelectorAll('.item');
-        const total = items.length;
-        // Number of rows = ceil(total / 5)
-        let rows = Math.ceil(total / actualTotal);
-
-        // First item spans N rows if >1
-        firstItem.style.gridRow = `span ${rows > 1 ? rows : 1}`;
-
-        // Set first item height dynamically (optional)
-        const singleHeight = 80; // matches CSS
-        firstItem.style.height = `${rows * singleHeight + 20}px`; // include gap
-      }
-
-      // Run initially
-      adjustFirstItemSpan();
-
-      // Optional: auto-adjust when items are added or removed
-      const observer = new MutationObserver(adjustFirstItemSpan);
-      observer.observe(container, { childList: true });
-    }
+    adjustGridLayout(container, firstItem, columns);
   });
-}
+}, 100);
 
-document.addEventListener('DOMContentLoaded', resize);
-window.addEventListener('resize', resize);
-window.addEventListener('scroll', resize);
+const getColumns = () => {
+  const { clientWidth: documentWidth } = document.documentElement;
+
+  let columns = 4; // Default columns
+
+  if (documentWidth <= CONFIG.breakpoints.mobile) {
+    columns = 1;
+  } else if (documentWidth <= CONFIG.breakpoints.tablet) {
+    columns = 1;
+  } else if (documentWidth <= CONFIG.breakpoints.laptop) {
+    columns = 2;
+  } else if (documentWidth <= CONFIG.breakpoints.desktop) {
+    columns = 3;
+  }
+  console.log(documentWidth);
+  return columns;
+};
+
+// Initialize the application
+const initializeApp = () => {
+  try {
+    const endpoint = `${CONFIG.apiEndpoint}/GetFolderByServerRelativeUrl('${CONFIG.folderUrl}')/Files`;
+    getFile(endpoint);
+    initializeSearch();
+    // Event listeners
+    window.addEventListener('resize', resize);
+    window.addEventListener('scroll', resize);
+  } catch (error) {
+    console.error('Error initializing app:', error);
+  }
+};
+
+/**
+ * Creates a subheader title element
+ * @param {Object} subheader - The subheader object
+ * @param {number} categoryIndex - Index of the category
+ * @param {number} subheaderIndex - Index of the subheader
+ * @returns {HTMLElement} The created title element
+ */
+const createSubheaderTitle = (subheader, categoryIndex, subheaderIndex) => {
+  const dt = createElement('dt', { className: 'special' });
+  const dtLink = createElement('a', {
+    className: 'nogo',
+    textContent: subheader.title,
+  });
+
+  dt.appendChild(dtLink);
+
+  // Set data attributes for tracking
+  dt.dataset.categoryIndex = categoryIndex;
+  dt.dataset.subheaderIndex = subheaderIndex;
+  dt.style.gridRow = 'span 1';
+
+  return dt;
+};
+
+/**
+ * Creates a link element with sub-links if present
+ * @param {Object} link - The link object
+ * @param {number} categoryIndex - Index of the category
+ * @param {number} subheaderIndex - Index of the subheader
+ * @param {number} linkIndex - Index of the link
+ * @returns {HTMLElement} The created link element
+ */
+const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
+  const dd = createElement('dd', { className: 'item' });
+  const linkEl = link.url
+    ? createElement('a', {
+        href: link.url,
+        target: '_blank',
+      })
+    : createElement('a', { className: 'nogo' });
+
+  // Add link content
+  linkEl.innerHTML = `
+    <span class="link-title">${link.name}</span>
+    <span class="link-info">${link.info || ''}</span>
+  `;
+
+  // Set data attributes
+  linkEl.dataset.categoryIndex = categoryIndex;
+  linkEl.dataset.subheaderIndex = subheaderIndex;
+  linkEl.dataset.linkIndex = linkIndex;
+
+  // Add sub-links if present
+  if (link.sub_links && link.sub_links.length > 0) {
+    const sublinkContainer = createElement('span', { className: 'sub-link' });
+    link.sub_links.forEach(subLink => {
+      const sublinkEl = createElement('span');
+      sublinkEl.innerHTML = `
+        <b>|</b> 
+        <a href="${subLink.url}" target="_blank">${subLink.name}</a>
+        <span>&nbsp;</span>
+      `;
+      sublinkContainer.appendChild(sublinkEl);
+    });
+    linkEl.appendChild(sublinkContainer);
+  }
+
+  dd.appendChild(linkEl);
+  return dd;
+};
+
+/**
+ * Adjusts the grid layout based on container width
+ * @param {HTMLElement} container - The grid container
+ * @param {HTMLElement} firstItem - The first item in the grid
+ * @param {number} columns - Number of columns to display
+ */
+const adjustGridLayout = (container, firstItem, columns) => {
+  const items = container.querySelectorAll('.item');
+  const total = items.length;
+
+  // Set grid layout
+  const rows = Math.ceil(total / columns) || 1;
+  firstItem.style.gridRow = `span ${rows}`;
+  console.log('Grid layout adjusted:', { rows, columns, total, firstItem });
+};
+
+/**
+ * Initializes the search functionality
+ */
+const initializeSearch = () => {
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) {
+    console.error('Search input element not found');
+    return;
+  }
+
+  // Debounce the search to improve performance
+  const debouncedSearch = debounceFunc(searchTerm => {
+    if (!searchTerm) {
+      renderCategories(categories);
+      return;
+    }
+
+    const filteredCategories = filterCategories(searchTerm);
+    renderCategories(filteredCategories);
+  }, 300);
+
+  searchInput.addEventListener('input', e => {
+    const searchTerm = e.target.value.toLowerCase().trim();
+    debouncedSearch(searchTerm);
+  });
+};
+
+/**
+ * Filters categories based on search term
+ * @param {string} searchTerm - The search term
+ * @returns {Array} Filtered categories
+ */
+const filterCategories = searchTerm => {
+  return categories
+    .map(category => {
+      const categoryMatches = category.name?.toLowerCase().includes(searchTerm);
+
+      const filteredSubheaders = category.subheaders
+        .map(subheader => {
+          const subheaderMatches = subheader.title?.toLowerCase().includes(searchTerm);
+
+          const filteredLinks = subheader.links.filter(
+            link =>
+              link.name?.toLowerCase().includes(searchTerm) ||
+              link.info?.toLowerCase().includes(searchTerm) ||
+              link.sub_links?.some(subLink => subLink.name?.toLowerCase().includes(searchTerm)) ||
+              subheaderMatches ||
+              categoryMatches
+          );
+
+          return filteredLinks.length > 0 || subheaderMatches ? { ...subheader, links: filteredLinks } : null;
+        })
+        .filter(Boolean);
+
+      return filteredSubheaders.length > 0 ? { ...category, subheaders: filteredSubheaders } : null;
+    })
+    .filter(Boolean);
+};
+
+const refreshApp = () => {
+  initializeApp();
+  resize();
+};
+
+// Add event listener for DOM content loaded
+document.addEventListener('DOMContentLoaded', refreshApp);

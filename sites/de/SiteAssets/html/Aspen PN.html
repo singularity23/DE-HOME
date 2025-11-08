@@ -1,210 +1,214 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="EN">
 
-	<head>
-		<meta name="viewport" content="width=device-width , initial-scale=1.0, maximum-scale=1.0" />
-		<meta charset="utf-8" />
-		<title>Aspen Feeder Relay Query Tool</title>
-		<style>
-			* {
-				box-sizing: border-box;
-				/* color: black; */
-				/* margin: 0 10px; */
-				/* margin: 10px; */
-				/* padding: 10px; */
-			}
+<head>
+	<meta name="viewport" content="width=device-width , initial-scale=1.0, maximum-scale=1.0">
+	<meta charset="utf-8">
+	<title>Aspen Feeder Relay Query Tool</title>
+	<style>
+		* {
+			box-sizing: border-box;
+			/* color: black; */
+			/* margin: 0 10px; */
+			/* margin: 10px; */
+			/* padding: 10px; */
+		}
 
-			div {
-				margin: 10px;
-			}
+		div {
+			margin: 10px;
+		}
 
-			body {
-				font-family: Arial, Helvetica, sans-serif;
-				font-size: 1.382rem;
-				background: #FFF;
-			}
+		body {
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 1.382rem;
+			background: #FFF;
+		}
 
-			#code-container,
-			#render-container,
-			#file-container,
-			#search-container {
-				width: 800px;
-				max-width: 90%;
-				margin: auto;
-				border: 1px solid #d0d0d0;
-				background-color: #f3f3f3;
-				padding: 20px, 20px;
-				display: block;
+		#code-container,
+		#render-container,
+		#file-container,
+		#search-container {
+			width: 800px;
+			max-width: 90%;
+			margin: auto;
+			border: 1px solid #d0d0d0;
+			background-color: #f3f3f3;
+			padding: 20px, 20px;
+			display: block;
 
-				/* align-self: normal; */
-			}
+			/* align-self: normal; */
+		}
 
-			#search-container input {
-				padding: 10px 10px;
-				margin: 10px 10px;
-				border-radius: 0px;
-				border-style: inset;
-				background-color: white;
-				border-width: 2px;
-				border-color: #d0d0d0;
-				font-size: 1.382rem;
-			}
+		#search-container input {
+			padding: 10px 10px;
+			margin: 10px 10px;
+			border-radius: 0px;
+			border-style: inset;
+			background-color: white;
+			border-width: 2px;
+			border-color: #d0d0d0;
+			font-size: 1.382rem;
+		}
 
-			#search-container input:valid {
-				background-color: #dcf1da;
-			}
+		#search-container input:valid {
+			background-color: #dcf1da;
+		}
 
-			#search-container input:invalid {
-				background-color: #fedad0;
-			}
+		#search-container input:invalid {
+			background-color: #fedad0;
+		}
 
-			input[type="text"]:focus-visible,
-			input[type="text"]:focus-within,
-			input[type="text"]:focus {
-				outline: grey solid 1px;
-				border-radius: 0px;
-			}
+		input[type="text"]:focus-visible,
+		input[type="text"]:focus-within,
+		input[type="text"]:focus {
+			outline: grey solid 1px;
+			border-radius: 0px;
+		}
 
 
-			.container {
-				min-width: 1000px;
-				width: 90%;
-				display: block;
-				box-sizing: border-box;
-				margin: auto;
-				padding: 20px;
-			}
+		.container {
+			min-width: 1000px;
+			width: 90%;
+			display: block;
+			box-sizing: border-box;
+			margin: auto;
+			padding: 20px;
+		}
 
-			#search-container label {
-				padding: 10px 10px;
-				font-weight: bold;
-				align-content: center;
-				text-align: right;
-			}
+		#search-container label {
+			padding: 10px 10px;
+			font-weight: bold;
+			align-content: center;
+			text-align: right;
+		}
 
-			.button {
-				transition-duration: 0.4s;
-				cursor: pointer;
-				padding: 10px 10px;
-				margin: 10px 10px 10px 0;
-				font-weight: bold;
-				font-size: 1.382rem;
-			}
+		.button {
+			transition-duration: 0.4s;
+			cursor: pointer;
+			padding: 10px 10px;
+			margin: 10px 10px 10px 0;
+			font-weight: bold;
+			font-size: 1.382rem;
+		}
 
-			.button1 {
-				background-color: white;
-				color: black;
-				border: 2px solid #04AA6D;
-			}
+		.button1 {
+			background-color: white;
+			color: black;
+			border: 2px solid #04AA6D;
+		}
 
-			.button1:hover {
-				background-color: #04AA6D;
-				color: white;
-			}
+		.button1:hover {
+			background-color: #04AA6D;
+			color: white;
+		}
 
-			.button2 {
-				background-color: white;
-				color: black;
-				border: 2px solid #008CBA;
-			}
+		.button2 {
+			background-color: white;
+			color: black;
+			border: 2px solid #008CBA;
+		}
 
-			.button2:hover {
-				background-color: #008CBA;
-				color: white;
-			}
+		.button2:hover {
+			background-color: #008CBA;
+			color: white;
+		}
 
-			.section {
-				padding: 10px 20px;
-			}
+		.section {
+			padding: 10px 20px;
+		}
 
-			.preview {
-				width: 65%;
-				align-content: center;
-			}
+		.preview {
+			width: 65%;
+			align-content: center;
+		}
 
-			.preview_box {
-				display: inline-block;
-				border: 1px solid #ddd;
-				text-decoration: none;
-				display: flex;
-				flex-wrap: nowrap;
-				justify-content: space-between;
-				background-color: white;
-				vertical-align: middle;
-			}
+		.preview_box {
+			display: inline-block;
+			border: 1px solid #ddd;
+			text-decoration: none;
+			display: flex;
+			flex-wrap: nowrap;
+			justify-content: space-between;
+			background-color: white;
+			vertical-align: middle;
+		}
 
-			form {
-				display: block;
-				padding: 5rem 0;
-			}
+		form {
+			display: block;
+			padding: 5rem 0;
+		}
 
-			#warning {
-				color: #fa4616;
-				font-size: 0.8rem;
-			}
+		#warning {
+			color: #fa4616;
+			font-size: 0.8rem;
+		}
 
-			fieldset {
-				width: 40%;
-				margin: auto;
-			}
+		fieldset {
+			width: 40%;
+			margin: auto;
+		}
 
-			legend {
-				font-size: 1.2rem;
-			}
+		legend {
+			font-size: 1.2rem;
+		}
 
-			video {
-				/* margin: auto; */
-				/* padding: 0px; */
-				/* box-sizing: content-box; */
-				display: block;
-				flex-direction: column;
-				align-content: stretch;
-				align-items: center;
-				justify-content: space-around;
-			}
-		</style>
-	</head>
+		video {
+			/* margin: auto; */
+			/* padding: 0px; */
+			/* box-sizing: content-box; */
+			display: block;
+			flex-direction: column;
+			align-content: stretch;
+			align-items: center;
+			justify-content: space-around;
+		}
+	</style>
+</head>
 
-	<body>
-		<form action="./aspen.html#" class="container">
-			<fieldset id="search-container">
-				<legend>PN Info Query from ASPEN</legend>
-				<div class="preview_box" style="display:none;">
-					<label for="feeder-input">Feeder ID:</label>
-					<input class="preview" type="text" name="feeder-input" id="feeder-input" placeholder="e.g. CSQ 12F72"
-						pattern="^\w{3}\s(4|12|25|35)(F)\d{2,3}\w?" required title="please follow the pattern " />
-					<button class="button button2" type="button" name="button_1" id="submit_1">Search</button>
-					<em id="warning"></em>
-				</div>
-				<br />
-				<small>
-					<div>Drag the following link to your bookmark bar on your browser, and click it when you are in the result
-						window or watch the video below (<mark>Updated: <span id="updated"></span></mark>)
-						<ul>
-							<li><a id="output" title="output" href="javascript:(function()%7Bconst%20text_1%20%3D'%3Cdiv%20class%3D%22input-group%22%20style%3D%22padding%3A10px%3Bbox-shadow%3A%200%202px%205px%20rgba(0%2C%200%2C%200%2C%200.2)%3Bjustify-content%3A%20center%3Bz-index%3A%201000%3B%22%3E%5Cn%20%3Cinput%20type%3D%22text%22%20id%3D%22searchInput%22%20placeholder%3D%22e.g.%20CSQ%2012F411%22%20class%3D%22app-search%20app-wj-search%20wj-control%20wj-content%20mr-2%20pl-3%22%20pattern%3D%22%5E%5C%5Cw%7B3%7D%5C%5Cs(4%7C12%7C25%7C35)(F)%5C%5Cd%7B2%2C3%7D%5C%5Cw%3F%22%20required%20title%3D%22please%20follow%20the%20pattern%20%22%3E%5Cn%20%3Cbutton%20id%3D%22searchButton%22%20type%3D%22button%22%20class%3D%22btn%20app-btn%20app-btn-outline-primary%20mr-2%20%22%3ESearch%3C%2Fbutton%3E%5Cn%3Cem%20id%3D%22warning%22%20style%3D%22color%3A%20%23fa4616%3B%20font-size%3A%200.8rem%3B%20margin%3A%20auto%205px%3B%22%3E%3C%2Fem%3E%5Cn%20%3C%2Fdiv%3E%5Cn'%3Bconst%20sytle_1%20%3D%20'input%3Avalid%20%7Bbackground-color%3A%20%23dcf1da%3B%7D%5Cninput%3Ainvalid%20%7Bbackground-color%3A%20%23fedad0%3B%7D'%3Bconst%20text_2%20%3D%20%60document.getElementById('searchButton').addEventListener('click'%2C%20()%20%3D%3E%20%7Bconst%20E%20%3D%20document.getElementById('searchInput').value%3Bconst%20reg%20%3D%20%2F%5C%5Cw%7B3%7D%5C%5Cs((4)%7C(12)%7C(25)%7C(35))(F)%5C%5Cd%7B2%2C3%7D%5C%5Cw%3F%2F%3Bif%20(reg.test(E))%20%7BQueryProtection(E)%3Bdocument.getElementById('warning').innerHTML%20%3D%20''%3B%7D%20else%20%7Bdocument.getElementById('warning').innerHTML%20%3D'Please%20use%20the%20correct%20format!'%3Bconsole.log('warning')%3Bdocument.getElementById('sql-editor').innerText%20%3D%20''%3Bdocument.getElementById(%22QueryResultGrid%22).style.display%20%3D%20'none'%3B%7D%7D)%3Bconst%20QueryProtection%20%3D%20(E)%20%3D%3E%20%7Blet%20T%20%3D%20%5C%60SELECT%20R.S01%20AS%20DEVICE%2C%20Q.RELAYTYPE%20AS%20RELAY%2C%20T.SETTINGNAME%20AS%20ELEMENT%2C%20CASE%20WHEN%20T.SETTINGNAME%20NOT%20LIKE%20'%25C'%20AND%20T.SETTINGNAME%20NOT%20LIKE%20'%25D'%20AND%20S.GROUPNAME%20%3D%20'1'%20AND%20DBMS_LOB.SUBSTR(S.SETTING%2C%204000)%20%3C%3E%20'OFF'%20THEN%20UPPER(TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING%2C%204000))%20*%20(%20SELECT%20TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING%2C%204000))%20AS%20CTR%20FROM%20TSETTING1%20S%2C%20TSETTYPE1%20T%2C%20TRELAY%20R%2C%20TREQUEST%20Q%20WHERE%20R.S01%20LIKE%20'%5C%24%7BE%7D%25'%20AND%20R.RELAYTYPE%20LIKE%20'SEL%25'%20AND%20R.ID%20%3D%20Q.RELAYID%20AND%20Q.ID%20%3D%20S.REQUESTID%20AND%20T.RELAYTYPE%20%3D%20Q.RELAYTYPE%20AND%20T.ROWNUMBER%20%3D%20S.ROWNUMBER%20AND%20S.GROUPNAME%20%3D%20'1'%20AND%20T.SETTINGNAME%20%3D%20'CTR'%20AND%20UPPER(Q.S02)%20%3D%20'IN%20SERVICE'))%20WHEN%20T.SETTINGNAME%20LIKE%20'67%25D'%20AND%20S.GROUPNAME%20%3D%20'1'%20AND%20DBMS_LOB.SUBSTR(S.SETTING%2C%204000)%20%3C%3E%20'OFF'%20THEN%20UPPER(TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING%2C%204000))%20%2F%2060)%20ELSE%20DBMS_LOB.SUBSTR(S.SETTING%2C%204000)%20END%20AS%20SETTING%2C%20Q.M01%20AS%20MEMO%20FROM%20TSETTING1%20S%2C%20TSETTYPE1%20T%2C%20TRELAY%20R%2C%20TREQUEST%20Q%20WHERE%20R.S01%20LIKE%20'%5C%24%7BE%7D%25'%20AND%20R.RELAYTYPE%20LIKE%20'SEL%25'%20AND%20R.ID%20%3D%20Q.RELAYID%20AND%20Q.ID%20%3D%20S.REQUESTID%20AND%20T.RELAYTYPE%20%3D%20Q.RELAYTYPE%20AND%20T.ROWNUMBER%20%3D%20S.ROWNUMBER%20AND%20UPPER(Q.S02)%20%3D%20'IN%20SERVICE'%20AND%20(%20(%20S.GROUPNAME%20%3D%20'1'%20AND%20T.SETTINGNAME%20IN%20(%20'51P1P'%2C%20'51P1TD'%2C%20'51P1C'%2C%20'50P1P'%2C%20'50P2P'%2C%20'50P3P'%2C%20'50P4P'%2C%20'50P5P'%2C%20'67P2D'%2C%20'67P3D'%2C%20'67P4D'%2C%20'51G1P'%2C%20'51G1TD'%2C%20'51G1C'%2C%20'50G1P'%2C%20'50G5P'%2C%20'51PP'%2C%20'51PTD'%2C%20'51PC'%2C%20'51GP'%2C%20'51GTD'%2C%20'51GC'%2C%20'51P'%2C%20'51TD'%2C%20'51C'%2C%20'50L'%2C%20'50H'%2C%20'51NP'%2C%20'51NTD'%2C%20'51NC'%2C%20'50NL'%2C%20'50NH'%2C%20'51QP'%2C%20'51QTD'%2C%20'51QC'%2C%20'50Q'%20)%20)%20OR%20(%20S.GROUPNAME%20%3D%20'L1'%20AND%20(%20(T.SETTINGNAME%20LIKE%20(%20SELECT%20S.SETTING%20AS%20TR%20FROM%20TSETTING1%20S%2C%20TSETTYPE1%20T%2C%20TRELAY%20R%2C%20TREQUEST%20Q%20WHERE%20R.S01%20LIKE%20'%5C%24%7BE%7D%25'%20AND%20R.RELAYTYPE%20LIKE%20'SEL%25'%20AND%20R.ID%20%3D%20Q.RELAYID%20AND%20Q.ID%20%3D%20S.REQUESTID%20AND%20T.RELAYTYPE%20%3D%20Q.RELAYTYPE%20AND%20T.ROWNUMBER%20%3D%20S.ROWNUMBER%20AND%20S.GROUPNAME%20%3D%20'L1'%20AND%20T.SETTINGNAME%20%3D%20'TR'%20AND%20UPPER(Q.S02)%3D'IN%20SERVICE'))%20OR%20T.SETTINGNAME%20IN('51P1TC'%2C%20'51PTC')%20)%20)%20)%20UNION%20ALL%20SELECT%20R.S01%20AS%20DEVICE%2C%20R.S04%20AS%20RELAY%2C%20R.S06%20AS%20VENDER%2C%20Q.RELAYTYPE%2C%20Q.M01%20AS%20MEMO%20FROM%20TRELAY%20R%2C%20TREQUEST%20Q%20WHERE%20R.S01%20LIKE%20'%5C%24%7BE%7D%25'%20AND%20UPPER(R.RELAYTYPE)%20LIKE%20'ELECTRO%25'%20AND%20R.ID%20%3D%20Q.RELAYID%20AND%20UPPER(Q.S02)%3D%20'IN%20SERVICE'%5C%60%3Bdocument.getElementById('sql-editor').innerText%20%3D%20T%3Bdocument.getElementById('sql-editor-section')%3F.style.display%20!%3D%3D%20'none'%20%26%26runQuery()%3Bconsole.log('Run%20Query')%3BsetTimeout(()%20%3D%3E%20%7Bconsole.log('Wait%20for%206s')%2C%20N()%3B%7D%2C%206e3)%3Bconst%20S%20%3D%20(E)%20%3D%3E%20%7Blet%20T%20%3D%20''%3Bconst%20S%20%3D%20%7B%20G%3A%20'GND%20'%2C%20P%3A%20'PHS%20'%2C%20Q%3A%20'NEG%20'%2C%20N%3A%20'GND%20'%20%7D%2CN%20%3D%20E.charAt(2)%3BT%20%2B%3D%20S%5BN%5D%20%7C%7C%20'PHS%20'%3Bif%20(%2F%5E50P%5B234%5D%2F.test(E))%20%7BT%20%3D%20'Definite%20Time%20Pick%20Up%20(A)'%3B%7D%20else%20if%20(%2F%5E67P%5B234%5D%2F.test(E))%20%7BT%20%3D%20'Definite%20Time%20Delay%20(s)'%3B%7D%20else%20%7B%3B%2F%5E50%2F.test(E)%3F%20(T%20%2B%3D%20'Inst.%20Overcurrent%20')%3A%20%2F%5E51%2F.test(E)%20%26%26%20(T%20%2B%3D%20'Timed%20Overcurrent%20')%3Bconst%20S%20%3D%20%7BP%3A%20'Pick%20Up%20(A)'%2CC%3A%20'Curve'%2CTD%3A%20'Time%20Dial'%2CTC%3A%20'Torque%20Control'%2CL%3A%20'Low%20Set'%2CH%3A%20'High%20Set'%2C%7D%2CN%20%3D%20E.slice(-1)%2CR%20%3D%20E.slice(-2)%3BS%5BR%5D%20%3F%20(T%20%2B%3D%20S%5BR%5D)%20%3A%20S%5BN%5D%20%26%26%20(T%20%2B%3D%20S%5BN%5D)%3B%7Dreturn%20(%2F%5E50%5BPG%5D5%2F.test(E)%20%26%26%20(T%20%2B%3D%20'%20(Live%20Line)')%2C%2F%5ESV%5C%5Cd%3F%5C%5Cw%2B%2F.test(E)%20%26%26%20(T%20%3D%20'_Trip%20Equation')%2CT)%3B%7D%3Bconst%20N%20%3D%20()%20%3D%3E%20%7Bconsole.log('Start')%3Bconst%20E%20%3D%20Array.from(_C1MVCCtrl5._ncc)%2CL%20%3D%20E.length%3Bif%20(L%20%3E%2010)%20%7Bfor%20(let%20X%20%3D%200%3B%20X%20%3C%20L%3B%20X%2B%2B)%20E%5BX%5D%5B4%5D%20%3D%20S(E%5BX%5D%5B2%5D)%3B%7D%20else%20%7Bdocument.body.style.fontFamily%20%3D%20'monospace'%3B%7Dalert('Query%20Completed')%3B%7D%3B%7D%60%3Btypeof%20switchEditor%20%3D%3D%3D%20'function'%20%26%26%20switchEditor()%3Bconst%20searchBar%20%3D%20document.createElement('div')%3BsearchBar.innerHTML%20%3D%20text_1%3Bconst%20styleSearch%20%3D%20document.createElement('style')%3BstyleSearch.textContent%20%3D%20sytle_1%3Bdocument.body.insertBefore(searchBar%2C%20document.body.firstChild)%3Bdocument.body.insertBefore(styleSearch%2C%20document.body.firstChild)%3Bconst%20script%20%3D%20document.createElement('script')%3Bscript.textContent%20%3D%20text_2%3Bdocument.body.appendChild(script)%3Bconst%20searchButton%20%3D%20document.getElementById('searchButton')%3Bconst%20input%20%3D%20document.getElementById('searchInput')%3Binput.addEventListener('keypress'%2C%20function%20(event)%20%7Bif%20(event.key%20%3D%3D%3D%20'Enter')%20%7Bevent.preventDefault()%3BsearchButton.click()%3B%7D%7D)%7D)()">ASPEN	Result Download</a>
-							</li>
-						</ul>
-					</div>
-				</small><br />
-				<hr />
-				<footer>
-					<small>Thanks <em>Joel McFaul</em> for the original idea. Please report issues to <a
-							href="mailto:kan.tang@bchydro.com">Kan Tang</a>
-					</small>
-				</footer>
-			</fieldset>
-		</form>
-		<div class="container">
-			<div id="file-container">
-				<video width="800" controls>
-					<source media="(min-width:800px)" src="../../SiteAssets/video/0905.mp4" type="video/mp4">
-				</video>
+<body>
+	<form action="./aspen.html#" class="container">
+		<fieldset id="search-container">
+			<legend>PN Info Query from ASPEN</legend>
+			<div class="preview_box" style="display:none;">
+				<label for="feeder-input">Feeder ID:</label>
+				<input class="preview" type="text" name="feeder-input" id="feeder-input" placeholder="e.g. CSQ 12F72"
+					pattern="^\w{3}\s(4|12|25|35)(F)\d{2,3}\w?" required title="please follow the pattern ">
+				<button class="button button2" type="button" name="button_1" id="submit_1">Search</button>
+				<button class="button button1" type="submit" style="display:none;" id="hidden_submit">Submit</button>
+				<em id="warning"></em>
 			</div>
+			<br>
+			<small>
+				Drag the following link to your bookmark bar on your browser, and click it when you are in the result
+				window or watch the video below (<mark>Updated: <span id="updated"></span></mark>)
+			</small>
+			<div>
+				<ul>
+					<li><a id="output" title="output"
+							href="javascript:(function(){const addSearchBar=()=&gt;{&quot;function&quot;==typeof switchEditor&amp;&amp;switchEditor();const n=document.createElement(&quot;div&quot;);n.innerHTML='&lt;div class=&quot;input-group&quot; style=&quot;padding:10px;box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);justify-content: center;z-index: 1000;&quot;&gt;\n &lt;input type=&quot;text&quot; id=&quot;searchInput&quot; placeholder=&quot;e.g. CSQ 12F411&quot; class=&quot;app-search app-wj-search wj-control wj-content mr-2 pl-3&quot; pattern=&quot;^\\w{3}\\s(4|12|25|35)(F)\\d{2,3}\\w?&quot; required title=&quot;please follow the pattern &quot;&gt;\n &lt;button id=&quot;searchButton&quot; type=&quot;button&quot; class=&quot;btn app-btn app-btn-outline-primary mr-2 &quot;&gt;Search&lt;/button&gt;\n&lt;em id=&quot;warning&quot; style=&quot;color: #fa4616; font-size: 0.8rem; margin: auto 5px;&quot;&gt;&lt;/em&gt;\n &lt;/div&gt;\n';const e=document.createElement(&quot;style&quot;);e.textContent=&quot;input:valid {background-color: #dcf1da;}\ninput:invalid {background-color: #fedad0;}&quot;,document.body.insertBefore(n,document.body.firstChild),document.body.insertBefore(e,document.body.firstChild),processQuery()},minifySqlManual=n=&gt;{let e=n.replace(/--.*$/gm,&quot;&quot;).replace(/\/\*[\s\S]*?\*\//g,&quot;&quot;);return e=e.replace(/\s+/g,&quot; &quot;),e=e.trim(),e},processQuery=()=&gt;{const n=document.getElementById(&quot;searchButton&quot;);n&amp;&amp;n.addEventListener(&quot;click&quot;,(()=&gt;{const n=document.getElementById(&quot;warning&quot;);n&amp;&amp;(n.innerHTML=&quot;&quot;);const e=document.getElementById(&quot;searchInput&quot;);E=e.value,T=minifySqlManual(getSqlText(E)),console.log(T);const t=/\w{3}\s((4)|(12)|(25)|(35))(F)\d{2,3}\w?/;console.log(t.test(E)),t.test(E)?(document.getElementById(&quot;sql-editor&quot;).innerText=T,&quot;none&quot;!==document.getElementById(&quot;sql-editor-section&quot;)?.style.display&amp;&amp;runQuery(),setTimeout((()=&gt;{console.log(&quot;Wait for 6s&quot;),N()}),6e3)):(document.getElementById(&quot;warning&quot;).innerHTML=&quot;Please use the correct format!&quot;,console.log(&quot;warning&quot;),document.getElementById(&quot;sql-editor&quot;).innerText=&quot;&quot;,document.getElementById(&quot;QueryResultGrid&quot;).style.display=&quot;none&quot;)}))},S=n=&gt;{let e=&quot;&quot;;if(e+={G:&quot;GND &quot;,P:&quot;PHS &quot;,Q:&quot;NEG &quot;,N:&quot;GND &quot;}[n.charAt(2)]||&quot;PHS &quot;,/^50P[234]/.test(n))e=&quot;Definite Time Pick Up (A)&quot;;else if(/^67P[234]/.test(n))e=&quot;Definite Time Delay (s)&quot;;else{/^50/.test(n)?e+=&quot;Inst. Overcurrent &quot;:/^51/.test(n)&amp;&amp;(e+=&quot;Timed Overcurrent &quot;);const E={P:&quot;Pick Up (A)&quot;,C:&quot;Curve&quot;,TD:&quot;Time Dial&quot;,TC:&quot;Torque Control&quot;,L:&quot;Low Set&quot;,H:&quot;High Set&quot;},t=n.slice(-1),T=n.slice(-2);E[T]?e+=E[T]:E[t]&amp;&amp;(e+=E[t])}return/^50[PG]5/.test(n)&amp;&amp;(e+=&quot; (Live Line)&quot;),/^SV\d?\w+/.test(n)&amp;&amp;(e=&quot;_Trip Equation&quot;),e},N=()=&gt;{console.log(&quot;Start&quot;);const n=Array.from(_C1MVCCtrl5._ncc),e=n.length;if(e&gt;10)for(let E=0;E&lt;e;E++)n[E][4]=S(n[E][2]);else document.body.style.fontFamily=&quot;monospace&quot;;alert(&quot;Query Completed&quot;)},getSqlText=n=&gt;`SELECT\n  R.S01 AS DEVICE,\n  Q.RELAYTYPE AS RELAY,\n  T.SETTINGNAME AS ELEMENT,\n  CASE\n    WHEN T.SETTINGNAME NOT LIKE '%C'\n    AND T.SETTINGNAME NOT LIKE '%D'\n    AND S.GROUPNAME = '1'\n    AND DBMS_LOB.SUBSTR (S.SETTING, 4000) &lt;&gt; 'OFF' THEN UPPER(\n      TO_NUMBER (DBMS_LOB.SUBSTR (S.SETTING, 4000)) * (\n        SELECT\n          TO_NUMBER (DBMS_LOB.SUBSTR (S.SETTING, 4000)) AS CTR\n        FROM\n          TSETTING1 S,\n          TSETTYPE1 T,\n          TRELAY R,\n          TREQUEST Q\n        WHERE\n          R.S01 LIKE '${n}%'\n          AND R.RELAYTYPE LIKE 'SEL%'\n          AND R.ID = Q.RELAYID\n          AND Q.ID = S.REQUESTID\n          AND T.RELAYTYPE = Q.RELAYTYPE\n          AND T.ROWNUMBER = S.ROWNUMBER\n          AND S.GROUPNAME = '1'\n          AND T.SETTINGNAME = 'CTR'\n          AND UPPER(Q.S02) = 'IN SERVICE'\n      )\n    )\n    WHEN T.SETTINGNAME LIKE '67%D'\n    AND S.GROUPNAME = '1'\n    AND DBMS_LOB.SUBSTR (S.SETTING, 4000) &lt;&gt; 'OFF' THEN UPPER(\n      TO_NUMBER (DBMS_LOB.SUBSTR (S.SETTING, 4000)) / 60\n    )\n    ELSE DBMS_LOB.SUBSTR (S.SETTING, 4000)\n  END AS SETTING,\n  Q.M01 AS MEMO\nFROM\n  TSETTING1 S,\n  TSETTYPE1 T,\n  TRELAY R,\n  TREQUEST Q\nWHERE\n  R.S01 LIKE '${n}%'\n  AND R.RELAYTYPE LIKE 'SEL%'\n  AND R.ID = Q.RELAYID\n  AND Q.ID = S.REQUESTID\n  AND T.RELAYTYPE = Q.RELAYTYPE\n  AND T.ROWNUMBER = S.ROWNUMBER\n  AND UPPER(Q.S02) = 'IN SERVICE'\n  AND (\n    (\n      S.GROUPNAME = '1'\n      AND T.SETTINGNAME IN (\n        '51P1P',\n        '51P1TD',\n        '51P1C',\n        '50P1P',\n        '50P2P',\n        '50P3P',\n        '50P4P',\n        '50P5P',\n        '67P2D',\n        '67P3D',\n        '67P4D',\n        '51G1P',\n        '51G1TD',\n        '51G1C',\n        '50G1P',\n        '50G5P',\n        '51PP',\n        '51PTD',\n        '51PC',\n        '51GP',\n        '51GTD',\n        '51GC',\n        '51P',\n        '51TD',\n        '51C',\n        '50L',\n        '50H',\n        '51NP',\n        '51NTD',\n        '51NC',\n        '50NL',\n        '50NH',\n        '51QP',\n        '51QTD',\n        '51QC',\n        '50Q'\n      )\n    )\n    OR (\n      S.GROUPNAME = 'L1'\n      AND (\n        (\n          T.SETTINGNAME LIKE (\n            SELECT\n              S.SETTING AS TR\n            FROM\n              TSETTING1 S,\n              TSETTYPE1 T,\n              TRELAY R,\n              TREQUEST Q\n            WHERE\n              R.S01 LIKE '${n}%'\n              AND R.RELAYTYPE LIKE 'SEL%'\n              AND R.ID = Q.RELAYID\n              AND Q.ID = S.REQUESTID\n              AND T.RELAYTYPE = Q.RELAYTYPE\n              AND T.ROWNUMBER = S.ROWNUMBER\n              AND S.GROUPNAME = 'L1'\n              AND T.SETTINGNAME = 'TR'\n              AND UPPER(Q.S02) = 'IN SERVICE'\n          )\n        )\n        OR T.SETTINGNAME IN ('51P1TC', '51PTC')\n      )\n    )\n  )\nUNION ALL\nSELECT\n  R.S01 AS DEVICE,\n  R.S04 AS RELAY,\n  R.S06 AS VENDER,\n  Q.RELAYTYPE,\n  Q.M01 AS MEMO\nFROM\n  TRELAY R,\n  TREQUEST Q\nWHERE\n  R.S01 LIKE '${n}%'\n  AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'\n  AND R.ID = Q.RELAYID\n  AND UPPER(Q.S02) = 'IN SERVICE'`;addSearchBar();}());">ASPEN
+							Result Download</a>
+					</li>
+				</ul>
+			</div>
+			<br>
+			<hr>
+			<footer>
+				<small>Thanks <em>Joel McFaul</em> for the original idea. Please report issues to <a
+						href="mailto:kan.tang@bchydro.com">Kan Tang</a>
+				</small>
+			</footer>
+		</fieldset>
+	</form>
+	<div class="container">
+		<div id="file-container">
+			<video width="800" controls>
+				<source media="(min-width:800px)" src="../../SiteAssets/video/0905.mp4" type="video/mp4">
+			</video>
 		</div>
-
-	</body>
+	</div>
 	<script>
 		document.getElementById('updated').innerText = new Intl.DateTimeFormat("en-CA").format(new Date(document.lastModified));
 	</script>
+</body>
 
 </html>

@@ -8,7 +8,7 @@
   --box-text-sublink: rgba(62, 57, 53);
   --box-text-sub: rgb(5, 161, 198);
   --text-subheader: rgb(156, 148, 141);
-
+  --border-color: rgb(156, 148, 141);
   --link-highlight-color: rgb(250, 70, 22, 1);
   --sublink-highlight-color: rgb(250, 70, 22, 0.2);
 
@@ -70,8 +70,6 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  letter-spacing: 0.0446em;
-  line-height: 1.4628em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -151,7 +149,7 @@ h1 {
   border-radius: 8px;
   background: var(--card-bg);
   box-shadow: var(--shadow);
-  border: 1px solid var(--secondary-color);
+  border: 1px solid var(--border-color);
 }
 
 .links.panel:hover {
@@ -160,14 +158,15 @@ h1 {
 
 .panel-heading {
   padding: 15px 20px;
-  font-size: 18px;
+  font-size: 1.4rem;
   font-family: 'brand-font-bold';
   border-bottom: 2px groove var(--secondary-color);
   border-radius: 4px 4px 0 0;
   color: var(--text-color);
   font-variant: small-caps;
   text-transform: uppercase;
-  line-height: 1.6em;
+  line-height: 1.4em;
+  letter-spacing: 0.075em;
 }
 
 .panel-body {
@@ -188,17 +187,18 @@ h1 {
   display: inline-block;
   margin: 5px 10px 5px 5px;
   color: var(--text-subheader) !important;
-  font-size: 15px;
+  font-size: 1.15rem;
   cursor: default;
   font-family: 'brand-font-medium';
   text-decoration: none !important;
   text-wrap-style: pretty;
   text-wrap-mode: wrap;
   white-space: normal;
-  line-height: 1.372em;
+  line-height: 1.38em;
+  letter-spacing: 0.08625em;
 }
 
-.links dt a:hover {
+.links dt a:hover, .links dt a.nogo:hover {
   text-decoration: none !important;
   color: var(--text-subheader) !important;
 }
@@ -222,44 +222,47 @@ h1 {
   width: 100%;
   background-color: 0;
   border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0);
+  text-decoration: none !important;
 }
 
 .links dd a:hover {
   background-color: var(--secondary-color) !important;
+  border: 1px solid rgba(0, 79, 108, 0.2)
 }
 
 .DEcontainer a {
-  text-decoration: none !important;
   color: var(--link-color) !important;
-  font-weight: 500;
 }
 
 .DEcontainer a:hover {
+  text-decoration: none !important;
   color: var(--link-highlight-color) !important;
 }
 
 .links dd .link-title {
   position: relative;
-  padding-bottom: 2px;
+  padding-bottom: 0.25em;
   overflow: hidden;
   display: block;
-  line-height: 1.4em;
+  line-height: 1.08em;
   text-wrap-style: pretty;
   text-wrap-mode: wrap;
   white-space: normal;
-  font-size: 14px;
+  font-size: 1.1rem;
   font-weight: 500;
+  letter-spacing: 0.075em;
 }
 
 .link-info {
   display: block;
-  font-size: 12px;
+  font-size: 0.95rem;
   color: var(--box-text-sub);
-  line-height: 1.3em;
-  text-wrap-style: pretty;
-  text-wrap-mode: wrap;
+  line-height: 1.15em;
+  text-wrap: pretty;
   white-space: normal;
-
+  letter-spacing: 0.075em;
+  padding-bottom: 0.45em;
 }
 
 .link-info:hover {
@@ -267,27 +270,24 @@ h1 {
 }
 
 .links dd .sub-link {
-  bottom: 2px;
-  left: 20px;
-  font-size: 12px;
+
   color: var(--text-color);
-  line-height: 1.5em;
   display: inline-flex;
   flex-wrap: wrap;
-  flex-direction: row;
 }
 
 .links dd .sub-link a {
-  font-size: 12px;
+  font-size: 1rem;
   color: var(--text-color) !important;
-  border-bottom-width: 2px;
-  border-bottom-style: dotted;
-  border-bottom-color: var(--text-color);
+  border-bottom: 2px dotted var(--text-color);
   padding-bottom: 2px;
   display: inline;
   padding: 0;
   border-radius: 0;
   font-weight: 500;
+  line-height: 1.5em;
+  letter-spacing: 0.0225em;
+  word-spacing: normal;
 }
 
 .links dd .sub-link a:hover {
@@ -416,25 +416,8 @@ footer {
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
-.add-category-btn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  border: none;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
+.links dd .nogo .link-title:hover, .DEcontainer a.nogo:hover {
+  color: var(--link-color) !important;
 }
 
 .add-category-btn:hover {
@@ -447,9 +430,7 @@ footer {
   grid-template-columns: repeat(5, 1fr);
   /* 5 columns */
   gap: 10px;
-  width: 100%;
-  max-width: 100%;
-  margin: auto;
+  grid-auto-rows: minmax(80px, auto);
 }
 
 .item {
@@ -459,8 +440,7 @@ footer {
 
 /* The first element (special one) */
 .special {
-  grid-row: span 1;
-  height: auto;
+  grid-column: 1;
   /* auto-height, controlled by JS dynamically */
 }
 
@@ -509,5 +489,13 @@ footer {
 @media only screen and (max-width: 480px) {
   .grid-container {
     grid-template-columns: repeat(1, 1fr);
+  }
+
+  .links dd a {
+    min-height: auto !important;
+  }
+
+  .special, .item {
+    height: auto !important;
   }
 }

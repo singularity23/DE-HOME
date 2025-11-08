@@ -1,4 +1,4 @@
-SELECT
+let sqlText = `SELECT
   R.S01 AS DEVICE,
   Q.RELAYTYPE AS RELAY,
   T.SETTINGNAME AS ELEMENT,
@@ -91,7 +91,7 @@ WHERE
       )
     )
     OR (
-      S.GROUPNAME = "L1"
+      S.GROUPNAME = 'L1'
       AND (
         (
           T.SETTINGNAME LIKE (
@@ -132,4 +132,4 @@ WHERE
   R.S01 LIKE '\${E}%'
   AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
   AND R.ID = Q.RELAYID
-  AND UPPER(Q.S02) = 'IN SERVICE'
+  AND UPPER(Q.S02) = 'IN SERVICE'`;
