@@ -8,7 +8,7 @@
   --box-text-sublink: rgba(62, 57, 53);
   --box-text-sub: rgb(5, 161, 198);
   --text-subheader: rgb(156, 148, 141);
-  --border-color: rgb(156, 148, 141);
+  --border-color: rgb(203, 196, 188);
   --link-highlight-color: rgb(250, 70, 22, 1);
   --sublink-highlight-color: rgb(250, 70, 22, 0.2);
 
@@ -21,49 +21,40 @@
   --hover-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.14), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
 }
 
+/* Fonts */
 @font-face {
   font-family: 'brand-font-light';
-  src: url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot');
-  src: url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff') format('woff'),
-    url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.ttf') format('truetype');
+  src: url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff') format('woff');
   font-weight: 300;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'brand-font-regular';
-  src: url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot');
-  src: url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff') format('woff'),
-    url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.ttf') format('truetype');
+  src: url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff') format('woff');
   font-weight: 400;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'brand-font-medium';
-  src: url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot');
-  src: url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff') format('woff'),
-    url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.ttf') format('truetype');
+  src: url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff') format('woff');
   font-weight: 500;
-}
-
-@font-face {
-  font-family: 'brand-font-black';
-  src: url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot');
-  src: url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff') format('woff'),
-    url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.ttf') format('truetype');
-  font-weight: 900;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'brand-font-bold';
-  src: url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot');
-  src: url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff') format('woff'),
-    url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.ttf') format('truetype');
+  src: url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff') format('woff');
   font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'brand-font-black';
+  src: url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff') format('woff');
+  font-weight: 900;
+  font-display: swap;
 }
 
 html {
@@ -81,6 +72,7 @@ body {
   padding: 20px;
   font-family: Arial, 'Lucida Grande', Helvetica, 'Heiti SC', 'microsoft yahei', Verdana, sans-serif;
   font-size: 13px;
+
 }
 
 .DEcontainer {
@@ -149,7 +141,7 @@ h1 {
   border-radius: 8px;
   background: var(--card-bg);
   box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
 }
 
 .links.panel:hover {
@@ -185,7 +177,7 @@ h1 {
 
 .links dt a {
   display: inline-block;
-  margin: 5px 10px 5px 5px;
+  margin: 5px 30% 5px 5px;
   color: var(--text-subheader) !important;
   font-size: 1.15rem;
   cursor: default;
@@ -195,7 +187,7 @@ h1 {
   text-wrap-mode: wrap;
   white-space: normal;
   line-height: 1.38em;
-  letter-spacing: 0.08625em;
+  letter-spacing: 0.075em;
 }
 
 .links dt a:hover, .links dt a.nogo:hover {
@@ -204,14 +196,18 @@ h1 {
 }
 
 
-.links .item,
-.links .special {
+.links dd.item {
   min-width: 220px;
   max-width: 260px;
   padding: 5px 10px 5px 5px;
   position: relative;
   margin-inline-start: 0px;
+}
 
+.links dt.special {
+  max-width: 260px;
+  padding: 5px 10px 5px 5px;
+  position: relative;
 }
 
 .links dd a {
@@ -224,6 +220,7 @@ h1 {
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0);
   text-decoration: none !important;
+
 }
 
 .links dd a:hover {
@@ -246,12 +243,14 @@ h1 {
   overflow: hidden;
   display: block;
   line-height: 1.08em;
-  text-wrap-style: pretty;
+  text-wrap: pretty;
   text-wrap-mode: wrap;
-  white-space: normal;
+  white-space: break-spaces;
   font-size: 1.1rem;
   font-weight: 500;
-  letter-spacing: 0.075em;
+  letter-spacing: 0.015em;
+  font-family: "GT-Haptik-Regular", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
 }
 
 .link-info {
@@ -261,7 +260,7 @@ h1 {
   line-height: 1.15em;
   text-wrap: pretty;
   white-space: normal;
-  letter-spacing: 0.075em;
+  letter-spacing: 0.015em;
   padding-bottom: 0.45em;
 }
 
@@ -280,13 +279,12 @@ h1 {
   font-size: 1rem;
   color: var(--text-color) !important;
   border-bottom: 2px dotted var(--text-color);
-  padding-bottom: 2px;
   display: inline;
   padding: 0;
   border-radius: 0;
   font-weight: 500;
-  line-height: 1.5em;
-  letter-spacing: 0.0225em;
+  line-height: 1.35em;
+  letter-spacing: 0.015em;
   word-spacing: normal;
 }
 
@@ -427,10 +425,14 @@ footer {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: minmax(auto, 180px) repeat(4, 1fr);
   /* 5 columns */
   gap: 10px;
   grid-auto-rows: minmax(80px, auto);
+}
+
+.grid-container:not(:has(dt.special)) {
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .item {
@@ -448,8 +450,13 @@ footer {
 
 @media only screen and (min-width: 1024px) and (max-width: 1440px) {
   .grid-container {
+    grid-template-columns: minmax(auto, 180px) repeat(3, 1fr);
+  }
+
+  .grid-container:not(:has(dt.special)) {
     grid-template-columns: repeat(4, 1fr);
   }
+
 
 }
 
@@ -459,6 +466,10 @@ footer {
   }
 
   .grid-container {
+    grid-template-columns: minmax(auto, 180px) repeat(2, 1fr);
+  }
+
+  .grid-container:not(:has(dt.special)) {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -482,12 +493,20 @@ footer {
   }
 
   .grid-container {
+    grid-template-columns: minmax(auto, 180px) repeat(1, 1fr);
+  }
+
+  .grid-container:not(:has(dt.special)) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media only screen and (max-width: 480px) {
   .grid-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .grid-container:not(:has(dt.special)) {
     grid-template-columns: repeat(1, 1fr);
   }
 

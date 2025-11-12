@@ -1,95 +1,163 @@
-const addSearchBar = () => {
-  const text_1 =
-    '<div class="input-group" style="padding:10px;box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);justify-content: center;z-index: 1000;">\n <input type="text" id="searchInput" placeholder="e.g. CSQ 12F411" class="app-search app-wj-search wj-control wj-content mr-2 pl-3" pattern="^\\w{3}\\s(4|12|25|35)(F)\\d{2,3}\\w?" required title="please follow the pattern ">\n <button id="searchButton" type="button" class="btn app-btn app-btn-outline-primary mr-2 ">Search</button>\n<em id="warning" style="color: #fa4616; font-size: 0.8rem; margin: auto 5px;"></em>\n </div>\n';
-  const style_1 = 'input:valid {background-color: #dcf1da;}\ninput:invalid {background-color: #fedad0;}';
-  typeof switchEditor === 'function' && switchEditor();
-  const searchBar = document.createElement('div');
-  searchBar.innerHTML = text_1;
-  const styleSearch = document.createElement('style');
-  styleSearch.textContent = style_1;
-  document.body.insertBefore(searchBar, document.body.firstChild);
-  document.body.insertBefore(styleSearch, document.body.firstChild);
+// ...existing code...
+(() => {
+  'use strict';
 
-  processQuery();
-};
+  const SELECTORS = {
+    searchContainerId: 'aspen-search-container',
+    inputId: 'searchInput',
+    buttonId: 'searchButton',
+    warningId: 'warning',
+    sqlEditorId: 'sql-editor',
+    sqlEditorSectionId: 'sql-editor-section',
+    resultGridId: 'QueryResultGrid',
+  };
 
-const minifySqlManual = sql => {
-  // Remove comments (single-line -- and multi-line /* */)
-  let minified = sql.replace(/--.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-  // Replace multiple whitespace characters with a single space
-  minified = minified.replace(/\s+/g, ' ');
-  // Trim leading/trailing spaces and newlines
-  minified = minified.trim();
-  return minified;
-};
+  const PATTERN = /^\w{3}\s(4|12|25|35)F\d{2,3}\w?$/i;
 
-const processQuery = () => {
-  const searchButton = document.getElementById('searchButton');
-  searchButton &&
-    searchButton.addEventListener('click', () => {
-      const warningText = document.getElementById('warning');
-      warningText && (warningText.innerHTML = '');
-      const searchInput = document.getElementById('searchInput');
-      E = searchInput.value;
-      T = minifySqlManual(getSqlText(E));
-      console.log(T);
-      const reg = /\w{3}\s((4)|(12)|(25)|(35))(F)\d{2,3}\w?/;
-      console.log(reg.test(E));
-      if (reg.test(E)) {
-        document.getElementById('sql-editor').innerText = T;
-        document.getElementById('sql-editor-section')?.style.display !== 'none' && runQuery();
-        setTimeout(() => {
-          console.log('Wait for 6s'), N();
-        }, 6e3);
-      } else {
-        document.getElementById('warning').innerHTML = 'Please use the correct format!';
-        console.log('warning');
-        document.getElementById('sql-editor').innerText = '';
-        document.getElementById('QueryResultGrid').style.display = 'none';
+  const addSearchBar = () => {
+    try {
+      if (typeof switchEditor === 'function') switchEditor();
+
+      // Create wrapper
+      const wrapper = document.createElement('div');
+      wrapper.id = SELECTORS.searchContainerId;
+      wrapper.className = 'input-group';
+      wrapper.style.cssText = 'padding:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);justify-content:center;z-index:1000;';
+
+      // Input
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = SELECTORS.inputId;
+      input.placeholder = 'e.g. CSQ 12F411';
+      input.className = 'app-search app-wj-search wj-control wj-content mr-2 pl-3';
+      input.setAttribute('pattern', '^\\w{3}\\s(4|12|25|35)(F)\\d{2,3}\\w?$');
+      input.title = 'please follow the pattern';
+      wrapper.appendChild(input);
+
+      // Button
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.id = SELECTORS.buttonId;
+      btn.className = 'btn app-btn app-btn-outline-primary mr-2';
+      btn.textContent = 'Search';
+      wrapper.appendChild(btn);
+
+      // Warning/feedback element
+      const warning = document.createElement('em');
+      warning.id = SELECTORS.warningId;
+      warning.style.cssText = 'color:#fa4616;font-size:0.8rem;margin:auto 5px;';
+      wrapper.appendChild(warning);
+
+      // Small style to show input validity colors (inject once)
+      const styleId = 'aspen-search-style';
+      if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = 'input:valid{background-color:#dcf1da;} input:invalid{background-color:#fedad0;}';
+        document.head.appendChild(style);
       }
-    });
-};
 
-const S = E => {
-  let T = '';
-  const S = { G: 'GND ', P: 'PHS ', Q: 'NEG ', N: 'GND ' },
-    N = E.charAt(2);
-  T += S[N] || 'PHS ';
-  if (/^50P[234]/.test(E)) {
-    T = 'Definite Time Pick Up (A)';
-  } else if (/^67P[234]/.test(E)) {
-    T = 'Definite Time Delay (s)';
-  } else {
-    /^50/.test(E) ? (T += 'Inst. Overcurrent ') : /^51/.test(E) && (T += 'Timed Overcurrent ');
-    const S = {
+      document.body.insertBefore(wrapper, document.body.firstChild);
+
+      attachHandlers();
+    } catch (err) {
+      console.error('addSearchBar error:', err);
+    }
+  };
+
+  const minifySqlManual = sql => {
+    if (!sql) return '';
+    try {
+      // remove single-line and block comments then collapse whitespace
+      return sql
+        .replace(/--.*$/gm, '')
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    } catch (err) {
+      console.error('minifySqlManual error:', err);
+      return sql;
+    }
+  };
+
+  const decodeSettingName = code => {
+    // original S() mapping and logic preserved, renamed and cleaned
+    if (!code) return '';
+    try {
+      const phaseMap = { G: 'GND ', P: 'PHS ', Q: 'NEG ', N: 'GND ' };
+      const thirdChar = code.charAt(2);
+      let result = phaseMap[thirdChar] || 'PHS ';
+
+      if (/^50P[234]/.test(code)) {
+        return 'Definite Time Pick Up (A)';
+      }
+      if (/^67P[234]/.test(code)) {
+        return 'Definite Time Delay (s)';
+      }
+
+      if (/^50/.test(code)) result += 'Inst. Overcurrent ';
+      else if (/^51/.test(code)) result += 'Timed Overcurrent ';
+
+      const suffixMap = {
         P: 'Pick Up (A)',
         C: 'Curve',
         TD: 'Time Dial',
         TC: 'Torque Control',
         L: 'Low Set',
         H: 'High Set',
-      },
-      N = E.slice(-1),
-      R = E.slice(-2);
-    S[R] ? (T += S[R]) : S[N] && (T += S[N]);
-  }
-  return /^50[PG]5/.test(E) && (T += ' (Live Line)'), /^SV\d?\w+/.test(E) && (T = '_Trip Equation'), T;
-};
+      };
 
-const N = () => {
-  console.log('Start');
-  const E = Array.from(_C1MVCCtrl5._ncc),
-    L = E.length;
-  if (L > 10) {
-    for (let X = 0; X < L; X++) E[X][4] = S(E[X][2]);
-  } else {
-    document.body.style.fontFamily = 'monospace';
-  }
-  alert('Query Completed');
-};
+      const last = code.slice(-1);
+      const last2 = code.slice(-2);
 
-const getSqlText = E => {
-  let sqlText = `SELECT
+      if (suffixMap[last2]) result += suffixMap[last2];
+      else if (suffixMap[last]) result += suffixMap[last];
+
+      if (/^50[PG]5/.test(code)) result += ' (Live Line)';
+      if (/^SV\d?\w+/.test(code)) result = '_Trip Equation';
+
+      return result;
+    } catch (err) {
+      console.error('decodeSettingName error:', err);
+      return '';
+    }
+  };
+
+  const processResults = () => {
+    try {
+      console.log('Start processing results');
+      if (!window._C1MVCCtrl5 || !_C1MVCCtrl5._ncc) {
+        document.body.style.fontFamily = 'monospace';
+        alert('Query Completed');
+        return;
+      }
+
+      const rows = Array.from(_C1MVCCtrl5._ncc);
+      const count = rows.length;
+      if (count > 10) {
+        for (let i = 0; i < count; i++) {
+          // preserve original behavior: set decoded description into index [4]
+          try {
+            rows[i][4] = decodeSettingName(rows[i][2]);
+          } catch (innerErr) {
+            console.warn('row decode error', i, innerErr);
+          }
+        }
+      } else {
+        document.body.style.fontFamily = 'monospace';
+      }
+      alert('Query Completed');
+    } catch (err) {
+      console.error('processResults error:', err);
+      alert('Query Completed');
+    }
+  };
+
+  const getSqlText = inputCode => {
+    if (!inputCode) return '';
+    const E = inputCode;
+    // SQL template preserved. Keep minification for display or execution.
+    return `SELECT
   R.S01 AS DEVICE,
   Q.RELAYTYPE AS RELAY,
   T.SETTINGNAME AS ELEMENT,
@@ -224,7 +292,59 @@ WHERE
   AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
   AND R.ID = Q.RELAYID
   AND UPPER(Q.S02) = 'IN SERVICE'`;
-  return sqlText;
-};
+  };
 
-addSearchBar();
+  const attachHandlers = () => {
+    const button = document.getElementById(SELECTORS.buttonId);
+    if (!button) return;
+
+    button.addEventListener('click', () => {
+      const warningEl = document.getElementById(SELECTORS.warningId);
+      const inputEl = document.getElementById(SELECTORS.inputId);
+      if (!inputEl) return;
+
+      if (warningEl) warningEl.textContent = '';
+
+      const rawValue = inputEl.value.trim();
+      if (!PATTERN.test(rawValue)) {
+        if (warningEl) warningEl.textContent = 'Please use the correct format!';
+        console.warn('Invalid format:', rawValue);
+        const sqlEditor = document.getElementById(SELECTORS.sqlEditorId);
+        if (sqlEditor) sqlEditor.innerText = '';
+        const grid = document.getElementById(SELECTORS.resultGridId);
+        if (grid) grid.style.display = 'none';
+        return;
+      }
+
+      try {
+        const sql = minifySqlManual(getSqlText(rawValue));
+        const sqlEditor = document.getElementById(SELECTORS.sqlEditorId);
+        if (sqlEditor) sqlEditor.innerText = sql;
+
+        // runQuery may be defined elsewhere in the original environment
+        if (typeof runQuery === 'function') {
+          runQuery();
+        }
+
+        // Keep the original delay + processing behavior
+        setTimeout(() => {
+          processResults();
+        }, 6000);
+      } catch (err) {
+        console.error('Search handler error:', err);
+      }
+    });
+  };
+
+  // expose for debugging if needed (optional)
+  window.AspenQuery = {
+    addSearchBar,
+    minifySqlManual,
+    decodeSettingName,
+    processResults,
+    getSqlText,
+  };
+
+  // initialize immediately
+  addSearchBar();
+})();

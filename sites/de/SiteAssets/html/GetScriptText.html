@@ -1,91 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Read and Process Text Files</title>
-    <style>
-      .output {
-        white-space: pre-wrap;
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Read and Process Text Files</h1>
-    <div id="output" class="output"></div>
-    <div id="output1" class="output"></div>
-    <div id="output2" class="output"></div>
-    <div id="output3" class="output"></div>
 
-    <script>
-      const SQL_URL = '/sites/de/SiteAssets/js/ASPEN Feeder PN.txt';
-      const SCRIPT_URL = '/sites/de/SiteAssets/js/ASPEN_Query.js';
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read and Process Text Files</title>
+  <style>
+    .output {
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
 
-      // Utility function to minify SQL code
-      function minifyCode(sql) {
-        return sql
-          .replace(/--.*$/gm, '') // Remove single-line comments
-          .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-          .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with a single space
-          .replace(/\(\s*/g, '(') // Remove leading spaces inside parentheses
-          .replace(/\s*\)/g, ')') // Remove trailing spaces inside parentheses
-          .trim(); // Remove leading and trailing spaces
-      }
+<body>
+  <h1>Read and Process Text Files</h1>
+  <div id="output" class="output"></div>
+  <div id="output1" class="output"></div>
+  <div id="output2" class="output"></div>
+  <div id="output3" class="output"></div>
 
-      // Utility function to fetch data from a URL
-      async function fetchData(url) {
-        try {
-          const response = await fetch(url, {
-            method: 'GET',
-            credentials: 'same-origin',
-          });
-          if (!response.ok) {
-            throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
-          }
-          return await response.text();
-        } catch (error) {
-          console.error(`Error fetching data from ${url}:`, error);
-          return null; // Return null if the fetch fails
+  <script>
+    const SQL_URL = '/sites/de/SiteAssets/js/ASPEN_Feeder_PN.js';
+    const SCRIPT_URL = '/sites/de/SiteAssets/js/ASPEN_Query.js';
+
+    // Utility function to minify SQL code
+    function minifyCode(sql) {
+
+      return sql
+        .replace(/\/{2}\s.+/gm, '')        // Remove single-line comments
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+        .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with a single space
+        .replace(/\(\s*/g, '(') // Remove leading spaces inside parentheses
+        .replace(/\s*\)/g, ')')
+        .replace(/\s+?\./g, '.')
+        // Remove trailing spaces inside parentheses
+        .trim(); // Remove leading and trailing spaces
+    }
+
+    // Utility function to fetch data from a URL
+    async function fetchData(url) {
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          credentials: 'same-origin',
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
         }
+        return await response.text();
+      } catch (error) {
+        console.error(`Error fetching data from ${url}:`, error);
+        return null; // Return null if the fetch fails
       }
+    }
 
-      // Function to render data into the output elements
-      async function renderData() {
-        const outputElements = {
-          rawSQL: document.getElementById('output'),
-          minifiedSQL: document.getElementById('output1'),
-          rawScript: document.getElementById('output2'),
-          processedScript: document.getElementById('output3'),
-        };
+    // Function to render data into the output elements
+    async function renderData() {
+      const outputElements = {
+        rawSQL: document.getElementById('output'),
+        minifiedSQL: document.getElementById('output1'),
+        rawScript: document.getElementById('output2'),
+        processedScript: document.getElementById('output3'),
+      };
 
-        // Fetch and process SQL data
-        const sqlData = await fetchData(SQL_URL);
-        if (sqlData) {
-          outputElements.rawSQL.innerText = sqlData;
-          const minifiedSQL = minifyCode(sqlData);
-          outputElements.minifiedSQL.innerText = minifiedSQL;
+      // Fetch and process SQL data
+      const sqlData = await fetchData(SQL_URL);
+      if (sqlData) {
+        outputElements.rawSQL.innerText = sqlData;
+        const minifiedSQL = minifyCode(sqlData);
+        outputElements.minifiedSQL.innerText = minifiedSQL;
 
-          // Fetch and process script data
-          const scriptData = await fetchData(SCRIPT_URL);
-          if (scriptData) {
-            outputElements.rawScript.innerText = scriptData;
-            const processedScript = scriptData
-              .replace('ToBeReplaced', minifiedSQL)
-              .replace(/`/gm, '\\`');
-            outputElements.processedScript.innerText = processedScript;
-          } else {
-            outputElements.rawScript.innerText = 'Failed to load script data.';
-          }
+        // Fetch and process script data
+        const scriptData = await fetchData(SCRIPT_URL);
+        if (scriptData) {
+          outputElements.rawScript.innerText = scriptData;
+          const minifiedScript = minifyCode(scriptData);
+
+          outputElements.processedScript.innerText = minifiedScript;
         } else {
-          outputElements.rawSQL.innerText = 'Failed to load SQL data.';
+          outputElements.rawScript.innerText = 'Failed to load script data.';
         }
+      } else {
+        outputElements.rawSQL.innerText = 'Failed to load SQL data.';
       }
+    }
 
-      // Initialize the rendering process
-      renderData();
-    </script>
-  </body>
+    // Initialize the rendering process
+    renderData();
+  </script>
+</body>
+
 </html>
