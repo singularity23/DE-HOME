@@ -1,4 +1,4 @@
-(() => {
+javascript: (function () {
   'use strict';
 
   // Enhanced Configuration with better organization
@@ -10,14 +10,15 @@
       warningId: 'warning',
       sqlEditorId: 'sql-editor',
       resultGridId: 'QueryResultGrid',
-      tableContainer: 'tableContainer',
-      main: 'app-main',
+      containerId: 'tableContainer',
+      mainAppClass: 'app-main',
     },
     patterns: {
       searchInput: /^\w{3}\s(4|12|25|35)[fF]\d{2,3}\w?$/i,
     },
     styles: {
-      wrapper: 'padding:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);justify-content:center;z-index:1000;',
+      wrapper:
+        'padding:10px; box-shadow:rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;justify-content:center;z-index:1000;',
       warning: 'color:#fa4616;font-size:0.8rem;margin:auto 5px;',
       inputValid: 'background-color:#dcf1da;',
       inputInvalid: 'background-color:#fedad0;',
@@ -107,7 +108,7 @@
     },
 
     getElement (id) {
-      const element = document.getElementById(id);
+      let element = document.getElementById(id);
       if (!element) {
         console.warn(`Element with id '${id}' not found`);
       }
@@ -135,98 +136,6 @@
 
     clearWarning () {
       this.showWarning('');
-    },
-  };
-
-  // Optimized SQL Utilities
-  const SQL = {
-    minify (sql) {
-      if (!sql?.trim()) return '';
-
-      return sql
-        .replace(/--.*$/gm, '') // Remove single line comments
-        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-        .replace(/\s+/g, ' ') // Collapse whitespace
-        .trim();
-    },
-
-    generate (inputCode) {
-      if (!inputCode) return '';
-
-      const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
-      const baseCondition = `R.S01 LIKE '${inputCode}%' AND R.RELAYTYPE LIKE 'SEL%'`;
-
-      return SQL.minify(`
-        SELECT
-          R.S01 AS DEVICE,
-          Q.RELAYTYPE AS RELAY,
-          T.SETTINGNAME AS ELEMENT,
-          CASE
-            WHEN T.SETTINGNAME NOT LIKE '%C'
-            AND T.SETTINGNAME NOT LIKE '%D'
-            AND S.GROUPNAME = '1'
-            AND DBMS_LOB.SUBSTR(S.SETTING, 4000) <> 'OFF' THEN UPPER(
-              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) * (
-                SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) AS CTR
-                FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-                WHERE ${baseCondition}
-                  AND R.ID = Q.RELAYID
-                  AND Q.ID = S.REQUESTID
-                  AND T.RELAYTYPE = Q.RELAYTYPE
-                  AND T.ROWNUMBER = S.ROWNUMBER
-                  AND S.GROUPNAME = '1'
-                  AND T.SETTINGNAME = 'CTR'
-                  AND UPPER(Q.S02) = 'IN SERVICE'
-              )
-            )
-            WHEN T.SETTINGNAME LIKE '67%D'
-            AND S.GROUPNAME = '1'
-            AND DBMS_LOB.SUBSTR(S.SETTING, 4000) <> 'OFF' THEN UPPER(
-              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) / 60
-            )
-            ELSE DBMS_LOB.SUBSTR(S.SETTING, 4000)
-          END AS SETTING,
-          Q.M01 AS MEMO
-        FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-        WHERE ${baseCondition}
-          AND R.ID = Q.RELAYID
-          AND Q.ID = S.REQUESTID
-          AND T.RELAYTYPE = Q.RELAYTYPE
-          AND T.ROWNUMBER = S.ROWNUMBER
-          AND UPPER(Q.S02) = 'IN SERVICE'
-          AND (
-            (S.GROUPNAME = '1' AND T.SETTINGNAME IN (${settingsList}))
-            OR (
-              S.GROUPNAME = 'L1' AND (
-                T.SETTINGNAME LIKE (
-                  SELECT S.SETTING AS TR
-                  FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-                  WHERE ${baseCondition}
-                    AND R.ID = Q.RELAYID
-                    AND Q.ID = S.REQUESTID
-                    AND T.RELAYTYPE = Q.RELAYTYPE
-                    AND T.ROWNUMBER = S.ROWNUMBER
-                    AND S.GROUPNAME = 'L1'
-                    AND T.SETTINGNAME = 'TR'
-                    AND UPPER(Q.S02) = 'IN SERVICE'
-                )
-                OR T.SETTINGNAME IN ('51P1TC', '51PTC')
-              )
-            )
-          )
-        UNION ALL
-        SELECT
-          R.S01 AS DEVICE,
-          R.S04 AS RELAY,
-          R.S06 AS VENDER,
-          Q.RELAYTYPE,
-          Q.M01 AS MEMO
-        FROM TRELAY R, TREQUEST Q
-        WHERE R.S01 LIKE '${inputCode}%'
-          AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
-          AND R.ID = Q.RELAYID
-          AND UPPER(Q.S02) = 'IN SERVICE'
-      `);
     },
   };
 
@@ -313,8 +222,8 @@
   const TableRenderer = {
     createTable (headers, data) {
       const table = DOM.createElement('table', {
-        border: '1',
-        style: 'border-collapse: collapse; width: 100%; font-family: monospace; font-size: 13px;',
+        style:
+          'border-collapse: collapse; max-width:100%; font-family: monospace; font-size: 13px; border: 1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;',
       });
 
       table.appendChild(this.createTableHead(headers));
@@ -329,7 +238,7 @@
 
       headers.forEach((header, index) => {
         const th = DOM.createElement('th', {
-          style: `padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #f2f2f2; font-weight: bold; width: ${this.getColumnWidth(
+          style: `padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold; width: ${this.getColumnWidth(
             headers.length,
             index
           )}vw`,
@@ -344,11 +253,10 @@
 
     createTableBody (data) {
       const tbody = DOM.createElement('tbody');
-      console.log(data);
+
       data.forEach(row => {
         const tr = DOM.createElement('tr');
         const rowData = Array.isArray(row) ? row : Object.values(row);
-        console.log(rowData);
 
         rowData.forEach(cell => {
           const cellData = typeof cell === 'object' ? cell.value : cell;
@@ -444,10 +352,10 @@
     },
 
     removeOriginal () {
-      const results = document.getElementById(CONFIG.selectors.resultGridId);
-      results.style.display = 'none';
-      const main = document.querySelector(`.${CONFIG.selectors.main}`);
-      main.setAttribute('style', 'min-height: auto');
+      const results = DOM.getElement(CONFIG.selectors.resultGridId);
+      if (results) results.style.display = 'none';
+      const main = document.querySelector(`.${CONFIG.selectors.mainAppClass}`);
+      if (main) main.setAttribute('style', 'min-height: auto');
     },
 
     downloadAsHtml (filename, headers, data) {
@@ -458,9 +366,9 @@
 <head>
     <title>${filename}</title>
     <style>
-        table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }
+        table { border-collapse: collapse; max-width: 100%; font-family: Arial, sans-serif; border:1px solid #ddd;border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;}
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f2f2f2; font-weight: bold; font-size: 14px; }
+        th { background-color: #97979780; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -487,8 +395,6 @@
   const DataProcessor = {
     processResults () {
       try {
-        console.log('Processing query results...');
-
         // Check for required global objects
         if (!this.hasRequiredGlobals()) {
           this.showCompletionAlert();
@@ -504,9 +410,15 @@
 
         const feederId = this.extractFeederId();
         this.showCompletionAlert();
-
-        TableManager.createContainer(feederId);
+        const container = TableManager.createContainer();
         this.renderTable();
+
+        const downloadBtn = TableManager.createDownloadButton(feederId);
+
+        container.insertBefore(DOM.createElement('br'), container.firstChild);
+        container.insertBefore(DOM.createElement('br'), container.firstChild);
+        container.insertBefore(downloadBtn, container.firstChild);
+        TableRenderer.removeOriginal();
       } catch (err) {
         console.error('Results processing error:', err);
         this.showCompletionAlert();
@@ -558,8 +470,7 @@
       if (currentState.tableRows.length > CONFIG.table.rowThreshold) {
         currentState.tableRows = TableRenderer.mergeConsecutiveCells(currentState.tableRows);
       }
-      TableRenderer.render(CONFIG.selectors.tableContainer, headers, currentState.tableRows);
-      TableRenderer.removeOriginal();
+      TableRenderer.render(CONFIG.selectors.containerId, headers, currentState.tableRows);
     },
 
     showCompletionAlert () {
@@ -569,18 +480,12 @@
 
   // Table Manager for container management
   const TableManager = {
-    createContainer (filename) {
-      let container = DOM.getElement(CONFIG.selectors.tableContainer);
-
-      if (!container) {
-        this.createDownloadButton(filename);
-        container = DOM.createElement('div', {
-          id: CONFIG.selectors.tableContainer,
-          style: 'margin: 20px 0; padding: 10px; border: 1px solid #ccc;',
-        });
-
-        document.body.appendChild(container);
-      }
+    createContainer () {
+      const container = DOM.createElement('div', {
+        id: CONFIG.selectors.containerId,
+        style: 'margin: 20px 0; padding: 10px; border: 1px solid #ccc;',
+      });
+      document.body.appendChild(container);
 
       return container;
     },
@@ -588,7 +493,7 @@
     createDownloadButton (filename) {
       const downloadBtn = DOM.createElement('button', {
         className: CONFIG.classes.button,
-        textContent: 'Download as HTML',
+        textContent: 'Download',
         onclick: () => {
           const headers = currentState.headerRow.map(header => header.Name);
           TableRenderer.downloadAsHtml(filename, headers, currentState.tableRows);
@@ -598,6 +503,7 @@
       document.body.appendChild(downloadBtn);
       document.body.appendChild(DOM.createElement('br'));
       document.body.appendChild(DOM.createElement('br'));
+      return downloadBtn;
     },
   };
 
@@ -629,7 +535,7 @@
       const input = DOM.createElement('input', {
         type: 'text',
         id: CONFIG.selectors.inputId,
-        placeholder: 'e.g. CSQ 12F411',
+        placeholder: '...ABC 12F123',
         className: CONFIG.classes.input,
         pattern: CONFIG.patterns.searchInput.source,
         title: 'Please follow the pattern: ABC 12F123',
@@ -659,23 +565,24 @@
 
       if (!button || !input) return;
 
-      button.addEventListener('click', () => this.handleSearch());
+      button.addEventListener('click', () => this.handleSearch(input));
       input.addEventListener('keypress', e => {
-        if (e.key === 'Enter') this.handleSearch();
+        if (e.key === 'Enter') this.handleSearch(input);
+      });
+      input.addEventListener('change', () => {
+        input.value = input.value.toUpperCase();
       });
     },
 
-    handleSearch () {
+    handleSearch (inputEl) {
       if (currentState.isProcessing) return;
 
       DOM.clearWarning();
 
-      const inputEl = DOM.getElement(CONFIG.selectors.inputId);
       const rawValue = inputEl.value.trim().toUpperCase();
 
       if (!this.validateInput(rawValue)) {
         DOM.showWarning('Please use the correct format (e.g., ABC 12F123)!');
-        this.hideTable();
         return;
       }
 
@@ -684,11 +591,6 @@
 
     validateInput (value) {
       return CONFIG.patterns.searchInput.test(value);
-    },
-
-    hideTable () {
-      const grid = DOM.getElement(CONFIG.selectors.tableContainer);
-      if (grid) grid.style.display = 'none';
     },
 
     executeSearch (searchValue) {
@@ -717,6 +619,98 @@
       if (sqlEditor) {
         sqlEditor.textContent = sql;
       }
+    },
+  };
+
+  // Optimized SQL Utilities
+  const SQL = {
+    minify (sql) {
+      if (!sql?.trim()) return '';
+
+      return sql
+        .replace(/--.*$/gm, '') // Remove single line comments
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+        .replace(/\s+/g, ' ') // Collapse whitespace
+        .trim();
+    },
+
+    generate (inputCode) {
+      if (!inputCode) return '';
+
+      const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
+      const baseCondition = `R.S01 LIKE '${inputCode}%' AND R.RELAYTYPE LIKE 'SEL%'`;
+
+      return SQL.minify(`
+        SELECT
+          R.S01 AS DEVICE,
+          Q.RELAYTYPE AS RELAY,
+          T.SETTINGNAME AS ELEMENT,
+          CASE
+            WHEN T.SETTINGNAME NOT LIKE '%C'
+            AND T.SETTINGNAME NOT LIKE '%D'
+            AND S.GROUPNAME = '1'
+            AND DBMS_LOB.SUBSTR(S.SETTING, 4000) <> 'OFF' THEN UPPER(
+              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) * (
+                SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) AS CTR
+                FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
+                WHERE ${baseCondition}
+                  AND R.ID = Q.RELAYID
+                  AND Q.ID = S.REQUESTID
+                  AND T.RELAYTYPE = Q.RELAYTYPE
+                  AND T.ROWNUMBER = S.ROWNUMBER
+                  AND S.GROUPNAME = '1'
+                  AND T.SETTINGNAME = 'CTR'
+                  AND UPPER(Q.S02) = 'IN SERVICE'
+              )
+            )
+            WHEN T.SETTINGNAME LIKE '67%D'
+            AND S.GROUPNAME = '1'
+            AND DBMS_LOB.SUBSTR(S.SETTING, 4000) <> 'OFF' THEN UPPER(
+              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) / 60
+            )
+            ELSE DBMS_LOB.SUBSTR(S.SETTING, 4000)
+          END AS SETTING,
+          Q.M01 AS MEMO
+        FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
+        WHERE ${baseCondition}
+          AND R.ID = Q.RELAYID
+          AND Q.ID = S.REQUESTID
+          AND T.RELAYTYPE = Q.RELAYTYPE
+          AND T.ROWNUMBER = S.ROWNUMBER
+          AND UPPER(Q.S02) = 'IN SERVICE'
+          AND (
+            (S.GROUPNAME = '1' AND T.SETTINGNAME IN (${settingsList}))
+            OR (
+              S.GROUPNAME = 'L1' AND (
+                T.SETTINGNAME LIKE (
+                  SELECT S.SETTING AS TR
+                  FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
+                  WHERE ${baseCondition}
+                    AND R.ID = Q.RELAYID
+                    AND Q.ID = S.REQUESTID
+                    AND T.RELAYTYPE = Q.RELAYTYPE
+                    AND T.ROWNUMBER = S.ROWNUMBER
+                    AND S.GROUPNAME = 'L1'
+                    AND T.SETTINGNAME = 'TR'
+                    AND UPPER(Q.S02) = 'IN SERVICE'
+                )
+                OR T.SETTINGNAME IN ('51P1TC', '51PTC')
+              )
+            )
+          )
+        UNION ALL
+        SELECT
+          R.S01 AS DEVICE,
+          R.S04 AS RELAY,
+          R.S06 AS VENDER,
+          Q.RELAYTYPE,
+          Q.M01 AS MEMO
+        FROM TRELAY R, TREQUEST Q
+        WHERE R.S01 LIKE '${inputCode}%'
+          AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
+          AND R.ID = Q.RELAYID
+          AND UPPER(Q.S02) = 'IN SERVICE'
+      `);
     },
   };
 
