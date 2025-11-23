@@ -136,6 +136,9 @@ javascript: (function () {
 
     clearWarning () {
       this.showWarning('');
+      document.getElementById(CONFIG.selectors.containerId)?.remove();
+      const sqlEditor = document.getElementById(CONFIG.selectors.sqlEditorId);
+      if (sqlEditor) sqlEditor.textContent = '';
     },
   };
 
@@ -410,7 +413,9 @@ javascript: (function () {
 
         const feederId = this.extractFeederId();
         this.showCompletionAlert();
-        const container = TableManager.createContainer();
+
+        const container = document.getElementById(CONFIG.selectors.containerId) || TableManager.createContainer();
+
         this.renderTable();
 
         const downloadBtn = TableManager.createDownloadButton(feederId);
