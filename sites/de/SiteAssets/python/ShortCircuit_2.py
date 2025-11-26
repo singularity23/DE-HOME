@@ -17,7 +17,7 @@ import subprocess
 from urllib.parse import quote
 from datetime import datetime
 from dataclasses import dataclass
-from typing import List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any
 from cympy import app as App, eq as Eqt, sim as Sim, study as Std
 
 # Constants
@@ -89,7 +89,6 @@ class ChromeBrowser:
                 return True
             except webbrowser.Error:
                 pass
-
         # Try subprocess
         chrome_path = ChromeBrowser.get_chrome_path()
         if chrome_path:
@@ -1240,7 +1239,7 @@ class FaultPoint:
             primaryForm,
         ) = inputs
 
-        if primaryForm != "1":
+        if primaryForm != "Yes":
             return
 
         _date = datetime.now().strftime("%Y-%m-%d")
@@ -1349,10 +1348,10 @@ class SourceEquivalent:
                 self.Nameplate,
                 0,  # Length
                 0,  # Distance
-                _ensure_positive(self.R1TN),
-                _ensure_positive(self.X1TN),
-                _ensure_positive(self.R0TN),
-                _ensure_positive(self.X0TN),
+                _ensure_positive(self.R1max),
+                _ensure_positive(self.X1max),
+                _ensure_positive(self.R0max),
+                _ensure_positive(self.X0max),
                 0,
                 0,
                 0,
@@ -1402,31 +1401,11 @@ class SourceEquivalent:
         self._get_source_objects()
 
         if self._source_device:
-            SCReport.write(" User Defined Source Equivalent")
-            self._store_user_defined_source_info(SCReport)
-        elif self._source_obj:
             self._store_equipment_source_info(SCReport)
+        elif self._source_obj:
+            SCReport.write(" User Defined Source Equivalent")
         else:
             SCReport.write(" Source equivalent from network parameters")
-
-    def _store_user_defined_source_info(self, SCReport) -> None:
-        """Store information for user-defined sources"""
-        try:
-            # Try to get additional information from user-defined source
-            device_id = self._source_device.GetValue("DeviceID")  # type: ignore
-            if device_id and device_id != self.SourceName:
-                SCReport.write(f" (Device ID: {device_id})")
-
-            # Get source voltage if available
-            try:
-                source_kv = self._source_device.GetValue("NominalKVLL")  # type: ignore
-                if source_kv:
-                    SCReport.write(f"\n{'Nominal Voltage:':<25} {source_kv} kV")
-            except Exception:
-                pass
-
-        except Exception:
-            pass
 
     def _store_equipment_source_info(self, SCReport) -> None:
         """Store information for equipment-based sources"""
