@@ -1,7 +1,10 @@
 javascript: (function () {
   'use strict';
 
-  // Enhanced Configuration with better organization
+  /**
+   * Enhanced Configuration with better organization
+   * All configurable values centralized for easy maintenance
+   */
   const CONFIG = {
     selectors: {
       searchContainerId: 'aspen-search-container',
@@ -12,6 +15,7 @@ javascript: (function () {
       resultGridId: 'QueryResultGrid',
       containerId: 'tableContainer',
       mainAppClass: 'app-main',
+      styleId: 'aspen-search-style',
     },
     patterns: {
       searchInput: /^\w{3}\s(4|12|25|35)[fF]\d{2,3}\w?$/i,
@@ -22,6 +26,10 @@ javascript: (function () {
       warning: 'color:#fa4616;font-size:0.8rem;margin:auto 5px;',
       inputValid: 'background-color:#dcf1da;',
       inputInvalid: 'background-color:#fedad0;',
+      table: 'border-collapse: collapse; max-width:100%; font-family: monospace; font-size: 13px; border: 1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;',
+      tableHeader: 'padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold;',
+      tableCell: 'padding: 6px; border: 1px solid #ddd; vertical-align: middle; white-space: pre-wrap;',
+      container: 'margin: 20px 0; padding: 10px; border: 1px solid #ccc;',
     },
     classes: {
       input: 'text-uppercase app-search app-wj-search wj-control wj-content mr-2 pl-3',
@@ -29,68 +37,95 @@ javascript: (function () {
     },
     sql: {
       settingNames: [
-        '51P1P',
-        '51P1TD',
-        '51P1C',
-        '50P1P',
-        '50P2P',
-        '50P3P',
-        '50P4P',
-        '50P5P',
-        '67P2D',
-        '67P3D',
-        '67P4D',
-        '51G1P',
-        '51G1TD',
-        '51G1C',
-        '50G1P',
-        '50G5P',
-        '51PP',
-        '51PTD',
-        '51PC',
-        '51GP',
-        '51GTD',
-        '51GC',
-        '51P',
-        '51TD',
-        '51C',
-        '50L',
-        '50H',
-        '51NP',
-        '51NTD',
-        '51NC',
-        '50NL',
-        '50NH',
-        '51QP',
-        '51QTD',
-        '51QC',
-        '50Q',
+        '51P1P', '51P1TD', '51P1C', '50P1P', '50P2P', '50P3P', '50P4P', '50P5P',
+        '67P2D', '67P3D', '67P4D', '51G1P', '51G1TD', '51G1C', '50G1P', '50G5P',
+        '51PP', '51PTD', '51PC', '51GP', '51GTD', '51GC', '51P', '51TD', '51C',
+        '50L', '50H', '51NP', '51NTD', '51NC', '50NL', '50NH', '51QP', '51QTD',
+        '51QC', '50Q',
       ],
+      excludedArevaSettings: [
+        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/PULS.PROL.IN>,INTPS1',
+        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/HOLD-T. TIN>,INTMPS1',
+        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/TIN>>>> PS1',
+        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/EVALUATION IN PS1',
+        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/EVAL. IN>,>>,>>> PS1',
+      ],
+      queryDelay: 6000,
+      dbmsLobLength: 4000,
     },
     table: {
       widthConfig: {
-        6: [12, 12, 12, 15, 24, 25],
-        5: [10, 10, 10, 10, 60],
+        SEL: [12, 12, 12, 15, 24, 25],
+        ELECTRO: [5, 5, 5, 5, 80],
+        AREVA: [10, 10, 60, 15, 5],
       },
-      rowThreshold: 10,
+      mergeColumns: {
+        SEL: [0, 1, 5], // DEVICE, RELAY, PN DESC
+        AREVA: [0, 1], // DEVICE, RELAY
+      },
+      sortColumnIndex: 4,
+      headerReplacements: {
+        ELEMENT: 'VENDER', // For 5-column tables (ELECTRO)
+      },
+    },
+    messages: {
+      queryCompleted: 'Query Completed',
+      invalidFormat: 'Please use the correct format (e.g., ABC 12F123)!',
+      inputPattern: 'Please follow the pattern: ABC 12F123',
+      placeholder: '...ABC 12F123',
+    },
+    relayTypes: {
+      SEL: 'SEL',
+      ELECTRO: 'ELECTRO',
+      AREVA: 'AREVA',
+      UNKNOWN: 'unknown',
     },
   };
 
-  // Immutable state management
-  const state = Object.freeze({
+  /**
+   * State management with proper encapsulation
+   */
+  const createState = () => ({
     headerRow: null,
     tableRows: null,
     isProcessing: false,
+    relayType: '',
   });
 
-  let currentState = { ...state };
+  let state = createState();
 
-  // Enhanced DOM Utilities with better error handling
+  /**
+   * Pre-compiled regex patterns for better performance
+   */
+  const Patterns = {
+    definiteTime: {
+      '50P[234]': /^50P[234]/,
+      '67P[234]': /^67P[234]/,
+    },
+    overCurrent: {
+      '50': /^50/,
+      '51': /^51/,
+    },
+    special: {
+      '50[PG]5': /^50[PG]5/,
+      'SV': /^SV\d?\w+/,
+    },
+  };
+
+  /**
+   * Enhanced DOM Utilities with better error handling and performance
+   */
   const DOM = {
-    createElement (tag, options = {}) {
+    /**
+     * Creates a DOM element with options
+     * @param {string} tag - HTML tag name
+     * @param {Object} options - Element attributes and properties
+     * @returns {HTMLElement}
+     */
+    createElement(tag, options = {}) {
       const element = document.createElement(tag);
 
-      Object.entries(options).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(options)) {
         if (key === 'style' && typeof value === 'string') {
           element.style.cssText = value;
         } else if (key === 'textContent') {
@@ -99,50 +134,70 @@ javascript: (function () {
           element.className = value;
         } else if (key === 'onclick') {
           element.onclick = value;
+        } else if (key === 'innerHTML') {
+          element.innerHTML = value;
         } else {
           element.setAttribute(key, value);
         }
-      });
+      }
 
       return element;
     },
 
-    getElement (id) {
-      let element = document.getElementById(id);
+    /**
+     * Gets element by ID with error handling
+     * @param {string} id - Element ID
+     * @returns {HTMLElement|null}
+     */
+    getElement(id) {
+      const element = document.getElementById(id);
       if (!element) {
         console.warn(`Element with id '${id}' not found`);
       }
       return element;
     },
 
-    injectStyles () {
-      const styleId = 'aspen-search-style';
-      if (!document.getElementById(styleId)) {
-        const style = this.createElement('style', { id: styleId });
-        style.textContent = `
-          input:valid { ${CONFIG.styles.inputValid} }
-          input:invalid { ${CONFIG.styles.inputInvalid} }
-        `;
-        document.head.appendChild(style);
-      }
+    /**
+     * Injects CSS styles into the document head
+     */
+    injectStyles() {
+      if (document.getElementById(CONFIG.selectors.styleId)) return;
+
+      const style = this.createElement('style', { id: CONFIG.selectors.styleId });
+      style.textContent = `
+        input:valid { ${CONFIG.styles.inputValid} }
+        input:invalid { ${CONFIG.styles.inputInvalid} }
+      `;
+      document.head.appendChild(style);
     },
 
-    showWarning (message) {
+    /**
+     * Shows warning message
+     * @param {string} message - Warning message
+     */
+    showWarning(message) {
       const warningEl = this.getElement(CONFIG.selectors.warningId);
       if (warningEl) {
         warningEl.textContent = message;
       }
     },
 
-    clearWarning () {
+    /**
+     * Clears warning and removes previous results
+     */
+    clearWarning() {
       this.showWarning('');
-      document.getElementById(CONFIG.selectors.containerId)?.remove();
+      const container = document.getElementById(CONFIG.selectors.containerId);
+      if (container) container.remove();
+
       const sqlEditor = document.getElementById(CONFIG.selectors.sqlEditorId);
       if (sqlEditor) sqlEditor.textContent = '';
     },
   };
 
-  // Enhanced Setting Name Decoder with better pattern matching
+  /**
+   * Enhanced Setting Name Decoder with optimized pattern matching
+   */
   const SettingDecoder = {
     phaseMap: {
       G: 'GND ',
@@ -160,73 +215,93 @@ javascript: (function () {
       H: 'High Set',
     },
 
-    definiteTime: {
+    definiteTimeMap: {
       '^50P[234]': 'Definite Time Pick Up (A)',
       '^67P[234]': 'Definite Time Delay (s)',
     },
 
-    overCurrent: {
+    overCurrentMap: {
       '^50': 'Inst. Overcurrent ',
       '^51': 'Timed Overcurrent ',
     },
 
-    specialPattern: {
+    specialPatternMap: {
       '^50[PG]5': '(Live Line)',
       '^SV\\d?\\w+': '_Trip Equation',
     },
 
-    decode (code) {
-      if (!code) return '';
+    /**
+     * Decodes setting code to human-readable description
+     * @param {string} code - Setting code
+     * @returns {string} Decoded description
+     */
+    decode(code) {
+      if (!code || typeof code !== 'string') return '';
 
       try {
-        // Check for special patterns first
-        const sPattern = Object.entries(this.specialPattern);
-        for (const [pattern, replacement] of Object.entries(this.definiteTime)) {
+        // Check definite time patterns
+        for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
           if (new RegExp(pattern).test(code)) {
             return this.getBaseDescription(code) + replacement;
           }
         }
 
-        for (const [pattern, replacement] of Object.entries(this.overCurrent)) {
+        // Check overcurrent patterns
+        for (const [pattern, replacement] of Object.entries(this.overCurrentMap)) {
           if (new RegExp(pattern).test(code)) {
-            if (new RegExp(sPattern[0][0]).test(code)) {
-              return this.getBaseDescription(code) + replacement + this.getSuffixDescription(code) + sPattern[0][1];
-            } else {
-              return this.getBaseDescription(code) + replacement + this.getSuffixDescription(code);
-            }
+            const base = this.getBaseDescription(code);
+            const suffix = this.getSuffixDescription(code);
+            const liveLine = Patterns.special['50[PG]5'].test(code) ? '(Live Line)' : '';
+            return base + replacement + suffix + liveLine;
           }
         }
 
-        if (new RegExp(sPattern[1][0]).test(code)) {
-          return sPattern[1][1];
+        // Check special patterns
+        if (Patterns.special.SV.test(code)) {
+          return '_Trip Equation';
         }
       } catch (err) {
         console.error('Setting name decode error:', err);
-        return '';
       }
+
+      return '';
     },
 
-    getBaseDescription (code) {
+    /**
+     * Gets base phase description from code
+     * @param {string} code - Setting code
+     * @returns {string} Phase description
+     */
+    getBaseDescription(code) {
       const thirdChar = code.charAt(2);
-      const phase = this.phaseMap[thirdChar] || 'PHS ';
-
-      return phase;
+      return this.phaseMap[thirdChar] || 'PHS ';
     },
 
-    getSuffixDescription (code) {
+    /**
+     * Gets suffix description from code
+     * @param {string} code - Setting code
+     * @returns {string} Suffix description
+     */
+    getSuffixDescription(code) {
       const last2 = code.slice(-2);
       const last1 = code.slice(-1);
-
       return this.suffixMap[last2] || this.suffixMap[last1] || '';
     },
   };
 
-  // Optimized Table Renderer
+  /**
+   * Optimized Table Renderer with better performance
+   */
   const TableRenderer = {
-    createTable (headers, data) {
+    /**
+     * Creates a complete table element
+     * @param {Array<string>} headers - Table headers
+     * @param {Array} data - Table data rows
+     * @returns {HTMLTableElement}
+     */
+    createTable(headers, data) {
       const table = DOM.createElement('table', {
-        style:
-          'border-collapse: collapse; max-width:100%; font-family: monospace; font-size: 13px; border: 1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;',
+        style: CONFIG.styles.table,
       });
 
       table.appendChild(this.createTableHead(headers));
@@ -235,18 +310,25 @@ javascript: (function () {
       return table;
     },
 
-    createTableHead (headers) {
+    /**
+     * Creates table header row
+     * @param {Array<string>} headers - Header names
+     * @returns {HTMLTableSectionElement}
+     */
+    createTableHead(headers) {
       const thead = DOM.createElement('thead');
       const tr = DOM.createElement('tr');
+      const columnCount = headers.length;
 
       headers.forEach((header, index) => {
+        const displayHeader = this.getDisplayHeader(header, columnCount);
+        const width = this.getColumnWidth(state.relayType, columnCount, index);
+
         const th = DOM.createElement('th', {
-          style: `padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold; width: ${this.getColumnWidth(
-            headers.length,
-            index
-          )}vw`,
-          textContent: headers.length === 5 && header === 'ELEMENT' ? 'VENDER' : header,
+          style: `${CONFIG.styles.tableHeader} width: ${width}vw`,
+          textContent: displayHeader,
         });
+
         tr.appendChild(th);
       });
 
@@ -254,17 +336,35 @@ javascript: (function () {
       return thead;
     },
 
-    createTableBody (data) {
+    /**
+     * Gets display header name with replacements
+     * @param {string} header - Original header
+     * @param {number} columnCount - Total column count
+     * @returns {string} Display header
+     */
+    getDisplayHeader(header, columnCount) {
+      if (columnCount === 5 && header === 'ELEMENT') {
+        return CONFIG.table.headerReplacements.ELEMENT;
+      }
+      return header;
+    },
+
+    /**
+     * Creates table body with data rows
+     * @param {Array} data - Table data
+     * @returns {HTMLTableSectionElement}
+     */
+    createTableBody(data) {
       const tbody = DOM.createElement('tbody');
 
-      data.forEach(row => {
+      for (const row of data) {
         const tr = DOM.createElement('tr');
         const rowData = Array.isArray(row) ? row : Object.values(row);
 
-        rowData.forEach(cell => {
+        for (const cell of rowData) {
           const cellData = typeof cell === 'object' ? cell.value : cell;
           const td = DOM.createElement('td', {
-            style: 'padding: 6px; border: 1px solid #ddd; vertical-align: middle; white-space: pre-wrap;',
+            style: CONFIG.styles.tableCell,
             textContent: cellData,
           });
 
@@ -273,56 +373,73 @@ javascript: (function () {
           }
 
           tr.appendChild(td);
-        });
+        }
 
         tbody.appendChild(tr);
-      });
+      }
 
       return tbody;
     },
 
-    swapColumns (array, index1, index2) {
+    /**
+     * Swaps two columns in an array
+     * @param {Array} array - Array to modify
+     * @param {number} index1 - First index
+     * @param {number} index2 - Second index
+     */
+    swapColumns(array, index1, index2) {
       [array[index1], array[index2]] = [array[index2], array[index1]];
     },
 
-    mergeConsecutiveCells (rows) {
+    /**
+     * Merges consecutive identical cells in specified columns
+     * Optimized algorithm with better performance
+     * @param {Array<Array>} rows - Table rows
+     * @returns {Array<Array>} Rows with merged cell information
+     */
+    mergeConsecutiveCells(rows) {
       if (!rows.length) return rows;
+
+      const mergeColumns = CONFIG.table.mergeColumns[state.relayType] || [];
+      if (!mergeColumns.length) return rows;
 
       const colCount = rows[0].length;
       const mergeMap = Array.from({ length: rows.length }, () =>
         Array.from({ length: colCount }, () => ({ rowspan: 1, skip: false }))
       );
 
-      // Check each column for consecutive same values
-      for (let col = 0; col < colCount; col++) {
-        if (col == 0 || col == 1 || col == 5) {
-          let currentValue = rows[0][col];
-          let startRow = 0;
-          let count = 1;
+      // Process each mergeable column
+      for (const col of mergeColumns) {
+        if (col >= colCount) continue;
 
-          for (let row = 1; row <= rows.length; row++) {
-            if (row < rows.length && rows[row][col] === currentValue) {
-              count++;
-            } else {
-              if (count > 1) {
-                // Mark cells to be merged
-                mergeMap[startRow][col].rowspan = count;
-                for (let i = startRow + 1; i < startRow + count; i++) {
-                  mergeMap[i][col].skip = true;
-                }
-              }
+        let currentValue = rows[0][col];
+        let startRow = 0;
+        let count = 1;
 
-              if (row < rows.length) {
-                currentValue = rows[row][col];
-                startRow = row;
-                count = 1;
+        for (let row = 1; row <= rows.length; row++) {
+          const isLastRow = row === rows.length;
+          const isSameValue = !isLastRow && rows[row][col] === currentValue;
+
+          if (isSameValue) {
+            count++;
+          } else {
+            if (count > 1) {
+              mergeMap[startRow][col].rowspan = count;
+              for (let i = startRow + 1; i < startRow + count; i++) {
+                mergeMap[i][col].skip = true;
               }
+            }
+
+            if (!isLastRow) {
+              currentValue = rows[row][col];
+              startRow = row;
+              count = 1;
             }
           }
         }
       }
 
-      // Apply merge information to rows
+      // Build merged rows
       const mergedRows = [];
       for (let row = 0; row < rows.length; row++) {
         const newRow = [];
@@ -341,11 +458,24 @@ javascript: (function () {
       return mergedRows;
     },
 
-    getColumnWidth (columnCount, index) {
-      return CONFIG.table.widthConfig[columnCount]?.[index] || 100 / columnCount;
+    /**
+     * Gets column width based on relay type
+     * @param {string} relayType - Relay type
+     * @param {number} columnCount - Total columns
+     * @param {number} index - Column index
+     * @returns {number} Column width in vw
+     */
+    getColumnWidth(relayType, columnCount, index) {
+      return CONFIG.table.widthConfig[relayType]?.[index] || 100 / columnCount;
     },
 
-    render (containerId, headers, data) {
+    /**
+     * Renders table to container
+     * @param {string} containerId - Container element ID
+     * @param {Array<string>} headers - Table headers
+     * @param {Array} data - Table data
+     */
+    render(containerId, headers, data) {
       const container = DOM.getElement(containerId);
       if (!container) return;
 
@@ -354,22 +484,31 @@ javascript: (function () {
       container.appendChild(table);
     },
 
-    removeOriginal () {
+    /**
+     * Hides original query result grid
+     */
+    removeOriginal() {
       const results = DOM.getElement(CONFIG.selectors.resultGridId);
       if (results) results.style.display = 'none';
+
       const main = document.querySelector(`.${CONFIG.selectors.mainAppClass}`);
       if (main) main.setAttribute('style', 'min-height: auto');
     },
 
-    downloadAsHtml (filename, headers, data) {
+    /**
+     * Downloads table as HTML file
+     * @param {string} filename - Filename without extension
+     * @param {Array<string>} headers - Table headers
+     * @param {Array} data - Table data
+     */
+    downloadAsHtml(filename, headers, data) {
       const tableHtml = this.createTable(headers, data).outerHTML;
-      const fullHtml = `
-<!DOCTYPE html>
+      const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
     <title>${filename}</title>
     <style>
-        table { border-collapse: collapse; max-width: 100%; font-family: Arial, sans-serif; border:1px solid #ddd;border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;}
+        table { border-collapse: collapse; max-width: 100%; font-family: Arial, sans-serif; border:1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;}
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #97979780; font-weight: bold; font-size: 14px; }
     </style>
@@ -394,127 +533,203 @@ javascript: (function () {
     },
   };
 
-  // Data Processing with better state management
+  /**
+   * Data Processing with optimized state management
+   */
   const DataProcessor = {
-    processResults () {
+    /**
+     * Main processing function for query results
+     */
+    processResults() {
       try {
-        // Check for required global objects
         if (!this.hasRequiredGlobals()) {
           this.showCompletionAlert();
           return;
         }
 
         this.updateStateFromGlobals();
-
-        if (currentState.tableRows.length > CONFIG.table.rowThreshold) {
-          this.addDescriptionColumn();
-          TableRenderer.swapColumns(currentState.headerRow, 4, 5);
-        }
-
+        this.detectRelayType();
         const feederId = this.extractFeederId();
-        this.showCompletionAlert();
 
-        const container = document.getElementById(CONFIG.selectors.containerId) || TableManager.createContainer();
-
+        this.addDescriptionColumn();
         this.renderTable();
 
-        const downloadBtn = TableManager.createDownloadButton(feederId);
-
-        container.insertBefore(DOM.createElement('br'), container.firstChild);
-        container.insertBefore(DOM.createElement('br'), container.firstChild);
-        container.insertBefore(downloadBtn, container.firstChild);
+        this.setupDownloadButton(feederId);
         TableRenderer.removeOriginal();
+        this.showCompletionAlert();
       } catch (err) {
         console.error('Results processing error:', err);
         this.showCompletionAlert();
       }
     },
 
-    hasRequiredGlobals () {
-      return !!(cvAvailableTableFields?._ncc && _C1MVCCtrl5?._ncc);
+    /**
+     * Checks if required global objects exist
+     * @returns {boolean}
+     */
+    hasRequiredGlobals() {
+      return !!(window.cvAvailableTableFields?._ncc && window._C1MVCCtrl5?._ncc);
     },
 
-    updateStateFromGlobals () {
-      currentState.headerRow = Array.from(cvAvailableTableFields._ncc);
-      currentState.tableRows = Array.from(_C1MVCCtrl5._ncc);
+    /**
+     * Updates state from global query result objects
+     */
+    updateStateFromGlobals() {
+      state.headerRow = Array.from(window.cvAvailableTableFields._ncc);
+      state.tableRows = Array.from(window._C1MVCCtrl5._ncc);
     },
 
-    addDescriptionColumn () {
-      currentState.headerRow.push({
-        Key: '5',
-        Table: '',
-        Name: 'PN ELEMENT DESC',
-        Alias: null,
-      });
+    /**
+     * Detects relay type from table data
+     */
+    detectRelayType() {
+      if (!state.tableRows?.length) {
+        state.relayType = CONFIG.relayTypes.UNKNOWN;
+        return;
+      }
 
-      currentState.tableRows = currentState.tableRows.map(row => {
+      const firstRow = state.tableRows[0];
+      const relayTypeCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
+      const upperRelayType = String(relayTypeCell || '').toUpperCase();
+
+      if (upperRelayType.includes(CONFIG.relayTypes.SEL)) {
+        state.relayType = CONFIG.relayTypes.SEL;
+      } else if (upperRelayType.includes(CONFIG.relayTypes.ELECTRO)) {
+        state.relayType = CONFIG.relayTypes.ELECTRO;
+      } else if (upperRelayType.includes(CONFIG.relayTypes.AREVA)) {
+        state.relayType = CONFIG.relayTypes.AREVA;
+      } else {
+        state.relayType = CONFIG.relayTypes.UNKNOWN;
+      }
+    },
+
+    /**
+     * Adds description column for SEL relays
+     */
+    addDescriptionColumn() {
+      if (state.relayType === CONFIG.relayTypes.SEL) {
+        state.headerRow.push({
+          Key: '5',
+          Table: '',
+          Name: 'PN ELEMENT DESC',
+          Alias: null,
+        });
+        TableRenderer.swapColumns(state.headerRow, 4, 5);
+      }
+
+      state.tableRows = state.tableRows.map((row) => {
         const rowArray = Array.isArray(row) ? [...row] : Object.values(row);
-        rowArray[5] = SettingDecoder.decode(rowArray[2]);
-        TableRenderer.swapColumns(rowArray, 4, 5);
+
+        if (state.relayType === CONFIG.relayTypes.SEL) {
+          rowArray[5] = SettingDecoder.decode(rowArray[2]);
+          TableRenderer.swapColumns(rowArray, 4, 5);
+        }
 
         return rowArray;
       });
 
       // Sort by setting value
-      currentState.tableRows.sort((a, b) => {
-        const aValue = a[4] || '';
-        const bValue = b[4] || '';
+      state.tableRows.sort((a, b) => {
+        const aValue = String(a[CONFIG.table.sortColumnIndex] || '');
+        const bValue = String(b[CONFIG.table.sortColumnIndex] || '');
         return aValue.localeCompare(bValue);
       });
     },
 
-    extractFeederId () {
-      if (!currentState.tableRows.length) return 'unknown';
-      const firstRow = currentState.tableRows[0];
+    /**
+     * Extracts feeder ID from first row
+     * @returns {string} Feeder ID
+     */
+    extractFeederId() {
+      if (!state.tableRows?.length) return 'unknown';
+
+      const firstRow = state.tableRows[0];
       const firstCell = Array.isArray(firstRow) ? firstRow[0] : Object.values(firstRow)[0];
-      return firstCell.split(' ').slice(0, 2).join(' ');
+      const parts = String(firstCell || '').split(' ');
+
+      return parts.slice(0, 2).join(' ') || 'unknown';
     },
 
-    renderTable () {
-      const headers = currentState.headerRow.map(header => header.Name);
-      if (currentState.tableRows.length > CONFIG.table.rowThreshold) {
-        currentState.tableRows = TableRenderer.mergeConsecutiveCells(currentState.tableRows);
+    /**
+     * Renders the processed table
+     */
+    renderTable() {
+      const headers = state.headerRow.map((header) => header.Name);
+
+      if (state.relayType === CONFIG.relayTypes.SEL || state.relayType === CONFIG.relayTypes.AREVA) {
+        state.tableRows = TableRenderer.mergeConsecutiveCells(state.tableRows);
       }
-      TableRenderer.render(CONFIG.selectors.containerId, headers, currentState.tableRows);
+
+      const container = document.getElementById(CONFIG.selectors.containerId) || TableManager.createContainer();
+      TableRenderer.render(CONFIG.selectors.containerId, headers, state.tableRows);
     },
 
-    showCompletionAlert () {
-      alert('Query Completed');
+    /**
+     * Sets up download button
+     * @param {string} feederId - Feeder ID for filename
+     */
+    setupDownloadButton(feederId) {
+      const container = document.getElementById(CONFIG.selectors.containerId);
+      if (!container) return;
+
+      const downloadBtn = TableManager.createDownloadButton(feederId);
+      container.insertBefore(DOM.createElement('br'), container.firstChild);
+      container.insertBefore(DOM.createElement('br'), container.firstChild);
+      container.insertBefore(downloadBtn, container.firstChild);
+    },
+
+    /**
+     * Shows completion alert
+     */
+    showCompletionAlert() {
+      alert(CONFIG.messages.queryCompleted);
     },
   };
 
-  // Table Manager for container management
+  /**
+   * Table Manager for container management
+   */
   const TableManager = {
-    createContainer () {
+    /**
+     * Creates table container element
+     * @returns {HTMLElement}
+     */
+    createContainer() {
       const container = DOM.createElement('div', {
         id: CONFIG.selectors.containerId,
-        style: 'margin: 20px 0; padding: 10px; border: 1px solid #ccc;',
+        style: CONFIG.styles.container,
       });
       document.body.appendChild(container);
-
       return container;
     },
 
-    createDownloadButton (filename) {
+    /**
+     * Creates download button
+     * @param {string} filename - Filename for download
+     * @returns {HTMLButtonElement}
+     */
+    createDownloadButton(filename) {
       const downloadBtn = DOM.createElement('button', {
         className: CONFIG.classes.button,
         textContent: 'Download',
         onclick: () => {
-          const headers = currentState.headerRow.map(header => header.Name);
-          TableRenderer.downloadAsHtml(filename, headers, currentState.tableRows);
+          const headers = state.headerRow.map((header) => header.Name);
+          TableRenderer.downloadAsHtml(filename, headers, state.tableRows);
         },
       });
 
-      document.body.appendChild(downloadBtn);
-      document.body.appendChild(DOM.createElement('br'));
-      document.body.appendChild(DOM.createElement('br'));
       return downloadBtn;
     },
   };
 
-  // Optimized Search Component
+  /**
+   * Optimized Search Component
+   */
   const SearchComponent = {
-    init () {
+    /**
+     * Initializes search component
+     */
+    init() {
       try {
         this.injectExternalDependencies();
         this.createSearchBar();
@@ -524,13 +739,19 @@ javascript: (function () {
       }
     },
 
-    injectExternalDependencies () {
-      if (typeof switchEditor === 'function') {
-        switchEditor();
+    /**
+     * Injects external dependencies if available
+     */
+    injectExternalDependencies() {
+      if (typeof window.switchEditor === 'function') {
+        window.switchEditor();
       }
     },
 
-    createSearchBar () {
+    /**
+     * Creates search bar UI
+     */
+    createSearchBar() {
       const wrapper = DOM.createElement('div', {
         id: CONFIG.selectors.searchContainerId,
         className: 'input-group',
@@ -540,10 +761,10 @@ javascript: (function () {
       const input = DOM.createElement('input', {
         type: 'text',
         id: CONFIG.selectors.inputId,
-        placeholder: '...ABC 12F123',
+        placeholder: CONFIG.messages.placeholder,
         className: CONFIG.classes.input,
         pattern: CONFIG.patterns.searchInput.source,
-        title: 'Please follow the pattern: ABC 12F123',
+        title: CONFIG.messages.inputPattern,
       });
 
       const button = DOM.createElement('button', {
@@ -564,62 +785,82 @@ javascript: (function () {
       DOM.injectStyles();
     },
 
-    attachEventHandlers () {
+    /**
+     * Attaches event handlers to search elements
+     */
+    attachEventHandlers() {
       const button = DOM.getElement(CONFIG.selectors.buttonId);
       const input = DOM.getElement(CONFIG.selectors.inputId);
 
       if (!button || !input) return;
 
       button.addEventListener('click', () => this.handleSearch(input));
-      input.addEventListener('keypress', e => {
+      input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') this.handleSearch(input);
       });
-      input.addEventListener('change', () => {
+      input.addEventListener('input', () => {
         input.value = input.value.toUpperCase();
       });
     },
 
-    handleSearch (inputEl) {
-      if (currentState.isProcessing) return;
+    /**
+     * Handles search action
+     * @param {HTMLInputElement} inputEl - Input element
+     */
+    handleSearch(inputEl) {
+      if (state.isProcessing) return;
 
       DOM.clearWarning();
 
       const rawValue = inputEl.value.trim().toUpperCase();
 
       if (!this.validateInput(rawValue)) {
-        DOM.showWarning('Please use the correct format (e.g., ABC 12F123)!');
+        DOM.showWarning(CONFIG.messages.invalidFormat);
         return;
       }
 
       this.executeSearch(rawValue);
     },
 
-    validateInput (value) {
+    /**
+     * Validates input against pattern
+     * @param {string} value - Input value
+     * @returns {boolean}
+     */
+    validateInput(value) {
       return CONFIG.patterns.searchInput.test(value);
     },
 
-    executeSearch (searchValue) {
-      currentState.isProcessing = true;
+    /**
+     * Executes search query
+     * @param {string} searchValue - Search value
+     */
+    executeSearch(searchValue) {
+      state.isProcessing = true;
 
       try {
         const sql = SQL.generate(searchValue);
         this.displaySql(sql);
 
-        if (typeof runQuery === 'function') {
-          runQuery();
+        if (typeof window.runQuery === 'function') {
+          window.runQuery();
         }
 
         setTimeout(() => {
           DataProcessor.processResults();
-          currentState.isProcessing = false;
-        }, 6000);
+          state.isProcessing = false;
+        }, CONFIG.sql.queryDelay);
       } catch (err) {
         console.error('Search execution error:', err);
-        currentState.isProcessing = false;
+        state.isProcessing = false;
       }
     },
 
-    displaySql (sql) {
+    /**
+     * Displays SQL in editor
+     * @param {string} sql - SQL query
+     */
+    displaySql(sql) {
       const sqlEditor = DOM.getElement(CONFIG.selectors.sqlEditorId);
       if (sqlEditor) {
         sqlEditor.textContent = sql;
@@ -627,9 +868,16 @@ javascript: (function () {
     },
   };
 
-  // Optimized SQL Utilities
+  /**
+   * Optimized SQL Utilities with better structure
+   */
   const SQL = {
-    minify (sql) {
+    /**
+     * Minifies SQL by removing comments and extra whitespace
+     * @param {string} sql - SQL query
+     * @returns {string} Minified SQL
+     */
+    minify(sql) {
       if (!sql?.trim()) return '';
 
       return sql
@@ -639,11 +887,18 @@ javascript: (function () {
         .trim();
     },
 
-    generate (inputCode) {
+    /**
+     * Generates SQL query for given input code
+     * @param {string} inputCode - Device code (e.g., "ABC 12F123")
+     * @returns {string} Generated SQL query
+     */
+    generate(inputCode) {
       if (!inputCode) return '';
 
-      const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
+      const settingsList = CONFIG.sql.settingNames.map((name) => `'${name}'`).join(',');
+      const excludedSettings = CONFIG.sql.excludedArevaSettings.map((name) => `'${name}'`).join(',');
       const baseCondition = `R.S01 LIKE '${inputCode}%' AND R.RELAYTYPE LIKE 'SEL%'`;
+      const lobLength = CONFIG.sql.dbmsLobLength;
 
       return SQL.minify(`
         SELECT
@@ -654,9 +909,9 @@ javascript: (function () {
             WHEN T.SETTINGNAME NOT LIKE '%C'
             AND T.SETTINGNAME NOT LIKE '%D'
             AND S.GROUPNAME = '1'
-            AND DBMS_LOB.SUBSTR(S.SETTING, 4000) <> 'OFF' THEN UPPER(
-              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) * (
-                SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) AS CTR
+            AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLength}) <> 'OFF' THEN UPPER(
+              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) * (
+                SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) AS CTR
                 FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
                 WHERE ${baseCondition}
                   AND R.ID = Q.RELAYID
@@ -670,10 +925,10 @@ javascript: (function () {
             )
             WHEN T.SETTINGNAME LIKE '67%D'
             AND S.GROUPNAME = '1'
-            AND DBMS_LOB.SUBSTR(S.SETTING, 4000) <> 'OFF' THEN UPPER(
-              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, 4000)) / 60
+            AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLength}) <> 'OFF' THEN UPPER(
+              TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) / 60
             )
-            ELSE DBMS_LOB.SUBSTR(S.SETTING, 4000)
+            ELSE DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})
           END AS SETTING,
           Q.M01 AS MEMO
         FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
@@ -706,20 +961,45 @@ javascript: (function () {
         UNION ALL
         SELECT
           R.S01 AS DEVICE,
-          R.S04 AS RELAY,
+          Q.RELAYTYPE AS RELAY,
           R.S06 AS VENDER,
-          Q.RELAYTYPE,
+          TO_CHAR(R.S04) AS MODEL,
           Q.M01 AS MEMO
         FROM TRELAY R, TREQUEST Q
         WHERE R.S01 LIKE '${inputCode}%'
           AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
           AND R.ID = Q.RELAYID
           AND UPPER(Q.S02) = 'IN SERVICE'
+        UNION ALL
+        SELECT
+          R.S01 AS DEVICE,
+          Q.RELAYTYPE AS RELAY,
+          T.SETTINGNAME AS ELEMENT,
+          TO_CHAR(S.SETTING) AS SETTING,
+          Q.M01 AS MEMO
+        FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
+        WHERE R.S01 LIKE '${inputCode}%'
+          AND R.RELAYTYPE LIKE 'AREVA%'
+          AND R.ID = Q.RELAYID
+          AND Q.ID = S.REQUESTID
+          AND T.RELAYTYPE = Q.RELAYTYPE
+          AND T.ROWNUMBER = S.ROWNUMBER
+          AND UPPER(Q.S02) = 'IN SERVICE'
+          AND S.GROUPNAME = 'PARAMETERS'
+          AND (
+            T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1%'
+            OR T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC%'
+            OR T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/GLOBAL/MAIN/INOM C.T. PRIM.%'
+          )
+          AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) != 'BLOCKED'
+          AND T.SETTINGNAME NOT IN (${excludedSettings})
       `);
     },
   };
 
-  // Public API
+  /**
+   * Public API - Exposed for external use
+   */
   window.AspenQuery = Object.freeze({
     addSearchBar: () => SearchComponent.init(),
     minifySqlManual: SQL.minify,
@@ -728,7 +1008,7 @@ javascript: (function () {
     getSqlText: SQL.generate,
     TableRenderer,
     createTableContainer: TableManager.createContainer.bind(TableManager),
-    getState: () => ({ ...currentState }),
+    getState: () => ({ ...state }),
     CONFIG,
   });
 

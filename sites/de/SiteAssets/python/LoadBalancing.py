@@ -2,6 +2,7 @@
 # Update @ 2025-05-29
 # Update @ 2025-06-27: Add function to balance not only the feeder, but the downstream of point of studies of choices
 # Update @ 2025-07-28: Add error handling for LoadAllocation methods between KVA and KWH
+# Update @ 2025-11-30: imrpove the PickSections_2 function to use iterative balancing approach  
 # """
 
 import locale
@@ -536,9 +537,22 @@ class LoadBalancing:
         picks = {k: [] for k in phase_names}
         peak_loads = [ImaxA, ImaxB, ImaxC]
         avg_load = IBal or sum(peak_loads) / 3
-        for _ in range(max_moves):
+
+        def calculate_balance(peak_loads):
+            balance = max(abs(load - avg_load) for load in peak_loads)
+            return balance
+
+        current_peak = peak_loads.copy()
+        current_balance = calculate_balance(current_peak)
+        # Iterate up to a maximum number of moves
+        
+        improved = True
+        while improved:
+            improved = False
             best_move = None
-            best_balance = sum(abs(load - avg_load) for load in peak_loads)
+            best_balance = current_balance
+
+            # Find the best move by comparing imbalances across phases
             for i, phase in enumerate(phase_names):
                 for branch, load in phase_branches[phase].items():
                     for j, other_phase in enumerate(phase_names):
@@ -547,11 +561,17 @@ class LoadBalancing:
                         new_peaks = peak_loads[:]
                         new_peaks[i] -= load
                         new_peaks[j] += load
-                        imbalance = sum(abs(peak - avg_load) for peak in new_peaks)
-                        if imbalance < best_balance - tolerance:
-                            best_balance = imbalance
+                        new_balance = calculate_balance(new_peaks)
+                        #print(f"Trying to move {load} from {i} to {j}: New balance = {new_balance}")
+                        #print(f'Best Blanace so far: {best_balance}')
+                            # Validate if the current move improves the balance
+                        if new_balance < best_balance:
+                            best_balance = new_balance
                             best_move = (branch, load, i, j)
-            if best_move:
+
+            # Execute the best found move
+            if best_move and best_balance < current_balance:
+                #print(f'Current Blanace: {current_balance}, Best Blanace: {best_balance}')
                 branch, load, from_i, to_j = best_move
                 from_phase, to_phase = phase_names[from_i], phase_names[to_j]
                 phase_branches[from_phase].pop(branch)
@@ -559,9 +579,14 @@ class LoadBalancing:
                 peak_loads[from_i] -= load
                 peak_loads[to_j] += load
                 picks[to_phase].append((branch, load))
-            else:
-                break
+                #print(f'Executing move: Move {load} from {from_i} to {to_j}')
+
+                current_balance = best_balance
+                improved = True
+
         return picks, phase_branches
+        
+       
 
     def SetFeederDemand(self):
         """

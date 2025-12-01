@@ -319,7 +319,7 @@ class LoadBalancing:
                     self._connected_phase[ph], "ClosedPhase", dev_num, dev_type_list)
         return rows
 
-    def PickSections_2(self, sec_dict, ImaxA, ImaxB, ImaxC, tolerance=1e-1, max_moves=5):
+    def PickSections_2(self, sec_dict, ImaxA, ImaxB, ImaxC):
         # """
         # Alternative method to pick sections for load transfer using iterative balancing.
 
@@ -339,10 +339,20 @@ class LoadBalancing:
         peak_loads = [ImaxA, ImaxB, ImaxC]
         avg_load = sum(peak_loads) / 3
 
+        def calculate_balance(peak_loads):
+            average = sum(peak_loads) / len(peak_loads)
+            balance = max(abs(load - average) for load in peak_loads)
+            return balance
+
+        current_peak = peak_loads.copy()
+        current_balance = calculate_balance(current_peak)
         # Iterate up to a maximum number of moves
-        for _ in range(max_moves):
+        
+        improved = True
+        while improved:
+            improved = False
             best_move = None
-            best_balance = sum(abs(load - avg_load) for load in peak_loads)
+            best_balance = current_balance
 
             # Find the best move by comparing imbalances across phases
             for i, branch_i in enumerate(phase_branches):
@@ -353,15 +363,15 @@ class LoadBalancing:
                             new_peaks = peak_loads[:]
                             new_peaks[i] -= load
                             new_peaks[j] += load
-                            imbalance = sum(abs(l - avg_load) for l in new_peaks)
+                            new_balance = calculate_balance(new_peaks)
 
                             # Validate if the current move improves the balance
-                            if imbalance < best_balance - tolerance:
-                                best_balance = imbalance
+                            if new_balance < best_balance:
+                                best_balance = new_balance
                                 best_move = (branch, load, i, j)
 
             # Execute the best found move
-            if best_move:
+            if best_move and best_balance < current_balance:
                 branch, load, from_i, to_j = best_move
                 phase_branches[from_i].pop(branch)
                 phase_branches[to_j][branch] = load
@@ -369,9 +379,8 @@ class LoadBalancing:
                 peak_loads[to_j] += load
                 picks[phase_names[to_j]].append((branch, load))
 
-            else:
-                # Break early if no improvements can be made
-                break
+                current_balance = best_balance
+                improved = True
 
         return picks, sec_dict
 

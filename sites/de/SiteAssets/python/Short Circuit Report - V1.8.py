@@ -54,6 +54,8 @@ class EmissionStudy:
         24.94: 12.96,
     }
 
+    BASE_VOLTAGES: List[(float, float)] = [[4.16, 4.20], [12.47, 12.60], [24.94, 25.20]]
+
     CONNECTION_TYPES: Dict[str, int] = {
         "1PH": 1,
         "3PH Y": 34,

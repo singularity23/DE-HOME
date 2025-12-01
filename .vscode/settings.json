@@ -1,7 +1,7 @@
 {
   "vscode-edge-devtools.headless": false,
   "editor.fontFamily": "JetBrains Mono NL",
-  "liveServer.settings.port": 5550,
+  "liveServer.settings.port": 5551,
   "editor.wordWrap": "wordWrapColumn",
   "editor.defaultFormatter": "ms-python.black-formatter",
   "files.autoSave": "onWindowChange",
@@ -14,5 +14,6 @@
   "[sql]": {
     "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
   },
+  "djlint.showInstallError": false,
 
 }

@@ -4,6 +4,7 @@
 # rewrite emission study @2025-11-19
 # optimized and refactored @2024-12-19
 
+from logging import info
 import math
 import locale
 import os
@@ -535,10 +536,14 @@ class BaseEquipment:
 
     def __init__(self, **kwargs):
         self.Device = kwargs.get("Device")
+        self.Node = kwargs.get("Node")
         self.DeviceObj = self.Device.GetObjType() if self.Device else None
         self.EqID = self.Device.EquipmentID if self.Device else "DEFAULT"
-        self.DevType = self.Device.DeviceType if self.Device else -1
+        self.EqType = self.Device.EquipmentType if self.Device else 0 #Unknown
+        self.DevType = self.Device.DeviceType if self.Device else -1 #AllDevices
         self.DevNum = self.Device.DeviceNumber if self.Device else "DEFAULT"
+        
+        self.Eq = Eqt.GetEquipment(self.EqID, self.EqType) if self.Device else None
         # Initialize impedance parameters with defaults
         impedance_defaults = (0, 0, 0, 0, 0, 0, 0, 0, 0)
         (
@@ -759,7 +764,7 @@ class ReactorEquipment(BaseEquipment):
         super().__init__(**kwargs)
         self.Length = 0
         self.R1 = self.R0 = 0
-        self.X1 = self.X0 = 0
+
         self.EqType = cympy.enums.EquipmentType.SeriesReactor
 
         # Get reactor specific values
@@ -1126,6 +1131,148 @@ class TransformerEquipment(BaseEquipment):
         except Exception:
             pass
 
+class SourceEquivalent(BaseEquipment):
+    """Class for source equivalent analysis and reporting"""
+
+    SOURCE_INFO = [
+        "SourceR1ohmsMax",
+        "SourceX1ohmsMax",
+        "SourceR0ohmsMax",
+        "SourceX0ohmsMax",
+        "SourceR1ohmsMin",
+        "SourceX1ohmsMin",
+        "SourceR0ohmsMin",
+        "SourceX0ohmsMin",
+        "SourceFaultLevel",
+    ]
+
+    def __init__(self, **kwargs):
+        """
+        Initialize SourceEquivalent object.
+
+        Args:
+            source_name: The name of the source
+            info_toNode: Impedance information from the source node [R1TN, X1TN, R0TN, X0TN, ...]
+        """
+        super().__init__(**kwargs)
+        self.SourceName = self.Node.ID
+        self.EqType = cympy.enums.EquipmentType.Substation
+
+        # Query source-specific information
+        source_data = QueryHelper.query_nodes(self.SOURCE_INFO, self.SourceName)
+        (
+            self.R1max,
+            self.X1max,
+            self.R0max,
+            self.X0max,
+            self.R1min,
+            self.X1min,
+            self.R0min,
+            self.X0min,
+            self.Level,
+        ) = source_data
+
+        print(self.Level)
+        # Extract Thevenin impedances from node information
+        if "High" in str(self.Level):
+            self.R1, self.X1, self.R0, self.X0 = self.R1min, self.X1min, self.R0min, self.X0min
+        elif "Low" in str(self.Level):
+            self.R1, self.X1, self.R0, self.X0 = self.R1max, self.X1max, self.R0max, self.X0max
+        else:
+            self.R1 = self.X1 = self.R0 = self.X0 = 0
+
+        self.Nameplate = f"SourceEquivalent: {self.SourceName}"
+        self._source_eqt = None
+        self._source_device = None
+
+    def _get_source_objects(self) -> None:
+        """Retrieve source equipment and device objects"""
+        try:
+            self._source_eqt = Eqt.GetEquipment(self.SourceName, self.EqType)
+        except Exception:
+            self._source_eqt = None
+
+        try:
+            self._source_device = Std.GetDevice(
+                self.SourceName, cympy.enums.DeviceType.Source
+            )
+        except Exception:
+            self._source_device = None
+
+    def info_table(self, NetworkParam: List) -> None:
+        """Add source equivalent information to network parameters"""
+
+        def _ensure_positive(number: float) -> float:
+            """Ensure impedance values are positive for reporting"""
+            return abs(number)
+
+        NetworkParam.append(
+            [
+                self.Nameplate,
+                0,  # Length
+                0,  # Distance
+                _ensure_positive(self.R1),
+                _ensure_positive(self.X1),
+                _ensure_positive(self.R0),
+                _ensure_positive(self.X0),
+                0,
+                0,
+                0,
+                0,  # Thevenin impedances (not applicable for source)
+            ]
+        )
+
+    def eq_data(self, EquipmentList: List) -> None:
+        """Add source equivalent to equipment list"""
+        EquipmentList.append(["Source", self])
+
+    def store_info(self, SCReport) -> None:
+        """Store source equivalent information to report"""
+        SCReport.write(f"\n[{self.Nameplate}]")
+
+        # Display appropriate impedance values based on fault level
+        if "Low" in str(self.Level):
+            self._store_low_fault_level_info(SCReport)
+        elif "High" in str(self.Level):
+            self._store_high_fault_level_info(SCReport)
+
+        # Add source comments and details
+        self._store_source_comments(SCReport)
+
+    def _store_low_fault_level_info(self, SCReport) -> None:
+        """Store low fault level impedance information"""
+        SCReport.write(
+            f"\n{'Low Fault Level Z1:':<25} {self.R1max:<8.4f} + j{self.X1max:<8.4f} ohms"
+        )
+        SCReport.write(
+            f"\n{'Low Fault Level Z0:':<25} {self.R0max:<8.4f} + j{self.X0max:<8.4f} ohms"
+        )
+
+    def _store_high_fault_level_info(self, SCReport) -> None:
+        """Store high fault level impedance information"""
+        SCReport.write(
+            f"\n{'High Fault Level Z1:':<25} {self.R1min:<8.4f} + j{self.X1min:<8.4f} ohms"
+        )
+        SCReport.write(
+            f"\n{'High Fault Level Z0:':<25} {self.R0min:<8.4f} + j{self.X0min:<8.4f} ohms"
+        )
+
+    def _store_source_comments(self, SCReport) -> None:
+        """Store source comments and additional details"""
+        SCReport.write("\nComments:")
+
+        self._get_source_objects()
+        comments = self._source_eqt.GetValue("Comments")
+        if comments:
+            SCReport.write("\n" + textwrap.fill(comments, 100))
+
+        if self._source_device:
+            SCReport.write(" Source equivalent from database")
+        elif self._source_eqt:
+            SCReport.write(" User Defined Source Equivalent")
+        else:
+            SCReport.write(" Unknown Error")
+
 
 class FaultPoint:
     """Class for fault point analysis"""
@@ -1274,150 +1421,6 @@ class FaultPoint:
         print(link)
         ChromeBrowser.open_url(link)
 
-
-class SourceEquivalent:
-    """Class for source equivalent analysis and reporting"""
-
-    SOURCE_INFO = [
-        "SourceR1ohmsMax",
-        "SourceX1ohmsMax",
-        "SourceR0ohmsMax",
-        "SourceX0ohmsMax",
-        "SourceR1ohmsMin",
-        "SourceX1ohmsMin",
-        "SourceR0ohmsMin",
-        "SourceX0ohmsMin",
-        "SourceFaultLevel",
-    ]
-
-    def __init__(self, source_name: str, info_toNode: List[float]):
-        """
-        Initialize SourceEquivalent object.
-
-        Args:
-            source_name: The name of the source
-            info_toNode: Impedance information from the source node [R1TN, X1TN, R0TN, X0TN, ...]
-        """
-        self.SourceName = source_name
-        self.EqType = cympy.enums.EquipmentType.Substation
-
-        # Query source-specific information
-        source_data = QueryHelper.query_nodes(self.SOURCE_INFO, self.SourceName)
-        (
-            self.R1max,
-            self.X1max,
-            self.R0max,
-            self.X0max,
-            self.R1min,
-            self.X1min,
-            self.R0min,
-            self.X0min,
-            self.Level,
-        ) = source_data
-
-        # Extract Thevenin impedances from node information
-        self.R1TN, self.X1TN, self.R0TN, self.X0TN = info_toNode[:4]
-
-        self.Nameplate = f"SourceEquivalent: {self.SourceName}"
-        self._source_obj = None
-        self._source_device = None
-
-    def _get_source_objects(self) -> None:
-        """Retrieve source equipment and device objects"""
-        try:
-            self._source_obj = Eqt.GetEquipment(self.SourceName, self.EqType)
-        except Exception:
-            self._source_obj = None
-
-        try:
-            self._source_device = Std.GetDevice(
-                self.SourceName, cympy.enums.DeviceType.Source
-            )
-        except Exception:
-            self._source_device = None
-
-    def info_table(self, NetworkParam: List) -> None:
-        """Add source equivalent information to network parameters"""
-
-        def _ensure_positive(number: float) -> float:
-            """Ensure impedance values are positive for reporting"""
-            return abs(number)
-
-        NetworkParam.append(
-            [
-                self.Nameplate,
-                0,  # Length
-                0,  # Distance
-                _ensure_positive(self.R1max),
-                _ensure_positive(self.X1max),
-                _ensure_positive(self.R0max),
-                _ensure_positive(self.X0max),
-                0,
-                0,
-                0,
-                0,  # Thevenin impedances (not applicable for source)
-            ]
-        )
-
-    def eq_data(self, EquipmentList: List) -> None:
-        """Add source equivalent to equipment list"""
-        EquipmentList.append(["Source", self])
-
-    def store_info(self, SCReport) -> None:
-        """Store source equivalent information to report"""
-        SCReport.write(f"\n[{self.Nameplate}]")
-
-        # Display appropriate impedance values based on fault level
-        if "Low" in str(self.Level):
-            self._store_low_fault_level_info(SCReport)
-        elif "High" in str(self.Level):
-            self._store_high_fault_level_info(SCReport)
-
-        # Add source comments and details
-        self._store_source_comments(SCReport)
-
-    def _store_low_fault_level_info(self, SCReport) -> None:
-        """Store low fault level impedance information"""
-        SCReport.write(
-            f"\n{'Low Fault Level Z1:':<25} {self.R1min:<8.4f} + j{self.X1min:<8.4f} ohms"
-        )
-        SCReport.write(
-            f"\n{'Low Fault Level Z0:':<25} {self.R0min:<8.4f} + j{self.X0min:<8.4f} ohms"
-        )
-
-    def _store_high_fault_level_info(self, SCReport) -> None:
-        """Store high fault level impedance information"""
-        SCReport.write(
-            f"\n{'High Fault Level Z1:':<25} {self.R1max:<8.4f} + j{self.X1max:<8.4f} ohms"
-        )
-        SCReport.write(
-            f"\n{'High Fault Level Z0:':<25} {self.R0max:<8.4f} + j{self.X0max:<8.4f} ohms"
-        )
-
-    def _store_source_comments(self, SCReport) -> None:
-        """Store source comments and additional details"""
-        SCReport.write("\nComments:")
-
-        self._get_source_objects()
-
-        if self._source_device:
-            self._store_equipment_source_info(SCReport)
-        elif self._source_obj:
-            SCReport.write(" User Defined Source Equivalent")
-        else:
-            SCReport.write(" Source equivalent from network parameters")
-
-    def _store_equipment_source_info(self, SCReport) -> None:
-        """Store information for equipment-based sources"""
-        try:
-            comments = Eqt.GetValue("Comments", self.SourceName, self.EqType)
-            if comments:
-                SCReport.write("\n" + textwrap.fill(comments, 100))
-
-            # Add additional equipment details
-
-        except Exception as e:
-            SCReport.write(f" Unable to retrieve comments: {str(e)}")
 
 
 class EmissionStudy:
@@ -1607,7 +1610,7 @@ class EmissionStudy:
 
 
 def device_handler(
-    short_circuit_study, device_obj, info_toNode, info_fromNode, Phase, FromPhase
+    short_circuit_study, device_obj, Node, FromNode, Phase, FromPhase
 ):
     """Handle different types of devices in a short circuit study"""
     device_handlers = {
@@ -1622,6 +1625,9 @@ def device_handler(
         11: CableEquipment,  # cympy.enums.DeviceType.OverheadLine
     }
 
+
+    info_fromNode, info_toNode = short_circuit_study.query_table(FromNode, Node)
+
     handler = device_handlers.get(device_obj.DeviceType)
     if handler:
         Dev = handler(
@@ -1633,7 +1639,7 @@ def device_handler(
         )
         Dev.eq_data(short_circuit_study.equipment_list)
         Dev.info_table(short_circuit_study.network_param)
-
+    
 
 def main():
     if not Std.ListNetworks:
@@ -1674,16 +1680,14 @@ def main():
             FromPhase = itr.GetFromPhase()
             Phase = itr.GetPhase()
 
-            info_fromNode, info_toNode = SC.query_table(FromNode, Node)
-
-            for Device in DeviceList:
-                device_handler(SC, Device, info_toNode, info_fromNode, Phase, FromPhase)
+            if DeviceList:
+                for Device in DeviceList:
+                    device_handler(SC, Device, Node, FromNode, Phase, FromPhase)
 
             if Std.QueryInfoNode("IsSourceNode", Node.ID) == "Yes":
-                # Source equivalent handling would be implemented here
-                SourceEquivalentObj = SourceEquivalent(SC.SourceName, info_toNode)
-                SourceEquivalentObj.eq_data(SC.equipment_list)
-                SourceEquivalentObj.info_table(SC.network_param)
+                source = SourceEquivalent(Node=Node)
+                source.eq_data(SC.equipment_list)
+                source.info_table(SC.network_param)
 
         ES = EmissionStudy(
             poi=fault_point_id,
