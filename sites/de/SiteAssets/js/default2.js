@@ -185,7 +185,6 @@ const getColumns = () => {
   } else if (documentWidth <= CONFIG.breakpoints.desktop) {
     columns = 3;
   }
-  console.log(documentWidth);
   return columns;
 };
 
@@ -260,8 +259,7 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
     const sublinkContainer = createElement('span', { className: 'sub-link' });
     link.sub_links.forEach(subLink => {
       const sublinkEl = createElement('span');
-      sublinkEl.innerHTML = `
-        <b>|</b> 
+      sublinkEl.innerHTML = ` 
         <a href="${subLink.url}" target="_blank">${subLink.name}</a>
         <span>&nbsp;</span>
       `;
@@ -287,7 +285,6 @@ const adjustGridLayout = (container, firstItem, columns) => {
   // Set grid layout
   const rows = Math.ceil(total / columns) || 1;
   firstItem.style.gridRow = `span ${rows}`;
-  console.log('Grid layout adjusted:', { rows, columns, total, firstItem });
 };
 
 /**
@@ -348,11 +345,28 @@ const filterCategories = searchTerm => {
     })
     .filter(Boolean);
 };
-
-const refreshApp = () => {
-  initializeApp();
-  resize();
+// Show the loader
+const showLoader = () => {
+  document.getElementById('loader').style.display = 'flex';
+  console.log('Loader displayed');
+  document.getElementById('DEcontainer').classList.add('hidden');
 };
 
+// Hide the loader
+const hideLoader = () => {
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('loader').classList.add('hidden');
+  console.log('Loader hidden');
+  document.getElementById('DEcontainer').classList.remove('hidden');
+};
+
+const refreshApp = () => {
+  showLoader();
+  initializeApp();
+  resize();
+  setTimeout(() => {
+    hideLoader();
+  }, 2000); // Ensure loader is visible for at least 500ms
+};
 // Add event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', refreshApp);
