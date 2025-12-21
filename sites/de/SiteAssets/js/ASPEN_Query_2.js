@@ -27,7 +27,7 @@ javascript: (function () {
       inputValid: 'background-color:#dcf1da;',
       inputInvalid: 'background-color:#fedad0;',
       table:
-        'border-collapse: collapse; max-width:100%; font-family: monospace; font-size: 13px; border: 1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;',
+        'border-collapse: collapse; max-width:100%; font-family: monospace; font-size: 12px; border: 1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;',
       tableHeader:
         'padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold;',
       tableCell: 'padding: 6px; border: 1px solid #ddd; vertical-align: middle; white-space: pre-wrap;',
@@ -146,7 +146,6 @@ javascript: (function () {
       '50[PG]5': /^50[PG]5/,
       SV: /^SV\d?\w+/,
     },
-
     phases: {
       PHS: /P(\.|\s|\.?\s)?PS1$/,
       GND: /N(\.|\s|\.?\s)?PS1$/,
@@ -237,13 +236,20 @@ javascript: (function () {
     },
   };
 
+  /**
+   * AREVA Setting Decoder with optimized pattern matching
+   */
   const AREVA_SettingDecoder = {
     phaseMap: {
-      'P(\\.|\\s|\\.\\s)?PS1$': 'PHS ',
-      'N(\\.|\\s|\\.\\s)?PS1$': 'GND ',
-      'NEG(\\.|\\s|\\.\\s)?PS1$': 'NEG ',
+      PHS: 'P(\\.|\\s|\\.?\\s)?PS1$',
+      GND: 'N(\\.|\\s|\\.?\\s)?PS1$',
+      NEG: 'NEG(\\.|\\s|\\.?\\s)?PS1$',
     },
-
+    phaseReplacements: {
+      PHS: 'PHS ',
+      GND: 'GND ',
+      NEG: 'NEG ',
+    },
     definiteTimeMap: {
       'DTOC/I>': 'PHS Definite Time Pick Up (A)',
       'DTOC/IN>': 'GND Definite Time Pick Up (A)',
@@ -252,100 +258,95 @@ javascript: (function () {
       'DTOC/TIN>': 'GND Definite Time Delay (s)',
       'DTOC/TINEG>': 'NEG Definite Time Delay (s)',
     },
-
     TimedMap: {
       IREF: 'Pick Up (A)',
       CHARACTER: 'Curve',
       FACTOR: 'Time Dial',
     },
-
     overCurrentMap: {
       IDMT1: 'Timed Overcurrent ',
     },
-
     CTP: 0,
 
+    /**
+     * Decodes setting code to human-readable description
+     * @param {string} code - Setting code
+     * @param {string} setting - Setting value
+     * @returns {Array<string>} [description, value]
+     */
     decode (code, setting) {
       if (!code || typeof code !== 'string') return ['', ''];
       if (!setting || typeof setting !== 'string') return ['', ''];
 
       if (code.includes('INOM')) {
-        this.CTP = Number(setting.split(' ')[0]);
-        return ['CT Primary (A)', this.CTP];
+        this.CTP = Number(setting.split(' ')[0]) || 0;
+        return ['CT Primary (A)'.toUpperCase(), this.CTP];
       }
 
       try {
+        // Check definite time patterns first (most specific)
         for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
           if (code.includes(pattern)) {
-            const value = Number(setting.split(' ')[0]);
-
-            if (setting.toUpperCase().includes('INOM')) {
-              return [replacement, value * this.CTP];
-            } else {
-              return [replacement, value];
-            }
+            const value = Number(setting.split(' ')[0]) || 0;
+            return [
+              replacement.toUpperCase(),
+              setting.toUpperCase().includes('INOM') ? Math.round(value * this.CTP, 0) : value,
+            ];
           }
         }
 
-        for (const [pattern, replacement] of Object.entries(this.phaseMap)) {
+        // Check phase patterns
+        for (const [phaseType, pattern] of Object.entries(this.phaseMap)) {
           if (new RegExp(pattern).test(code)) {
             const suffix = this.getSuffixDescription(code, pattern);
-            const overCurrent = this.getOverCurrentProtection(code) || '';
-            setting = this.getSettingNumber(setting);
-            code = replacement + overCurrent + suffix;
+            const overCurrent = code.includes('IDMT1') ? this.overCurrentMap.IDMT1 : '';
+            const settingValue = this.getSettingNumber(setting);
+            let decodedCode = this.phaseReplacements[phaseType] + overCurrent + suffix;
 
-            if (String(setting).endsWith(' s')) {
-              setting = setting.replace(' s', '');
-              code += ' (s)';
+            if (String(settingValue).endsWith(' s')) {
+              decodedCode += ' (s)';
             }
 
-            return [code, setting];
+            return [decodedCode.toUpperCase(), settingValue.toString().replace(' s', '')];
           }
         }
       } catch (err) {
         console.error('Setting name decode error:', err);
       }
+
       console.warn('No match found for code:', code);
       return ['', ''];
     },
 
+    /**
+     * Gets setting number with INOM conversion
+     * @param {string} setting - Setting value
+     * @returns {string|number} Converted setting
+     */
     getSettingNumber (setting) {
       if (setting.toUpperCase().includes('INOM')) {
-        const value = Number(setting.split(' ')[0]);
-        return value * this.CTP;
-      } else {
-        return setting;
+        const value = Number(setting.split(' ')[0]) || 0;
+        return Math.round(value * this.CTP, 0);
       }
+      return setting;
     },
 
-    getOverCurrentProtection (code) {
-      if (code.includes('IDMT1')) {
-        return this.overCurrentMap.IDMT1;
-      }
-      return '';
-    },
-
-    getPrefixDescription (code) {
-      for (const [pattern, replacement] of Object.entries(this.phaseMap)) {
-        if (new RegExp(pattern).test(code)) {
-          return replacement;
-        }
-      }
-      return '';
-    },
-
+    /**
+     * Gets suffix description from code
+     * @param {string} code - Setting code
+     * @param {RegExp} pattern - Phase pattern
+     * @returns {string} Suffix description
+     */
     getSuffixDescription (code, pattern) {
-      if (code.includes('IREF')) {
-        return this.TimedMap.IREF;
-      } else if (code.includes('CHARACTER')) {
-        return this.TimedMap.CHARACTER;
-      } else if (code.includes('FACTOR')) {
-        return this.TimedMap.FACTOR;
-      } else {
-        return code.split('/').pop().replace(new RegExp(pattern), '').trim();
-      }
+      if (code.includes('IREF')) return this.TimedMap.IREF;
+      if (code.includes('CHARACTER')) return this.TimedMap.CHARACTER;
+      if (code.includes('FACTOR')) return this.TimedMap.FACTOR;
+
+      const parts = code.split('/');
+      return parts[parts.length - 1]?.replace(new RegExp(pattern), '').trim() || '';
     },
   };
+
   /**
    * Enhanced Setting Name Decoder with optimized pattern matching
    */
@@ -356,7 +357,6 @@ javascript: (function () {
       Q: 'NEG ',
       N: 'GND ',
     },
-
     suffixMap: {
       P: 'Pick Up (A)',
       C: 'Curve',
@@ -365,17 +365,14 @@ javascript: (function () {
       L: 'Low Set',
       H: 'High Set',
     },
-
     definiteTimeMap: {
       '^50P[234]': 'Definite Time Pick Up (A)',
       '^67P[234]': 'Definite Time Delay (s)',
     },
-
     overCurrentMap: {
       '^50': 'Inst. Overcurrent ',
       '^51': 'Timed Overcurrent ',
     },
-
     specialPatternMap: {
       '^50[PG]5': '(Live Line)',
       '^SV\\d?\\w+': '_Trip Equation',
@@ -451,13 +448,9 @@ javascript: (function () {
      * @returns {HTMLTableElement}
      */
     createTable (headers, data) {
-      const table = DOM.createElement('table', {
-        style: CONFIG.styles.table,
-      });
-
+      const table = DOM.createElement('table', { style: CONFIG.styles.table });
       table.appendChild(this.createTableHead(headers));
       table.appendChild(this.createTableBody(data));
-
       return table;
     },
 
@@ -471,8 +464,8 @@ javascript: (function () {
       const tr = DOM.createElement('tr');
       const columnCount = headers.length;
 
-      headers.forEach((header, index) => {
-        const displayHeader = this.getDisplayHeader(header, columnCount);
+      for (let index = 0; index < headers.length; index++) {
+        const displayHeader = this.getDisplayHeader(state.relayType, headers[index], columnCount);
         const width = this.getColumnWidth(state.relayType, columnCount, index);
 
         const th = DOM.createElement('th', {
@@ -481,7 +474,7 @@ javascript: (function () {
         });
 
         tr.appendChild(th);
-      });
+      }
 
       thead.appendChild(tr);
       return thead;
@@ -493,11 +486,10 @@ javascript: (function () {
      * @param {number} columnCount - Total column count
      * @returns {string} Display header
      */
-    getDisplayHeader (header, columnCount) {
-      if (columnCount === 5 && header === 'ELEMENT') {
-        return CONFIG.table.headerReplacements.ELEMENT;
-      }
-      return header;
+    getDisplayHeader (relayType, header, columnCount) {
+      return relayType === 'ELECTRO' && columnCount === 5 && header === 'ELEMENT'
+        ? CONFIG.table.headerReplacements.ELEMENT
+        : header;
     },
 
     /**
@@ -551,8 +543,8 @@ javascript: (function () {
     mergeConsecutiveCells (rows) {
       if (!rows.length) return rows;
 
-      const mergeColumns = CONFIG.table.mergeColumns[state.relayType] || [];
-      if (!mergeColumns.length) return rows;
+      const mergeColumns = CONFIG.table.mergeColumns[state.relayType];
+      if (!mergeColumns?.length) return rows;
 
       const colCount = rows[0].length;
       const mergeMap = Array.from({ length: rows.length }, () =>
@@ -654,6 +646,7 @@ javascript: (function () {
      */
     downloadAsHtml (filename, headers, data) {
       const tableHtml = this.createTable(headers, data).outerHTML;
+      const currentDate = new Date();
       const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -665,7 +658,7 @@ javascript: (function () {
     </style>
 </head>
 <body>
-    <h2>Protection Settings - ${filename}</h2>
+    <h2>Protection Settings - ${filename} - ${currentDate.toLocaleDateString()}</h2>
     ${tableHtml}
 </body>
 </html>`;
@@ -775,27 +768,29 @@ javascript: (function () {
           rowArray[5] = SEL_SettingDecoder.decode(rowArray[2]);
           TableRenderer.swapColumns(rowArray, 4, 5);
         } else if (state.relayType === CONFIG.relayTypes.AREVA) {
-          let cell1 = rowArray[2];
-          let cell2 = rowArray[3];
-          [rowArray[2], rowArray[3]] = AREVA_SettingDecoder.decode(cell1, cell2);
+          const [decodedCode, decodedSetting] = AREVA_SettingDecoder.decode(rowArray[2], rowArray[3]);
+          rowArray[2] = decodedCode;
+          rowArray[3] = decodedSetting;
         }
 
         return rowArray;
       });
 
-      let columnIndex = null;
-      if (state.relayType === CONFIG.relayTypes.SEL) {
-        columnIndex = CONFIG.table.SEL_sortColumnIndex;
-      } else if (state.relayType === CONFIG.relayTypes.AREVA) {
-        columnIndex = CONFIG.table.AREVA_sortColumnIndex;
-      }
-
       // Sort by setting value
-      state.tableRows.sort((a, b) => {
-        const aValue = String(a[columnIndex] || '');
-        const bValue = String(b[columnIndex] || '');
-        return aValue.localeCompare(bValue);
-      });
+      const columnIndex =
+        state.relayType === CONFIG.relayTypes.SEL
+          ? CONFIG.table.SEL_sortColumnIndex
+          : state.relayType === CONFIG.relayTypes.AREVA
+          ? CONFIG.table.AREVA_sortColumnIndex
+          : null;
+
+      if (columnIndex !== null) {
+        state.tableRows.sort((a, b) => {
+          const aValue = String(a[columnIndex] || '');
+          const bValue = String(b[columnIndex] || '');
+          return aValue.localeCompare(bValue);
+        });
+      }
     },
 
     /**
@@ -1057,6 +1052,7 @@ javascript: (function () {
     generate (inputCode) {
       if (!inputCode) return '';
 
+      // Pre-compute SQL fragments for better performance
       const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
       const excludedSettings = CONFIG.sql.excludedArevaSettings.map(name => `'${name}'`).join(',');
       const baseCondition = `R.S01 LIKE '${inputCode}%' AND R.RELAYTYPE LIKE 'SEL%'`;

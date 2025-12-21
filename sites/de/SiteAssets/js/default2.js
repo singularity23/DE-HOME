@@ -366,7 +366,7 @@ const refreshApp = () => {
   resize();
   setTimeout(() => {
     hideLoader();
-  }, 2000); // Ensure loader is visible for at least 500ms
+  }, 2000);
 };
 // Add event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', refreshApp);

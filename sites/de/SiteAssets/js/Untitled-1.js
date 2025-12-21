@@ -1,148 +1,614 @@
-javascript: (function () {
-  (() => {
-    'use strict';
-    const n = 'aspen-search-container',
-      e = 'searchInput',
-      t = 'searchButton',
-      E = 'warning',
-      r = 'sql-editor',
-      T = 'QueryResultGrid',
-      o = /^\w{3}\s(4|12|25|35)F\d{2,3}\w?$/i,
-      S = () => {
-        try {
-          'function' == typeof switchEditor && switchEditor();
-          const r = document.createElement('div');
-          (r.id = n),
-            (r.className = 'input-group'),
-            (r.style.cssText =
-              'padding:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);justify-content:center;z-index:1000;');
-          const T = document.createElement('input');
-          (T.type = 'text'),
-            (T.id = e),
-            (T.placeholder = 'e.g. CSQ 12F411'),
-            (T.className = 'app-search app-wj-search wj-control wj-content mr-2 pl-3'),
-            T.setAttribute('pattern', '^\\w{3}\\s(4|12|25|35)(F)\\d{2,3}\\w?$'),
-            (T.title = 'please follow the pattern'),
-            r.appendChild(T);
-          const o = document.createElement('button');
-          (o.type = 'button'),
-            (o.id = t),
-            (o.className = 'btn app-btn app-btn-outline-primary mr-2'),
-            (o.textContent = 'Search'),
-            r.appendChild(o);
-          const S = document.createElement('em');
-          (S.id = E), (S.style.cssText = 'color:#fa4616;font-size:0.8rem;margin:auto 5px;'), r.appendChild(S);
-          const c = 'aspen-search-style';
-          if (!document.getElementById(c)) {
-            const n = document.createElement('style');
-            (n.id = c),
-              (n.textContent = 'input:valid{background-color:#dcf1da;} input:invalid{background-color:#fedad0;}'),
-              document.head.appendChild(n);
+const CONFIG = {
+  selectors: {
+    searchContainerId: 'aspen-search-container',
+    inputId: 'searchInput',
+    buttonId: 'searchButton',
+    warningId: 'warning',
+    sqlEditorId: 'sql-editor',
+    resultGridId: 'QueryResultGrid',
+    containerId: 'tableContainer',
+    mainAppClass: 'app-main',
+    styleId: 'aspen-search-style',
+  },
+  patterns: { searchInput: /^\w{3}\s(4|12|25|35)[fF]\d{2,3}\w?$/i },
+  styles: {
+    wrapper:
+      'padding:10px;box-shadow:rgba(23, 43, 77, 0.1) 0px 2px 2px,rgba(23, 43, 77, 0.1) 2px 2px 2px;justify-content:center;z-index:1000;',
+    warning: 'color:#fa4616;font-size:0.8rem;margin:auto 5px;',
+    inputValid: 'background-color:#dcf1da;',
+    inputInvalid: 'background-color:#fedad0;',
+    table:
+      'border-collapse:collapse;max-width:100%;font-family:monospace;font-size: 13px;border: 1px solid#ddd;border-shadow:rgba(23, 43, 77, 0.1) 0px 2px 2px,rgba(23, 43, 77, 0.1) 2px 2px 2px;',
+    tableHeader: 'padding: 8px;border: 1px solid#ddd;text-align:left;background-color: #97979780;font-weight:bold;',
+    tableCell: 'padding: 6px;border: 1px solid#ddd;vertical-align:middle;white-space:pre-wrap;',
+    container: 'margin: 20px 0;padding: 10px;border: 1px solid#ccc;',
+  },
+  classes: {
+    input: 'text-uppercase app-search app-wj-search wj-control wj-content mr-2 pl-3',
+    button: 'btn app-btn app-btn-outline-primary mr-2',
+  },
+  sql: {
+    settingNames: [
+      '51P1P',
+      '51P1TD',
+      '51P1C',
+      '50P1P',
+      '50P2P',
+      '50P3P',
+      '50P4P',
+      '50P5P',
+      '67P2D',
+      '67P3D',
+      '67P4D',
+      '51G1P',
+      '51G1TD',
+      '51G1C',
+      '50G1P',
+      '50G5P',
+      '51PP',
+      '51PTD',
+      '51PC',
+      '51GP',
+      '51GTD',
+      '51GC',
+      '51P',
+      '51TD',
+      '51C',
+      '50L',
+      '50H',
+      '51NP',
+      '51NTD',
+      '51NC',
+      '50NL',
+      '50NH',
+      '51QP',
+      '51QTD',
+      '51QC',
+      '50Q',
+    ],
+    excludedArevaSettings: [
+      'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/PULS.PROL.IN>,INTPS1',
+      'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/HOLD-T. TIN>,INTMPS1',
+      'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/TIN>>>> PS1',
+      'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/EVALUATION IN PS1',
+      'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/EVAL. IN>,>>,>>> PS1',
+      'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/ENABLE PS1',
+      'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/ENABLE PS1',
+    ],
+    queryDelay: 6000,
+    dbmsLobLength: 4000,
+  },
+  table: {
+    widthConfig: { SEL: [12, 12, 12, 15, 24, 25], ELECTRO: [5, 5, 5, 5, 80], AREVA: [10, 10, 60, 15, 5] },
+    mergeColumns: { SEL: [0, 1, 5], AREVA: [0, 1] },
+    SEL_sortColumnIndex: 4,
+    AREVA_sortColumnIndex: 2,
+    headerReplacements: { ELEMENT: 'VENDER' },
+  },
+  messages: {
+    queryCompleted: 'Query Completed',
+    invalidFormat: 'Please use the correct format(e.g., ABC 12F123)!',
+    inputPattern: 'Please follow the pattern: ABC 12F123',
+    placeholder: '...ABC 12F123',
+  },
+  relayTypes: { SEL: 'SEL', ELECTRO: 'ELECTRO', AREVA: 'AREVA', UNKNOWN: 'unknown' },
+};
+const createState = () => ({ headerRow: null, tableRows: null, isProcessing: false, relayType: '' });
+let state = createState();
+const Patterns = {
+  definiteTime: { '50P[234]': /^50P[234]/, '67P[234]': /^67P[234]/ },
+  overCurrent: { 50: /^50/, 51: /^51/ },
+  special: { '50[PG]5': /^50[PG]5/, SV: /^SV\d?\w+/ },
+  phases: { PHS: /P(\.|\s|\.?\s)?PS1$/, GND: /N(\.|\s|\.?\s)?PS1$/, NEG: /NEG(\.|\s|\.?\s)?PS1$/ },
+};
+const DOM = {
+  createElement (tag, options = {}) {
+    const element = document.createElement(tag);
+    for (const [key, value] of Object.entries(options)) {
+      if (key === 'style' && typeof value === 'string') {
+        element.style.cssText = value;
+      } else if (key === 'textContent') {
+        element.textContent = value;
+      } else if (key === 'className') {
+        element.className = value;
+      } else if (key === 'onclick') {
+        element.onclick = value;
+      } else if (key === 'innerHTML') {
+        element.innerHTML = value;
+      } else {
+        element.setAttribute(key, value);
+      }
+    }
+    return element;
+  },
+  getElement (id) {
+    const element = document.getElementById(id);
+    if (!element) {
+      console.warn(`Element with id'${id}'not found`);
+    }
+    return element;
+  },
+  injectStyles () {
+    if (document.getElementById(CONFIG.selectors.styleId)) return;
+    const style = this.createElement('style', { id: CONFIG.selectors.styleId });
+    style.textContent = `input:valid{${CONFIG.styles.inputValid}}input:invalid{${CONFIG.styles.inputInvalid}} `;
+    document.head.appendChild(style);
+  },
+  showWarning (message) {
+    const warningEl = this.getElement(CONFIG.selectors.warningId);
+    if (warningEl) {
+      warningEl.textContent = message;
+    }
+  },
+  clearWarning () {
+    this.showWarning('');
+    const container = document.getElementById(CONFIG.selectors.containerId);
+    if (container) container.remove();
+    const sqlEditor = document.getElementById(CONFIG.selectors.sqlEditorId);
+    if (sqlEditor) sqlEditor.textContent = '';
+  },
+};
+const AREVA_SettingDecoder = {
+  phaseMap: { PHS: 'P(\\.|\\s|\\.?\\s)?PS1$', GND: 'N(\\.|\\s|\\.?\\s)?PS1$', NEG: 'NEG(\\.|\\s|\\.?\\s)?PS1$' },
+  phaseReplacements: { PHS: 'PHS ', GND: 'GND ', NEG: 'NEG ' },
+  definiteTimeMap: {
+    'DTOC/I>': 'PHS Definite Time Pick Up(A)',
+    'DTOC/IN>': 'GND Definite Time Pick Up(A)',
+    'DTOC/INEG>': 'NEG Definite Time Pick Up(A)',
+    'DTOC/TI>': 'PHS Definite Time Delay(s)',
+    'DTOC/TIN>': 'GND Definite Time Delay(s)',
+    'DTOC/TINEG>': 'NEG Definite Time Delay(s)',
+  },
+  TimedMap: { IREF: 'Pick Up(A)', CHARACTER: 'Curve', FACTOR: 'Time Dial' },
+  overCurrentMap: { IDMT1: 'Timed Overcurrent' },
+  CTP: 0,
+  decode (code, setting) {
+    if (!code || typeof code !== 'string') return ['', ''];
+    if (!setting || typeof setting !== 'string') return ['', ''];
+    if (code.includes('INOM')) {
+      this.CTP = Number(setting.split(' ')[0]) || 0;
+      return ['CT Primary(A)'.toUpperCase(), this.CTP];
+    }
+    try {
+      for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
+        if (code.includes(pattern)) {
+          const value = Number(setting.split(' ')[0]) || 0;
+          return [replacement.toUpperCase(), setting.toUpperCase().includes('INOM') ? value * this.CTP : value];
+        }
+      }
+      for (const [phaseType, pattern] of Object.entries(this.phaseMap)) {
+        if (new RegExp(pattern).test(code)) {
+          const suffix = this.getSuffixDescription(code, pattern);
+          const overCurrent = code.includes('IDMT1') ? this.overCurrentMap.IDMT1 : '';
+          const settingValue = this.getSettingNumber(setting);
+          let decodedCode = this.phaseReplacements[phaseType] + overCurrent + suffix;
+          if (String(settingValue).endsWith('s')) {
+            decodedCode += ' (s)';
           }
-          document.body.insertBefore(r, document.body.firstChild), a();
-        } catch (n) {
-          console.error('addSearchBar error:', n);
+          return [decodedCode.toUpperCase(), settingValue.toString().replace('s', '')];
         }
-      },
-      c = n => {
-        if (!n) return '';
-        try {
-          return n
-            .replace(/--.*$/gm, '')
-            .replace(/\/\*[\s\S]*?\*\//g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        } catch (e) {
-          return console.error('minifySqlManual error:', e), n;
+      }
+    } catch (err) {
+      console.error('Setting name decode error:', err);
+    }
+    console.warn('No match found for code:', code);
+    return ['', ''];
+  },
+  getSettingNumber (setting) {
+    if (setting.toUpperCase().includes('INOM')) {
+      const value = Number(setting.split(' ')[0]) || 0;
+      return value * this.CTP;
+    }
+    return setting;
+  },
+  getSuffixDescription (code, pattern) {
+    if (code.includes('IREF')) return this.TimedMap.IREF;
+    if (code.includes('CHARACTER')) return this.TimedMap.CHARACTER;
+    if (code.includes('FACTOR')) return this.TimedMap.FACTOR;
+    const parts = code.split('/');
+    return parts[parts.length - 1]?.replace(new RegExp(pattern), '').trim() || '';
+  },
+};
+const SEL_SettingDecoder = {
+  phaseMap: { G: 'GND ', P: 'PHS ', Q: 'NEG ', N: 'GND ' },
+  suffixMap: { P: 'Pick Up(A)', C: 'Curve', TD: 'Time Dial', TC: 'Torque Control', L: 'Low Set', H: 'High Set' },
+  definiteTimeMap: { '^50P[234]': 'Definite Time Pick Up(A)', '^67P[234]': 'Definite Time Delay(s)' },
+  overCurrentMap: { '^50': 'Inst. Overcurrent', '^51': 'Timed Overcurrent' },
+  specialPatternMap: { '^50[PG]5': '(Live Line)', '^SV\\d?\\w+': '_Trip Equation' },
+  decode (code) {
+    if (!code || typeof code !== 'string') return '';
+    try {
+      for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
+        if (new RegExp(pattern).test(code)) {
+          return this.getBaseDescription(code) + replacement;
         }
-      },
-      N = n => {
-        if (!n) return '';
-        try {
-          let e = { G: 'GND ', P: 'PHS ', Q: 'NEG ', N: 'GND ' }[n.charAt(2)] || 'PHS ';
-          if (/^50P[234]/.test(n)) return 'Definite Time Pick Up (A)';
-          if (/^67P[234]/.test(n)) return 'Definite Time Delay (s)';
-          /^50/.test(n) ? (e += 'Inst. Overcurrent ') : /^51/.test(n) && (e += 'Timed Overcurrent ');
-          const t = {
-              P: 'Pick Up (A)',
-              C: 'Curve',
-              TD: 'Time Dial',
-              TC: 'Torque Control',
-              L: 'Low Set',
-              H: 'High Set',
-            },
-            E = n.slice(-1),
-            r = n.slice(-2);
-          return (
-            t[r] ? (e += t[r]) : t[E] && (e += t[E]),
-            /^50[PG]5/.test(n) && (e += ' (Live Line)'),
-            /^SV\d?\w+/.test(n) && (e = '_Trip Equation'),
-            e
-          );
-        } catch (n) {
-          return console.error('decodeSettingName error:', n), '';
+      }
+      for (const [pattern, replacement] of Object.entries(this.overCurrentMap)) {
+        if (new RegExp(pattern).test(code)) {
+          const base = this.getBaseDescription(code);
+          const suffix = this.getSuffixDescription(code);
+          const liveLine = Patterns.special['50[PG]5'].test(code) ? '(Live Line)' : '';
+          return base + replacement + suffix + liveLine;
         }
-      },
-      R = () => {
-        try {
-          if ((console.log('Start processing results'), !window._C1MVCCtrl5 || !_C1MVCCtrl5._ncc))
-            return (document.body.style.fontFamily = 'monospace'), void alert('Query Completed');
-          const n = Array.from(_C1MVCCtrl5._ncc),
-            e = n.length;
-          if (e > 10)
-            for (let t = 0; t < e; t++)
-              try {
-                n[t][4] = N(n[t][2]);
-              } catch (n) {
-                console.warn('row decode error', t, n);
-              }
-          else document.body.style.fontFamily = 'monospace';
-          alert('Query Completed');
-        } catch (n) {
-          console.error('processResults error:', n), alert('Query Completed');
+      }
+      if (Patterns.special.SV.test(code)) {
+        return '_Trip Equation';
+      }
+    } catch (err) {
+      console.error('Setting name decode error:', err);
+    }
+    return '';
+  },
+  getBaseDescription (code) {
+    const thirdChar = code.charAt(2);
+    return this.phaseMap[thirdChar] || 'PHS ';
+  },
+  getSuffixDescription (code) {
+    const last2 = code.slice(-2);
+    const last1 = code.slice(-1);
+    return this.suffixMap[last2] || this.suffixMap[last1] || '';
+  },
+};
+const TableRenderer = {
+  createTable (headers, data) {
+    const table = DOM.createElement('table', { style: CONFIG.styles.table });
+    table.appendChild(this.createTableHead(headers));
+    table.appendChild(this.createTableBody(data));
+    return table;
+  },
+  createTableHead (headers) {
+    const thead = DOM.createElement('thead');
+    const tr = DOM.createElement('tr');
+    const columnCount = headers.length;
+    for (let index = 0; index < headers.length; index++) {
+      const displayHeader = this.getDisplayHeader(headers[index], columnCount);
+      const width = this.getColumnWidth(state.relayType, columnCount, index);
+      const th = DOM.createElement('th', {
+        style: `${CONFIG.styles.tableHeader}width: ${width}vw`,
+        textContent: displayHeader,
+      });
+      tr.appendChild(th);
+    }
+    thead.appendChild(tr);
+    return thead;
+  },
+  getDisplayHeader (header, columnCount) {
+    return columnCount === 5 && header === 'ELEMENT' ? CONFIG.table.headerReplacements.ELEMENT : header;
+  },
+  createTableBody (data) {
+    const tbody = DOM.createElement('tbody');
+    for (const row of data) {
+      const tr = DOM.createElement('tr');
+      const rowData = Array.isArray(row) ? row : Object.values(row);
+      for (const cell of rowData) {
+        const cellData = typeof cell === 'object' ? cell.value : cell;
+        const td = DOM.createElement('td', { style: CONFIG.styles.tableCell, textContent: cellData });
+        if (typeof cell === 'object' && cell.rowspan > 1) {
+          td.rowSpan = cell.rowspan;
         }
-      },
-      s = n => {
-        if (!n) return '';
-        return `SELECT\n  R.S01 AS DEVICE,\n  Q.RELAYTYPE AS RELAY,\n  T.SETTINGNAME AS ELEMENT,\n  CASE\n    WHEN T.SETTINGNAME NOT LIKE '%C'\n    AND T.SETTINGNAME NOT LIKE '%D'\n    AND S.GROUPNAME = '1'\n    AND DBMS_LOB.SUBSTR (S.SETTING, 4000) <> 'OFF' THEN UPPER(\n      TO_NUMBER (DBMS_LOB.SUBSTR (S.SETTING, 4000)) * (\n        SELECT\n          TO_NUMBER (DBMS_LOB.SUBSTR (S.SETTING, 4000)) AS CTR\n        FROM\n          TSETTING1 S,\n          TSETTYPE1 T,\n          TRELAY R,\n          TREQUEST Q\n        WHERE\n          R.S01 LIKE '${n}%'\n          AND R.RELAYTYPE LIKE 'SEL%'\n          AND R.ID = Q.RELAYID\n          AND Q.ID = S.REQUESTID\n          AND T.RELAYTYPE = Q.RELAYTYPE\n          AND T.ROWNUMBER = S.ROWNUMBER\n          AND S.GROUPNAME = '1'\n          AND T.SETTINGNAME = 'CTR'\n          AND UPPER(Q.S02) = 'IN SERVICE'\n      )\n    )\n    WHEN T.SETTINGNAME LIKE '67%D'\n    AND S.GROUPNAME = '1'\n    AND DBMS_LOB.SUBSTR (S.SETTING, 4000) <> 'OFF' THEN UPPER(\n      TO_NUMBER (DBMS_LOB.SUBSTR (S.SETTING, 4000)) / 60\n    )\n    ELSE DBMS_LOB.SUBSTR (S.SETTING, 4000)\n  END AS SETTING,\n  Q.M01 AS MEMO\nFROM\n  TSETTING1 S,\n  TSETTYPE1 T,\n  TRELAY R,\n  TREQUEST Q\nWHERE\n  R.S01 LIKE '${n}%'\n  AND R.RELAYTYPE LIKE 'SEL%'\n  AND R.ID = Q.RELAYID\n  AND Q.ID = S.REQUESTID\n  AND T.RELAYTYPE = Q.RELAYTYPE\n  AND T.ROWNUMBER = S.ROWNUMBER\n  AND UPPER(Q.S02) = 'IN SERVICE'\n  AND (\n    (\n      S.GROUPNAME = '1'\n      AND T.SETTINGNAME IN (\n        '51P1P',\n        '51P1TD',\n        '51P1C',\n        '50P1P',\n        '50P2P',\n        '50P3P',\n        '50P4P',\n        '50P5P',\n        '67P2D',\n        '67P3D',\n        '67P4D',\n        '51G1P',\n        '51G1TD',\n        '51G1C',\n        '50G1P',\n        '50G5P',\n        '51PP',\n        '51PTD',\n        '51PC',\n        '51GP',\n        '51GTD',\n        '51GC',\n        '51P',\n        '51TD',\n        '51C',\n        '50L',\n        '50H',\n        '51NP',\n        '51NTD',\n        '51NC',\n        '50NL',\n        '50NH',\n        '51QP',\n        '51QTD',\n        '51QC',\n        '50Q'\n      )\n    )\n    OR (\n      S.GROUPNAME = 'L1'\n      AND (\n        (\n          T.SETTINGNAME LIKE (\n            SELECT\n              S.SETTING AS TR\n            FROM\n              TSETTING1 S,\n              TSETTYPE1 T,\n              TRELAY R,\n              TREQUEST Q\n            WHERE\n              R.S01 LIKE '${n}%'\n              AND R.RELAYTYPE LIKE 'SEL%'\n              AND R.ID = Q.RELAYID\n              AND Q.ID = S.REQUESTID\n              AND T.RELAYTYPE = Q.RELAYTYPE\n              AND T.ROWNUMBER = S.ROWNUMBER\n              AND S.GROUPNAME = 'L1'\n              AND T.SETTINGNAME = 'TR'\n              AND UPPER(Q.S02) = 'IN SERVICE'\n          )\n        )\n        OR T.SETTINGNAME IN ('51P1TC', '51PTC')\n      )\n    )\n  )\nUNION ALL\nSELECT\n  R.S01 AS DEVICE,\n  R.S04 AS RELAY,\n  R.S06 AS VENDER,\n  Q.RELAYTYPE,\n  Q.M01 AS MEMO\nFROM\n  TRELAY R,\n  TREQUEST Q\nWHERE\n  R.S01 LIKE '${n}%'\n  AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'\n  AND R.ID = Q.RELAYID\n  AND UPPER(Q.S02) = 'IN SERVICE'`;
-      },
-      a = () => {
-        const n = document.getElementById(t);
-        n &&
-          n.addEventListener('click', () => {
-            const n = document.getElementById(E),
-              t = document.getElementById(e);
-            if (!t) return;
-            n && (n.textContent = '');
-            const S = t.value.trim();
-            if (o.test(S))
-              try {
-                const n = c(s(S)),
-                  e = document.getElementById(r);
-                e && (e.innerText = n),
-                  'function' == typeof runQuery && runQuery(),
-                  setTimeout(() => {
-                    R();
-                  }, 6e3);
-              } catch (n) {
-                console.error('Search handler error:', n);
-              }
-            else {
-              n && (n.textContent = 'Please use the correct format!'), console.warn('Invalid format:', S);
-              const e = document.getElementById(r);
-              e && (e.innerText = '');
-              const t = document.getElementById(T);
-              t && (t.style.display = 'none');
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    return tbody;
+  },
+  swapColumns (array, index1, index2) {
+    [array[index1], array[index2]] = [array[index2], array[index1]];
+  },
+  mergeConsecutiveCells (rows) {
+    if (!rows.length) return rows;
+    const mergeColumns = CONFIG.table.mergeColumns[state.relayType];
+    if (!mergeColumns?.length) return rows;
+    const colCount = rows[0].length;
+    const mergeMap = Array.from({ length: rows.length }, () =>
+      Array.from({ length: colCount }, () => ({ rowspan: 1, skip: false }))
+    );
+    for (const col of mergeColumns) {
+      if (col >= colCount) continue;
+      let currentValue = rows[0][col];
+      let startRow = 0;
+      let count = 1;
+      for (let row = 1; row <= rows.length; row++) {
+        const isLastRow = row === rows.length;
+        const isSameValue = !isLastRow && rows[row][col] === currentValue;
+        if (isSameValue) {
+          count++;
+        } else {
+          if (count > 1) {
+            mergeMap[startRow][col].rowspan = count;
+            for (let i = startRow + 1; i < startRow + count; i++) {
+              mergeMap[i][col].skip = true;
             }
-          });
-      };
-    (window.AspenQuery = {
-      addSearchBar: S,
-      minifySqlManual: c,
-      decodeSettingName: N,
-      processResults: R,
-      getSqlText: s,
-    }),
-      S();
-  })();
-})();
+          }
+          if (!isLastRow) {
+            currentValue = rows[row][col];
+            startRow = row;
+            count = 1;
+          }
+        }
+      }
+    }
+    const mergedRows = [];
+    for (let row = 0; row < rows.length; row++) {
+      const newRow = [];
+      for (let col = 0; col < colCount; col++) {
+        if (!mergeMap[row][col].skip) {
+          newRow.push({ value: rows[row][col], rowspan: mergeMap[row][col].rowspan, colspan: 1 });
+        }
+      }
+      mergedRows.push(newRow);
+    }
+    return mergedRows;
+  },
+  getColumnWidth (relayType, columnCount, index) {
+    return CONFIG.table.widthConfig[relayType]?.[index] || 100 / columnCount;
+  },
+  render (containerId, headers, data) {
+    const container = DOM.getElement(containerId);
+    if (!container) return;
+    const table = this.createTable(headers, data);
+    container.innerHTML = '';
+    container.appendChild(table);
+  },
+  removeOriginal () {
+    const results = DOM.getElement(CONFIG.selectors.resultGridId);
+    if (results) results.style.display = 'none';
+    const main = document.querySelector(`.${CONFIG.selectors.mainAppClass}`);
+    if (main) main.setAttribute('style', 'min-height:auto');
+  },
+  downloadAsHtml (filename, headers, data) {
+    const tableHtml = this.createTable(headers, data).outerHTML;
+    const currentDate = new Date();
+    const fullHtml = `<!DOCTYPE html> <html> <head> <title>${filename}</title> <style>table{border-collapse:collapse;max-width: 100%;font-family: Arial,sans-serif;border:1px solid#ddd;border-shadow:rgba(23, 43, 77, 0.1) 0px 2px 2px,rgba(23, 43, 77, 0.1) 2px 2px 2px;}th,td{padding: 8px;border: 1px solid#ddd;text-align:left;}th{background-color: #97979780;font-weight:bold;font-size: 14px;} </style> </head> <body> <h2>Protection Settings- ${filename} - ${currentDate.toLocaleDateString()}</h2> ${tableHtml} </body> </html>`;
+    const blob = new Blob([fullHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = DOM.createElement('a', { href: url, download: `${filename}.html` });
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+};
+const DataProcessor = {
+  processResults () {
+    try {
+      if (!this.hasRequiredGlobals()) {
+        this.showCompletionAlert();
+        return;
+      }
+      this.updateStateFromGlobals();
+      this.detectRelayType();
+      const feederId = this.extractFeederId();
+      this.addDescriptionColumn();
+      this.renderTable();
+      this.setupDownloadButton(feederId);
+      TableRenderer.removeOriginal();
+      this.showCompletionAlert();
+    } catch (err) {
+      console.error('Results processing error:', err);
+      this.showCompletionAlert();
+    }
+  },
+  hasRequiredGlobals () {
+    return !!(window.cvAvailableTableFields?._ncc && window._C1MVCCtrl5?._ncc);
+  },
+  updateStateFromGlobals () {
+    state.headerRow = Array.from(window.cvAvailableTableFields._ncc);
+    state.tableRows = Array.from(window._C1MVCCtrl5._ncc);
+  },
+  detectRelayType () {
+    if (!state.tableRows?.length) {
+      state.relayType = CONFIG.relayTypes.UNKNOWN;
+      return;
+    }
+    const firstRow = state.tableRows[0];
+    const relayTypeCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
+    const upperRelayType = String(relayTypeCell || '').toUpperCase();
+    if (upperRelayType.includes(CONFIG.relayTypes.SEL)) {
+      state.relayType = CONFIG.relayTypes.SEL;
+    } else if (upperRelayType.includes(CONFIG.relayTypes.ELECTRO)) {
+      state.relayType = CONFIG.relayTypes.ELECTRO;
+    } else if (upperRelayType.includes(CONFIG.relayTypes.AREVA)) {
+      state.relayType = CONFIG.relayTypes.AREVA;
+    } else {
+      state.relayType = CONFIG.relayTypes.UNKNOWN;
+    }
+  },
+  addDescriptionColumn () {
+    if (state.relayType === CONFIG.relayTypes.SEL) {
+      state.headerRow.push({ Key: '5', Table: '', Name: 'PN ELEMENT DESC', Alias: null });
+      TableRenderer.swapColumns(state.headerRow, 4, 5);
+    }
+    state.tableRows = state.tableRows.map(row => {
+      const rowArray = Array.isArray(row) ? [...row] : Object.values(row);
+      if (state.relayType === CONFIG.relayTypes.SEL) {
+        rowArray[5] = SEL_SettingDecoder.decode(rowArray[2]);
+        TableRenderer.swapColumns(rowArray, 4, 5);
+      } else if (state.relayType === CONFIG.relayTypes.AREVA) {
+        const [decodedCode, decodedSetting] = AREVA_SettingDecoder.decode(rowArray[2], rowArray[3]);
+        rowArray[2] = decodedCode;
+        rowArray[3] = decodedSetting;
+      }
+      return rowArray;
+    });
+    const columnIndex =
+      state.relayType === CONFIG.relayTypes.SEL
+        ? CONFIG.table.SEL_sortColumnIndex
+        : state.relayType === CONFIG.relayTypes.AREVA
+        ? CONFIG.table.AREVA_sortColumnIndex
+        : null;
+    if (columnIndex !== null) {
+      state.tableRows.sort((a, b) => {
+        const aValue = String(a[columnIndex] || '');
+        const bValue = String(b[columnIndex] || '');
+        return aValue.localeCompare(bValue);
+      });
+    }
+  },
+  extractFeederId () {
+    if (!state.tableRows?.length) return 'unknown';
+    const firstRow = state.tableRows[0];
+    const firstCell = Array.isArray(firstRow) ? firstRow[0] : Object.values(firstRow)[0];
+    const parts = String(firstCell || '').split(' ');
+    return parts.slice(0, 2).join(' ') || 'unknown';
+  },
+  renderTable () {
+    const headers = state.headerRow.map(header => header.Name);
+    if (state.relayType === CONFIG.relayTypes.SEL || state.relayType === CONFIG.relayTypes.AREVA) {
+      state.tableRows = TableRenderer.mergeConsecutiveCells(state.tableRows);
+    }
+    const container = document.getElementById(CONFIG.selectors.containerId) || TableManager.createContainer();
+    TableRenderer.render(CONFIG.selectors.containerId, headers, state.tableRows);
+  },
+  setupDownloadButton (feederId) {
+    const container = document.getElementById(CONFIG.selectors.containerId);
+    if (!container) return;
+    const downloadBtn = TableManager.createDownloadButton(feederId);
+    container.insertBefore(DOM.createElement('br'), container.firstChild);
+    container.insertBefore(DOM.createElement('br'), container.firstChild);
+    container.insertBefore(downloadBtn, container.firstChild);
+  },
+  showCompletionAlert () {
+    alert(CONFIG.messages.queryCompleted);
+  },
+};
+const TableManager = {
+  createContainer () {
+    const container = DOM.createElement('div', { id: CONFIG.selectors.containerId, style: CONFIG.styles.container });
+    document.body.appendChild(container);
+    return container;
+  },
+  createDownloadButton (filename) {
+    const downloadBtn = DOM.createElement('button', {
+      className: CONFIG.classes.button,
+      textContent: 'Download',
+      onclick: () => {
+        const headers = state.headerRow.map(header => header.Name);
+        TableRenderer.downloadAsHtml(filename, headers, state.tableRows);
+      },
+    });
+    return downloadBtn;
+  },
+};
+const SearchComponent = {
+  init () {
+    try {
+      this.injectExternalDependencies();
+      this.createSearchBar();
+      this.attachEventHandlers();
+    } catch (err) {
+      console.error('Search component initialization error:', err);
+    }
+  },
+  injectExternalDependencies () {
+    if (typeof window.switchEditor === 'function') {
+      window.switchEditor();
+    }
+  },
+  createSearchBar () {
+    const wrapper = DOM.createElement('div', {
+      id: CONFIG.selectors.searchContainerId,
+      className: 'input-group',
+      style: CONFIG.styles.wrapper,
+    });
+    const input = DOM.createElement('input', {
+      type: 'text',
+      id: CONFIG.selectors.inputId,
+      placeholder: CONFIG.messages.placeholder,
+      className: CONFIG.classes.input,
+      pattern: CONFIG.patterns.searchInput.source,
+      title: CONFIG.messages.inputPattern,
+    });
+    const button = DOM.createElement('button', {
+      type: 'button',
+      id: CONFIG.selectors.buttonId,
+      className: CONFIG.classes.button,
+      textContent: 'Search',
+    });
+    const warning = DOM.createElement('em', { id: CONFIG.selectors.warningId, style: CONFIG.styles.warning });
+    wrapper.append(input, button, warning);
+    document.body.insertBefore(wrapper, document.body.firstChild);
+    DOM.injectStyles();
+  },
+  attachEventHandlers () {
+    const button = DOM.getElement(CONFIG.selectors.buttonId);
+    const input = DOM.getElement(CONFIG.selectors.inputId);
+    if (!button || !input) return;
+    button.addEventListener('click', () => this.handleSearch(input));
+    input.addEventListener('keypress', e => {
+      if (e.key === 'Enter') this.handleSearch(input);
+    });
+    input.addEventListener('input', () => {
+      input.value = input.value.toUpperCase();
+    });
+  },
+  handleSearch (inputEl) {
+    if (state.isProcessing) return;
+    DOM.clearWarning();
+    const rawValue = inputEl.value.trim().toUpperCase();
+    if (!this.validateInput(rawValue)) {
+      DOM.showWarning(CONFIG.messages.invalidFormat);
+      return;
+    }
+    this.executeSearch(rawValue);
+  },
+  validateInput (value) {
+    return CONFIG.patterns.searchInput.test(value);
+  },
+  executeSearch (searchValue) {
+    state.isProcessing = true;
+    try {
+      const sql = SQL.generate(searchValue);
+      this.displaySql(sql);
+      if (typeof window.runQuery === 'function') {
+        window.runQuery();
+      }
+      setTimeout(() => {
+        DataProcessor.processResults();
+        state.isProcessing = false;
+      }, CONFIG.sql.queryDelay);
+    } catch (err) {
+      console.error('Search execution error:', err);
+      state.isProcessing = false;
+    }
+  },
+  displaySql (sql) {
+    const sqlEditor = DOM.getElement(CONFIG.selectors.sqlEditorId);
+    if (sqlEditor) {
+      sqlEditor.textContent = sql;
+    }
+  },
+};
+const SQL = {
+  minify (sql) {
+    if (!sql?.trim()) return '';
+    return sql
+      .replace(/--.*$/gm, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  },
+  generate (inputCode) {
+    if (!inputCode) return '';
+    const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
+    const excludedSettings = CONFIG.sql.excludedArevaSettings.map(name => `'${name}'`).join(',');
+    const baseCondition = `R.S01 LIKE '${inputCode}%' AND R.RELAYTYPE LIKE 'SEL%'`;
+    const lobLength = CONFIG.sql.dbmsLobLength;
+    return SQL.minify(
+      ` SELECT R.S01 AS DEVICE, Q.RELAYTYPE AS RELAY, T.SETTINGNAME AS ELEMENT, CASE WHEN T.SETTINGNAME NOT LIKE '%C' AND T.SETTINGNAME NOT LIKE '%D' AND S.GROUPNAME = '1' AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLength}) <> 'OFF' THEN UPPER(TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) * (SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) AS CTR FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q WHERE ${baseCondition} AND R.ID = Q.RELAYID AND Q.ID = S.REQUESTID AND T.RELAYTYPE = Q.RELAYTYPE AND T.ROWNUMBER = S.ROWNUMBER AND S.GROUPNAME = '1' AND T.SETTINGNAME = 'CTR' AND UPPER(Q.S02) = 'IN SERVICE')) WHEN T.SETTINGNAME LIKE '67%D' AND S.GROUPNAME = '1' AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLength}) <> 'OFF' THEN UPPER(TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) / 60) ELSE DBMS_LOB.SUBSTR(S.SETTING, ${lobLength}) END AS SETTING, Q.M01 AS MEMO FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q WHERE ${baseCondition} AND R.ID = Q.RELAYID AND Q.ID = S.REQUESTID AND T.RELAYTYPE = Q.RELAYTYPE AND T.ROWNUMBER = S.ROWNUMBER AND UPPER(Q.S02) = 'IN SERVICE' AND ((S.GROUPNAME = '1' AND T.SETTINGNAME IN (${settingsList})) OR (S.GROUPNAME = 'L1' AND (T.SETTINGNAME LIKE (SELECT S.SETTING AS TR FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q WHERE ${baseCondition} AND R.ID = Q.RELAYID AND Q.ID = S.REQUESTID AND T.RELAYTYPE = Q.RELAYTYPE AND T.ROWNUMBER = S.ROWNUMBER AND S.GROUPNAME = 'L1' AND T.SETTINGNAME = 'TR' AND UPPER(Q.S02) = 'IN SERVICE') OR T.SETTINGNAME IN ('51P1TC', '51PTC')))) UNION ALL SELECT R.S01 AS DEVICE, Q.RELAYTYPE AS RELAY, R.S06 AS VENDER, TO_CHAR(R.S04) AS MODEL, Q.M01 AS MEMO FROM TRELAY R, TREQUEST Q WHERE R.S01 LIKE '${inputCode}%' AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%' AND R.ID = Q.RELAYID AND UPPER(Q.S02) = 'IN SERVICE' UNION ALL SELECT R.S01 AS DEVICE, Q.RELAYTYPE AS RELAY, T.SETTINGNAME AS ELEMENT, TO_CHAR(S.SETTING) AS SETTING, Q.M01 AS MEMO FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q WHERE R.S01 LIKE '${inputCode}%' AND R.RELAYTYPE LIKE 'AREVA%' AND R.ID = Q.RELAYID AND Q.ID = S.REQUESTID AND T.RELAYTYPE = Q.RELAYTYPE AND T.ROWNUMBER = S.ROWNUMBER AND UPPER(Q.S02) = 'IN SERVICE' AND S.GROUPNAME = 'PARAMETERS' AND (T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1%' OR T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC%' OR T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/GLOBAL/MAIN/INOM C.T. PRIM.%') AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) != 'BLOCKED' AND T.SETTINGNAME NOT IN (${excludedSettings}) `
+    );
+  },
+};
+window.AspenQuery = Object.freeze({
+  addSearchBar: () => SearchComponent.init(),
+  minifySqlManual: SQL.minify,
+  decodeSELSettingName: SEL_SettingDecoder.decode.bind(SEL_SettingDecoder),
+  decodeAREVASettingName: AREVA_SettingDecoder.decode.bind(AREVA_SettingDecoder),
+  processResults: DataProcessor.processResults.bind(DataProcessor),
+  getSqlText: SQL.generate,
+  TableRenderer,
+  createTableContainer: TableManager.createContainer.bind(TableManager),
+  getState: () => ({ ...state }),
+  CONFIG,
+});
+SearchComponent.init();

@@ -258,6 +258,8 @@ div#s4-workspace {
 
 #s4-bodyContainer {
   padding-bottom: 35px;
+  overflow-y: scroll;
+  height: 100vh;
 }
 
 div#WebPartWPQ5 tbody,
