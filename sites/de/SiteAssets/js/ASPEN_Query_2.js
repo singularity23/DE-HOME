@@ -12,6 +12,7 @@ javascript: (function () {
       buttonId: 'searchButton',
       warningId: 'warning',
       sqlEditorId: 'sql-editor',
+      sqlEditorSectionId: 'sql-editor-section',
       resultGridId: 'QueryResultGrid',
       containerId: 'tableContainer',
       mainAppClass: 'app-main',
@@ -85,7 +86,7 @@ javascript: (function () {
         'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/ENABLE PS1',
         'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/ENABLE PS1',
       ],
-      queryDelay: 6000,
+      queryDelay: 2000,
       dbmsLobLength: 4000,
     },
     table: {
@@ -652,9 +653,10 @@ javascript: (function () {
 <head>
     <title>${filename}</title>
     <style>
-        table { border-collapse: collapse; max-width: 100%; font-family: Arial, sans-serif; border:1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;}
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #97979780; font-weight: bold; font-size: 14px; }
+        body { font-family: monospace; font-size: 12px; }
+        table { border-collapse: collapse; max-width: 100%; border:1px solid rgba(221, 221, 221, 0.5); border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;}
+        th, td { padding: 8px; border: 1px solid rgba(221, 221, 221, 0.5); text-align: left; }
+        th { background-color:rgba(151, 151, 151, 0.5); font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -899,16 +901,21 @@ javascript: (function () {
     /**
      * Injects external dependencies if available
      */
-    injectExternalDependencies () {
-      if (typeof window.switchEditor === 'function') {
-        window.switchEditor();
-      }
-    },
+    injectExternalDependencies() {
+      const sqlEditorSection = DOM.getElement(CONFIG.selectors.sqlEditorSectionId);
+      if (typeof window.switchEditor === 'function' && sqlEditorSection && sqlEditorSection.style.display =='none') {
+          window.switchEditor();
+        }
+      },
 
     /**
      * Creates search bar UI
      */
-    createSearchBar () {
+    createSearchBar() {
+      const searchContainer = DOM.getElement(CONFIG.selectors.searchContainerId);
+      if (searchContainer) {
+        return;
+      }
       const wrapper = DOM.createElement('div', {
         id: CONFIG.selectors.searchContainerId,
         className: 'input-group',

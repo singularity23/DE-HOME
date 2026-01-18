@@ -2,7 +2,7 @@
 # fix the url encode issue by Kan @2024-11-19
 # minor improvements @2025-07-04
 # rewrite emission study @2025-11-19
-# optimized and refactored @2024-12-19
+# optimized and refactored @2026-01-12
 
 from logging import info
 import math
@@ -223,7 +223,7 @@ class ShortCircuitStudy:
     )
     TABLE_ROW_FORMAT = "\n {:<56}{:>8.1f}{:>11.1f}{:>9.4f}{:>8.4f}{:>8.4f}{:>8.4f}{:>10.4f}{:>8.4f}{:>8.4f}{:>8.4f}"
     IMPEDANCE_UNIT = "Ohms"
-    PREFAULT_VOLTAGE = "OperatingVoltage"
+    PREFAULT_VOLTAGE = ["BaseVoltage", "OperatingVoltage"]
     FAULT_VALUES = {False: [0, 0, 0, 0], True: [40, 0, 8, 0]}
     TABLE_VARIABLES = [
         "R1ohm",
@@ -236,6 +236,8 @@ class ShortCircuitStudy:
         "X0pu",
         "Distance",
     ]
+    NETWORK_PARAM = []
+    EQUIP_LIST = []
 
     def __init__(self):
         """Initialize the ShortCircuitStudy with default values"""
@@ -250,8 +252,7 @@ class ShortCircuitStudy:
         self.LGFaultResistance = self.LGFaultReactance = 40, 0
         self.LLLFaultResistance = self.LLLFaultReactance = 8, 0
         self.toPhase = self.fromPhase = ""
-        self.network_param = []
-        self.equipment_list = []
+
         self.Rep_Loc = self.Path = ""
         self.Source_R0 = self.Source_X0 = self.Source_R1 = self.Source_X1 = 0
         self.Reactor_X, self.Reactor_I = 0.900, 400
@@ -408,6 +409,8 @@ class ShortCircuitStudy:
     def config_sc(self) -> None:
         """Configure the parameters for the short circuit simulation"""
         print("- Config short circuit study")
+        self.NETWORK_PARAM = []
+        self.EQUIP_LIST = []
 
         self.SC_Sim = Sim.ShortCircuit()
         n = self.SC_Sim.GetValue("AnalysisNetworks.SelectedNetworks")
@@ -449,12 +452,12 @@ class ShortCircuitStudy:
             (self.LGFaultReactance, f"{pretxt}LGFaultReactanceOHMS"),
             (self.LLLFaultResistance, f"{pretxt}LLLFaultResistanceOHMS"),
             (self.LLLFaultReactance, f"{pretxt}LLLFaultReactanceOHMS"),
-            (self.PREFAULT_VOLTAGE, f"{pretxt}PreFaultVoltage"),
+            (self.PREFAULT_VOLTAGE[0], f"{pretxt}PreFaultVoltage"),
         ]
 
     def store_info(self, SCReport) -> None:
         """Store fault impedance information"""
-        SCReport.write("\n{:<25} {:<8}{:<8}".format("Fault Impedance(ohms)", "R", "X"))
+        SCReport.write("\n{:<25} {:<8}{:<8}".format("Fault Impedance (ohms)", "R", "X"))
 
         fault_impedances = [
             (self.LLLFaultResistance, self.LLLFaultReactance, "Zf-LLL:"),
@@ -504,27 +507,32 @@ class ShortCircuitStudy:
         elif not equipment_id.startswith("3P_G4"):
             Device.SetValue("3P_G4_-_1/C_#4/0_AWG_AL_25_KV_XLPE", "CableID")
 
-    def make_report(self, file, NetworkParam: List, EquipmentList: List) -> None:
+    def make_report(self, file, NETWORK_PARAM: List, EQUIP_LIST: List) -> None:
         """Generate the study report"""
         print(f"- Results Text File: {self.Rep_Loc}")
 
         def _print_and_write(content: str) -> None:
             print(content)
             file.write(content)
+        
+        _print_and_write("\n" + "=" * 50 + "\n")
+        _print_and_write("        FAULT STUDY REPORT\n")
+        _print_and_write("=" * 50 + "\n")
 
         _print_and_write(self.table_separator)
         _print_and_write(self.table_header_1)
         _print_and_write(self.table_header_2)
         _print_and_write(self.table_separator)
 
-        for param in NetworkParam:
+        for param in NETWORK_PARAM:
             if "INT_WIRE" not in param[0]:
                 _print_and_write(self.TABLE_ROW_FORMAT.format(*param))
 
         _print_and_write(self.table_separator)
         self.store_info(file)
+        file.write(self.table_separator)
 
-        for eq in EquipmentList:
+        for eq in EQUIP_LIST:
             eq[1].store_info(file)
             file.write(self.table_separator)
 
@@ -539,10 +547,10 @@ class BaseEquipment:
         self.Node = kwargs.get("Node")
         self.DeviceObj = self.Device.GetObjType() if self.Device else None
         self.EqID = self.Device.EquipmentID if self.Device else "DEFAULT"
-        self.EqType = self.Device.EquipmentType if self.Device else 0 #Unknown
-        self.DevType = self.Device.DeviceType if self.Device else -1 #AllDevices
+        self.EqType = self.Device.EquipmentType if self.Device else 0  # Unknown
+        self.DevType = self.Device.DeviceType if self.Device else -1  # AllDevices
         self.DevNum = self.Device.DeviceNumber if self.Device else "DEFAULT"
-        
+
         self.Eq = Eqt.GetEquipment(self.EqID, self.EqType) if self.Device else None
         # Initialize impedance parameters with defaults
         impedance_defaults = (0, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -581,7 +589,7 @@ class BaseEquipment:
         self.toPhase = kwargs.get("toPhase", "")
         self.fromPhase = kwargs.get("fromPhase", "")
 
-    def info_table(self, NetworkParam: List) -> None:
+    def info_table(self, NETWORK_PARAM: List) -> None:
         """Add equipment information to network parameters"""
         _DEVICE_INFO = [
             self.Nameplate,
@@ -596,12 +604,12 @@ class BaseEquipment:
             self.R0TN,
             self.X0TN,
         ]
-        NetworkParam.append(_DEVICE_INFO)
+        NETWORK_PARAM.append(_DEVICE_INFO)
 
-    def eq_data(self, EquipmentList: List) -> None:
+    def eq_data(self, EQUIP_LIST: List) -> None:
         """Add equipment to equipment list"""
-        if all(self.EqID not in eq for eq in EquipmentList) and self.EqID != "INT_WIRE":
-            EquipmentList.append([self.EqID, self])
+        if all(self.EqID not in eq for eq in EQUIP_LIST) and self.EqID != "INT_WIRE":
+            EQUIP_LIST.append([self.EqID, self])
 
     def store_info(self, SCReport) -> None:
         """Store equipment information - to be implemented by subclasses"""
@@ -683,12 +691,12 @@ class CableEquipment(BaseEquipment):
             self.R1 = self.R0 = (self.R1TN + self.R1TN + self.R0TN) / 3
             self.X1 = self.X0 = (self.X1TN + self.X1TN + self.X0TN) / 3
 
-    def info_table(self, NetworkParam: List) -> None:
-        """Append cable information to NetworkParam with consolidation"""
-        if NetworkParam and NetworkParam[-1][0] == self.Nameplate:
-            self._consolidate_cable_entry(NetworkParam)
+    def info_table(self, NETWORK_PARAM: List) -> None:
+        """Append cable information to NETWORK_PARAM with consolidation"""
+        if NETWORK_PARAM and NETWORK_PARAM[-1][0] == self.Nameplate:
+            self._consolidate_cable_entry(NETWORK_PARAM)
         else:
-            NetworkParam.append(
+            NETWORK_PARAM.append(
                 [
                     self.Nameplate,
                     self.Length,
@@ -704,10 +712,10 @@ class CableEquipment(BaseEquipment):
                 ]
             )
 
-    def _consolidate_cable_entry(self, NetworkParam: List) -> None:
+    def _consolidate_cable_entry(self, NETWORK_PARAM: List) -> None:
         """Consolidate consecutive cable entries"""
-        prev_entry = NetworkParam.pop()
-        NetworkParam.append(
+        prev_entry = NETWORK_PARAM.pop()
+        NETWORK_PARAM.append(
             [
                 self.Nameplate,
                 prev_entry[1] + self.Length,
@@ -731,18 +739,23 @@ class CableEquipment(BaseEquipment):
                 SCReport.write(f"\n{label:<25} {value}")
 
         SCReport.write(f"\n[{self.DeviceObj}: {self.EqID}]")
-        SCReport.write(
-            f"\n{'Positive Sequence Z1:':<25} {self.R1_db:<8.4f} + j{self.X1_db:<8.4f} ohms/km"  # pyright: ignore[reportAttributeAccessIssue]
+
+        _write_info(
+            "Positive Sequence Z1:",
+            f"{self.R1_db:<8.4f} + j{self.X1_db:<8.4f} ohms/km",  # pyright: ignore[reportAttributeAccessIssue]
         )
-        SCReport.write(
-            f"\n{'Negative Sequence Z0:':<25} {self.R0_db:<8.4f} + j{self.X0_db:<8.4f} ohms/km"  # pyright: ignore[reportAttributeAccessIssue]
+        _write_info(
+            "Negative Sequence Z0:",
+            f"{self.R0_db:<8.4f} + j{self.X0_db:<8.4f} ohms/km",  # pyright: ignore[reportAttributeAccessIssue]
         )
-        SCReport.write(
-            f"\n{'Nominal Rating:':<25} {self.Rating:<8.0f} amps"  # type: ignore
-        )
+        _write_info(
+            "Nominal Rating:", f"{self.Rating:<8.0f} amps" # type: ignore
+        )  
 
         if self.Comments:
-            content = textwrap.fill(str(self.Comments), 100)
+            content = textwrap.fill(
+                str(self.Comments), 80, initial_indent="", subsequent_indent=" " * 26
+            )
             _write_info("Comments:", content)
 
         if self.DevType == 11:  # OverheadLine
@@ -751,7 +764,7 @@ class CableEquipment(BaseEquipment):
             _write_info("Conductor Spacing:", self.ConSpacing)  # type: ignore
         elif self.DevType == 10:  # Cable
             _write_info(
-                "Impedances Note:", textwrap.fill(str(self.ImpNote), 100)  # type: ignore
+                "Impedances Note:", textwrap.fill(str(self.ImpNote), 80, initial_indent="", subsequent_indent=" " * 26)  # type: ignore
             )
 
 
@@ -775,9 +788,9 @@ class ReactorEquipment(BaseEquipment):
         # Update nameplate for reactors
         self.Nameplate = f"{self.DeviceObj}: {self.EqID}"
 
-    def info_table(self, NetworkParam: List) -> None:
+    def info_table(self, NETWORK_PARAM: List) -> None:
         """Add reactor information to network parameters"""
-        NetworkParam.append(
+        NETWORK_PARAM.append(
             [
                 self.Nameplate,
                 self.Length,
@@ -806,7 +819,9 @@ class ReactorEquipment(BaseEquipment):
             reactor_eq = Eqt.GetEquipment(self.EqID, self.EqType)
             comments = reactor_eq.GetValue("Comments")
             if comments:
-                SCReport.write(f"\n{'Comments:':<25} {textwrap.fill(comments, 100)}")
+                SCReport.write(
+                    f"{'Comments:':<25} {textwrap.fill(comments, 80, initial_indent='', subsequent_indent=' '*26)}"
+                )
         except Exception:
             pass
 
@@ -820,6 +835,7 @@ class ProtectionEquipment(BaseEquipment):
         super().__init__(**kwargs)
         self.Length = 0
         self.R1 = self.X1 = self.R0 = self.X0 = 0
+        self.EqID = "ProtectiveDevice"
 
         # Initialize protection attributes
         self.prot_nv_id = self.prot_tcc_desc = self.prot_normal_status = ""
@@ -862,9 +878,9 @@ class ProtectionEquipment(BaseEquipment):
                 self.instrument_type.append(inst.GetObjType())
                 self.instrument_number.append(inst.InstrumentNumber)
 
-    def info_table(self, NetworkParam: List) -> None:
+    def info_table(self, NETWORK_PARAM: List) -> None:
         """Add protection information to network parameters"""
-        NetworkParam.append(
+        NETWORK_PARAM.append(
             [
                 self.Nameplate,
                 self.Length,
@@ -879,10 +895,6 @@ class ProtectionEquipment(BaseEquipment):
                 self.X0TN,
             ]
         )
-
-    def eq_data(self, EquipmentList: List) -> None:
-        """Add protection to equipment list (always add, don't check for duplicates)"""
-        EquipmentList.append(["Protection", self])
 
     def store_info(self, SCReport) -> None:
         """Store protection information to report"""
@@ -917,7 +929,7 @@ class ProtectionEquipment(BaseEquipment):
         if self.prot_model:
             SCReport.write(f"\n{'Model:':<25} {self.prot_model}")
         if self.prot_rating:
-            SCReport.write(f"\n{'Rating:':<25} {self.prot_rating}")
+            SCReport.write(f"\n{'Rating:':<25} {self.prot_rating:<8}")
 
     def _store_basic_protection_info(self, SCReport) -> None:
         """Store basic protection information"""
@@ -928,7 +940,7 @@ class ProtectionEquipment(BaseEquipment):
         if self.prot_model:
             SCReport.write(f"\n{'Model:':<25} {self.prot_model}")
         if self.prot_rating:
-            SCReport.write(f"\n{'Rating:':<25} {self.prot_rating}")
+            SCReport.write(f"\n{'Rating:':<25} {self.prot_rating:<8.0F} amps")
 
     def _write_multiple_values(self, SCReport, label: str, values: List) -> None:
         """Write multiple values in a formatted way"""
@@ -1076,9 +1088,9 @@ class TransformerEquipment(BaseEquipment):
         ):
             raise ValueError("Error: the transformer device impedance is not correct")
 
-    def info_table(self, NetworkParam: List) -> None:
+    def info_table(self, NETWORK_PARAM: List) -> None:
         """Add transformer information to network parameters"""
-        NetworkParam.append(
+        NETWORK_PARAM.append(
             [
                 self.Nameplate,
                 self.Length,
@@ -1127,9 +1139,10 @@ class TransformerEquipment(BaseEquipment):
             )
             comments = transformer_eq.GetValue("Comments")
             if comments:
-                SCReport.write(f"\nComments: {textwrap.fill(comments, 100)}")
+                SCReport.write(f"\nComments: {textwrap.fill(comments, 80)}")
         except Exception:
             pass
+
 
 class SourceEquivalent(BaseEquipment):
     """Class for source equivalent analysis and reporting"""
@@ -1155,8 +1168,9 @@ class SourceEquivalent(BaseEquipment):
             info_toNode: Impedance information from the source node [R1TN, X1TN, R0TN, X0TN, ...]
         """
         super().__init__(**kwargs)
-        self.SourceName = self.Node.ID
+        self.SourceName = self.Node.ID  # pyright: ignore[reportOptionalMemberAccess]
         self.EqType = cympy.enums.EquipmentType.Substation
+        self.EqID = "Source"
 
         # Query source-specific information
         source_data = QueryHelper.query_nodes(self.SOURCE_INFO, self.SourceName)
@@ -1172,12 +1186,21 @@ class SourceEquivalent(BaseEquipment):
             self.Level,
         ) = source_data
 
-        print(self.Level)
         # Extract Thevenin impedances from node information
         if "High" in str(self.Level):
-            self.R1, self.X1, self.R0, self.X0 = self.R1min, self.X1min, self.R0min, self.X0min
+            self.R1, self.X1, self.R0, self.X0 = (
+                self.R1min,
+                self.X1min,
+                self.R0min,
+                self.X0min,
+            )
         elif "Low" in str(self.Level):
-            self.R1, self.X1, self.R0, self.X0 = self.R1max, self.X1max, self.R0max, self.X0max
+            self.R1, self.X1, self.R0, self.X0 = (
+                self.R1max,
+                self.X1max,
+                self.R0max,
+                self.X0max,
+            )
         else:
             self.R1 = self.X1 = self.R0 = self.X0 = 0
 
@@ -1199,14 +1222,14 @@ class SourceEquivalent(BaseEquipment):
         except Exception:
             self._source_device = None
 
-    def info_table(self, NetworkParam: List) -> None:
+    def info_table(self, NETWORK_PARAM: List) -> None:
         """Add source equivalent information to network parameters"""
 
         def _ensure_positive(number: float) -> float:
             """Ensure impedance values are positive for reporting"""
             return abs(number)
 
-        NetworkParam.append(
+        NETWORK_PARAM.append(
             [
                 self.Nameplate,
                 0,  # Length
@@ -1221,10 +1244,6 @@ class SourceEquivalent(BaseEquipment):
                 0,  # Thevenin impedances (not applicable for source)
             ]
         )
-
-    def eq_data(self, EquipmentList: List) -> None:
-        """Add source equivalent to equipment list"""
-        EquipmentList.append(["Source", self])
 
     def store_info(self, SCReport) -> None:
         """Store source equivalent information to report"""
@@ -1259,12 +1278,13 @@ class SourceEquivalent(BaseEquipment):
 
     def _store_source_comments(self, SCReport) -> None:
         """Store source comments and additional details"""
-        SCReport.write("\nComments:")
 
         self._get_source_objects()
-        comments = self._source_eqt.GetValue("Comments")
+        comments = self._source_eqt.GetValue("Comments")  # type: ignore
         if comments:
-            SCReport.write("\n" + textwrap.fill(comments, 100))
+            SCReport.write(
+                f"\n{'Comments:':<25} {textwrap.fill(comments, 80, initial_indent='', subsequent_indent=' '*26)}"
+            )
 
         if self._source_device:
             SCReport.write(" Source equivalent from database")
@@ -1274,7 +1294,7 @@ class SourceEquivalent(BaseEquipment):
             SCReport.write(" Unknown Error")
 
 
-class FaultPoint:
+class FaultPoint(BaseEquipment):
     """Class for fault point analysis"""
 
     _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Fault%20Level%20Form.html"
@@ -1299,17 +1319,20 @@ class FaultPoint:
         "Longitude",
     ]
 
-    def __init__(self, fault_point: str):
+    def __init__(self, fault_point: str, **kwargs):
+        super().__init__(**kwargs)
+
         fault_data = QueryHelper.query_nodes(self.FAULT_CURRENT_INFO, fault_point)
         self.data = dict(zip(self.FAULT_CURRENT_INFO, fault_data))
         self.TIo = max(self.data["LGamp"], self.data["LLGT"])
         self.TIO_imp = max(self.data["LGampZ"], self.data["LLGTZ"])
+        self.EqID = fault_point
 
-    def info_table(self, NetworkParam: List) -> None:
+    def info_table(self, NETWORK_PARAM: List) -> None:
         """Add fault point information to network parameters"""
-        NetworkParam.append(
+        NETWORK_PARAM.append(
             [
-                f"FAULT POINT (Lat.:{self.data['Latitude']:.5f},Long.:{self.data['Longitude']:.5f})",
+                f"{self.EqID} (Lat.:{self.data['Latitude']:.5f},Long.:{self.data['Longitude']:.5f})",
                 0,
                 self.data["Distance"],
                 0,
@@ -1323,16 +1346,13 @@ class FaultPoint:
             ]
         )
 
-    def eq_data(self, EquipmentList: List) -> None:
-        """Add fault point to equipment list"""
-        EquipmentList.append(["FaultPoint", self])
-
     def store_info(self, SCReport) -> None:
         """Store fault point information to report"""
-        SCReport.write("\n")
+
+        SCReport.write(f"\n[{self.EqID}]")
         SCReport.write(
             "\n{:<25} {:<6}{:<6}{:<6}{:<6}{:<6}".format(
-                "FAULT POINT(Amps)", "LLL", "LL", "LLG", "LG", "3Io"
+                "Faults (amps)", "LLL", "LL", "LLG", "LG", "3Io"
             )
         )
         SCReport.write(
@@ -1419,11 +1439,11 @@ class FaultPoint:
 
         link = self._PATH + "?" + "&".join(variables)
         print(link)
+
         ChromeBrowser.open_url(link)
 
 
-
-class EmissionStudy:
+class EmissionStudy(ShortCircuitStudy):
     """Class for performing emission studies on power systems"""
 
     # Constants
@@ -1506,7 +1526,7 @@ class EmissionStudy:
         total_mva = (
             self.current_load_smv + self.current_load_slv
         ) / 1000 + self.customer_load_mva
-        self._calculate_slv_percentage(total_mva)
+        self.slv_percentage = self.current_load_slv / (1000 * total_mva)
         self.estimated_slv = round(
             round(self.slv_percentage, 2) * self.parameters.feeder_limit, 3  # type: ignore
         )
@@ -1522,24 +1542,13 @@ class EmissionStudy:
             )
 
             if "INT_" in spot.DeviceNumber:
+
                 smv_load += load_kva
             else:
                 slv_load += load_kva
 
         self.current_load_smv = smv_load
         self.current_load_slv = slv_load
-
-    def _calculate_slv_percentage(self, total_mva: float) -> None:
-        if total_mva <= self.parameters.feeder_limit:  # type: ignore
-            print("Warning: The load will be over the feeder limit")
-            total_current_load = self.current_load_slv + self.current_load_smv
-            self.slv_percentage = (
-                self.current_load_slv / total_current_load
-                if total_current_load > 0
-                else 0.0
-            )
-        else:
-            self.slv_percentage = self.current_load_slv / (1000 * total_mva)
 
     def _prepare_variables(self) -> None:
         r1, x1, r0, x0 = self.impedance
@@ -1572,9 +1581,13 @@ class EmissionStudy:
     def _write_report(self, file, report_url: str) -> None:
         report_data = self._prepare_report_data(report_url)
 
-        file.write("\n" + "=" * 50 + "\n")
-        file.write("        EMISSION STUDY REPORT\n")
-        file.write("=" * 50 + "\n")
+        def _print_and_write(content: str) -> None:
+            print(content)
+            file.write(content)
+
+        _print_and_write("\n" + "=" * 50 + "\n")
+        _print_and_write("        EMISSION STUDY REPORT\n")
+        _print_and_write("=" * 50 + "\n")
 
         for label, value in report_data:
             self._write_formatted_line(file, label, value)
@@ -1586,7 +1599,7 @@ class EmissionStudy:
             ("Voltage (kV):", f"{self.kv_ll}"),
             ("Impedance R1/X1:", f"{r1}/{x1}"),
             ("Impedance R0/X0:", f"{r0}/{x0}"),
-            ("Distance:", f"{self.distance}"),
+            ("Distance (m):", f"{self.distance}"),
             ("Phase:", f"{self.phase_count}"),
             ("Feeder Planning Limit (MVA):", f"{self.parameters.feeder_limit}"),  # type: ignore
             ("Connection Type:", str(self.parameters.connection)),  # type: ignore
@@ -1599,7 +1612,7 @@ class EmissionStudy:
             ("Percentage of LV Load (%):", f"{self.slv_percentage * 100:.0f}"),
             ("Max. LV Load (MVA):", f"{self.estimated_slv:.3f}"),
             ("Disturbing Load:", str(self.parameters.disturbing)),  # type: ignore
-            ("Report Link:", f"\n{textwrap.fill(report_url, 100)}"),
+            ("Report Link:", f"{textwrap.fill(report_url, 80, initial_indent='', subsequent_indent=' ' * 31, break_long_words=False, break_on_hyphens=False)}"),
         ]
 
     @staticmethod
@@ -1609,9 +1622,7 @@ class EmissionStudy:
         file.write(line)
 
 
-def device_handler(
-    short_circuit_study, device_obj, Node, FromNode, Phase, FromPhase
-):
+def device_handler(short_circuit_study, device_obj, Node, FromNode, Phase, FromPhase):
     """Handle different types of devices in a short circuit study"""
     device_handlers = {
         1: TransformerEquipment,  # cympy.enums.DeviceType.Transformer
@@ -1625,7 +1636,6 @@ def device_handler(
         11: CableEquipment,  # cympy.enums.DeviceType.OverheadLine
     }
 
-
     info_fromNode, info_toNode = short_circuit_study.query_table(FromNode, Node)
 
     handler = device_handlers.get(device_obj.DeviceType)
@@ -1637,9 +1647,9 @@ def device_handler(
             toPhase=Phase,
             fromPhase=FromPhase,
         )
-        Dev.eq_data(short_circuit_study.equipment_list)
-        Dev.info_table(short_circuit_study.network_param)
-    
+        Dev.eq_data(short_circuit_study.EQUIP_LIST)
+        Dev.info_table(short_circuit_study.NETWORK_PARAM)
+
 
 def main():
     if not Std.ListNetworks:
@@ -1665,8 +1675,8 @@ def main():
 
         # Fault Point
         FP = FaultPoint(fault_point_id)
-        FP.info_table(SC.network_param)
-        FP.eq_data(SC.equipment_list)
+        FP.info_table(SC.NETWORK_PARAM)
+        FP.eq_data(SC.EQUIP_LIST)
 
         # Upstream path to Source
         itr = Std.NetworkIterator(
@@ -1686,8 +1696,8 @@ def main():
 
             if Std.QueryInfoNode("IsSourceNode", Node.ID) == "Yes":
                 source = SourceEquivalent(Node=Node)
-                source.eq_data(SC.equipment_list)
-                source.info_table(SC.network_param)
+                source.eq_data(SC.EQUIP_LIST)
+                source.info_table(SC.NETWORK_PARAM)
 
         ES = EmissionStudy(
             poi=fault_point_id,
@@ -1703,11 +1713,12 @@ def main():
             ES.run_study()
 
             with open(SC.Rep_Loc, "w") as report_file:
-                SC.make_report(report_file, SC.network_param, SC.equipment_list)
+                SC.make_report(report_file, SC.NETWORK_PARAM, SC.EQUIP_LIST)
                 if ES.parameters.emission == "Yes":  # type: ignore
                     ES.generate_report(report_file)
 
             FP.generate_form(SC.NetworkID)
+            print(SC.table_separator)
 
         except Exception as e:
             print(f"Error: {e}")

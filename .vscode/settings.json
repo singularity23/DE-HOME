@@ -15,5 +15,8 @@
     "editor.defaultFormatter": "adpyke.vscode-sql-formatter"
   },
   "djlint.showInstallError": false,
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
 
 }

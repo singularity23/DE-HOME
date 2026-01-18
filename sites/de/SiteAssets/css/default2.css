@@ -1,22 +1,22 @@
 :root {
-  --primary-color: rgba(0, 79, 108);
-  --secondary-color: rgba(0, 79, 108, 0.1);
+  --primary-color: #046a38;
+  --secondary-color: #004f6c1a;
   --box-font-color: #ffffff;
-  --box-background-color: #f5f3f2;
-  --link-color: rgba(0, 79, 108);
+  --box-background-color: #9adbe8;
+  --link-color: #004f6c;
   --box-text-color: #05a1c6;
-  --box-text-sublink: rgba(62, 57, 53);
-  --box-text-sub: rgb(5, 161, 198);
-  --text-subheader: rgb(156, 148, 141);
-  --border-color: rgb(203, 196, 188);
-  --link-highlight-color: rgb(250, 70, 22, 1);
-  --sublink-highlight-color: rgb(250, 70, 22, 0.2);
+  --box-text-sublink: #3e3935;
+  --box-text-sub: #10a3c8;
+  --text-subheader: #9c948d;
+  --border-color: #cbc4bc;
+  --link-highlight-color: #fa4616;
+  --sublink-highlight-color: #e8927c33;
 
   --box-abbr-color: #004f6c;
-  --box-webpart-color: rgb(72, 167, 57);
-  --light-bg: rgba(255, 255, 255, 0.63);
-  --card-bg: rgba(245, 244, 243, 0.65);
-  --text-color: rgb(62, 57, 53);
+  --box-webpart-color: #48a739;
+  --light-bg: #ffffffa1;
+  --card-bg: #f5f4f3a6;
+  --text-color: #3e3935;
   --shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.15), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
   --hover-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.14), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
 }

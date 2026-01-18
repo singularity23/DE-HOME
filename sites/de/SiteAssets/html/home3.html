@@ -3,46 +3,38 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width" initial-scale="1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QuickLinks Hub - All Your Frequently Used Websites</title>
   <link rel="preload" href="/sites/de/SiteAssets/js/default2_copy.js" as="script">
   <link rel="stylesheet" type="text/css" href="/sites/de/SiteAssets/css/default.css">
   <link rel="stylesheet" type="text/css" href="/sites/de/SiteAssets/css/default2.css">
   <script src="/sites/de/SiteAssets/js/default.js"></script>
   <script src="/sites/de/SiteAssets/js/default2_copy.js" defer></script>
-
-
 </head>
 
 <body>
   <div class="DEhome">
-    <div class="fullpage-loader" id="fullpage-loader">
+    <div class="container" id="loader">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
 
-      <div class="container" id="loader">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-
-      <div class="DEcontainer" id="DEcontainer">
-
-        <header>
-
-          <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" id="searchInput" placeholder="Search for websites...">
-          </div>
-        </header>
-        <div id="categoriesContainer">
-          <!-- Categories will be dynamically inserted here -->
+    <div class="DEcontainer" id="DEcontainer">
+      <header>
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search for websites...">
         </div>
-        <footer>
-          <p>Quick access to all DE related sites. Bookmark this page for easy access!</p>
-        </footer>
+      </header>
+      <div id="categoriesContainer">
+        <!-- Categories will be dynamically inserted here -->
       </div>
+      <footer>
+        <p>Quick access to all DE related sites. Bookmark this page for easy access!</p>
+      </footer>
     </div>
   </div>
-
 </body>
 
 </html>
