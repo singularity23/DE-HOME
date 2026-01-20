@@ -48,11 +48,17 @@ def CombineDicts(dict1, dict2):
     Used to combine section dictionaries for different phases.
     Returns a new dictionary to avoid modifying the input.
     """
-    result = {k: v.copy() for k, v in dict1.items()}
-    for key in result:
-        if key in dict2:
-            result[key].update(dict2[key])
-    return result
+    if dict1 == {}:
+        return dict2
+    elif dict2 == {}:
+        return dict1
+    else:
+        result = {k: v.copy() for k, v in dict1.items()}
+
+        for key in result:
+            if key in dict2:
+                result[key].update(dict2[key])
+        return result
 
 
 def QueryWithFallback(
@@ -65,6 +71,7 @@ def QueryWithFallback(
     Used for querying device/node values, converting to float if possible.
     Handles empty strings and invalid float values gracefully.
     """
+
     def try_parse_float(value: Any) -> Optional[float]:
         if value is None:
             return None
@@ -545,7 +552,7 @@ class LoadBalancing:
         current_peak = peak_loads.copy()
         current_balance = calculate_balance(current_peak)
         # Iterate up to a maximum number of moves
-        
+
         improved = True
         while improved:
             improved = False
@@ -562,16 +569,16 @@ class LoadBalancing:
                         new_peaks[i] -= load
                         new_peaks[j] += load
                         new_balance = calculate_balance(new_peaks)
-                        #print(f"Trying to move {load} from {i} to {j}: New balance = {new_balance}")
-                        #print(f'Best Blanace so far: {best_balance}')
-                            # Validate if the current move improves the balance
+                        # print(f"Trying to move {load} from {i} to {j}: New balance = {new_balance}")
+                        # print(f'Best Blanace so far: {best_balance}')
+                        # Validate if the current move improves the balance
                         if new_balance < best_balance:
                             best_balance = new_balance
                             best_move = (branch, load, i, j)
 
             # Execute the best found move
             if best_move and best_balance < current_balance:
-                #print(f'Current Blanace: {current_balance}, Best Blanace: {best_balance}')
+                # print(f'Current Blanace: {current_balance}, Best Blanace: {best_balance}')
                 branch, load, from_i, to_j = best_move
                 from_phase, to_phase = phase_names[from_i], phase_names[to_j]
                 phase_branches[from_phase].pop(branch)
@@ -579,14 +586,12 @@ class LoadBalancing:
                 peak_loads[from_i] -= load
                 peak_loads[to_j] += load
                 picks[to_phase].append((branch, load))
-                #print(f'Executing move: Move {load} from {from_i} to {to_j}')
+                # print(f'Executing move: Move {load} from {from_i} to {to_j}')
 
                 current_balance = best_balance
                 improved = True
 
         return picks, phase_branches
-        
-       
 
     def SetFeederDemand(self):
         """
@@ -684,9 +689,13 @@ class LoadBalancing:
         _results = QueryNodes(self._variables, node_dev)
 
         [IA, IB, IC, IN, IBal, IunbA, IunbB, IunbC, PFA, PFB, PFC] = [
-            0 if isinstance(x, str) or x == "" else x for x in _results
+            0 if isinstance(x, str) or x == "" or x is None else x for x in _results
         ]
 
+        # Ensure IA, IB, IC are numeric before exponentiation
+        IA = float(IA) if isinstance(IA, (int, float)) else 0.0
+        IB = float(IB) if isinstance(IB, (int, float)) else 0.0
+        IC = float(IC) if isinstance(IC, (int, float)) else 0.0
         IN = (IA**2 + IB**2 + IC**2 - IA * IB - IB * IC - IC * IA) ** 0.5
         Iunb = {"A": IunbA, "B": IunbB, "C": IunbC}
         return [IA, IB, IC, IN, IBal, PFA, PFB, PFC, Iunb]

@@ -352,6 +352,12 @@ javascript: (function () {
    * Enhanced Setting Name Decoder with optimized pattern matching
    */
   const SEL_SettingDecoder = {
+    curveMap: {
+      '1': ' (Moderately Inverse)',
+      '2': ' (Inverse)',
+      '3': ' (Very Inverse)',
+      '4': ' (Extremely Inverse)',
+    },
     phaseMap: {
       G: 'GND ',
       P: 'PHS ',
@@ -363,8 +369,8 @@ javascript: (function () {
       C: 'Curve',
       TD: 'Time Dial',
       TC: 'Torque Control',
-      L: 'Low Set',
-      H: 'High Set',
+      L: 'Low Set (A)',
+      H: 'High Set (A)',
     },
     definiteTimeMap: {
       '^50P[234]': 'Definite Time Pick Up (A)',
@@ -384,14 +390,15 @@ javascript: (function () {
      * @param {string} code - Setting code
      * @returns {string} Decoded description
      */
-    decode (code) {
-      if (!code || typeof code !== 'string') return '';
+    decode (code, setting) {
+      if (!code || typeof code !== 'string') return ['', ''];
+      if (!setting || typeof setting !== 'string') return ['',''];
 
       try {
         // Check definite time patterns
         for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
           if (new RegExp(pattern).test(code)) {
-            return this.getBaseDescription(code) + replacement;
+            return [this.getBaseDescription(code) + replacement, setting];
           }
         }
 
@@ -400,20 +407,23 @@ javascript: (function () {
           if (new RegExp(pattern).test(code)) {
             const base = this.getBaseDescription(code);
             const suffix = this.getSuffixDescription(code);
+            if (suffix.includes('Curve') && setting in this.curveMap){
+              setting += this.curveMap[setting]
+            };
             const liveLine = Patterns.special['50[PG]5'].test(code) ? '(Live Line)' : '';
-            return base + replacement + suffix + liveLine;
+            return [base + replacement + suffix + liveLine, setting];
           }
         }
 
         // Check special patterns
         if (Patterns.special.SV.test(code)) {
-          return '_Trip Equation';
+          return ['_Trip Equation', setting];
         }
       } catch (err) {
         console.error('Setting name decode error:', err);
       }
 
-      return '';
+      return ['', ''];
     },
 
     /**
@@ -767,7 +777,9 @@ javascript: (function () {
         const rowArray = Array.isArray(row) ? [...row] : Object.values(row);
 
         if (state.relayType === CONFIG.relayTypes.SEL) {
-          rowArray[5] = SEL_SettingDecoder.decode(rowArray[2]);
+          const [decodedCode, decodedSetting] = SEL_SettingDecoder.decode(rowArray[2], rowArray[3]);
+          rowArray[5] = decodedCode;
+          rowArray[3] = decodedSetting;
           TableRenderer.swapColumns(rowArray, 4, 5);
         } else if (state.relayType === CONFIG.relayTypes.AREVA) {
           const [decodedCode, decodedSetting] = AREVA_SettingDecoder.decode(rowArray[2], rowArray[3]);
@@ -901,17 +913,17 @@ javascript: (function () {
     /**
      * Injects external dependencies if available
      */
-    injectExternalDependencies() {
+    injectExternalDependencies () {
       const sqlEditorSection = DOM.getElement(CONFIG.selectors.sqlEditorSectionId);
-      if (typeof window.switchEditor === 'function' && sqlEditorSection && sqlEditorSection.style.display =='none') {
-          window.switchEditor();
-        }
-      },
+      if (typeof window.switchEditor === 'function' && sqlEditorSection && sqlEditorSection.style.display == 'none') {
+        window.switchEditor();
+      }
+    },
 
     /**
      * Creates search bar UI
      */
-    createSearchBar() {
+    createSearchBar () {
       const searchContainer = DOM.getElement(CONFIG.selectors.searchContainerId);
       if (searchContainer) {
         return;

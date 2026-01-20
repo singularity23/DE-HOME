@@ -514,7 +514,7 @@ class ShortCircuitStudy:
         def _print_and_write(content: str) -> None:
             print(content)
             file.write(content)
-        
+
         _print_and_write("\n" + "=" * 50 + "\n")
         _print_and_write("        FAULT STUDY REPORT\n")
         _print_and_write("=" * 50 + "\n")
@@ -748,9 +748,7 @@ class CableEquipment(BaseEquipment):
             "Negative Sequence Z0:",
             f"{self.R0_db:<8.4f} + j{self.X0_db:<8.4f} ohms/km",  # pyright: ignore[reportAttributeAccessIssue]
         )
-        _write_info(
-            "Nominal Rating:", f"{self.Rating:<8.0f} amps" # type: ignore
-        )  
+        _write_info("Nominal Rating:", f"{self.Rating:<8.0f} amps")  # type: ignore
 
         if self.Comments:
             content = textwrap.fill(
@@ -1612,7 +1610,10 @@ class EmissionStudy(ShortCircuitStudy):
             ("Percentage of LV Load (%):", f"{self.slv_percentage * 100:.0f}"),
             ("Max. LV Load (MVA):", f"{self.estimated_slv:.3f}"),
             ("Disturbing Load:", str(self.parameters.disturbing)),  # type: ignore
-            ("Report Link:", f"{textwrap.fill(report_url, 80, initial_indent='', subsequent_indent=' ' * 31, break_long_words=False, break_on_hyphens=False)}"),
+            (
+                "Report Link:",
+                f"{textwrap.fill(report_url, 80, initial_indent='', subsequent_indent=' ' * 31, break_long_words=False, break_on_hyphens=False)}",
+            ),
         ]
 
     @staticmethod
