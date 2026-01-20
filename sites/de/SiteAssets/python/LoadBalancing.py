@@ -2,7 +2,7 @@
 # Update @ 2025-05-29
 # Update @ 2025-06-27: Add function to balance not only the feeder, but the downstream of point of studies of choices
 # Update @ 2025-07-28: Add error handling for LoadAllocation methods between KVA and KWH
-# Update @ 2025-11-30: imrpove the PickSections_2 function to use iterative balancing approach  
+# Update @ 2025-11-30: imrpove the PickSections_2 function to use iterative balancing approach
 # """
 
 import locale
