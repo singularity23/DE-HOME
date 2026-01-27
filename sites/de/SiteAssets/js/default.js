@@ -99,40 +99,50 @@ function tagUpdate () {
 
 function handleLinks () {
   document.body.addEventListener('click', event => {
-    const link = event.target.closest('div.box ul li a') || event.target.closest('.links dd a');
+    const linkEl = event.target.closest('links dd .sub_link a') || event.target.closest('.links dd a');
 
-    if (!link) return;
+    if (!linkEl) return;
 
     event.preventDefault();
-    const linkUrl = link.href;
+    gtag('event', 'link_click', {
+      link_name: linkEl.innerText.trim(),
+      link_url: linkEl.href,
+    });
+    console.log('Gtag logged link click:', linkEl.innerText.trim(), linkEl.href);
+    console.log('datalayer:', window.dataLayer);
+    const linkUrl = linkEl.href;
 
-    if (linkUrl.startsWith('file:')) {
-      const copiedText = decodeURI(linkUrl).replace(/\s/g, ' ');
-      navigator.clipboard
-        .writeText(copiedText)
-        .then(() => {
-          const inHtml = `<div><strong>${copiedText}</strong></div><div>has been copied to clipboard.</div>`;
-          showPopup(inHtml);
-        })
-        .catch(err => {
-          console.error('Failed to copy text to clipboard:', err);
-        });
-    } else if (isValidUrl(linkUrl)) {
-      const originalUrl = decodeURI(linkUrl).split('?')[0];
-      const link = `${DOWNLOAD_URL_PREFIX}${originalUrl}${SUFFIX}`;
-      checkLinkHealth(link).then(isHealthy => {
-        if (isHealthy) {
-          const fname = originalUrl.split('/').pop();
-          if (/^.*\.(pdf|docx)$/i.test(fname) && linkUrl.includes(PREFIX)) {
-            window.open(link, '_blank');
-          } else {
-            window.open(linkUrl, '_blank');
-          }
+    if (isValidUrl(linkUrl) && linkUrl) {
+      if (linkUrl.startsWith('file:') || linkEl.classList.contains('_clipboard')) {
+        const copiedText = decodeURI(linkUrl).replace(/\s/g, ' ');
+
+        navigator.clipboard
+          .writeText(copiedText)
+          .then(() => {
+            const inHtml = `<div><strong>${copiedText}</strong></div><div>has been copied to clipboard.</div>`;
+            showPopup(inHtml);
+          })
+          .catch(err => {
+            console.error('Failed to copy text to clipboard:', err);
+          });
+      } else if (linkEl.classList.contains('_form')) {
+        if (linkUrl.includes(PREFIX)) {
+          const originalUrl = decodeURI(linkUrl).split('?')[0];
+          const downloadUrl = `${DOWNLOAD_URL_PREFIX}${originalUrl}${SUFFIX}`;
+
+          checkLinkHealth(downloadUrl).then(isHealthy => {
+            if (isHealthy) {
+              window.open(downloadUrl, '_blank');
+            } else {
+              console.error(`Inaccessible download URL: ${linkUrl}`);
+            }
+          });
         } else {
-          console.error(`Unhealthy or inaccessible URL: ${linkUrl}`);
-          showPopup(`<div><strong>${linkUrl}</strong></div><div>is not accessible.</div>`);
+          window.open(linkUrl, '_blank');
         }
-      });
+      } else {
+        window.open(linkUrl, '_blank');
+      }
     } else {
       console.error(`Invalid URL: ${linkUrl}`);
     }
@@ -141,13 +151,13 @@ function handleLinks () {
 
 // Helper function to check if a link is healthy
 function checkLinkHealth (url) {
-  return fetch(url, { method: 'HEAD' })
+  return fetch(url, { method: 'GET' })
     .then(response => {
       console.log(response); // Log the response for debugging
       return response.ok; // Returns true if status is 200-299
     })
-    .catch(() => false); // Returns false if the request fails
-}
+    .catch(() => false);
+} // Returns false if the request fails
 
 function isValidUrl (url) {
   try {

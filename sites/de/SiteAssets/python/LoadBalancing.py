@@ -12,7 +12,6 @@ import math
 import time
 from datetime import datetime
 from typing import List, Dict, Tuple, Optional, Any
-from enum import Enum
 from cympy import study, enums, sim, rm, app, GetInputParameter
 
 # Constants
@@ -20,19 +19,6 @@ MULTIPLIER = 1.1
 CELL_FORMAT_COLOR = 14737632
 ALLOCATION_METHODS: tuple[str, str] = ("KVAMethod", "KWHMethod")
 PHASES: tuple[str, str, str] = ("A", "B", "C")
-
-
-# Enum for phase types
-class PhaseType(Enum):
-    """Phase types for the network"""
-
-    A = "A"
-    B = "B"
-    C = "C"
-    AC = "AC"
-    BC = "BC"
-    AB = "AB"
-    ABC = "ABC"
 
 
 # Custom exception for load balancing errors
@@ -276,9 +262,7 @@ class LoadBalancing:
             "PFC",
         ]
         # Map phase names to enum values
-        self._connected_phase = {
-            phase.value: getattr(enums.Phase, phase.value) for phase in PhaseType
-        }
+        self._connected_phase = {phase: getattr(enums.Phase, phase) for phase in PHASES}
         self.sections = {}
         self.counter = 0
         self.study_points = []
@@ -388,7 +372,8 @@ class LoadBalancing:
         Get single phase sections for load transfer at a given node.
         Iterates through the network, collecting sections with sufficient current.
         """
-        dict_sec = {phase.value: {} for phase in PhaseType if len(phase.value) == 1}
+        dict_sec = {phase: {} for phase in PHASES}
+
         self.LF.Run([self.network_id])
         iterator = study.NetworkIterator(node_id, enums.IterationOption.Downstream)
         while iterator.Next():

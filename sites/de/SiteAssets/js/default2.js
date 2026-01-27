@@ -240,6 +240,7 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
     ? createElement('a', {
         href: link.url,
         target: '_blank',
+        className: link.class || '',
       })
     : createElement('a', { className: 'nogo' });
 
@@ -259,7 +260,12 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
     const sublinkContainer = createElement('span', { className: 'sub-link' });
     link.sub_links.forEach(subLink => {
       const sublinkEl = createElement('span');
-      sublinkEl.innerHTML = ` 
+      sublinkEl.innerHTML = subLink.class
+        ? `
+        <a href="${subLink.url}" target="_blank" class="${subLink.class}">${subLink.name}</a>
+        <span>&nbsp;</span>
+      `
+        : `
         <a href="${subLink.url}" target="_blank">${subLink.name}</a>
         <span>&nbsp;</span>
       `;
@@ -370,3 +376,30 @@ const refreshApp = () => {
 };
 // Add event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', refreshApp);
+
+const insertGoogleAnalytics = () => {
+  // Create the first script element (external gtag.js)
+  const script1 = document.createElement('script');
+  script1.async = true;
+  script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-MYQM69XE6F';
+
+  // Create the second script element (inline configuration)
+  const script2 = document.createElement('script');
+  script2.textContent = `
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-MYQM69XE6F');
+  `;
+
+  // Insert both into head
+  document.head.appendChild(script1);
+  document.head.appendChild(script2);
+};
+
+// Run when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', insertGoogleAnalytics);
+} else {
+  insertGoogleAnalytics();
+}

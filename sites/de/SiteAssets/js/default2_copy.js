@@ -12,7 +12,7 @@ let categories = [
           {
             name: 'DesignHub',
             url: 'https://designhub.bchydro.bc.ca/web/app',
-            info: 'Review and track distribution design requests to engineers',
+            info: 'Review and track DESRT requests to engineers',
           },
           {
             name: 'Employee Connect',
@@ -22,7 +22,7 @@ let categories = [
           {
             name: 'SIS',
             url: 'http://w3ecm/sis/',
-            info: 'Access operating orders, station operating diagrams, etc.',
+            info: 'Site Information System - access operating orders, station operating diagrams, etc.',
           },
           {
             name: 'Charge Codes',
@@ -57,7 +57,7 @@ let categories = [
           {
             name: 'Distribution Civil Engineering',
             url: 'https://hydroshare.bchydro.bc.ca/sites/DCE/default.aspx',
-            info: 'Civil team structure and member directory',
+            info: 'DCE Hydroshare',
             sub_links: [
               {
                 url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/DCE.pdf',
@@ -79,13 +79,7 @@ let categories = [
           {
             name: 'Estimating Team',
             url: '',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/DE%20Programs%20Team.pdf',
-                name: 'Member Details',
-              },
-            ],
+            info: 'TBD',
           },
         ],
       },
@@ -145,7 +139,7 @@ let categories = [
             info: '',
             sub_links: [
               {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/LMN.pdf',
+                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/LMS.pdf',
                 name: 'Member Details',
               },
               {
@@ -249,7 +243,7 @@ let categories = [
           },
           {
             name: 'DELT Advisory Site',
-            url: '#',
+            url: 'https://hydroshare.bchydro.bc.ca/sites/distributionengineeringadvisories/SitePages/Home.aspx',
             info: 'Latest advisories and announcements',
           },
           {
@@ -259,7 +253,7 @@ let categories = [
           },
           {
             name: 'ScoreCard',
-            url: '#',
+            url: 'https://hydroshare.bchydro.bc.ca/sites/de/DE_SCORECARD/Forms/AllItems.aspx',
             info: 'Team performance dashboard',
           },
         ],
@@ -269,13 +263,13 @@ let categories = [
         links: [
           {
             name: 'Employee Onboarding',
-            url: '#',
+            url: 'https://hydroshare.bchydro.bc.ca/sites/de/DE%20Employee%20Onoboarding/Forms/AllItems.aspx',
             info: 'Guides and resources for new hires',
           },
           {
             name: 'CLRA Solution Office',
-            url: '#',
-            info: '#Contract #Timesheet #Expense for contractors',
+            url: 'https://hw.bchydro.bc.ca/p/clra-solution-office/Pages/Home.aspx',
+            info: 'Contingent Labour Resource Augmentation - #Contract #Timesheet #Expense for contractors',
           },
         ],
       },
@@ -289,7 +283,7 @@ let categories = [
           },
           {
             name: 'DE Base Accountability',
-            url: '#',
+            url: '',
             info: 'DE career pathways',
             sub_links: [
               {
@@ -297,11 +291,11 @@ let categories = [
                 name: 'Core',
               },
               {
-                url: '/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Core%20Pathway%20rev0.pdf',
+                url: '/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Technical%20Pathway%20rev0.pdf',
                 name: 'Technical',
               },
               {
-                url: '/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Core%20Pathway%20rev0.pdf',
+                url: '/sites/de/Lists/SharedDocuments/DE%20Base%20Job%20Accountabilities/DE%20Role%20Alignment%20-%20Leadership%20Pathway%20rev0.pdf',
                 name: 'Leadership',
               },
             ],
@@ -342,6 +336,11 @@ let categories = [
         title: 'OE Review & Evaluation',
         links: [
           {
+            name: 'RDE Request Tracking',
+            url: 'https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338',
+            info: 'Tracking program work requests',
+          },
+          {
             name: 'OE Review Evaluation Summary',
             url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Forms/AllItems.aspx?RootFolder=%2fsites%2fde%2fLists%2fSharedDocuments%2fOE%20Reviews&FolderCTID=0x012000AED0A8CEAAF530479695AD49C4B673A4',
             info: 'Summary of ESP performance and evaluations',
@@ -354,14 +353,17 @@ let categories = [
               {
                 name: 'Review Comment Sheet',
                 url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Sheet%20-%20Distribution%20Engineering.docx?d=w6ead9d330136412390bead5f1499a1f8',
+                class: '_form',
               },
               {
                 name: 'Review Evaluation Form',
                 url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155',
+                class: '_form',
               },
               {
                 name: 'Project Completion Form',
                 url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf',
+                class: '_form',
               },
             ],
           },
@@ -373,10 +375,12 @@ let categories = [
               {
                 name: 'Overhead Checklist',
                 url: 'http://w3filenet/PRT.%7B98F4B82F-6171-426D-B48D-2B2190124244%7D',
+                class: '_form',
               },
               {
                 name: 'Underground Checklist',
                 url: 'http://w3filenet/PRT.%7BE9070D1A-584A-4C17-8912-4B7A37A233A1%7D',
+                class: '_form',
               },
             ],
           },
@@ -496,6 +500,7 @@ let categories = [
             name: 'Unconfirmed Load Review Form',
             url: 'https://hydroshare.bchydro.bc.ca/sites/cc/DDCCWorkSmartPublishedAssets/F23QW01-Implement-QSL-Integrated-Planning/DDCC%20Work%20Smart%20-%20Unconfirmed%20Load%20Requirements%20Form.pdf',
             info: 'Form to provide information for unconfirmed stage',
+            class: '_form',
           },
           {
             name: 'Distribution Connection Variance Request Guide',
@@ -531,6 +536,11 @@ let categories = [
             name: 'Distribution Planning - Tableau®',
             url: 'https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home',
             info: 'Feeder planning databases - capacity, peak demand, reliability, etc.',
+          },
+          {
+            name: 'Distribution Planning - Feeder Load Forecast',
+            url: 'https://app.powerbi.com/groups/me/reports/9beef7a1-c0ac-4eb7-9bf1-c5c64db2ba74/ba5f1b05841bde0c3de6?ctid=8fbb85e8-0cbc-48c3-a2e9-528cef30ec27&experience=power-bi',
+            info: '10 year feeder load forecast - max demand + spot loads + load transfers',
           },
           {
             name: 'Distribution Planning Record Documents',
@@ -589,7 +599,7 @@ let categories = [
           },
           {
             name: 'CROW',
-            url: 'http://crwbchprweb01/crow/Logging/log_index.aspx?maintab=Logging',
+            url: 'https://crwbchprweb01.bchydro.bc.ca/crow/Logging/log_index.aspx',
             info: 'Control Room Operations Window - real-time system operations',
           },
           {
@@ -606,6 +616,7 @@ let categories = [
             name: 'Feeder Load Research Tool - SAS®',
             url: 'https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/',
             info: '#LoadFactors #LoadProfile',
+            class: '_clipboard',
           },
           {
             name: 'DASM HydroShare',
@@ -634,13 +645,13 @@ let categories = [
         links: [
           {
             name: 'WikiDI',
-            url: '#',
+            url: 'http://edmbchwiki1/di/index.php/Main_Page',
             info: 'Distribution design instructions & tariff information',
           },
           {
             name: 'Plant Alteration Tracking',
-            url: '#',
-            info: 'System for tracking current and historical plant alterations',
+            url: 'https://kdcbchpoweb1.bchydro.bc.ca:7004/pat/',
+            info: 'PAT - System for tracking current and historical plant alterations',
           },
         ],
       },
@@ -755,11 +766,12 @@ let categories = [
           {
             name: 'Controlled Numbering System',
             url: 'http://kdcssweb1/cns/Account/Login?ReturnUrl=%2Fcns%2F',
-            info: 'Dcoument control system for generating document numbers',
+            info: 'CNS - Dcoument control system for generating document numbers',
             sub_links: [
               {
                 name: 'DESRT Memo Template',
                 url: 'https://hydroshare.bchydro.bc.ca/sites/PGA/_layouts/15/WopiFrame.aspx?sourcedoc=%7BE644A337-F1EE-4B8B-86EE-1625E9FAF170%7D&file=DESRT%20Memo.docx&action=default',
+                class: '_form',
               },
             ],
           },
@@ -828,41 +840,6 @@ let categories = [
     ],
   },
   {
-    name: 'Others',
-    subheaders: [
-      {
-        title: 'Corporate Resources',
-        links: [
-          {
-            name: 'Telematics',
-            url: 'https://hw.bchydro.bc.ca/basicpage/telematics',
-            info: 'Corporate vehicle management',
-          },
-          {
-            name: 'Branded Templates',
-            url: 'https://hw.bchydro.bc.ca/basicpage/templates',
-            info: 'Corporate branded templates for documents and presentations',
-          },
-        ],
-      },
-      {
-        title: 'IT Services',
-        links: [
-          {
-            name: 'Application Portal',
-            url: 'http://bchap/esd',
-            info: 'Approved software',
-          },
-          {
-            name: 'ServiceNow',
-            url: 'https://bchydro.service-now.com/sp/',
-            info: 'IT service management platform',
-          },
-        ],
-      },
-    ],
-  },
-  {
     name: 'Travel & Site Visits',
     subheaders: [
       {
@@ -882,6 +859,7 @@ let categories = [
             name: 'Engineering - Field Work & Travel Form',
             url: 'https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form%20Fillable.pdf',
             info: 'Standard form for engineering field work planning',
+            class: '_form',
           },
         ],
       },
@@ -920,8 +898,58 @@ let categories = [
           },
           {
             name: 'Victoria - VI Regional Team',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/Vernon%20Pool%20Vehicle%20%2019S03/calendar.aspx',
+            url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/Victoria%20Pool%20Vehicle%20%2019S71/calendar.aspx',
             info: 'Victoria Regional Office',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'Others',
+    subheaders: [
+      {
+        title: 'Corporate Strategy',
+        links: [
+          {
+            name: 'Three-year Strategic Action Plan',
+            url: 'https://hw.bchydro.bc.ca/basicpage/business-planning',
+            info: 'Our strategic goals, organizational values, and long-term vision',
+          },
+          {
+            name: 'Risk Tolerance Framework',
+            url: 'https://hw.bchydro.bc.ca/basicpage/risk-tolerance',
+            info: 'A thinking framework to assess and manage risks',
+          },
+        ],
+      },
+      {
+        title: 'Corporate Resources',
+        links: [
+          {
+            name: 'Telematics',
+            url: 'https://hw.bchydro.bc.ca/basicpage/telematics',
+            info: 'Corporate vehicle management',
+          },
+          {
+            name: 'Branded Templates',
+            url: 'https://hw.bchydro.bc.ca/basicpage/templates',
+            info: 'Corporate branded templates for documents and presentations',
+          },
+        ],
+      },
+      {
+        title: 'IT Services',
+        links: [
+          {
+            name: 'Application Portal',
+            url: 'http://bchap/esd',
+            info: 'Approved software',
+          },
+          {
+            name: 'ServiceNow',
+            url: 'https://bchydro.service-now.com/sp/',
+            info: 'IT service management platform',
           },
         ],
       },
@@ -1173,6 +1201,7 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
     ? createElement('a', {
         href: link.url,
         target: '_blank',
+        className: link.class || '',
       })
     : createElement('a', { className: 'nogo' });
   // Add link content
@@ -1191,7 +1220,12 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
     const sublinkContainer = createElement('span', { className: 'sub-link' });
     link.sub_links.forEach(subLink => {
       const sublinkEl = createElement('span');
-      sublinkEl.innerHTML = `
+      sublinkEl.innerHTML = subLink.class
+        ? `
+        <a href="${subLink.url}" target="_blank" class="${subLink.class}">${subLink.name}</a>
+        <span>&nbsp;</span>
+      `
+        : `
         <a href="${subLink.url}" target="_blank">${subLink.name}</a>
         <span>&nbsp;</span>
       `;
@@ -1309,3 +1343,45 @@ const refreshApp = () => {
 
 // Add event listener for DOM content loaded
 document.addEventListener('DOMContentLoaded', refreshApp);
+
+const insertGoogleAnalytics = () => {
+  // Create the first script element (external gtag.js)
+  const script1 = document.createElement('script');
+  script1.async = true;
+  script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-MYQM69XE6F';
+
+  // Create the second script element (inline configuration)
+  const script2 = document.createElement('script');
+  script2.textContent = `
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-MYQM69XE6F');
+  `;
+
+  const script3 = document.createElement('script');
+  script3.textContent = `
+  const links = document.querySelectorAll('.links dd a');
+  Object.entries(links).forEach(link => {
+    link[1].addEventListener('click', function () {
+      gtag('event', 'link_click', {
+        'link_name': this.innerText.trim(),
+        'link_url': this.href
+      });
+      console.log("Gtag logged link click:", this.innerText.trim(), this.href);
+    });
+  });
+  `;
+
+  // Insert both into head
+  document.head.appendChild(script1);
+  document.head.appendChild(script2);
+  document.body.appendChild(script3);
+};
+
+// Run when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', insertGoogleAnalytics);
+} else {
+  insertGoogleAnalytics();
+}

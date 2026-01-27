@@ -57,7 +57,7 @@
           {
             "name": "Distribution Civil Engineering",
             "url": "https://hydroshare.bchydro.bc.ca/sites/DCE/default.aspx",
-            "info": "Civil team structure and member directory",
+            "info": "DCE Hydroshare",
             "sub_links": [
               {
                 "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/DCE.pdf",
@@ -352,15 +352,18 @@
             "sub_links": [
               {
                 "name": "Review Comment Sheet",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Sheet%20-%20Distribution%20Engineering.docx?d=w6ead9d330136412390bead5f1499a1f8"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Sheet%20-%20Distribution%20Engineering.docx?d=w6ead9d330136412390bead5f1499a1f8",
+                "class": "_form"
               },
               {
                 "name": "Review Evaluation Form",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155",
+                "class": "_form"
               },
               {
                 "name": "Project Completion Form",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf",
+                "class": "_form"
               }
             ]
           },
@@ -371,11 +374,13 @@
             "sub_links": [
               {
                 "name": "Overhead Checklist",
-                "url": "http://w3filenet/PRT.%7B98F4B82F-6171-426D-B48D-2B2190124244%7D"
+                "url": "http://w3filenet/PRT.%7B98F4B82F-6171-426D-B48D-2B2190124244%7D",
+                "class": "_form"
               },
               {
                 "name": "Underground Checklist",
-                "url": "http://w3filenet/PRT.%7BE9070D1A-584A-4C17-8912-4B7A37A233A1%7D"
+                "url": "http://w3filenet/PRT.%7BE9070D1A-584A-4C17-8912-4B7A37A233A1%7D",
+                "class": "_form"
               }
             ]
           }
@@ -456,7 +461,7 @@
             ]
           },
           {
-            "name": "ASPEN Relay Databaseâ„¢",
+            "name": "ASPEN Relay Database™",
             "url": "http://kdcssweb1/aspen/rdbweb.exe",
             "info": "Database for relay settings and configurations",
             "sub_links": [
@@ -494,7 +499,8 @@
           {
             "name": "Unconfirmed Load Review Form",
             "url": "https://hydroshare.bchydro.bc.ca/sites/cc/DDCCWorkSmartPublishedAssets/F23QW01-Implement-QSL-Integrated-Planning/DDCC%20Work%20Smart%20-%20Unconfirmed%20Load%20Requirements%20Form.pdf",
-            "info": "Form to provide information for unconfirmed stage"
+            "info": "Form to provide information for unconfirmed stage",
+            "class": "_form"
           },
           {
             "name": "Distribution Connection Variance Request Guide",
@@ -527,9 +533,14 @@
             "info": "#Switchgear #Recloser"
           },
           {
-            "name": "Distribution Planning - TableauÂ®",
+            "name": "Distribution Planning - Tableau®",
             "url": "https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home",
             "info": "Feeder planning databases - capacity, peak demand, reliability, etc."
+          },
+          {
+            "name": "Distribution Planning - Feeder Load Forecast",
+            "url": "https://app.powerbi.com/groups/me/reports/9beef7a1-c0ac-4eb7-9bf1-c5c64db2ba74/ba5f1b05841bde0c3de6?ctid=8fbb85e8-0cbc-48c3-a2e9-528cef30ec27&experience=power-bi",
+            "info": "10 year feeder load forecast - max demand + spot loads + load transfers"
           },
           {
             "name": "Distribution Planning Record Documents",
@@ -537,7 +548,7 @@
             "info": "Repository for distribution planning memos"
           },
           {
-            "name": "BCH ArcGISÂ®",
+            "name": "BCH ArcGIS®",
             "url": "https://kdcesriweb1.bchydro.adroot.bchydro.bc.ca/gisportal/home/index.html",
             "info": "Distribution planning GIS data"
           }
@@ -602,9 +613,10 @@
         "title": "Sustain & Maintenance",
         "links": [
           {
-            "name": "Feeder Load Research Tool - SASÂ®",
+            "name": "Feeder Load Research Tool - SAS®",
             "url": "https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/",
-            "info": "#LoadFactors #LoadProfile"
+            "info": "#LoadFactors #LoadProfile",
+            "class": "_clipboard"
           },
           {
             "name": "DASM HydroShare",
@@ -707,7 +719,7 @@
             ]
           },
           {
-            "name": "EATONÂ® CYME",
+            "name": "EATON® CYME",
             "url": "file:///J:/Engineering/Distribution/CYME",
             "info": "",
             "sub_links": [
@@ -758,7 +770,8 @@
             "sub_links": [
               {
                 "name": "DESRT Memo Template",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/PGA/_layouts/15/WopiFrame.aspx?sourcedoc=%7BE644A337-F1EE-4B8B-86EE-1625E9FAF170%7D&file=DESRT%20Memo.docx&action=default"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/PGA/_layouts/15/WopiFrame.aspx?sourcedoc=%7BE644A337-F1EE-4B8B-86EE-1625E9FAF170%7D&file=DESRT%20Memo.docx&action=default",
+                "class": "_form"
               }
             ]
           },
@@ -845,7 +858,8 @@
           {
             "name": "Engineering - Field Work & Travel Form",
             "url": "https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form%20Fillable.pdf",
-            "info": "Standard form for engineering field work planning"
+            "info": "Standard form for engineering field work planning",
+            "class": "_form"
           }
         ]
       },
