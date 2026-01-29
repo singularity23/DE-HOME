@@ -34,10 +34,10 @@
     ]
   },
   {
-    "name": "Department Structure",
+    "name": "Organization & Teams",
     "subheaders": [
       {
-        "title": "Leadership",
+        "title": "DE Overview",
         "links": [
           {
             "name": "DE Department Org Chart",
@@ -181,7 +181,7 @@
         ]
       },
       {
-        "title": "Specialized Engineering",
+        "title": "Technical Specialty Teams",
         "links": [
           {
             "name": "Protection & Modelling",
@@ -226,10 +226,10 @@
     ]
   },
   {
-    "name": "Management",
+    "name": "Leadership & Administration",
     "subheaders": [
       {
-        "title": "Team Leadership",
+        "title": "Leadership Portal",
         "links": [
           {
             "name": "DE HydroWeb",
@@ -305,10 +305,10 @@
     ]
   },
   {
-    "name": "Projects & Programs",
+    "name": "Project Delivery & Reviews",
     "subheaders": [
       {
-        "title": "Design Review Requirements",
+        "title": "Guidelines & References",
         "links": [
           {
             "name": "External Design & Engineering DBR",
@@ -333,7 +333,7 @@
         ]
       },
       {
-        "title": "OE Review & Evaluation",
+        "title": "Review Process & Forms",
         "links": [
           {
             "name": "RDE Request Tracking",
@@ -387,7 +387,7 @@
         ]
       },
       {
-        "title": "Project Management",
+        "title": "Project Management & Delivery",
         "links": [
           {
             "name": "PCM Info Center",
@@ -414,7 +414,7 @@
     ]
   },
   {
-    "name": "Engineering Tools",
+    "name": "Technical Tools & Analysis",
     "subheaders": [
       {
         "title": "Drafting & Visualization",
@@ -442,7 +442,7 @@
         ]
       },
       {
-        "title": "Engineering Studies",
+        "title": "Engineering Tools & Databases",
         "links": [
           {
             "name": "JotForm",
@@ -489,11 +489,11 @@
         ]
       },
       {
-        "title": "Engineering Request",
+        "title": "Engineering Request Review",
         "links": [
           {
             "name": "Capacity Review - Planning & Engineering Tasks",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/distplan/Lists/SharedDocuments/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DESRT/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf",
             "info": "#FlowChart #Process #Deliverables"
           },
           {
@@ -512,10 +512,10 @@
     ]
   },
   {
-    "name": "Integrated Planning",
+    "name": "Distribution Planning & Standards",
     "subheaders": [
       {
-        "title": "Distribution Planning",
+        "title": "Planning Guidelines & Data",
         "links": [
           {
             "name": "Voltage Management Guideline",
@@ -555,7 +555,7 @@
         ]
       },
       {
-        "title": "Distribution Standards",
+        "title": "Standards & Specifications",
         "links": [
           {
             "name": "PQweb",
@@ -570,7 +570,7 @@
         ]
       },
       {
-        "title": "Transmission",
+        "title": "T&D Interface",
         "links": [
           {
             "name": "Revenue Metering",
@@ -587,10 +587,10 @@
     ]
   },
   {
-    "name": "Operations",
+    "name": "Business Operations",
     "subheaders": [
       {
-        "title": "Grid Operations",
+        "title": "Real-Time Operations",
         "links": [
           {
             "name": "PowerOn Remote",
@@ -610,7 +610,7 @@
         ]
       },
       {
-        "title": "Sustain & Maintenance",
+        "title": "Asset Management & Maintenance",
         "links": [
           {
             "name": "Feeder Load Research Tool - SAS®",
@@ -658,7 +658,7 @@
     ]
   },
   {
-    "name": "Technical References",
+    "name": "Knowledge Base & Resources",
     "subheaders": [
       {
         "title": "Engineering Resources",
@@ -701,7 +701,7 @@
         ]
       },
       {
-        "title": "Technical Resources",
+        "title": "Technical Tools & Resources",
         "links": [
           {
             "name": "Conductor Slap",
@@ -738,10 +738,10 @@
     ]
   },
   {
-    "name": "Professional Practice",
+    "name": "Professional Compliance & Practice",
     "subheaders": [
       {
-        "title": "EGBC Compliances",
+        "title": "Professional Governance & Ethics",
         "links": [
           {
             "name": "Respectful Workplace Program",
@@ -754,14 +754,14 @@
             "info": "Professional Governance Act portal for BCH engineers"
           },
           {
-            "name": "EQBC Filing - Guides and References",
-            "url": "file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References",
-            "info": "DE engineers compliance guidelines"
+            "name": "SuccessFactors Learning",
+            "url": "https://hcm17.sapsf.com/login?company=bchydro",
+            "info": "Continuing education"
           }
         ]
       },
       {
-        "title": "Usual Tools",
+        "title": "Engineering Practice & Documentation",
         "links": [
           {
             "name": "Controlled Numbering System",
@@ -776,6 +776,11 @@
             ]
           },
           {
+            "name": "EQBC Filing - Guides and References",
+            "url": "file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References",
+            "info": "DE engineers compliance guidelines"
+          },
+          {
             "name": "Signature Verification - verifiO",
             "url": "https://verifio.com/document",
             "info": "Validation of authenticated documents"
@@ -784,11 +789,6 @@
             "name": "Field Review Tracking",
             "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/Field%20Review%20Tracking/Active%20Items.aspx",
             "info": "Tracking system for field reviews assignmentt and completion"
-          },
-          {
-            "name": "SuccessFactors Learning",
-            "url": "https://hcm17.sapsf.com/login?company=bchydro",
-            "info": "Continuing education"
           }
         ]
       }
@@ -798,7 +798,7 @@
     "name": "Health & Safety",
     "subheaders": [
       {
-        "title": "Safety Documentations",
+        "title": "Policy & Procedures",
         "links": [
           {
             "name": "Safety Framework",
@@ -818,7 +818,7 @@
         ]
       },
       {
-        "title": "Safety Reports",
+        "title": "Incident & Emmergency Management",
         "links": [
           {
             "name": "Safety Folder",
@@ -843,7 +843,7 @@
     "name": "Travel & Site Visits",
     "subheaders": [
       {
-        "title": "Procedures",
+        "title": "Field Work Procedures",
         "links": [
           {
             "name": "Working Alone & Journey Management",
@@ -864,7 +864,7 @@
         ]
       },
       {
-        "title": "Booking & Claims",
+        "title": "Travel Booking & Expenses",
         "links": [
           {
             "name": "DE Travel Expense Submissions Guidelines",
@@ -873,8 +873,9 @@
           },
           {
             "name": "Engineering Expense Claim Template",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20&%20Documents/Engineering%20Expense%20Claim%20Template.xlsx",
-            "info": "Standard template for engineering business expense claims and reimbursements"
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20%26%20Documents/Engineering%20Expense%20Claim%20Template.xlsx?d=wd4f1fdf420d74263ba1cc951772f50ad",
+            "info": "Standard template for engineering business expense claims and reimbursements",
+            "class": "_form"
           },
           {
             "name": "Business Travel",
@@ -884,7 +885,7 @@
         ]
       },
       {
-        "title": "Corporate Vehicles",
+        "title": "Corporate Vehicles Booking",
         "links": [
           {
             "name": "Edmonds #1 - LM Regional Team",

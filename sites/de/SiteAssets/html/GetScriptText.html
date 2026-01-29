@@ -130,7 +130,6 @@
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
 </head>
 
 <body>
@@ -163,20 +162,21 @@
 
     // Utility function to minify SQL code
     function minifyCode(sql) {
-
-      return sql
-        .replace(/\/{2}\s.+/gm, '')        // Remove single-line comments
-        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-        .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with a single space
-        .replace(/(?<=[^\w'\=])\s(?=[a-z])/g, '')
-        .replace(/(?<=[a-z])\s(?=[^\w'\()])/g, '')
-        .replace(/\(\s*/g, '(') // Remove leading spaces inside parentheses
-        .replace(/\{\s*/g, '{') // Remove leading spaces inside parentheses
-        .replace(/\s*\)/g, ')')
-        .replace(/\s*\}/g, '}')
-        .replace(/\s+?\./g, '.')
-        // Remove trailing spaces inside parentheses
-        .trim(); // Remove leading and trailing spaces
+      return (
+        sql
+          .replace(/\/{2}\s.+/gm, '') // Remove single-line comments
+          .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+          .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with a single space
+          .replace(/(?<=[^\w'\=])\s(?=[a-z])/g, '')
+          .replace(/(?<=[a-z])\s(?=[^\w'\()])/g, '')
+          .replace(/\(\s*/g, '(') // Remove leading spaces inside parentheses
+          .replace(/\{\s*/g, '{') // Remove leading spaces inside parentheses
+          .replace(/\s*\)/g, ')')
+          .replace(/\s*\}/g, '}')
+          .replace(/\s+?\./g, '.')
+          // Remove trailing spaces inside parentheses
+          .trim()
+      ); // Remove leading and trailing spaces
     }
 
     // Utility function to fetch data from a URL
@@ -230,177 +230,6 @@
     // Initialize the rendering process
     renderData();
 
-    // CSV data
-    const csvData = `DEVICE,RELAY,ELEMENT,SETTING,MEMO
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,SV3,67P2T+67P3T+67P4T+51P1T+51QT+51G1T+(50P5+50G5)*LT10,_Trip Equation
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,67P2D,10,Definite Time Delay (s)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,67P3D,4.2,Definite Time Delay (s)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,67P4D,3,Definite Time Delay (s)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,50P2P,600,Definite Time Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,50P3P,792,Definite Time Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,50P4P,900,Definite Time Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,50G1P,OFF,GND Inst. Overcurrent Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,50G5P,1200,GND Inst. Overcurrent Pick Up (A) (Live Line)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51G1C,U4,GND Timed Overcurrent Curve
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51G1P,240,GND Timed Overcurrent Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51G1TD,6.50,GND Timed Overcurrent Time Dial
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51QC,U3,NEG Timed Overcurrent Curve
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51QP,648,NEG Timed Overcurrent Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51QTD,3.30,NEG Timed Overcurrent Time Dial
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,50P1P,OFF,PHS Inst. Overcurrent Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,50P5P,1200,PHS Inst. Overcurrent Pick Up (A) (Live Line)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51P1C,U3,PHS Timed Overcurrent Curve
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51P1P,600,PHS Timed Overcurrent Pick Up (A)
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51P1TD,2.00,PHS Timed Overcurrent Time Dial
-CSQ 12F411 PN 51F,SEL-351S-6 Z102,51P1TC,1,PHS Timed Overcurrent Torque Control`;
-
-    // Parse CSV and populate table
-    function populateTable() {
-      const tableBody = document.querySelector('#settingsTable tbody');
-      const rows = csvData.split('\n');
-
-      // Skip header row (already in HTML)
-      for (let i = 1; i < rows.length; i++) {
-        const cells = rows[i].split(',');
-        const row = document.createElement('tr');
-
-        cells.forEach(cell => {
-          const td = document.createElement('td');
-          td.textContent = cell;
-          row.appendChild(td);
-        });
-
-        tableBody.appendChild(row);
-      }
-    }
-
-    // Export to Excel with formatting
-    function exportToExcel() {
-      try {
-        // Create workbook
-        const workbook = XLSX.utils.book_new();
-
-        // Get table element
-        const table = document.getElementById('settingsTable');
-
-        // Convert table to worksheet
-        const worksheet = XLSX.utils.table_to_sheet(table);
-
-        // Apply styling to worksheet
-        applyExcelFormatting(worksheet, table);
-
-        // Add worksheet to workbook
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Relay Settings');
-
-        // Generate Excel file and download
-        XLSX.writeFile(workbook, 'Relay_Settings_Formatted.xlsx');
-
-        showStatus('Excel file exported successfully!', 'success');
-      } catch (error) {
-        console.error('Export error:', error);
-        showStatus('Error exporting file: ' + error.message, 'error');
-      }
-    }
-
-    // Apply Excel formatting based on HTML table styles
-    function applyExcelFormatting(worksheet, table) {
-      const range = XLSX.utils.decode_range(worksheet['!ref']);
-
-      // Get computed styles from HTML table
-      const headerRow = table.rows[0];
-      const firstDataRow = table.rows[1];
-
-      // Apply styles to all cells
-      for (let R = range.s.r; R <= range.e.r; ++R) {
-        for (let C = range.s.c; C <= range.e.c; ++C) {
-          const cellAddress = { c: C, r: R };
-          const cellRef = XLSX.utils.encode_cell(cellAddress);
-
-          if (!worksheet[cellRef]) continue;
-
-          // Initialize style object if it doesn't exist
-          if (!worksheet[cellRef].s) {
-            worksheet[cellRef].s = {};
-          }
-
-          // Header row styling
-          if (R === 0) {
-            worksheet[cellRef].s = {
-              font: {
-                name: 'Consolas',
-                sz: 12,
-                bold: true,
-                color: { rgb: 'FFFFFF' }
-              },
-              fill: {
-                fgColor: { rgb: '2C3E50' }
-              },
-              border: {
-                top: { style: 'thin', color: { rgb: '34495E' } },
-                left: { style: 'thin', color: { rgb: '34495E' } },
-                bottom: { style: 'thin', color: { rgb: '34495E' } },
-                right: { style: 'thin', color: { rgb: '34495E' } }
-              },
-              alignment: {
-                vertical: 'center',
-                horizontal: 'left'
-              }
-            };
-          } else {
-            // Data rows styling
-            const isEvenRow = R % 2 === 0;
-            worksheet[cellRef].s = {
-              font: {
-                name: 'Consolas',
-                sz: 10,
-                color: { rgb: '000000' }
-              },
-              fill: {
-                fgColor: { rgb: isEvenRow ? 'F8F9FA' : 'FFFFFF' }
-              },
-              border: {
-                top: { style: 'thin', color: { rgb: 'DDDDDD' } },
-                left: { style: 'thin', color: { rgb: 'DDDDDD' } },
-                bottom: { style: 'thin', color: { rgb: 'DDDDDD' } },
-                right: { style: 'thin', color: { rgb: 'DDDDDD' } }
-              },
-              alignment: {
-                vertical: 'top',
-                horizontal: 'left'
-              }
-            };
-          }
-        }
-      }
-
-      // Set column widths based on HTML table column classes
-      if (!worksheet['!cols']) worksheet['!cols'] = [];
-      const cols = [
-        { wch: 20 }, // DEVICE
-        { wch: 20 }, // RELAY
-        { wch: 15 }, // ELEMENT
-        { wch: 30 }, // SETTING
-        { wch: 40 }  // MEMO
-      ];
-      worksheet['!cols'] = cols;
-    }
-
-    // Show status message
-    function showStatus(message, type) {
-      const statusEl = document.getElementById('statusMessage');
-      statusEl.textContent = message;
-      statusEl.className = `status ${type}`;
-      statusEl.style.display = 'block';
-
-      setTimeout(() => {
-        statusEl.style.display = 'none';
-      }, 5000);
-    }
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', function () {
-      populateTable();
-    });
 
   </script>
 </body>

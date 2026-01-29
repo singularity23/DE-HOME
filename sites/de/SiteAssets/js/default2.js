@@ -159,7 +159,7 @@ const debounceFunc = (func, wait) => {
 
 // Optimized resize function
 const resize = debounceFunc(() => {
-  console.log('Resize event detected');
+  //console.log('Resize event detected');
   const containers = document.querySelectorAll('.grid-container');
 
   containers.forEach(container => {
@@ -329,11 +329,9 @@ const filterCategories = searchTerm => {
   return categories
     .map(category => {
       const categoryMatches = category.name?.toLowerCase().includes(searchTerm);
-
       const filteredSubheaders = category.subheaders
         .map(subheader => {
           const subheaderMatches = subheader.title?.toLowerCase().includes(searchTerm);
-
           const filteredLinks = subheader.links.filter(
             link =>
               link.name?.toLowerCase().includes(searchTerm) ||
@@ -354,7 +352,7 @@ const filterCategories = searchTerm => {
 // Show the loader
 const showLoader = () => {
   document.getElementById('loader').style.display = 'flex';
-  console.log('Loader displayed');
+  //console.log('Loader displayed');
   document.getElementById('DEcontainer').classList.add('hidden');
 };
 
@@ -362,7 +360,7 @@ const showLoader = () => {
 const hideLoader = () => {
   document.getElementById('loader').style.display = 'none';
   document.getElementById('loader').classList.add('hidden');
-  console.log('Loader hidden');
+  //console.log('Loader hidden');
   document.getElementById('DEcontainer').classList.remove('hidden');
 };
 

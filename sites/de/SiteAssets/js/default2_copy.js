@@ -1144,8 +1144,8 @@ const getColumns = () => {
   } else if (documentWidth <= CONFIG.breakpoints.desktop) {
     columns = 3;
   }
-  //console.log(documentWidth);
-  //console.log('Columns:', columns);
+  console.log(documentWidth);
+  console.log('Columns:', columns);
   return columns;
 };
 

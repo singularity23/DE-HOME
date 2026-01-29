@@ -79,6 +79,8 @@ html {
   font-size: 13px;
   color: var(--box-text-header);
   box-sizing: border-box;
+  font-optical-sizing: auto;
+
 }
 
 *, *::before, *::after {

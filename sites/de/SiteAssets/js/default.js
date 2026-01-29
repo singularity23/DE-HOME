@@ -82,7 +82,7 @@ function tagUpdate () {
   qSA('new, update').forEach(tag => {
     const tagDate = tag.getAttribute('date');
     const currentDate = new Date();
-    // console.log(tagDate);
+    console.log(tagDate);
     // console.log(currentDate);
 
     if (!tagDate) {

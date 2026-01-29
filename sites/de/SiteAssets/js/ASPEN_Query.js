@@ -428,8 +428,8 @@
 
         // Get headers (skip the last one since we're adding description column)
         const headers = state.headerRow.map(header => header.Name);
-        console.log(state.headerRow);
-        console.log(headers);
+        ///console.log(state.headerRow);
+        ///console.log(headers);
         // Process rows for merging and empty column
         // Swap specified columns if valid
         swapColumns = state.tableRows.length < 10 ? [0, 0] : [4, 5];
@@ -439,7 +439,7 @@
         }
         // Process rows for merging, empty column, and swapping
         const processedData = this.processTableData(state.tableRows, swapColumns);
-        console.log(processedData);
+        //console.log(processedData);
         // Generate HTML table
         return this.generateHtmlTable(headers, processedData);
       } catch (err) {
@@ -715,7 +715,7 @@
       document.body.appendChild(downloadBtn);
       document.body.appendChild(document.createElement('br'));
       document.body.appendChild(document.createElement('br'));
-      console.log(container);
+      //console.log(container);
       document.body.appendChild(container);
     }
   };

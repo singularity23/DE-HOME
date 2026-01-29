@@ -1,664 +1,741 @@
-javascript: (function () {
-  'use strict';
+javascript : (function () {
+    'use strict';
 
-  /**
+    /**
    * Enhanced Configuration with better organization
    * All configurable values centralized for easy maintenance
    */
-  const CONFIG = {
-    selectors: {
-      searchContainerId: 'aspen-search-container',
-      inputId: 'searchInput',
-      buttonId: 'searchButton',
-      warningId: 'warning',
-      sqlEditorId: 'sql-editor',
-      sqlEditorSectionId: 'sql-editor-section',
-      resultGridId: 'QueryResultGrid',
-      containerId: 'tableContainer',
-      mainAppClass: 'app-main',
-      styleId: 'aspen-search-style',
-    },
-    patterns: {
-      searchInput: /^\w{3}\s(4|12|25|35)[fF]\d{2,3}\w?$/i,
-    },
-    styles: {
-      wrapper:
-        'padding:10px; box-shadow:rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;justify-content:center;z-index:1000;',
-      warning: 'color:#fa4616;font-size:0.8rem;margin:auto 5px;',
-      inputValid: 'background-color:#dcf1da;',
-      inputInvalid: 'background-color:#fedad0;',
-      table:
-        'border-collapse: collapse; max-width:100%; font-family: monospace; font-size: 12px; border: 1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;',
-      tableHeader:
-        'padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold;',
-      tableCell: 'padding: 6px; border: 1px solid #ddd; vertical-align: middle; white-space: pre-wrap;',
-      container: 'margin: 20px 0; padding: 10px; border: 1px solid #ccc;',
-    },
-    classes: {
-      input: 'text-uppercase app-search app-wj-search wj-control wj-content mr-2 pl-3',
-      button: 'btn app-btn app-btn-outline-primary mr-2',
-    },
-    sql: {
-      settingNames: [
-        '51P1P',
-        '51P1TD',
-        '51P1C',
-        '50P1P',
-        '50P2P',
-        '50P3P',
-        '50P4P',
-        '50P5P',
-        '67P2D',
-        '67P3D',
-        '67P4D',
-        '51G1P',
-        '51G1TD',
-        '51G1C',
-        '50G1P',
-        '50G5P',
-        '51PP',
-        '51PTD',
-        '51PC',
-        '51GP',
-        '51GTD',
-        '51GC',
-        '51P',
-        '51TD',
-        '51C',
-        '50L',
-        '50H',
-        '51NP',
-        '51NTD',
-        '51NC',
-        '50NL',
-        '50NH',
-        '51QP',
-        '51QTD',
-        '51QC',
-        '50Q',
-      ],
-      excludedArevaSettings: [
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/PULS.PROL.IN>,INTPS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/HOLD-T. TIN>,INTMPS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/TIN>>>> PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/EVALUATION IN PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/EVAL. IN>,>>,>>> PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/ENABLE PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/ENABLE PS1',
-      ],
-      queryDelay: 2000,
-      dbmsLobLength: 4000,
-    },
-    table: {
-      widthConfig: {
-        SEL: [12, 12, 12, 15, 24, 25],
-        ELECTRO: [5, 5, 5, 5, 80],
-        AREVA: [10, 10, 60, 15, 5],
-      },
-      mergeColumns: {
-        SEL: [0, 1, 5], // DEVICE, RELAY, PN DESC
-        AREVA: [0, 1], // DEVICE, RELAY
-      },
-      SEL_sortColumnIndex: 4,
-      AREVA_sortColumnIndex: 2,
-      headerReplacements: {
-        ELEMENT: 'VENDER', // For 5-column tables (ELECTRO)
-      },
-    },
-    messages: {
-      queryCompleted: 'Query Completed',
-      invalidFormat: 'Please use the correct format (e.g., ABC 12F123)!',
-      inputPattern: 'Please follow the pattern: ABC 12F123',
-      placeholder: '...ABC 12F123',
-    },
-    relayTypes: {
-      SEL: 'SEL',
-      ELECTRO: 'ELECTRO',
-      AREVA: 'AREVA',
-      UNKNOWN: 'unknown',
-    },
-  };
+    const CONFIG = {
+        selectors: {
+            searchContainerId: 'aspen-search-container',
+            inputId: 'searchInput',
+            buttonId: 'searchButton',
+            warningId: 'warning',
+            sqlEditorId: 'sql-editor',
+            sqlEditorSectionId: 'sql-editor-section',
+            resultGridId: 'QueryResultGrid',
+            resultGridClass: 'query-result',
+            containerId: 'tableContainer',
+            mainAppClass: 'app-main',
+            styleId: 'aspen-search-style'
+        },
+        patterns: {
+            searchInput: /^\w{3}\s(4|12|25|35)[fF]\d{2,3}\w?$/i
+        },
+        styles: {
+            wrapper: 'padding:10px; box-shadow:rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;justify-content:center;z-index:1000;',
+            warning: 'color:#fa4616;font-size:0.9rem;margin:auto 5px;font-weight:bold;',
+            inputValid: 'background-color:#dcf1da;',
+            inputInvalid: 'background-color:#fedad0;',
+            table: 'border-collapse: collapse; max-width:100%; font-family: monospace; font-size: 12px; border: 1px solid #ddd; border-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;',
+            tableHeader: 'padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold;',
+            tableCell: 'padding: 6px; border: 1px solid #ddd; vertical-align: middle; white-space: pre-wrap;',
+            container: 'margin: 20px 0; padding: 10px; border: 1px solid #ccc;'
+        },
+        classes: {
+            input: 'text-uppercase app-search app-wj-search wj-control wj-content mr-2 pl-3',
+            button: 'btn app-btn app-btn-outline-primary mr-2'
+        },
+        sql: {
+            settingNames: [
+                '51P1P',
+                '51P1TD',
+                '51P1C',
+                '50P1P',
+                '50P2P',
+                '50P3P',
+                '50P4P',
+                '50P5P',
+                '67P2D',
+                '67P3D',
+                '67P4D',
+                '51G1P',
+                '51G1TD',
+                '51G1C',
+                '50G1P',
+                '50G5P',
+                '51PP',
+                '51PTD',
+                '51PC',
+                '51GP',
+                '51GTD',
+                '51GC',
+                '51P',
+                '51TD',
+                '51C',
+                '50L',
+                '50H',
+                '51NP',
+                '51NTD',
+                '51NC',
+                '50NL',
+                '50NH',
+                '51QP',
+                '51QTD',
+                '51QC',
+                '50Q',
+            ],
+            excludedArevaSettings: [
+                'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/PULS.PROL.IN>,INTPS1',
+                'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/HOLD-T. TIN>,INTMPS1',
+                'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/TIN>>>> PS1',
+                'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/EVALUATION IN PS1',
+                'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/EVAL. IN>,>>,>>> PS1',
+                'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/ENABLE PS1',
+                'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/ENABLE PS1',
+            ],
+            settingStatus: {
+                inService: 'IN SERVICE',
+                issued: 'ISSUED'
+            },
+            queryDelay: 2000,
+            dbmsLobLength: 4000
+        },
+        table: {
+            widthConfig: {
+                SEL: [
+                    12,
+                    12,
+                    12,
+                    15,
+                    24,
+                    25
+                ],
+                ELECTRO: [
+                    5,
+                    5,
+                    5,
+                    5,
+                    80
+                ],
+                AREVA: [
+                    10,
+                    10,
+                    60,
+                    15,
+                    5
+                ]
+            },
+            mergeColumns: {
+                SEL: [
+                    0, 1, 5
+                ], // DEVICE, RELAY, PN DESC
+                AREVA: [
+                    0, 1
+                ], // DEVICE, RELAY
+            },
+            SEL_sortColumnIndex: 4,
+            AREVA_sortColumnIndex: 2,
+            headerReplacements: {
+                ELEMENT: 'VENDER', // For 5-column tables (ELECTRO)
+            }
+        },
+        messages: {
+            queryCompleted: 'Query Completed',
+            invalidFormat: 'Please use the correct format (e.g., ABC 12F123)!',
+            inputPattern: 'Please follow the pattern: ABC 12F123',
+            placeholder: '...ABC 12F123',
+            noResults: 'No In Service Settings - Obtained ISSUED Settings instead.'
+        },
+        relayTypes: {
+            SEL: 'SEL',
+            ELECTRO: 'ELECTRO',
+            AREVA: 'AREVA',
+            UNKNOWN: 'unknown'
+        }
+    };
 
-  /**
+    /**
    * State management with proper encapsulation
    */
-  const createState = () => ({
-    headerRow: null,
-    tableRows: null,
-    isProcessing: false,
-    relayType: '',
-  });
+    const createState = () => ({headerRow: null, tableRows: null, isProcessing: false, relayType: ''});
 
-  let state = createState();
+    let state = createState();
 
-  /**
+    /**
    * Pre-compiled regex patterns for better performance
    */
-  const Patterns = {
-    definiteTime: {
-      '50P[234]': /^50P[234]/,
-      '67P[234]': /^67P[234]/,
-    },
-    overCurrent: {
-      50: /^50/,
-      51: /^51/,
-    },
-    special: {
-      '50[PG]5': /^50[PG]5/,
-      SV: /^SV\d?\w+/,
-    },
-    phases: {
-      PHS: /P(\.|\s|\.?\s)?PS1$/,
-      GND: /N(\.|\s|\.?\s)?PS1$/,
-      NEG: /NEG(\.|\s|\.?\s)?PS1$/,
-    },
-  };
+    const Patterns = {
+        definiteTime: {
+            '50P[234]': /^50P[234]/,
+            '67P[234]': /^67P[234]/
+        },
+        overCurrent: {
+            50: /^50/,
+            51: /^51/
+        },
+        special: {
+            '50[PG]5': /^50[PG]5/,
+            SV: /^SV\d?\w+/
+        },
+        phases: {
+            PHS: /P(\.|\s|\.?\s)?PS1$/,
+            GND: /N(\.|\s|\.?\s)?PS1$/,
+            NEG: /NEG(\.|\s|\.?\s)?PS1$/
+        }
+    };
 
-  /**
+    /**
    * Enhanced DOM Utilities with better error handling and performance
    */
-  const DOM = {
-    /**
+    const DOM = {
+        /**
      * Creates a DOM element with options
      * @param {string} tag - HTML tag name
      * @param {Object} options - Element attributes and properties
      * @returns {HTMLElement}
      */
-    createElement (tag, options = {}) {
-      const element = document.createElement(tag);
+        createElement(tag, options = {}) {
+            const element = document.createElement(tag);
 
-      for (const [key, value] of Object.entries(options)) {
-        if (key === 'style' && typeof value === 'string') {
-          element.style.cssText = value;
-        } else if (key === 'textContent') {
-          element.textContent = value;
-        } else if (key === 'className') {
-          element.className = value;
-        } else if (key === 'onclick') {
-          element.onclick = value;
-        } else if (key === 'innerHTML') {
-          element.innerHTML = value;
-        } else {
-          element.setAttribute(key, value);
-        }
-      }
+            for (const [key, value] of Object.entries(options)) {
+                if (key === 'style' && typeof value === 'string') {
+                    element.style.cssText = value;
+                } else if (key === 'textContent') {
+                    element.textContent = value;
+                } else if (key === 'className') {
+                    element.className = value;
+                } else if (key === 'onclick') {
+                    element.onclick = value;
+                } else if (key === 'innerHTML') {
+                    element.innerHTML = value;
+                } else {
+                    element.setAttribute(key, value);
+                }
+            }
 
-      return element;
-    },
+            return element;
+        },
 
-    /**
+        /**
      * Gets element by ID with error handling
      * @param {string} id - Element ID
      * @returns {HTMLElement|null}
      */
-    getElement (id) {
-      const element = document.getElementById(id);
-      if (!element) {
-        console.warn(`Element with id '${id}' not found`);
-      }
-      return element;
-    },
+        getElement(id) {
+            const element = document.getElementById(id);
+            if (! element) {
+                console.warn(`Element with id '${id}' not found`);
+            }
+            return element;
+        },
 
-    /**
+        /**
      * Injects CSS styles into the document head
      */
-    injectStyles () {
-      if (document.getElementById(CONFIG.selectors.styleId)) return;
+        injectStyles() {
+            if (document.getElementById(CONFIG.selectors.styleId)) 
+                return;
+            
 
-      const style = this.createElement('style', { id: CONFIG.selectors.styleId });
-      style.textContent = `
-        input:valid { ${CONFIG.styles.inputValid} }
-        input:invalid { ${CONFIG.styles.inputInvalid} }
+            const style = this.createElement('style', {id: CONFIG.selectors.styleId});
+            style.textContent = `
+        input:valid { ${
+                CONFIG.styles.inputValid
+            } }
+        input:invalid { ${
+                CONFIG.styles.inputInvalid
+            } }
       `;
-      document.head.appendChild(style);
-    },
+            document.head.appendChild(style);
+        },
 
-    /**
+        /**
      * Shows warning message
      * @param {string} message - Warning message
      */
-    showWarning (message) {
-      const warningEl = this.getElement(CONFIG.selectors.warningId);
-      if (warningEl) {
-        warningEl.textContent = message;
-      }
-    },
+        showWarning(message) {
+            const warningEl = this.getElement(CONFIG.selectors.warningId);
+            if (warningEl) {
+                warningEl.textContent = message;
+            }
+        },
 
-    /**
+        /**
      * Clears warning and removes previous results
      */
-    clearWarning () {
-      this.showWarning('');
-      const container = document.getElementById(CONFIG.selectors.containerId);
-      if (container) container.remove();
+        clearWarning() {
+            this.showWarning('');
+            const container = document.getElementById(CONFIG.selectors.containerId);
+            if (container) 
+                container.remove();
+            
 
-      const sqlEditor = document.getElementById(CONFIG.selectors.sqlEditorId);
-      if (sqlEditor) sqlEditor.textContent = '';
-    },
-  };
-
-  /**
-   * AREVA Setting Decoder with optimized pattern matching
-   */
-  const AREVA_SettingDecoder = {
-    phaseMap: {
-      PHS: 'P(\\.|\\s|\\.?\\s)?PS1$',
-      GND: 'N(\\.|\\s|\\.?\\s)?PS1$',
-      NEG: 'NEG(\\.|\\s|\\.?\\s)?PS1$',
-    },
-    phaseReplacements: {
-      PHS: 'PHS ',
-      GND: 'GND ',
-      NEG: 'NEG ',
-    },
-    definiteTimeMap: {
-      'DTOC/I>': 'PHS Definite Time Pick Up (A)',
-      'DTOC/IN>': 'GND Definite Time Pick Up (A)',
-      'DTOC/INEG>': 'NEG Definite Time Pick Up (A)',
-      'DTOC/TI>': 'PHS Definite Time Delay (s)',
-      'DTOC/TIN>': 'GND Definite Time Delay (s)',
-      'DTOC/TINEG>': 'NEG Definite Time Delay (s)',
-    },
-    TimedMap: {
-      IREF: 'Pick Up (A)',
-      CHARACTER: 'Curve',
-      FACTOR: 'Time Dial',
-    },
-    overCurrentMap: {
-      IDMT1: 'Timed Overcurrent ',
-    },
-    CTP: 0,
+            const sqlEditor = document.getElementById(CONFIG.selectors.sqlEditorId);
+            if (sqlEditor) 
+                sqlEditor.textContent = '';
+            
+        }
+    };
 
     /**
+   * AREVA Setting Decoder with optimized pattern matching
+   */
+    const AREVA_SettingDecoder = {
+        phaseMap: {
+            PHS: 'P(\\.|\\s|\\.?\\s)?PS1$',
+            GND: 'N(\\.|\\s|\\.?\\s)?PS1$',
+            NEG: 'NEG(\\.|\\s|\\.?\\s)?PS1$'
+        },
+        phaseReplacements: {
+            PHS: 'PHS ',
+            GND: 'GND ',
+            NEG: 'NEG '
+        },
+        definiteTimeMap: {
+            'DTOC/I>': 'PHS Definite Time Pick Up (A)',
+            'DTOC/IN>': 'GND Definite Time Pick Up (A)',
+            'DTOC/INEG>': 'NEG Definite Time Pick Up (A)',
+            'DTOC/TI>': 'PHS Definite Time Delay (s)',
+            'DTOC/TIN>': 'GND Definite Time Delay (s)',
+            'DTOC/TINEG>': 'NEG Definite Time Delay (s)'
+        },
+        TimedMap: {
+            IREF: 'Pick Up (A)',
+            CHARACTER: 'Curve',
+            FACTOR: 'Time Dial'
+        },
+        overCurrentMap: {
+            IDMT1: 'Timed Overcurrent '
+        },
+        CTP: 0,
+
+        /**
      * Decodes setting code to human-readable description
      * @param {string} code - Setting code
      * @param {string} setting - Setting value
      * @returns {Array<string>} [description, value]
      */
-    decode (code, setting) {
-      if (!code || typeof code !== 'string') return ['', ''];
-      if (!setting || typeof setting !== 'string') return ['', ''];
+        decode(code, setting) {
+            if (!code || typeof code !== 'string') 
+                return ['', ''];
+            
 
-      if (code.includes('INOM')) {
-        this.CTP = Number(setting.split(' ')[0]) || 0;
-        return ['CT Primary (A)'.toUpperCase(), this.CTP];
-      }
+            if (!setting || typeof setting !== 'string') 
+                return ['', ''];
+            
 
-      try {
-        // Check definite time patterns first (most specific)
-        for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
-          if (code.includes(pattern)) {
-            const value = Number(setting.split(' ')[0]) || 0;
-            return [
-              replacement.toUpperCase(),
-              setting.toUpperCase().includes('INOM') ? Math.round(value * this.CTP, 0) : value,
-            ];
-          }
-        }
-
-        // Check phase patterns
-        for (const [phaseType, pattern] of Object.entries(this.phaseMap)) {
-          if (new RegExp(pattern).test(code)) {
-            const suffix = this.getSuffixDescription(code, pattern);
-            const overCurrent = code.includes('IDMT1') ? this.overCurrentMap.IDMT1 : '';
-            const settingValue = this.getSettingNumber(setting);
-            let decodedCode = this.phaseReplacements[phaseType] + overCurrent + suffix;
-
-            if (String(settingValue).endsWith(' s')) {
-              decodedCode += ' (s)';
+            if (code.includes('INOM')) {
+                this.CTP = Number(setting.split(' ')[0]) || 0;
+                return ['CT Primary (A)'.toUpperCase(), this.CTP];
             }
 
-            return [decodedCode.toUpperCase(), settingValue.toString().replace(' s', '')];
-          }
-        }
-      } catch (err) {
-        console.error('Setting name decode error:', err);
-      }
+            try { // Check definite time patterns first (most specific)
+                for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
+                    if (code.includes(pattern)) {
+                        const value = Number(setting.split(' ')[0]) || 0;
+                        return [
+                            replacement.toUpperCase(),
+                            setting.toUpperCase().includes('INOM') ? Math.round(value * this.CTP, 0) : value,
+                        ];
+                    }
+                }
 
-      console.warn('No match found for code:', code);
-      return ['', ''];
-    },
+                // Check phase patterns
+                for (const [phaseType, pattern] of Object.entries(this.phaseMap)) {
+                    if (new RegExp(pattern).test(code)) {
+                        const suffix = this.getSuffixDescription(code, pattern);
+                        const overCurrent = code.includes('IDMT1') ? this.overCurrentMap.IDMT1 : '';
+                        const settingValue = this.getSettingNumber(setting);
+                        let decodedCode = this.phaseReplacements[phaseType] + overCurrent + suffix;
 
-    /**
+                        if (String(settingValue).endsWith(' s')) {
+                            decodedCode += ' (s)';
+                        }
+
+                        return [
+                            decodedCode.toUpperCase(), settingValue.toString().replace(' s', '')
+                        ];
+                    }
+                }
+            } catch (err) {
+                console.error('Setting name decode error:', err);
+            }
+
+            console.warn('No match found for code:', code);
+            return ['', ''];
+        },
+
+        /**
      * Gets setting number with INOM conversion
      * @param {string} setting - Setting value
      * @returns {string|number} Converted setting
      */
-    getSettingNumber (setting) {
-      if (setting.toUpperCase().includes('INOM')) {
-        const value = Number(setting.split(' ')[0]) || 0;
-        return Math.round(value * this.CTP, 0);
-      }
-      return setting;
-    },
+        getSettingNumber(setting) {
+            if (setting.toUpperCase().includes('INOM')) {
+                const value = Number(setting.split(' ')[0]) || 0;
+                return Math.round(value * this.CTP, 0);
+            }
+            return setting;
+        },
 
-    /**
+        /**
      * Gets suffix description from code
      * @param {string} code - Setting code
      * @param {RegExp} pattern - Phase pattern
      * @returns {string} Suffix description
      */
-    getSuffixDescription (code, pattern) {
-      if (code.includes('IREF')) return this.TimedMap.IREF;
-      if (code.includes('CHARACTER')) return this.TimedMap.CHARACTER;
-      if (code.includes('FACTOR')) return this.TimedMap.FACTOR;
+        getSuffixDescription(code, pattern) {
+            if (code.includes('IREF')) 
+                return this.TimedMap.IREF;
+            
 
-      const parts = code.split('/');
-      return parts[parts.length - 1]?.replace(new RegExp(pattern), '').trim() || '';
-    },
-  };
+            if (code.includes('CHARACTER')) 
+                return this.TimedMap.CHARACTER;
+            
 
-  /**
-   * Enhanced Setting Name Decoder with optimized pattern matching
-   */
-  const SEL_SettingDecoder = {
-    curveMap: {
-      '1': ' (Moderately Inverse)',
-      '2': ' (Inverse)',
-      '3': ' (Very Inverse)',
-      '4': ' (Extremely Inverse)',
-    },
-    phaseMap: {
-      G: 'GND ',
-      P: 'PHS ',
-      Q: 'NEG ',
-      N: 'GND ',
-    },
-    suffixMap: {
-      P: 'Pick Up (A)',
-      C: 'Curve',
-      TD: 'Time Dial',
-      TC: 'Torque Control',
-      L: 'Low Set (A)',
-      H: 'High Set (A)',
-    },
-    definiteTimeMap: {
-      '^50P[234]': 'Definite Time Pick Up (A)',
-      '^67P[234]': 'Definite Time Delay (s)',
-    },
-    overCurrentMap: {
-      '^50': 'Inst. Overcurrent ',
-      '^51': 'Timed Overcurrent ',
-    },
-    specialPatternMap: {
-      '^50[PG]5': '(Live Line)',
-      '^SV\\d?\\w+': '_Trip Equation',
-    },
+            if (code.includes('FACTOR')) 
+                return this.TimedMap.FACTOR;
+            
+
+            const parts = code.split('/');
+            return parts[parts.length - 1] ?. replace(new RegExp(pattern), '').trim() || '';
+        }
+    };
 
     /**
+   * Enhanced Setting Name Decoder with optimized pattern matching
+   */
+    const SEL_SettingDecoder = {
+        curveMap: {
+            1: ' (Moderately Inverse)',
+            2: ' (Inverse)',
+            3: ' (Very Inverse)',
+            4: ' (Extremely Inverse)'
+        },
+        phaseMap: {
+            G: 'GND ',
+            P: 'PHS ',
+            Q: 'NEG ',
+            N: 'GND '
+        },
+        suffixMap: {
+            P: 'Pick Up (A)',
+            C: 'Curve',
+            TD: 'Time Dial',
+            TC: 'Torque Control',
+            L: 'Low Set (A)',
+            H: 'High Set (A)'
+        },
+        definiteTimeMap: {
+            '^50P[234]': 'Definite Time Pick Up (A)',
+            '^67P[234]': 'Definite Time Delay (s)'
+        },
+        overCurrentMap: {
+            '^50': 'Inst. Overcurrent ',
+            '^51': 'Timed Overcurrent '
+        },
+        specialPatternMap: {
+            '^50[PG]5': '(Live Line)',
+            '^SV\\d?\\w+': '_Trip Equation'
+        },
+
+        /**
      * Decodes setting code to human-readable description
      * @param {string} code - Setting code
      * @returns {string} Decoded description
      */
-    decode (code, setting) {
-      if (!code || typeof code !== 'string') return ['', ''];
-      if (!setting || typeof setting !== 'string') return ['',''];
+        decode(code, setting) {
+            if (!code || typeof code !== 'string') 
+                return ['', ''];
+            
 
-      try {
-        // Check definite time patterns
-        for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
-          if (new RegExp(pattern).test(code)) {
-            return [this.getBaseDescription(code) + replacement, setting];
-          }
-        }
+            if (!setting || typeof setting !== 'string') 
+                return ['', ''];
+            
 
-        // Check overcurrent patterns
-        for (const [pattern, replacement] of Object.entries(this.overCurrentMap)) {
-          if (new RegExp(pattern).test(code)) {
-            const base = this.getBaseDescription(code);
-            const suffix = this.getSuffixDescription(code);
-            if (suffix.includes('Curve') && setting in this.curveMap){
-              setting += this.curveMap[setting]
-            };
-            const liveLine = Patterns.special['50[PG]5'].test(code) ? '(Live Line)' : '';
-            return [base + replacement + suffix + liveLine, setting];
-          }
-        }
+            try { // Check definite time patterns
+                for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
+                    if (new RegExp(pattern).test(code)) {
+                        return [
+                            this.getBaseDescription(code) + replacement,
+                            setting
+                        ];
+                    }
+                }
 
-        // Check special patterns
-        if (Patterns.special.SV.test(code)) {
-          return ['_Trip Equation', setting];
-        }
-      } catch (err) {
-        console.error('Setting name decode error:', err);
-      }
+                // Check overcurrent patterns
+                for (const [pattern, replacement] of Object.entries(this.overCurrentMap)) {
+                    if (new RegExp(pattern).test(code)) {
+                        const base = this.getBaseDescription(code);
+                        const suffix = this.getSuffixDescription(code);
+                        if (suffix.includes('Curve') && setting in this.curveMap) {
+                            setting += this.curveMap[setting];
+                        }
+                        const liveLine = Patterns.special['50[PG]5'].test(code) ? '(Live Line)' : '';
+                        return [
+                            base + replacement + suffix + liveLine,
+                            setting
+                        ];
+                    }
+                }
 
-      return ['', ''];
-    },
+                // Check special patterns
+                if (Patterns.special.SV.test(code)) {
+                    return ['_Trip Equation', setting];
+                }
+            } catch (err) {
+                console.error('Setting name decode error:', err);
+            }
 
-    /**
+            return ['', ''];
+        },
+
+        /**
      * Gets base phase description from code
      * @param {string} code - Setting code
      * @returns {string} Phase description
      */
-    getBaseDescription (code) {
-      const thirdChar = code.charAt(2);
-      return this.phaseMap[thirdChar] || 'PHS ';
-    },
+        getBaseDescription(code) {
+            const thirdChar = code.charAt(2);
+            return this.phaseMap[thirdChar] || 'PHS ';
+        },
 
-    /**
+        /**
      * Gets suffix description from code
      * @param {string} code - Setting code
      * @returns {string} Suffix description
      */
-    getSuffixDescription (code) {
-      const last2 = code.slice(-2);
-      const last1 = code.slice(-1);
-      return this.suffixMap[last2] || this.suffixMap[last1] || '';
-    },
-  };
+        getSuffixDescription(code) {
+            const last2 = code.slice(-2);
+            const last1 = code.slice(-1);
+            return this.suffixMap[last2] || this.suffixMap[last1] || '';
+        }
+    };
 
-  /**
+    /**
    * Optimized Table Renderer with better performance
    */
-  const TableRenderer = {
-    /**
+    const TableRenderer = {
+        /**
      * Creates a complete table element
      * @param {Array<string>} headers - Table headers
      * @param {Array} data - Table data rows
      * @returns {HTMLTableElement}
      */
-    createTable (headers, data) {
-      const table = DOM.createElement('table', { style: CONFIG.styles.table });
-      table.appendChild(this.createTableHead(headers));
-      table.appendChild(this.createTableBody(data));
-      return table;
-    },
+        createTable(headers, data) {
+            const table = DOM.createElement('table', {style: CONFIG.styles.table});
+            table.appendChild(this.createTableHead(headers));
+            table.appendChild(this.createTableBody(data));
+            return table;
+        },
 
-    /**
+        /**
      * Creates table header row
      * @param {Array<string>} headers - Header names
      * @returns {HTMLTableSectionElement}
      */
-    createTableHead (headers) {
-      const thead = DOM.createElement('thead');
-      const tr = DOM.createElement('tr');
-      const columnCount = headers.length;
+        createTableHead(headers) {
+            const thead = DOM.createElement('thead');
+            const tr = DOM.createElement('tr');
+            const columnCount = headers.length;
 
-      for (let index = 0; index < headers.length; index++) {
-        const displayHeader = this.getDisplayHeader(state.relayType, headers[index], columnCount);
-        const width = this.getColumnWidth(state.relayType, columnCount, index);
+            for (let index = 0; index < headers.length; index++) {
+                const displayHeader = this.getDisplayHeader(state.relayType, headers[index], columnCount);
+                const width = this.getColumnWidth(state.relayType, columnCount, index);
 
-        const th = DOM.createElement('th', {
-          style: `${CONFIG.styles.tableHeader} width: ${width}vw`,
-          textContent: displayHeader,
-        });
+                const th = DOM.createElement('th', {
+                    style: `${
+                        CONFIG.styles.tableHeader
+                    } width: ${width}vw`,
+                    textContent: displayHeader
+                });
 
-        tr.appendChild(th);
-      }
+                tr.appendChild(th);
+            }
 
-      thead.appendChild(tr);
-      return thead;
-    },
+            thead.appendChild(tr);
+            return thead;
+        },
 
-    /**
+        /**
      * Gets display header name with replacements
      * @param {string} header - Original header
      * @param {number} columnCount - Total column count
      * @returns {string} Display header
      */
-    getDisplayHeader (relayType, header, columnCount) {
-      return relayType === 'ELECTRO' && columnCount === 5 && header === 'ELEMENT'
-        ? CONFIG.table.headerReplacements.ELEMENT
-        : header;
-    },
+        getDisplayHeader(relayType, header, columnCount) {
+            return relayType === 'ELECTRO' && columnCount === 5 && header === 'ELEMENT' ? CONFIG.table.headerReplacements.ELEMENT : header;
+        },
 
-    /**
+        /**
      * Creates table body with data rows
      * @param {Array} data - Table data
      * @returns {HTMLTableSectionElement}
      */
-    createTableBody (data) {
-      const tbody = DOM.createElement('tbody');
+        createTableBody(data) {
+            const tbody = DOM.createElement('tbody');
 
-      for (const row of data) {
-        const tr = DOM.createElement('tr');
-        const rowData = Array.isArray(row) ? row : Object.values(row);
+            for (const row of data) {
+                const tr = DOM.createElement('tr');
+                const rowData = Array.isArray(row) ? row : Object.values(row);
 
-        for (const cell of rowData) {
-          const cellData = typeof cell === 'object' ? cell.value : cell;
-          const td = DOM.createElement('td', {
-            style: CONFIG.styles.tableCell,
-            textContent: cellData,
-          });
+                for (const cell of rowData) {
+                    const cellData = typeof cell === 'object' ? cell.value : cell;
+                    const td = DOM.createElement('td', {
+                        style: CONFIG.styles.tableCell,
+                        textContent: cellData
+                    });
 
-          if (typeof cell === 'object' && cell.rowspan > 1) {
-            td.rowSpan = cell.rowspan;
-          }
+                    if (typeof cell === 'object' && cell.rowspan > 1) {
+                        td.rowSpan = cell.rowspan;
+                    }
 
-          tr.appendChild(td);
-        }
+                    tr.appendChild(td);
+                }
 
-        tbody.appendChild(tr);
-      }
+                tbody.appendChild(tr);
+            }
 
-      return tbody;
-    },
+            return tbody;
+        },
 
-    /**
+        /**
      * Swaps two columns in an array
      * @param {Array} array - Array to modify
      * @param {number} index1 - First index
      * @param {number} index2 - Second index
      */
-    swapColumns (array, index1, index2) {
-      [array[index1], array[index2]] = [array[index2], array[index1]];
-    },
+        swapColumns(array, index1, index2) {
+            [
+                array[index1], array[index2]
+            ] = [
+                array[index2], array[index1]
+            ];
+        },
 
-    /**
+        /**
      * Merges consecutive identical cells in specified columns
      * Optimized algorithm with better performance
      * @param {Array<Array>} rows - Table rows
      * @returns {Array<Array>} Rows with merged cell information
      */
-    mergeConsecutiveCells (rows) {
-      if (!rows.length) return rows;
+        mergeConsecutiveCells(rows) {
+            if (!rows.length) 
+                return rows;
+            
 
-      const mergeColumns = CONFIG.table.mergeColumns[state.relayType];
-      if (!mergeColumns?.length) return rows;
+            const mergeColumns = CONFIG.table.mergeColumns[state.relayType];
+            if (! mergeColumns ?. length) 
+                return rows;
+            
 
-      const colCount = rows[0].length;
-      const mergeMap = Array.from({ length: rows.length }, () =>
-        Array.from({ length: colCount }, () => ({ rowspan: 1, skip: false }))
-      );
+            const colCount = rows[0].length;
+            const mergeMap = Array.from({
+                length: rows.length
+            }, () => Array.from({
+                length: colCount
+            }, () => ({rowspan: 1, skip: false})));
 
-      // Process each mergeable column
-      for (const col of mergeColumns) {
-        if (col >= colCount) continue;
+            // Process each mergeable column
+            for (const col of mergeColumns) {
+                if (col >= colCount) 
+                    continue;
+                
 
-        let currentValue = rows[0][col];
-        let startRow = 0;
-        let count = 1;
+                let currentValue = rows[0][col];
+                let startRow = 0;
+                let count = 1;
 
-        for (let row = 1; row <= rows.length; row++) {
-          const isLastRow = row === rows.length;
-          const isSameValue = !isLastRow && rows[row][col] === currentValue;
+                for (let row = 1; row <= rows.length; row++) {
+                    const isLastRow = row === rows.length;
+                    const isSameValue = ! isLastRow && rows[row][col] === currentValue;
 
-          if (isSameValue) {
-            count++;
-          } else {
-            if (count > 1) {
-              mergeMap[startRow][col].rowspan = count;
-              for (let i = startRow + 1; i < startRow + count; i++) {
-                mergeMap[i][col].skip = true;
-              }
+                    if (isSameValue) {
+                        count++;
+                    } else {
+                        if (count > 1) {
+                            mergeMap[startRow][col].rowspan = count;
+                            for (let i = startRow + 1; i < startRow + count; i++) {
+                                mergeMap[i][col].skip = true;
+                            }
+                        }
+
+                        if (! isLastRow) {
+                            currentValue = rows[row][col];
+                            startRow = row;
+                            count = 1;
+                        }
+                    }
+                }
             }
 
-            if (!isLastRow) {
-              currentValue = rows[row][col];
-              startRow = row;
-              count = 1;
+            // Build merged rows
+            const mergedRows = [];
+            for (let row = 0; row < rows.length; row++) {
+                const newRow = [];
+                for (let col = 0; col < colCount; col++) {
+                    if (! mergeMap[row][col].skip) {
+                        newRow.push({value: rows[row][col], rowspan: mergeMap[row][col].rowspan,
+                            colspan: 1
+                        });
+                    }
+                }
+                mergedRows.push(newRow);
             }
-          }
-        }
-      }
 
-      // Build merged rows
-      const mergedRows = [];
-      for (let row = 0; row < rows.length; row++) {
-        const newRow = [];
-        for (let col = 0; col < colCount; col++) {
-          if (!mergeMap[row][col].skip) {
-            newRow.push({
-              value: rows[row][col],
-              rowspan: mergeMap[row][col].rowspan,
-              colspan: 1,
-            });
-          }
-        }
-        mergedRows.push(newRow);
-      }
+            return mergedRows;
+        },
 
-      return mergedRows;
-    },
-
-    /**
+        /**
      * Gets column width based on relay type
      * @param {string} relayType - Relay type
      * @param {number} columnCount - Total columns
      * @param {number} index - Column index
      * @returns {number} Column width in vw
      */
-    getColumnWidth (relayType, columnCount, index) {
-      return CONFIG.table.widthConfig[relayType]?.[index] || 100 / columnCount;
-    },
+        getColumnWidth(relayType, columnCount, index) {
+            return CONFIG.table.widthConfig[relayType] ?. [index] || 100 / columnCount;
+        },
 
-    /**
+        /**
      * Renders table to container
-     * @param {string} containerId - Container element ID
+     * @param {container} object - Container element ID
      * @param {Array<string>} headers - Table headers
      * @param {Array} data - Table data
      */
-    render (containerId, headers, data) {
-      const container = DOM.getElement(containerId);
-      if (!container) return;
+        render(container, headers, data) {
+            if (!container) 
+                return;
+            
 
-      const table = this.createTable(headers, data);
-      container.innerHTML = '';
-      container.appendChild(table);
-    },
+            const table = this.createTable(headers, data);
+            container.innerHTML = '';
+            container.appendChild(table);
+        },
 
-    /**
+        /**
      * Hides original query result grid
      */
-    removeOriginal () {
-      const results = DOM.getElement(CONFIG.selectors.resultGridId);
-      if (results) results.style.display = 'none';
+        removeOriginal() {
+            const results = DOM.getElement(CONFIG.selectors.resultGridId);
+            if (results) 
+                results.style.display = 'none';
+            
 
-      const main = document.querySelector(`.${CONFIG.selectors.mainAppClass}`);
-      if (main) main.setAttribute('style', 'min-height: auto');
-    },
+            const grid = document.getElementsByClassName(CONFIG.selectors.resultGridClass)[0];
+            if (grid) 
+                grid.style.display = 'none';
+            
 
-    /**
+            const main = document.querySelector(`.${
+                CONFIG.selectors.mainAppClass
+            }`);
+            if (main) 
+                main.setAttribute('style', 'min-height: auto');
+            
+        },
+
+        /**
      * Downloads table as HTML file
      * @param {string} filename - Filename without extension
      * @param {Array<string>} headers - Table headers
      * @param {Array} data - Table data
      */
-    downloadAsHtml (filename, headers, data) {
-      const tableHtml = this.createTable(headers, data).outerHTML;
-      const currentDate = new Date();
-      const fullHtml = `<!DOCTYPE html>
+        downloadAsHtml(filename, headers, data) {
+            const tableHtml = this.createTable(headers, data).outerHTML;
+            const currentDate = new Date();
+            const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
     <title>${filename}</title>
@@ -670,414 +747,451 @@ javascript: (function () {
     </style>
 </head>
 <body>
-    <h2>Protection Settings - ${filename} - ${currentDate.toLocaleDateString()}</h2>
+    <h2>Protection Settings - ${filename} - ${
+                currentDate.toLocaleDateString()
+            }</h2>
     ${tableHtml}
 </body>
 </html>`;
 
-      const blob = new Blob([fullHtml], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = DOM.createElement('a', {
-        href: url,
-        download: `${filename}.html`,
-      });
+            const blob = new Blob([fullHtml], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const a = DOM.createElement('a', {
+                href: url,
+                download: `${filename}.html`
+            });
 
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    },
-  };
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    };
 
-  /**
+    /**
    * Data Processing with optimized state management
    */
-  const DataProcessor = {
-    /**
+    const DataProcessor = {
+        /**
      * Main processing function for query results
      */
-    processResults () {
-      try {
-        if (!this.hasRequiredGlobals()) {
-          this.showCompletionAlert();
-          return;
-        }
+        processResults() {
+            try {
+                if (!this.hasRequiredGlobals()) {
+                    this.showCompletionAlert();
+                    return false;
+                }
 
-        this.updateStateFromGlobals();
-        this.detectRelayType();
-        const feederId = this.extractFeederId();
+                this.updateStateFromGlobals();
 
-        this.addDescriptionColumn();
-        this.renderTable();
+                this.detectRelayType();
+                const feederId = this.extractFeederId();
 
-        this.setupDownloadButton(feederId);
-        TableRenderer.removeOriginal();
-        this.showCompletionAlert();
-      } catch (err) {
-        console.error('Results processing error:', err);
-        this.showCompletionAlert();
-      }
-    },
+                this.addDescriptionColumn();
+                this.renderTable();
 
-    /**
+                this.setupDownloadButton(feederId);
+                TableRenderer.removeOriginal();
+
+                return this.hasValidResults();
+            } catch (err) {
+                console.error('Results processing error:', err);
+                this.showCompletionAlert();
+                return false;
+            }
+        },
+
+        /**
      * Checks if required global objects exist
      * @returns {boolean}
      */
-    hasRequiredGlobals () {
-      return !!(window.cvAvailableTableFields?._ncc && window._C1MVCCtrl5?._ncc);
-    },
+        hasRequiredGlobals() {
+            return !!(window.cvAvailableTableFields ?. _ncc && window._C1MVCCtrl5 ?. _ncc);
+        },
 
-    /**
+        hasValidResults() {
+            if (Array.isArray(state.tableRows) && state.tableRows.length > 0) {
+                return true;
+            }
+            if (window.resultGrid && Array.isArray(window.resultGrid._rows)) {
+                return window.resultGrid._rows.length > 0;
+            }
+            return false;
+        },
+
+        /**
      * Updates state from global query result objects
      */
-    updateStateFromGlobals () {
-      state.headerRow = Array.from(window.cvAvailableTableFields._ncc);
-      state.tableRows = Array.from(window._C1MVCCtrl5._ncc);
-    },
+        updateStateFromGlobals() {
+            state.headerRow = Array.from(window.cvAvailableTableFields._ncc);
+            state.tableRows = Array.from(window._C1MVCCtrl5._ncc);
+        },
 
-    /**
+        /**
      * Detects relay type from table data
      */
-    detectRelayType () {
-      if (!state.tableRows?.length) {
-        state.relayType = CONFIG.relayTypes.UNKNOWN;
-        return;
-      }
+        detectRelayType() {
+            if (! state.tableRows ?. length) {
+                state.relayType = CONFIG.relayTypes.UNKNOWN;
+                return;
+            }
 
-      const firstRow = state.tableRows[0];
-      const relayTypeCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
-      const upperRelayType = String(relayTypeCell || '').toUpperCase();
+            const firstRow = state.tableRows[0];
+            const relayTypeCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
+            const upperRelayType = String(relayTypeCell || '').toUpperCase();
 
-      if (upperRelayType.includes(CONFIG.relayTypes.SEL)) {
-        state.relayType = CONFIG.relayTypes.SEL;
-      } else if (upperRelayType.includes(CONFIG.relayTypes.ELECTRO)) {
-        state.relayType = CONFIG.relayTypes.ELECTRO;
-      } else if (upperRelayType.includes(CONFIG.relayTypes.AREVA)) {
-        state.relayType = CONFIG.relayTypes.AREVA;
-      } else {
-        state.relayType = CONFIG.relayTypes.UNKNOWN;
-      }
-    },
+            if (upperRelayType.includes(CONFIG.relayTypes.SEL)) {
+                state.relayType = CONFIG.relayTypes.SEL;
+            } else if (upperRelayType.includes(CONFIG.relayTypes.ELECTRO)) {
+                state.relayType = CONFIG.relayTypes.ELECTRO;
+            } else if (upperRelayType.includes(CONFIG.relayTypes.AREVA)) {
+                state.relayType = CONFIG.relayTypes.AREVA;
+            } else {
+                state.relayType = CONFIG.relayTypes.UNKNOWN;
+            }
+        },
 
-    /**
+        /**
      * Adds description column for SEL relays
      */
-    addDescriptionColumn () {
-      if (state.relayType === CONFIG.relayTypes.SEL) {
-        state.headerRow.push({
-          Key: '5',
-          Table: '',
-          Name: 'PN ELEMENT DESC',
-          Alias: null,
-        });
-        TableRenderer.swapColumns(state.headerRow, 4, 5);
-      }
+        addDescriptionColumn() {
+            if (state.relayType === CONFIG.relayTypes.SEL) {
+                state.headerRow.push({Key: '5', Table: '', Name: 'PN ELEMENT DESC', Alias: null});
+                TableRenderer.swapColumns(state.headerRow, 4, 5);
+            }
 
-      state.tableRows = state.tableRows.map(row => {
-        const rowArray = Array.isArray(row) ? [...row] : Object.values(row);
+            state.tableRows = state.tableRows.map(row => {
+                const rowArray = Array.isArray(row) ? [...row] : Object.values(row);
 
-        if (state.relayType === CONFIG.relayTypes.SEL) {
-          const [decodedCode, decodedSetting] = SEL_SettingDecoder.decode(rowArray[2], rowArray[3]);
-          rowArray[5] = decodedCode;
-          rowArray[3] = decodedSetting;
-          TableRenderer.swapColumns(rowArray, 4, 5);
-        } else if (state.relayType === CONFIG.relayTypes.AREVA) {
-          const [decodedCode, decodedSetting] = AREVA_SettingDecoder.decode(rowArray[2], rowArray[3]);
-          rowArray[2] = decodedCode;
-          rowArray[3] = decodedSetting;
-        }
+                if (state.relayType === CONFIG.relayTypes.SEL) {
+                    const [decodedCode, decodedSetting] = SEL_SettingDecoder.decode(rowArray[2], rowArray[3]);
+                    rowArray[5] = decodedCode;
+                    rowArray[3] = decodedSetting;
+                    TableRenderer.swapColumns(rowArray, 4, 5);
+                } else if (state.relayType === CONFIG.relayTypes.AREVA) {
+                    const [decodedCode, decodedSetting] = AREVA_SettingDecoder.decode(rowArray[2], rowArray[3]);
+                    rowArray[2] = decodedCode;
+                    rowArray[3] = decodedSetting;
+                }
 
-        return rowArray;
-      });
+                return rowArray;
+            });
 
-      // Sort by setting value
-      const columnIndex =
-        state.relayType === CONFIG.relayTypes.SEL
-          ? CONFIG.table.SEL_sortColumnIndex
-          : state.relayType === CONFIG.relayTypes.AREVA
-          ? CONFIG.table.AREVA_sortColumnIndex
-          : null;
+            // Sort by setting value
+            const columnIndex = state.relayType === CONFIG.relayTypes.SEL ? CONFIG.table.SEL_sortColumnIndex : state.relayType === CONFIG.relayTypes.AREVA ? CONFIG.table.AREVA_sortColumnIndex : null;
 
-      if (columnIndex !== null) {
-        state.tableRows.sort((a, b) => {
-          const aValue = String(a[columnIndex] || '');
-          const bValue = String(b[columnIndex] || '');
-          return aValue.localeCompare(bValue);
-        });
-      }
-    },
+            if (columnIndex !== null) {
+                state.tableRows.sort((a, b) => {
+                    const aValue = String(a[columnIndex] || '');
+                    const bValue = String(b[columnIndex] || '');
+                    return aValue.localeCompare(bValue);
+                });
+            }
+        },
 
-    /**
+        /**
      * Extracts feeder ID from first row
      * @returns {string} Feeder ID
      */
-    extractFeederId () {
-      if (!state.tableRows?.length) return 'unknown';
+        extractFeederId() {
+            if (! state.tableRows ?. length) 
+                return 'unknown';
+            
 
-      const firstRow = state.tableRows[0];
-      const firstCell = Array.isArray(firstRow) ? firstRow[0] : Object.values(firstRow)[0];
-      const parts = String(firstCell || '').split(' ');
+            const firstRow = state.tableRows[0];
+            const firstCell = Array.isArray(firstRow) ? firstRow[0] : Object.values(firstRow)[0];
+            const parts = String(firstCell || '').split(' ');
 
-      return parts.slice(0, 2).join(' ') || 'unknown';
-    },
+            return parts.slice(0, 2).join(' ') || 'unknown';
+        },
 
-    /**
+        /**
      * Renders the processed table
      */
-    renderTable () {
-      const headers = state.headerRow.map(header => header.Name);
+        renderTable() {
+            const headers = state.headerRow.map(header => header.Name);
 
-      if (state.relayType === CONFIG.relayTypes.SEL || state.relayType === CONFIG.relayTypes.AREVA) {
-        state.tableRows = TableRenderer.mergeConsecutiveCells(state.tableRows);
-      }
+            if (state.relayType === CONFIG.relayTypes.SEL || state.relayType === CONFIG.relayTypes.AREVA) {
+                state.tableRows = TableRenderer.mergeConsecutiveCells(state.tableRows);
+            }
 
-      const container = document.getElementById(CONFIG.selectors.containerId) || TableManager.createContainer();
-      TableRenderer.render(CONFIG.selectors.containerId, headers, state.tableRows);
-    },
+            const container = document.getElementById(CONFIG.selectors.containerId) || TableManager.createContainer();
+            TableRenderer.render(container, headers, state.tableRows);
+        },
 
-    /**
+        /**
      * Sets up download button
      * @param {string} feederId - Feeder ID for filename
      */
-    setupDownloadButton (feederId) {
-      const container = document.getElementById(CONFIG.selectors.containerId);
-      if (!container) return;
+        setupDownloadButton(feederId) {
+            const container = document.getElementById(CONFIG.selectors.containerId);
+            if (! container) 
+                return;
+            
 
-      const downloadBtn = TableManager.createDownloadButton(feederId);
-      container.insertBefore(DOM.createElement('br'), container.firstChild);
-      container.insertBefore(DOM.createElement('br'), container.firstChild);
-      container.insertBefore(downloadBtn, container.firstChild);
-    },
+            const downloadBtn = TableManager.createDownloadButton(feederId);
+            container.insertBefore(DOM.createElement('br'), container.firstChild);
+            container.insertBefore(DOM.createElement('br'), container.firstChild);
+            container.insertBefore(downloadBtn, container.firstChild);
+        },
 
-    /**
+        /**
      * Shows completion alert
      */
-    showCompletionAlert () {
-      alert(CONFIG.messages.queryCompleted);
-    },
-  };
+        showCompletionAlert() {
+            alert(CONFIG.messages.queryCompleted);
+        }
+    };
 
-  /**
+    /**
    * Table Manager for container management
    */
-  const TableManager = {
-    /**
+    const TableManager = { /**
      * Creates table container element
      * @returns {HTMLElement}
      */
-    createContainer () {
-      const container = DOM.createElement('div', {
-        id: CONFIG.selectors.containerId,
-        style: CONFIG.styles.container,
-      });
-      document.body.appendChild(container);
-      return container;
-    },
+        createContainer() {
+            const container = DOM.createElement('div', {
+                id: CONFIG.selectors.containerId,
+                style: CONFIG.styles.container
+            });
+            document.body.appendChild(container);
+            return container;
+        },
 
-    /**
+        /**
      * Creates download button
      * @param {string} filename - Filename for download
      * @returns {HTMLButtonElement}
      */
-    createDownloadButton (filename) {
-      const downloadBtn = DOM.createElement('button', {
-        className: CONFIG.classes.button,
-        textContent: 'Download',
-        onclick: () => {
-          const headers = state.headerRow.map(header => header.Name);
-          TableRenderer.downloadAsHtml(filename, headers, state.tableRows);
-        },
-      });
+        createDownloadButton(filename) {
+            const downloadBtn = DOM.createElement('button', {
+                className: CONFIG.classes.button,
+                textContent: 'Download',
+                onclick: () => {
+                    const headers = state.headerRow.map(header => header.Name);
+                    TableRenderer.downloadAsHtml(filename, headers, state.tableRows);
+                }
+            });
 
-      return downloadBtn;
-    },
-  };
+            return downloadBtn;
+        }
+    };
 
-  /**
+    /**
    * Optimized Search Component
    */
-  const SearchComponent = {
-    /**
+    const SearchComponent = {
+        /**
      * Initializes search component
      */
-    init () {
-      try {
-        this.injectExternalDependencies();
-        this.createSearchBar();
-        this.attachEventHandlers();
-      } catch (err) {
-        console.error('Search component initialization error:', err);
-      }
-    },
+        init() {
+            try {
+                this.injectExternalDependencies();
+                this.createSearchBar();
+                this.attachEventHandlers();
+            } catch (err) {
+                console.error('Search component initialization error:', err);
+            }
+        },
 
-    /**
+        /**
      * Injects external dependencies if available
      */
-    injectExternalDependencies () {
-      const sqlEditorSection = DOM.getElement(CONFIG.selectors.sqlEditorSectionId);
-      if (typeof window.switchEditor === 'function' && sqlEditorSection && sqlEditorSection.style.display == 'none') {
-        window.switchEditor();
-      }
-    },
+        injectExternalDependencies() {
+            const sqlEditorSection = DOM.getElement(CONFIG.selectors.sqlEditorSectionId);
+            if (typeof window.switchEditor === 'function' && sqlEditorSection && sqlEditorSection.style.display == 'none') {
+                window.switchEditor();
+            }
+        },
 
-    /**
+        /**
      * Creates search bar UI
      */
-    createSearchBar () {
-      const searchContainer = DOM.getElement(CONFIG.selectors.searchContainerId);
-      if (searchContainer) {
-        return;
-      }
-      const wrapper = DOM.createElement('div', {
-        id: CONFIG.selectors.searchContainerId,
-        className: 'input-group',
-        style: CONFIG.styles.wrapper,
-      });
+        createSearchBar() {
+            const searchContainer = DOM.getElement(CONFIG.selectors.searchContainerId);
+            if (searchContainer) {
+                return;
+            }
+            const wrapper = DOM.createElement('div', {
+                id: CONFIG.selectors.searchContainerId,
+                className: 'input-group',
+                style: CONFIG.styles.wrapper
+            });
 
-      const input = DOM.createElement('input', {
-        type: 'text',
-        id: CONFIG.selectors.inputId,
-        placeholder: CONFIG.messages.placeholder,
-        className: CONFIG.classes.input,
-        pattern: CONFIG.patterns.searchInput.source,
-        title: CONFIG.messages.inputPattern,
-      });
+            const input = DOM.createElement('input', {
+                type: 'text',
+                id: CONFIG.selectors.inputId,
+                placeholder: CONFIG.messages.placeholder,
+                className: CONFIG.classes.input,
+                pattern: CONFIG.patterns.searchInput.source,
+                title: CONFIG.messages.inputPattern
+            });
 
-      const button = DOM.createElement('button', {
-        type: 'button',
-        id: CONFIG.selectors.buttonId,
-        className: CONFIG.classes.button,
-        textContent: 'Search',
-      });
+            const button = DOM.createElement('button', {
+                type: 'button',
+                id: CONFIG.selectors.buttonId,
+                className: CONFIG.classes.button,
+                textContent: 'Search'
+            });
 
-      const warning = DOM.createElement('em', {
-        id: CONFIG.selectors.warningId,
-        style: CONFIG.styles.warning,
-      });
+            const warning = DOM.createElement('em', {
+                id: CONFIG.selectors.warningId,
+                style: CONFIG.styles.warning
+            });
 
-      wrapper.append(input, button, warning);
-      document.body.insertBefore(wrapper, document.body.firstChild);
+            wrapper.append(input, button, warning);
+            document.body.insertBefore(wrapper, document.body.firstChild);
 
-      DOM.injectStyles();
-    },
+            DOM.injectStyles();
+        },
 
-    /**
+        /**
      * Attaches event handlers to search elements
      */
-    attachEventHandlers () {
-      const button = DOM.getElement(CONFIG.selectors.buttonId);
-      const input = DOM.getElement(CONFIG.selectors.inputId);
+        attachEventHandlers() {
+            const button = DOM.getElement(CONFIG.selectors.buttonId);
+            const input = DOM.getElement(CONFIG.selectors.inputId);
 
-      if (!button || !input) return;
+            if (! button || ! input) 
+                return;
+            
 
-      button.addEventListener('click', () => this.handleSearch(input));
-      input.addEventListener('keypress', e => {
-        if (e.key === 'Enter') this.handleSearch(input);
-      });
-      input.addEventListener('input', () => {
-        input.value = input.value.toUpperCase();
-      });
-    },
+            button.addEventListener('click', () => this.handleSearch(input));
+            input.addEventListener('keypress', e => {
+                if (e.key === 'Enter') 
+                    this.handleSearch(input);
+                
+            });
+            input.addEventListener('input', () => {
+                input.value = input.value.toUpperCase();
+            });
+        },
 
-    /**
+        /**
      * Handles search action
      * @param {HTMLInputElement} inputEl - Input element
      */
-    handleSearch (inputEl) {
-      if (state.isProcessing) return;
+        handleSearch(inputEl) {
+            if (state.isProcessing) 
+                return;
+            
 
-      DOM.clearWarning();
+            DOM.clearWarning();
 
-      const rawValue = inputEl.value.trim().toUpperCase();
+            const rawValue = inputEl.value.trim().toUpperCase();
 
-      if (!this.validateInput(rawValue)) {
-        DOM.showWarning(CONFIG.messages.invalidFormat);
-        return;
-      }
+            if (!this.validateInput(rawValue)) {
+                DOM.showWarning(CONFIG.messages.invalidFormat);
+                return;
+            }
 
-      this.executeSearch(rawValue);
-    },
+            this.executeSearch(rawValue);
+        },
 
-    /**
+        /**
      * Validates input against pattern
      * @param {string} value - Input value
      * @returns {boolean}
      */
-    validateInput (value) {
-      return CONFIG.patterns.searchInput.test(value);
-    },
+        validateInput(value) {
+            return CONFIG.patterns.searchInput.test(value);
+        },
 
-    /**
+        /**
      * Executes search query
      * @param {string} searchValue - Search value
      */
-    executeSearch (searchValue) {
-      state.isProcessing = true;
+        executeSearch(searchValue) {
+            state.isProcessing = true;
 
-      try {
-        const sql = SQL.generate(searchValue);
-        this.displaySql(sql);
+            try {
+                this.excuteQuery(searchValue);
 
-        if (typeof window.runQuery === 'function') {
-          window.runQuery();
-        }
+                // First attempt after query delay
+                setTimeout(() => {
+                    const firstAttemptSuccess = DataProcessor.processResults();
 
-        setTimeout(() => {
-          DataProcessor.processResults();
-          state.isProcessing = false;
-        }, CONFIG.sql.queryDelay);
-      } catch (err) {
-        console.error('Search execution error:', err);
-        state.isProcessing = false;
-      }
-    },
+                    // Explicitly run hasValidResults() after processing as requested
+                    const validAfterFirst = DataProcessor.hasValidResults();
 
-    /**
+                    if (validAfterFirst) {
+                        state.isProcessing = false;
+                        return;
+                    }
+
+                    // No results – inform user and retry with 'issued' status
+                    DOM.showWarning(CONFIG.messages.noResults);
+                    this.excuteQuery(searchValue, CONFIG.sql.settingStatus.issued);
+
+                    // Second attempt after retry delay
+                    setTimeout(() => {
+                        const secondAttemptSuccess = DataProcessor.processResults();
+                        if (! secondAttemptSuccess) {
+                            DOM.showWarning(CONFIG.messages.noResults);
+                        }
+                        state.isProcessing = false;
+                    }, CONFIG.sql.queryDelay);
+                }, CONFIG.sql.queryDelay);
+            } catch (err) {
+                console.error('Search execution error:', err);
+                state.isProcessing = false;
+            }
+        },
+
+        excuteQuery(searchValue, status = CONFIG.sql.settingStatus.inService) {
+            const sql = SQL.generate(searchValue, status);
+            this.displaySql(sql);
+            if (typeof window.runQuery === 'function') {
+                window.runQuery();
+            }
+        },
+
+        /**
      * Displays SQL in editor
      * @param {string} sql - SQL query
      */
-    displaySql (sql) {
-      const sqlEditor = DOM.getElement(CONFIG.selectors.sqlEditorId);
-      if (sqlEditor) {
-        sqlEditor.textContent = sql;
-      }
-    },
-  };
+        displaySql(sql) {
+            const sqlEditor = DOM.getElement(CONFIG.selectors.sqlEditorId);
+            if (sqlEditor) {
+                sqlEditor.textContent = sql;
+            }
+        }
+    };
 
-  /**
+    /**
    * Optimized SQL Utilities with better structure
    */
-  const SQL = {
-    /**
+    const SQL = { /**
      * Minifies SQL by removing comments and extra whitespace
      * @param {string} sql - SQL query
      * @returns {string} Minified SQL
      */
-    minify (sql) {
-      if (!sql?.trim()) return '';
+        minify(sql) {
+            if (!sql ?. trim()) 
+                return '';
+            
 
-      return sql
-        .replace(/--.*$/gm, '') // Remove single line comments
-        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
-        .replace(/\s+/g, ' ') // Collapse whitespace
-        .trim();
-    },
+            return sql.replace(/--.*$/gm, ''); // Remove single line comments.replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments.replace(/\s+/g, ' ') // Collapse whitespace.trim();
+        },
 
-    /**
+        /**
      * Generates SQL query for given input code
      * @param {string} inputCode - Device code (e.g., 'ABC 12F123')
      * @returns {string} Generated SQL query
      */
-    generate (inputCode) {
-      if (!inputCode) return '';
+        generate(inputCode, status = CONFIG.sql.settingStatus.inService) {
+            if (!inputCode) 
+                return '';
+            
 
-      // Pre-compute SQL fragments for better performance
-      const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
-      const excludedSettings = CONFIG.sql.excludedArevaSettings.map(name => `'${name}'`).join(',');
-      const baseCondition = `R.S01 LIKE '${inputCode}%' AND R.RELAYTYPE LIKE 'SEL%'`;
-      const lobLength = CONFIG.sql.dbmsLobLength;
+            // Pre-compute SQL fragments for better performance
+            const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
+            const excludedSettings = CONFIG.sql.excludedArevaSettings.map(name => `'${name}'`).join(',');
+            const baseCondition = `R.S01 LIKE '${inputCode}%'`;
+            const lobLength = CONFIG.sql.dbmsLobLength;
 
-      return SQL.minify(`
+            return SQL.minify(`
         SELECT
           R.S01 AS DEVICE,
           Q.RELAYTYPE AS RELAY,
@@ -1091,13 +1205,14 @@ javascript: (function () {
                 SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) AS CTR
                 FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
                 WHERE ${baseCondition}
+                  AND R.RELAYTYPE LIKE 'SEL%'
                   AND R.ID = Q.RELAYID
                   AND Q.ID = S.REQUESTID
                   AND T.RELAYTYPE = Q.RELAYTYPE
                   AND T.ROWNUMBER = S.ROWNUMBER
                   AND S.GROUPNAME = '1'
                   AND T.SETTINGNAME = 'CTR'
-                  AND UPPER(Q.S02) = 'IN SERVICE'
+                  AND UPPER(Q.S02) = '${status}'
               )
             )
             WHEN T.SETTINGNAME LIKE '67%D'
@@ -1110,11 +1225,12 @@ javascript: (function () {
           Q.M01 AS MEMO
         FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
         WHERE ${baseCondition}
+          AND R.RELAYTYPE LIKE 'SEL%'
           AND R.ID = Q.RELAYID
           AND Q.ID = S.REQUESTID
           AND T.RELAYTYPE = Q.RELAYTYPE
           AND T.ROWNUMBER = S.ROWNUMBER
-          AND UPPER(Q.S02) = 'IN SERVICE'
+          AND UPPER(Q.S02) = '${status}'
           AND (
             (S.GROUPNAME = '1' AND T.SETTINGNAME IN (${settingsList}))
             OR (
@@ -1123,13 +1239,14 @@ javascript: (function () {
                   SELECT S.SETTING AS TR
                   FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
                   WHERE ${baseCondition}
+                    AND R.RELAYTYPE LIKE 'SEL%'
                     AND R.ID = Q.RELAYID
                     AND Q.ID = S.REQUESTID
                     AND T.RELAYTYPE = Q.RELAYTYPE
                     AND T.ROWNUMBER = S.ROWNUMBER
                     AND S.GROUPNAME = 'L1'
                     AND T.SETTINGNAME = 'TR'
-                    AND UPPER(Q.S02) = 'IN SERVICE'
+                    AND UPPER(Q.S02) = '${status}'
                 )
                 OR T.SETTINGNAME IN ('51P1TC', '51PTC')
               )
@@ -1143,10 +1260,10 @@ javascript: (function () {
           TO_CHAR(R.S04) AS MODEL,
           Q.M01 AS MEMO
         FROM TRELAY R, TREQUEST Q
-        WHERE R.S01 LIKE '${inputCode}%'
+        WHERE ${baseCondition}
           AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
           AND R.ID = Q.RELAYID
-          AND UPPER(Q.S02) = 'IN SERVICE'
+          AND UPPER(Q.S02) = '${status}'
         UNION ALL
         SELECT
           R.S01 AS DEVICE,
@@ -1155,13 +1272,13 @@ javascript: (function () {
           TO_CHAR(S.SETTING) AS SETTING,
           Q.M01 AS MEMO
         FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-        WHERE R.S01 LIKE '${inputCode}%'
+        WHERE ${baseCondition}
           AND R.RELAYTYPE LIKE 'AREVA%'
           AND R.ID = Q.RELAYID
           AND Q.ID = S.REQUESTID
           AND T.RELAYTYPE = Q.RELAYTYPE
           AND T.ROWNUMBER = S.ROWNUMBER
-          AND UPPER(Q.S02) = 'IN SERVICE'
+          AND UPPER(Q.S02) = '${status}'
           AND S.GROUPNAME = 'PARAMETERS'
           AND (
             T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1%'
@@ -1171,25 +1288,29 @@ javascript: (function () {
           AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) != 'BLOCKED'
           AND T.SETTINGNAME NOT IN (${excludedSettings})
       `);
-    },
-  };
+        }
+    };
 
-  /**
+    /**
    * Public API - Exposed for external use
    */
-  window.AspenQuery = Object.freeze({
-    addSearchBar: () => SearchComponent.init(),
-    minifySqlManual: SQL.minify,
-    decodeSELSettingName: SEL_SettingDecoder.decode.bind(SEL_SettingDecoder),
-    decodeAREVASettingName: AREVA_SettingDecoder.decode.bind(AREVA_SettingDecoder),
-    processResults: DataProcessor.processResults.bind(DataProcessor),
-    getSqlText: SQL.generate,
-    TableRenderer,
-    createTableContainer: TableManager.createContainer.bind(TableManager),
-    getState: () => ({ ...state }),
-    CONFIG,
-  });
+    window.AspenQuery = Object.freeze({
+        addSearchBar: () => SearchComponent.init(),
+        minifySqlManual: SQL.minify,
+        decodeSELSettingName: SEL_SettingDecoder.decode.bind(SEL_SettingDecoder),
+        decodeAREVASettingName: AREVA_SettingDecoder.decode.bind(AREVA_SettingDecoder),
+        processResults: DataProcessor.processResults.bind(DataProcessor),
+        getSqlText: SQL.generate,
+        TableRenderer,
+        createTableContainer: TableManager.createContainer.bind(TableManager),
+        getState: () => (
+            {
+                ... state
+            }
+        ),
+        CONFIG
+    });
 
-  // Initialize the application
-  SearchComponent.init();
+    // Initialize the application
+    SearchComponent.init();
 })();
