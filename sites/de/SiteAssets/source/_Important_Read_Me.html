@@ -15,8 +15,8 @@
 
     body {
       margin: auto;
-      padding: 40px;
-      width: 40%;
+      padding: 10vh;
+      width: 60%;
     }
 
     html {
@@ -49,7 +49,7 @@
 
     code,
     pre {
-      font-size: 1em
+      font-size: 0.85em
     }
 
     /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
@@ -128,7 +128,7 @@
 
     body {
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: 14px;
+      font-size: 12px;
       line-height: 1.42857143;
       color: #333
     }
@@ -226,7 +226,7 @@
     blockquote {
       padding: 10px 20px;
       margin: 0 0 20px;
-      font-size: 14.5px;
+      font-size: 12px;
       border-left: 5px solid #eee
     }
 
@@ -237,7 +237,7 @@
 
     code {
       padding: 2px 4px;
-      font-size: 90%
+      font-size: 0.85em;
     }
 
     code,
@@ -254,7 +254,7 @@
     pre {
       padding: 9.5px;
       margin: 0 0 10px;
-      font-size: 13px;
+      font-size: 0.85em;
       word-break: break-all;
       word-wrap: break-word;
       background-color: #f5f5f5;
@@ -266,8 +266,9 @@
       padding: 0;
       font-size: inherit;
       color: inherit;
-      white-space: normal;
-      border-radius: 0
+      white-space: pre-wrap;
+      border-radius: 0;
+      color: #c7254e;
     }
 
     @-ms-viewport {
@@ -296,6 +297,10 @@
       border-radius: 4px
     }
 
+    .grid-row-span {
+      grid-row: span 1;
+    }
+
     .hljs-tag {
       color: #0000ff
     }
@@ -308,6 +313,8 @@
       font-style: italic
     }
   </style>
+  <link rel="stylesheet" type="text/css" href="../css/default.css">
+  <link rel="stylesheet" type="text/css" href="../css/default2.css">
 </head>
 
 <body>
@@ -315,71 +322,103 @@
 
   <hr>
   <h1 id="intro">Intro</h1>
-  <p>In order to modify the main page, you have to modify the corresponding files under this directory. Download the
-    fo;file you need to edit - each .txt file is related to each panel on the HydroShare.</p>
-  <p>For example, if you want to edit the link under &quot;Administrative&quot;, then you need to download
-    &quot;1_Administrative.txt&quot; file and locally edit it with Notepad. </p>
+  <p>All links and information shown on DE hydroshare are here. They are organized in a JSON file format.</p>
+  <p>Download this file: <a
+      href="https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/link/WebLinks.txt">WebLinks.txt</a>.</p>
   <hr>
-  <h2 id="update-the-md-files">Update the .txt Files</h2>
-  <blockquote>
-    <p>In general, each entry consists of eight inputs, separated by comma:</p>
-    <h3><code>Indent Level(1), Title(2), Tag(3), Date(4), Link(5), Icon(6), Icon Source(7), Icon Link(8)</code></h3>
 
-    <p><strong>1. Indent Level</strong>: use <code>1</code> for the first level indent, use <code>2</code> for second
-      level indent.</p>
-    <p><strong>2. Title</strong>: The description of the link you are going to add</p>
-    <p><strong>3. Tag</strong>: This is optional - but you have two entries to choose <code>new</code> or
-      <code>update</code>
-    </p>
-    <p><strong>4. Date</strong>: <code>format: yyyy-mm-dd </code>used together with the <code>new</code> or
-      <code>update</code> input, keep it empty if the last input is empty
-    </p>
-    <p><strong>5. Link</strong>: The url link of the document/directory you want to point to - J drive link works as
-      well</p>
-    <p><strong>6. Icon, 7. Icon Source, 8. Icon Link</strong>: These three need to be used in conjunction, you won't
-      need them for most of the time</p>
+  <h4 id="lists-and-links-">1. Open the file:</h4>
+  <p>Use any text editor if you are familiar with JSON file format; if not,
+    use this <a href="https://jsoneditoronline.org/">JSON Online Editor</a>, in <a
+      href="https://jsoneditoronline.org/docs/#tree-mode">"Tree Mode"</a> and "Expand All".</p>
 
-  </blockquote>
-  <h4 id="lists-and-links-">Lists and Links:</h4>
-  <p>List item example in html:</p>
-  <ul>
-    <li><a href="http://pq.bchydro.bc.ca:99/index.php">E13 Desk Booking</a></li>
-  </ul>
-  <p>in .txt file:</p>
-  <pre><code><span class="hljs-bullet">1, E13 Desk Booking, , , http://pq.bchydro.bc.ca:99/index.php, , , , </span>
-      </code></pre>
-  <p>Indented list item example in html:</p>
-  <ul>
-    <li><a href="/sites/de/sites/de/DELT/Forms/AllItems.aspx"><abbr
-          title="Distribution Engineering Leadership Team">DELT</abbr></a>
-      <ul>
-        <li><a href="/sites/de/Business_Review/Forms/AllItems.aspx">Business Review</a><sup>
-            <new date="2028-05-02"></new>
-          </sup></li>
-      </ul>
-    </li>
-  </ul>
-  <p>in .txt files:</p>
-  <pre><code><span class="hljs-bullet">1, DELT(Distribution Engineering Leadership Team), , , /sites/de/sites/de/DELT/Forms/AllItems.aspx, , , ,</span>
-  <span class="hljs-bullet">2, Business Review, new, "yyyy-mm-dd", http://pq.bchydro.bc.ca:99/index.php, , , ,  </span></code></pre>
-  <h4 id="abbreviations-">Abbreviations:</h4>
-  <p>In the above example:</p>
-  <blockquote>
-    <p><code>( )</code> is used behind the abbreviation <code>DELT</code>, to indicate the full name when your mouse
-      hover over the abbreviation.</p>
-  </blockquote>
-  <h4 id="new-and-updated-items-">New and Updated Items:</h4>
-  <p>For new link item or updated link item:</p>
-  <blockquote>
-    <p>This is optional, however, the tag (column 3) and date (column 4) need to be used in conjunction.
-    </p>
-  </blockquote>
-  <hr>
-  <h2 id="make-html-code">Make HTML Code</h2>
+  <h4 id="abbreviations-">2. Understand the structure:</h4>
+  <p>Use an example, information are shown in the txt file like this:</p>
 
-  <p>Once you have edited the .txt files, re-upload it to this directory, it should override the existing .txt file.
-    Click <a href="https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/txt2html.html">here</a> you will
-    get the html code generated.The sharepoint site will update automatically</p>
+  <pre><code><span class="hljs-string">{
+  "name": "Organization &amp; Teams",
+  "subheaders": [
+    {
+      "title": "Regional Teams",
+      "links": [
+        {
+          "name": "Lower Mainland North",
+          "url": "",
+          "info": "",
+          "sub_links": [
+            {
+              "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/LMN.pdf",
+              "name": "Member Details"
+            },
+            {
+              "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/LMN%20-%20Regional%20Area%20Substations.pdf",
+              "name": "Substation Assignments"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+},
+
+  </span></code></pre>
+
+  <p>They will be renderred in hydroShare like this:</p>
+
+  <div>
+    <div class="links panel">
+      <div class="panel-heading">Organization &amp; Teams</div>
+      <div class="panel-body">
+        <dl class="grid-container">
+          <dt class="special grid-row-span" data-category-index="1" data-subheader-index="0"><a class="nogo">Regional
+              Teams</a></dt>
+          <dd class="item">
+            <div class="nogo" data-category-index="1" data-subheader-index="0" data-link-index="0">
+              <span class="link-title">Lower Mainland North</span>
+              <span class="link-info"></span>
+              <span class="sub-link">
+                <span>
+                  <a href="https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/LMN.pdf"
+                    target="_blank">Member Details</a>
+                  <span>&nbsp;</span>
+                </span>
+                <span>
+                  <a href="https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/LMN%20-%20Regional%20Area%20Substations.pdf"
+                    target="_blank">Substation Assignments</a>
+                  <span>&nbsp;</span>
+                </span>
+              </span>
+            </div>
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <p>In general, each element follows this pattern:</p>
+
+  <pre><code><span class="hljs-string">{
+    "name": "Link Name",
+    "url": "https://example.com",
+    "info": "Short description",
+    "sub_links": [
+      {
+        "name": "Optional sub‑item",
+        "url": "https://example2.com"
+        "class": "Optional for handling special files"
+      }
+    ]
+  }  </span></code></pre>
+  <p>"Class" under each "Sub_link" is optional and is used for handling special files, <code>"Class":"_form"</code> for
+    files need to be downloaded; <code>"Class":"_clipboard"</code> for files that are copied to clipboard.</p>
+
+  <h4>3. Format and Validation:</h4>
+  <p>The online editor will keep the format and validate the JSON structure of each item continously.</p>
+
+  <h4>4. Save and Upload:</h4>
+  <p>Save the file and upload and replace the file wherever it is downloaded from.</p>
+
+  <p>Once it is uploaded, the sharepoint site will update automatically</p>
   <hr>
   <footer>
     <p>​​Maintained by

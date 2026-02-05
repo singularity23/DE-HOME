@@ -82,7 +82,7 @@ function tagUpdate () {
   qSA('new, update').forEach(tag => {
     const tagDate = tag.getAttribute('date');
     const currentDate = new Date();
-    console.log(tagDate);
+    // console.log(tagDate);
     // console.log(currentDate);
 
     if (!tagDate) {
@@ -108,8 +108,7 @@ function handleLinks () {
       link_name: linkEl.innerText.trim(),
       link_url: linkEl.href,
     });
-    console.log('Gtag logged link click:', linkEl.innerText.trim(), linkEl.href);
-    console.log('datalayer:', window.dataLayer);
+    //console.log('Gtag logged link click:', linkEl.innerText.trim(), linkEl.href);
     const linkUrl = linkEl.href;
 
     if (isValidUrl(linkUrl) && linkUrl) {
@@ -153,7 +152,7 @@ function handleLinks () {
 function checkLinkHealth (url) {
   return fetch(url, { method: 'GET' })
     .then(response => {
-      console.log(response); // Log the response for debugging
+      //console.log(response); // Log the response for debugging
       return response.ok; // Returns true if status is 200-299
     })
     .catch(() => false);

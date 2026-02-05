@@ -37,85 +37,6 @@ let categories = [
     name: 'Department Structure',
     subheaders: [
       {
-        title: 'Leadership',
-        links: [
-          {
-            name: 'DE Department Org Chart',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Org%20Chart%20PDF/Engineering%20Design%20D-Engineering.pdf',
-            info: 'Full organizational chart for Distribution Engineering',
-          },
-          {
-            name: 'DELT',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/DELT.pdf',
-            info: 'Distribution Engineering Leadership Team overview',
-          },
-        ],
-      },
-      {
-        title: 'Functional Teams',
-        links: [
-          {
-            name: 'Distribution Civil Engineering',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/DCE/default.aspx',
-            info: 'DCE Hydroshare',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/DCE.pdf',
-                name: 'Member Details',
-              },
-            ],
-          },
-          {
-            name: 'Programs Team',
-            url: '',
-            info: 'Team Charter',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/DE%20Programs%20Team.pdf',
-                name: 'Member Details',
-              },
-            ],
-          },
-          {
-            name: 'Estimating Team',
-            url: '',
-            info: 'TBD',
-          },
-        ],
-      },
-      {
-        title: 'Project Teams',
-        links: [
-          {
-            name: 'Project A',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Projects%20A%20Team%20Member%20List.pdf',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/Projects%20A.pdf',
-                name: 'Member Details',
-              },
-            ],
-          },
-          {
-            name: 'Project B',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Projects%20B%20Team%20Member%20List.pdf',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/Projects%20B.pdf',
-                name: 'Member Details',
-              },
-            ],
-          },
-          {
-            name: 'Projects Hydroshare',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/DistributionEngineeringProjects/SitePages/Home.aspx',
-            info: 'Central hub for all DE project tracking and updates',
-          },
-        ],
-      },
-      {
         title: 'Regional Teams',
         links: [
           {
@@ -132,94 +53,6 @@ let categories = [
                 name: 'Substation Assignments',
               },
             ],
-          },
-          {
-            name: 'Lower Mainland South',
-            url: '',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/LMS.pdf',
-                name: 'Member Details',
-              },
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/LMS%20-%20Regional%20Area%20Substations.pdf',
-                name: 'Substation Assignments',
-              },
-            ],
-          },
-          {
-            name: 'Interior & NIA',
-            url: '',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/INT.pdf',
-                name: 'Member Details',
-              },
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/INT%20-%20Regional%20Area%20Substations.pdf',
-                name: 'Substation Assignments',
-              },
-            ],
-          },
-          {
-            name: 'Vancouver Island',
-            url: '',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/VI.pdf',
-                name: 'Member Details',
-              },
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/VI%20-%20Regional%20Area%20Substations.pdf',
-                name: 'Substation Assignments',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: 'Specialized Engineering',
-        links: [
-          {
-            name: 'Protection & Modelling',
-            url: '',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Protection%20and%20Modeling%20Team.pdf',
-                name: 'Member Details',
-              },
-            ],
-          },
-          {
-            name: 'Distribution Feeders',
-            url: '',
-            info: '',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Distribution%20Feeders%20Team.pdf',
-                name: 'Member Details',
-              },
-            ],
-          },
-          {
-            name: 'Applied Engineering',
-            url: 'https://bchydro.sharepoint.com/teams/MT-DE-AppliedEngineering/SitePages/ProjectHome.aspx',
-            info: 'AE HydroShare',
-            sub_links: [
-              {
-                url: 'https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/Applied%20Engineering%20Team.pdf',
-                name: 'Member Details',
-              },
-            ],
-          },
-          {
-            name: 'Non-Linear Analysis',
-            url: 'https://hydroshare.bchydro.bc.ca/sites/de/DEKnowledgeOneNote/Overhead%20Line%20Design%20(NLA)%20Team',
-            info: 'NLA OneNote for knowledge sharing',
           },
         ],
       },
@@ -1338,7 +1171,7 @@ const refreshApp = () => {
   resize();
   setTimeout(() => {
     hideLoader();
-  }, 2000); // Ensure loader is visible for at least 500ms
+  }, 1000); // Ensure loader is visible for at least 500ms
 };
 
 // Add event listener for DOM content loaded

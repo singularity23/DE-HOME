@@ -40,8 +40,8 @@
         "title": "DE Overview",
         "links": [
           {
-            "name": "DE Department Org Chart",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Org%20Chart%20PDF/Engineering%20Design%20D-Engineering.pdf",
+            "name": "DE Division Org Chart",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/OrgCharts/Distribution%20Engineering%20%26%20Standards%20-%20D-Engineering.pdf",
             "info": "Full organizational chart for Distribution Engineering"
           },
           {
@@ -67,11 +67,11 @@
           },
           {
             "name": "Programs Team",
-            "url": "",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/DE%20Programs%20Team.pdf",
             "info": "Team Charter",
             "sub_links": [
               {
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/DE%20Programs%20Team.pdf",
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/Programs.pdf",
                 "name": "Member Details"
               }
             ]

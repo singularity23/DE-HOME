@@ -1,6 +1,13 @@
 {
   "configurations": [
     {
+      "name": "Launch Chrome",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "/sites/de/SiteAssets/html/"
+    },
+    {
       "type": "chrome",
       "name": "http://127.0.0.1:3000/sites/de/SiteAssets/html/Markdown2HTML.html",
       "request": "launch",

@@ -148,7 +148,7 @@ window.onload = () => {
 
   const folderUrl = '/sites/de/SiteAssets/source'
 
-  async function getTxtFilesFromSharePointFolder () {
+/*   async function getTxtFilesFromSharePointFolder () {
     const endpoint = `https://hydroshare.bchydro.bc.ca/sites/de/_api/web/GetFolderByServerRelativeUrl('${folderUrl}')/Files`
 
     const response = await fetch(endpoint, {
@@ -180,5 +180,5 @@ window.onload = () => {
     state.fileList.forEach((file, index) => handleFile(file, index))
   }
 
-  getTxtFilesFromSharePointFolder()
+  getTxtFilesFromSharePointFolder() */
 }

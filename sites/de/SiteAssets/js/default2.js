@@ -373,7 +373,6 @@ const refreshApp = () => {
   }, 2000);
 };
 // Add event listener for DOM content loaded
-document.addEventListener('DOMContentLoaded', refreshApp);
 
 const insertGoogleAnalytics = () => {
   // Create the first script element (external gtag.js)
@@ -397,7 +396,11 @@ const insertGoogleAnalytics = () => {
 
 // Run when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', insertGoogleAnalytics);
+  document.addEventListener('DOMContentLoaded', () => {
+    refreshApp();
+    insertGoogleAnalytics();
+  });
 } else {
+  refreshApp();
   insertGoogleAnalytics();
 }
