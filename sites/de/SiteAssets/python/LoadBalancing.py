@@ -112,12 +112,12 @@ def ClosestSumOfSubset(
     Uses dynamic programming to find optimal subset.
 
     Args:
-        nums: List of numbers to choose from
-        target: Target sum to achieve
-        max_elements: Optional maximum number of elements in the subset
+    nums: List of numbers to choose from
+    target: Target sum to achieve
+    max_elements: Optional maximum number of elements in the subset
 
     Returns:
-        Tuple of (closest sum achieved, list of indices used)
+    Tuple of (closest sum achieved, list of indices used)
     """
     if not nums:
         return 0.0, []
@@ -332,8 +332,8 @@ class LoadBalancing:
         Each dictionary maps phase name to a dict of sections and their current values.
 
         Returns:
-            List[Dict[str, Dict]]: List of phase dictionaries, where each inner dict
-            maps section objects to their current values.
+        List[Dict[str, Dict]]: List of phase dictionaries, where each inner dict
+        maps section objects to their current values.
         """
         # Get sections for each study point and the main network
         dict_list = [self.RunCYMEIteration(point) for point in self.study_points]

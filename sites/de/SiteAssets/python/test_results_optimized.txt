@@ -1,30 +1,46 @@
+test_base_equipment_calculates_impedances (__main__.TestBaseEquipment.test_base_equipment_calculates_impedances) ... ok
 test_base_equipment_eq_data_appends_once (__main__.TestBaseEquipment.test_base_equipment_eq_data_appends_once) ... ok
 test_base_equipment_info_table_appends_row (__main__.TestBaseEquipment.test_base_equipment_info_table_appends_row) ... ok
-test_base_equipment_store_info_raises_not_implemented (__main__.TestBaseEquipment.test_base_equipment_store_info_raises_not_implemented) ... ok
 test_consolidate_cable_entry_merges_length_and_impedance (__main__.TestCableEquipmentConsolidation.test_consolidate_cable_entry_merges_length_and_impedance) ... ok
 test_get_chrome_path_returns_none_when_not_found (__main__.TestChromeBrowser.test_get_chrome_path_returns_none_when_not_found) ... ok
 test_get_chrome_path_returns_path_when_found (__main__.TestChromeBrowser.test_get_chrome_path_returns_path_when_found) ... ok
+test_get_platform_key_darwin (__main__.TestChromeBrowser.test_get_platform_key_darwin) ... ok
+test_get_platform_key_linux (__main__.TestChromeBrowser.test_get_platform_key_linux) ... ok
+test_get_platform_key_windows (__main__.TestChromeBrowser.test_get_platform_key_windows) ... ok
 test_open_url_fallback_opens_default_browser (__main__.TestChromeBrowser.test_open_url_fallback_opens_default_browser) ... ok
 test_device_handlers_map_expected_types (__main__.TestDeviceHandler.test_device_handlers_map_expected_types) ... ok
+test_emission_study_get_input_parameters (__main__.TestEmissionStudy.test_emission_study_get_input_parameters) ... ok
+test_emission_study_get_system_parameters (__main__.TestEmissionStudy.test_emission_study_get_system_parameters) ... ok
+test_emission_study_initialization (__main__.TestEmissionStudy.test_emission_study_initialization) ... ok
+test_emission_study_prepare_variables (__main__.TestEmissionStudy.test_emission_study_prepare_variables) ... ok
 test_set_source_value_calls_setvaluetopo (__main__.TestEquipmentValueSetter.test_set_source_value_calls_setvaluetopo) ... ok
 test_set_value_dev_eqt_calls_setvalue (__main__.TestEquipmentValueSetter.test_set_value_dev_eqt_calls_setvalue) ... ok
+test_set_value_dev_eqt_handles_exceptions (__main__.TestEquipmentValueSetter.test_set_value_dev_eqt_handles_exceptions) ... ok
 test_fault_point_initializes_with_mocked_query (__main__.TestFaultPoint.test_fault_point_initializes_with_mocked_query) ... ok
-test_calculate_impedance_2_negative_diff (__main__.TestImpedanceCalculator.test_calculate_impedance_2_negative_diff) ... ok
-test_calculate_impedance_2_positive_diff (__main__.TestImpedanceCalculator.test_calculate_impedance_2_positive_diff) ... ok
 test_calculate_impedance_basic (__main__.TestImpedanceCalculator.test_calculate_impedance_basic) ... ok
+test_calculate_impedance_difference_negative_diff (__main__.TestImpedanceCalculator.test_calculate_impedance_difference_negative_diff) ... ok
+test_calculate_impedance_difference_positive_diff (__main__.TestImpedanceCalculator.test_calculate_impedance_difference_positive_diff) ... ok
+test_calculate_impedance_invalid_params (__main__.TestImpedanceCalculator.test_calculate_impedance_invalid_params) ... ok
 test_calculate_impedance_zero_x_r (__main__.TestImpedanceCalculator.test_calculate_impedance_zero_x_r) ... ok
-test_main_raises_when_no_networks (__main__.TestMain.test_main_raises_when_no_networks) ... ok
+test_chrome_browser_with_query_helper (__main__.TestIntegration.test_chrome_browser_with_query_helper)
+Test that ChromeBrowser can work with QueryHelper patterns ... ok
+test_impedance_calculator_integration (__main__.TestIntegration.test_impedance_calculator_integration)
+Test that impedance calculations work together ... ok
+test_study_parameters_with_impedance_calculator (__main__.TestIntegration.test_study_parameters_with_impedance_calculator)
+Test that StudyParameters can be used with impedance calculations ... ok
+test_query_with_fallback_handles_exceptions (__main__.TestQueryHelper.test_query_with_fallback_handles_exceptions) ... ok
 test_query_with_fallback_non_numeric_passthrough (__main__.TestQueryHelper.test_query_with_fallback_non_numeric_passthrough) ... ok
 test_query_with_fallback_numeric_results (__main__.TestQueryHelper.test_query_with_fallback_numeric_results) ... ok
 test_create_sc_set_list (__main__.TestShortCircuitStudy.test_create_sc_set_list) ... ok
 test_create_source_set_list (__main__.TestShortCircuitStudy.test_create_source_set_list) ... ok
 test_fault_values_constants (__main__.TestShortCircuitStudy.test_fault_values_constants) ... ok
 test_get_file_name_sets_rep_loc (__main__.TestShortCircuitStudy.test_get_file_name_sets_rep_loc) ... ok
+test_init_raises_when_loop_exists (__main__.TestShortCircuitStudy.test_init_raises_when_loop_exists) ... ok
 test_init_succeeds_when_no_loop_nodes (__main__.TestShortCircuitStudy.test_init_succeeds_when_no_loop_nodes) ... ok
 test_setup_table_headers (__main__.TestShortCircuitStudy.test_setup_table_headers) ... ok
 test_study_parameters_creation (__main__.TestStudyParameters.test_study_parameters_creation) ... ok
 
 ----------------------------------------------------------------------
-Ran 25 tests in 0.008s
+Ran 38 tests in 0.010s
 
 OK

@@ -1,7 +1,7 @@
 {
   "vscode-edge-devtools.headless": false,
   "editor.fontFamily": "Google Sans Code",
-  "liveServer.settings.port": 5583,
+  "liveServer.settings.port": 5584,
   "editor.wordWrap": "wordWrapColumn",
   "editor.defaultFormatter": "ms-python.black-formatter",
   "files.autoSave": "onWindowChange",
@@ -34,5 +34,17 @@
   "[javascript]": {
     "editor.defaultFormatter": "numso.prettier-standard-vscode"
   },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    "./sites",
+    "-p",
+    "test_*.py"
+  ],
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestEnabled": true,
 
 }

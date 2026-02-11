@@ -505,7 +505,7 @@ footer {
   grid-template-columns: repeat(5, 1fr);
   /* 5 columns */
   gap: 10px;
-  grid-auto-rows: minmax(80px, auto);
+  grid-auto-rows: minmax(fit-content, auto);
 }
 
 .item {
@@ -555,21 +555,31 @@ footer {
   }
 
   .grid-container {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 50%);
   }
 }
 
 @media only screen and (max-width: 480px) {
   .grid-container {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: 100%;
+    grid-template-rows: fit-content!important;
+  }
+
+  .links.panel, .search-input {
+    min-width:320px !important;
   }
 
   .links dd a {
-    min-height: auto !important;
+    min-width: fit-content !important;
+
   }
 
-  .special,
+
   .item {
-    height: auto !important;
+    min-width: fit-content !important;
+  }
+
+  .links .special {
+    height: fit-content!important;
   }
 }

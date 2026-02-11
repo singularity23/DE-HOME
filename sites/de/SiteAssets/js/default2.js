@@ -11,7 +11,7 @@ const CONFIG = {
 
 let categories = [];
 
-/**
+/*
  * Fetches and processes files from the server
  * @param {string} fileUrl - The API endpoint URL
  * @returns {Promise<Array>} The processed file data
@@ -43,7 +43,7 @@ const getFile = async fileUrl => {
   }
 };
 
-/**
+/*
  * Reads and processes a text file
  * @param {Object} txtFile - The text file object
  * @returns {Promise<Array>} The processed categories
@@ -70,7 +70,7 @@ const readFile = async txtFile => {
     return [];
   }
 };
-/**
+/*
  * Creates a DOM element with attributes
  * @param {string} tag - HTML tag name
  * @param {Object} attrs - Attributes to set
@@ -90,7 +90,7 @@ const createElement = (tag, attrs = {}) => {
   return element;
 };
 
-/**
+/*
  * Renders the categories to the DOM
  * @param {Array} categoriesToRender - Categories to display
  */
@@ -159,7 +159,6 @@ const debounceFunc = (func, wait) => {
 
 // Optimized resize function
 const resize = debounceFunc(() => {
-  //console.log('Resize event detected');
   const containers = document.querySelectorAll('.grid-container');
 
   containers.forEach(container => {
@@ -202,7 +201,7 @@ const initializeApp = () => {
   }
 };
 
-/**
+/*
  * Creates a subheader title element
  * @param {Object} subheader - The subheader object
  * @param {number} categoryIndex - Index of the category
@@ -226,7 +225,7 @@ const createSubheaderTitle = (subheader, categoryIndex, subheaderIndex) => {
   return dt;
 };
 
-/**
+/*
  * Creates a link element with sub-links if present
  * @param {Object} link - The link object
  * @param {number} categoryIndex - Index of the category
@@ -278,7 +277,7 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
   return dd;
 };
 
-/**
+/*
  * Adjusts the grid layout based on container width
  * @param {HTMLElement} container - The grid container
  * @param {HTMLElement} firstItem - The first item in the grid
@@ -293,7 +292,7 @@ const adjustGridLayout = (container, firstItem, columns) => {
   firstItem.style.gridRow = `span ${rows}`;
 };
 
-/**
+/*
  * Initializes the search functionality
  */
 const initializeSearch = () => {
@@ -320,7 +319,7 @@ const initializeSearch = () => {
   });
 };
 
-/**
+/*
  * Filters categories based on search term
  * @param {string} searchTerm - The search term
  * @returns {Array} Filtered categories
@@ -351,17 +350,29 @@ const filterCategories = searchTerm => {
 };
 // Show the loader
 const showLoader = () => {
-  document.getElementById('loader').style.display = 'flex';
-  //console.log('Loader displayed');
-  document.getElementById('DEcontainer').classList.add('hidden');
+  const loader = document.getElementById('loader');
+  const container = document.getElementById('DEcontainer');
+
+  if (loader) {
+    loader.style.display = 'flex';
+  }
+  if (container) {
+    container.classList.add('hidden');
+  }
 };
 
 // Hide the loader
 const hideLoader = () => {
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('loader').classList.add('hidden');
-  //console.log('Loader hidden');
-  document.getElementById('DEcontainer').classList.remove('hidden');
+  const loader = document.getElementById('loader');
+  const container = document.getElementById('DEcontainer');
+
+  if (loader) {
+    loader.style.display = 'none';
+    loader.classList.add('hidden');
+  }
+  if (container) {
+    container.classList.remove('hidden');
+  }
 };
 
 const refreshApp = () => {

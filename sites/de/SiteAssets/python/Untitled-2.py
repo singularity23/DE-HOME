@@ -5,16 +5,12 @@ def addition(x):
     return y
 
 
-lst = [1, 2, 3, 4, 5, 6, 7, 8]
+lst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 data = addition(lst)
 
 dct = dict(zip(lst, data))
 
-dd = map(addition, lst)
+nn = list(map(addition, lst))
 
-ee = list(dd)
-
-print(ee)
-
-print(dct)
+n_lst = [n for n in nn]

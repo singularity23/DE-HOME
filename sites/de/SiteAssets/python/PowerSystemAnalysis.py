@@ -154,8 +154,7 @@ class PowerSystemAnalysis:
         )
 
         try:
-            self.points = [
-                node for node in ListNodes() if node.ID.startswith(pretext)]
+            self.points = [node for node in ListNodes() if node.ID.startswith(pretext)]
         except:
             raise ValueError("No Network Loaded")
 
@@ -189,11 +188,13 @@ class PowerSystemAnalysis:
 
         self.network_id = QueryInfoNode("$NetworkId$", fault_point)
 
-        self.source_eq = Eqt.GetEquipment(self.network_id, self.eq_type_station) or Eqt.GetEquipment(
-            self.network_id, self.eq_type_station)
+        self.source_eq = Eqt.GetEquipment(
+            self.network_id, self.eq_type_station
+        ) or Eqt.GetEquipment(self.network_id, self.eq_type_station)
 
-        self.source_name = QueryInfoNode(
-            "$UpstreamSourceNodeID$", fault_point) or self.network_id
+        self.source_name = (
+            QueryInfoNode("$UpstreamSourceNodeID$", fault_point) or self.network_id
+        )
 
         self.len_unit = App.GetKeyword("Length").Unit
 
@@ -207,55 +208,55 @@ class PowerSystemAnalysis:
         )
         # Setup operating votlage for the study
 
-        self.nominal_voltage = locale.atof(
-            self.source_eq.GetValue("NominalKVLL"))
-        self.operating_voltage = locale.atof(
-            self.source_eq.GetValue("DesiredKVLL"))
+        self.nominal_voltage = locale.atof(self.source_eq.GetValue("NominalKVLL"))
+        self.operating_voltage = locale.atof(self.source_eq.GetValue("DesiredKVLL"))
 
-        set_list = [(
-            self.operating_voltage/3**0.5,
-            "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1",
-        ),
+        set_list = [
             (
-                self.operating_voltage/3**0.5,
+                self.operating_voltage / 3**0.5,
+                "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage1",
+            ),
+            (
+                self.operating_voltage / 3**0.5,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage2",
-        ),
+            ),
             (
-                self.operating_voltage/3**0.5,
+                self.operating_voltage / 3**0.5,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.OperatingVoltage3",
-        ),
+            ),
             (
                 "Ohms",
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.ImpedanceUnit",
-        ),
+            ),
             (
                 self.operating_voltage,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.KVLL",
-        ),
+            ),
             (
                 self.Source_R0,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.SecondLevelR0",
-        ),
+            ),
             (
                 self.Source_X0,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.SecondLevelX0",
-        ),
+            ),
             (
                 self.Source_R1,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.SecondLevelR1",
-        ),
+            ),
             (
                 self.Source_X1,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.SecondLevelX1",
-        ),
+            ),
             (
                 self.Source_R1,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.SecondLevelR2",
-        ),
+            ),
             (
                 self.Source_X1,
                 "Sources[0].EquivalentSourceModels[0].EquivalentSource.SecondLevelX2",
-        )]
+            ),
+        ]
 
         if GetDevice(self.network_id, self.dev_type_source):
             set_value_source(set_list, self.source_name)
@@ -275,12 +276,12 @@ class PowerSystemAnalysis:
             RX_Device = RX_List[0]
 
             RX_Device.SetValue(
-                "RX_{:n}_{:.3f}".format(
-                    self.RX_Amp, self.Source_RX), "DeviceID"
+                "RX_{:n}_{:.3f}".format(self.RX_Amp, self.Source_RX), "DeviceID"
             )
 
             RX_Eq = cympy.eq.GetEquipment(
-                RX_Device.EquipmentID, RX_Device.EquipmentType)
+                RX_Device.EquipmentID, RX_Device.EquipmentType
+            )
 
             if (
                 RX_Eq.GetValue("RatedCurrent") != self.RX_Amp
@@ -299,8 +300,9 @@ class PowerSystemAnalysis:
         #   Raises ValueError for unsupported fault resistance values.
 
         self.sc_sim = Sim.ShortCircuit()
-        config_count = locale.atoi(self.sc_sim.GetValue(
-            "ParametersConfigurations.Count"))
+        config_count = locale.atoi(
+            self.sc_sim.GetValue("ParametersConfigurations.Count")
+        )
         config = [
             i
             for i in range(config_count)
@@ -465,7 +467,7 @@ class PowerSystemAnalysis:
         self.table_row_format = " {:<56}{:>8.1f}{:>11.1f}{:>9.4f}{:>8.4f}{:>8.4f}{:>8.4f}{:>10.4f}{:>8.4f}{:>8.4f}{:>8.4f}"
 
         self.table_header = " {:<56}{:>8}{:>11}  |{:-^31}||{:-^31}|".format(
-            f'Circuits: {self.network_id}',
+            f"Circuits: {self.network_id}",
             "Length",
             "Distance",
             "Device Impedance(ohm)",
@@ -497,6 +499,7 @@ class PowerSystemAnalysis:
 
             # open the txt file for recording
             with open(ps.rep_loc, "w") as textfile:
+
                 def print_and_write(content):
                     print(content)
                     textfile.write(content + "\n")
@@ -548,8 +551,7 @@ class PowerSystemAnalysis:
                                 Device.DeviceType == 11
                             ):  # cympy.enums.DeviceType.OverheadLine
                                 if MainLine == "Yes" and PhaseCount == "3":
-                                    Device.SetValue(
-                                        "3P_336.4_ASC", "LineID")
+                                    Device.SetValue("3P_336.4_ASC", "LineID")
 
                             elif (
                                 Device.DeviceType == 10
@@ -557,8 +559,7 @@ class PowerSystemAnalysis:
                                 if MainLine == "Yes":
                                     if PhaseCount == "3":
                                         if (
-                                            not Device.EquipmentID.startswith(
-                                                "3P_G16")
+                                            not Device.EquipmentID.startswith("3P_G16")
                                             and not Device.EquipmentID.startswith(
                                                 "3P_G13"
                                             )
@@ -679,15 +680,19 @@ class PowerSystemAnalysis:
 
                     else:
                         raise ValueError(
-                            "Error: dowsntream node can not be closer to substation than upstream")
+                            "Error: dowsntream node can not be closer to substation than upstream"
+                        )
 
                     # this for loop is used to build the NetworkParam list entries for each type of Equipment of importance. It's also used to build the ps.equipment_list
                     for Device in DeviceList:
 
                         # Two-Winding Step up/down Transformer and Autotransformers
                         DeviceObj = Device.GetObjType()
-                        Length = locale.atof(QueryInfoDevice(
-                            "Length", Device.DeviceNumber, Device.DeviceType))
+                        Length = locale.atof(
+                            QueryInfoDevice(
+                                "Length", Device.DeviceNumber, Device.DeviceType
+                            )
+                        )
 
                         # cympy.enums.DeviceType.Transformer or cympy.enums.DeviceType.AutoTransformer
                         if Device.DeviceType in [1, 42]:
@@ -704,7 +709,8 @@ class PowerSystemAnalysis:
                                 PrimBase,
                                 SecBase,
                             ) = queryDevice(
-                                ps.xfmr_device, Device.DeviceNumber, Device.DeviceType)
+                                ps.xfmr_device, Device.DeviceNumber, Device.DeviceType
+                            )
 
                             per_unit = [
                                 "R1pu",
@@ -718,7 +724,6 @@ class PowerSystemAnalysis:
                                 X1pu,
                                 R0pu,
                                 X0pu,
-
                             ) = queryNode(per_unit, Node.ID)
 
                             (
@@ -726,13 +731,12 @@ class PowerSystemAnalysis:
                                 X1pu_down,
                                 R0pu_down,
                                 X0pu_down,
-
                             ) = queryNode(per_unit, FromNode.ID)
 
-                            R1c = (R1pu_down-R1pu)*(SecBase**2)/self.base_MVA
-                            X1c = (X1pu_down-X1pu)*(SecBase**2)/self.base_MVA
-                            R0c = (R0pu_down-R0pu)*(SecBase**2)/self.base_MVA
-                            X0c = (X0pu_down-X0pu)*(SecBase**2)/self.base_MVA
+                            R1c = (R1pu_down - R1pu) * (SecBase**2) / self.base_MVA
+                            X1c = (X1pu_down - X1pu) * (SecBase**2) / self.base_MVA
+                            R0c = (R0pu_down - R0pu) * (SecBase**2) / self.base_MVA
+                            X0c = (X0pu_down - X0pu) * (SecBase**2) / self.base_MVA
 
                             XfZ1ohms_Mag = (Z1PU * 10 * SecVolts**2) / XfmrKVA
                             XfZ0ohms_Mag = (Z0PU * 10 * SecVolts**2) / XfmrKVA
@@ -743,9 +747,14 @@ class PowerSystemAnalysis:
                             R0 = (XfZ0ohms_Mag**2 / (1 + X0R0**2)) ** (1 / 2)
                             X0 = X0R0 * R0
 
-                            if round(R1c**2 + R1**2, 4) != round(2*R1c*R1, 4) and round(R0c**2 + R0**2, 4) != round(2*R0c*R0, 4):
+                            if round(R1c**2 + R1**2, 4) != round(
+                                2 * R1c * R1, 4
+                            ) and round(R0c**2 + R0**2, 4) != round(
+                                2 * R0c * R0, 4
+                            ):
                                 raise ValueError(
-                                    "Error: the device impedance is not correct")
+                                    "Error: the device impedance is not correct"
+                                )
 
                             ps.equipment_list.append(
                                 [
@@ -782,7 +791,6 @@ class PowerSystemAnalysis:
                                 "X1pu",
                                 "R0pu",
                                 "X0pu",
-
                             ]
 
                             (
@@ -790,7 +798,6 @@ class PowerSystemAnalysis:
                                 X1pu,
                                 R0pu,
                                 X0pu,
-
                             ) = queryNode(per_unit, Node.ID)
 
                             (
@@ -798,13 +805,12 @@ class PowerSystemAnalysis:
                                 X1pu_down,
                                 R0pu_down,
                                 X0pu_down,
-
                             ) = queryNode(per_unit, FromNode.ID)
 
-                            R1c = (R1pu_down-R1pu)*(SecVolts**2)/self.base_MVA
-                            X1c = (X1pu_down-X1pu)*(SecVolts**2)/self.base_MVA
-                            R0c = (R0pu_down-R0pu)*(SecVolts**2)/self.base_MVA
-                            X0c = (X0pu_down-X0pu)*(SecVolts**2)/self.base_MVA
+                            R1c = (R1pu_down - R1pu) * (SecVolts**2) / self.base_MVA
+                            X1c = (X1pu_down - X1pu) * (SecVolts**2) / self.base_MVA
+                            R0c = (R0pu_down - R0pu) * (SecVolts**2) / self.base_MVA
+                            X0c = (X0pu_down - X0pu) * (SecVolts**2) / self.base_MVA
                             print(R1c, X1c, R0c, X0c)
 
                             XfZ1ohms_Mag = (Z1PU * 10 * SecVolts**2) / XfmrKVA
@@ -816,21 +822,23 @@ class PowerSystemAnalysis:
                             R0 = (XfZ0ohms_Mag**2 / (1 + X0R0**2)) ** (1 / 2)
                             X0 = X0R0 * R0
 
-                            if round(R1c**2 + R1**2, 4) != round(2*R1c*R1, 4) and round(R0c**2 + R0**2, 4) != round(2*R0c*R0, 4):
+                            if round(R1c**2 + R1**2, 4) != round(
+                                2 * R1c * R1, 4
+                            ) and round(R0c**2 + R0**2, 4) != round(
+                                2 * R0c * R0, 4
+                            ):
                                 raise ValueError(
-                                    "Error: the device impedance is not correct")
+                                    "Error: the device impedance is not correct"
+                                )
 
                             ps.equipment_list.append(
-                                [XfmrIDA, Device.DeviceType,
-                                    Device.DeviceNumber, "A"]
+                                [XfmrIDA, Device.DeviceType, Device.DeviceNumber, "A"]
                             )
                             ps.equipment_list.append(
-                                [XfmrIDB, Device.DeviceType,
-                                    Device.DeviceNumber, "B"]
+                                [XfmrIDB, Device.DeviceType, Device.DeviceNumber, "B"]
                             )
                             ps.equipment_list.append(
-                                [XfmrIDC, Device.DeviceType,
-                                    Device.DeviceNumber, "C"]
+                                [XfmrIDC, Device.DeviceType, Device.DeviceNumber, "C"]
                             )
                             EqID = "{} : {}".format(XfmrType, XfmrID)
 
@@ -848,8 +856,7 @@ class PowerSystemAnalysis:
                                     Device.DeviceNumber,
                                 ]
                             )
-                            EqID = "{}: {}".format(
-                                DeviceObj, Device.EquipmentID)
+                            EqID = "{}: {}".format(DeviceObj, Device.EquipmentID)
 
                         elif Device.DeviceType in [10, 11]:
                             if Device.DeviceType == 10:
@@ -862,8 +869,7 @@ class PowerSystemAnalysis:
                                     DeviceObj, Device.EquipmentID, Parallel_Run
                                 )
                             else:
-                                EqID = "{}: {}".format(
-                                    DeviceObj, Device.EquipmentID)
+                                EqID = "{}: {}".format(DeviceObj, Device.EquipmentID)
 
                             # calculate the impedance at the From node
                             # print(Ph_Num_UpStream)
@@ -971,8 +977,7 @@ class PowerSystemAnalysis:
                             print_and_write("\n{}".format(ps.table_separator))
                         else:
                             print_and_write(
-                                ("\n" +
-                                 ps.table_row_format).format(param[0], *param[1])
+                                ("\n" + ps.table_row_format).format(param[0], *param[1])
                             )
 
                 print_and_write("\n{}".format(ps.table_separator))
@@ -995,8 +1000,7 @@ class PowerSystemAnalysis:
                         LLL_imp, LL_imp, LLG_imp, LG_imp, Three_I0_imp
                     )
                 )
-                print_and_write(
-                    "\nFault Impedance (ohms) {:>6}{:>6}".format("R", "X"))
+                print_and_write("\nFault Impedance (ohms) {:>6}{:>6}".format("R", "X"))
                 print_and_write(
                     "\nZf-LLL: {:>21.2f}{:>6.2f}".format(
                         ps.LLL_Fault_Resistance, ps.LLL_Fault_Reactance
@@ -1008,8 +1012,7 @@ class PowerSystemAnalysis:
                     )
                 )
                 print_and_write(
-                    "\nPrefault Voltage at Fault Point: {} kVLL".format(
-                        PreFaultVolts)
+                    "\nPrefault Voltage at Fault Point: {} kVLL".format(PreFaultVolts)
                 )
                 print_and_write("\n{}".format(ps.table_separator))
 
@@ -1020,8 +1023,7 @@ class PowerSystemAnalysis:
                 )
 
                 if ps.upstream_prot_id:
-                    ps.prot_dev = GetDevice(
-                        ps.upstream_prot_id, ps.all_device_type)
+                    ps.prot_dev = GetDevice(ps.upstream_prot_id, ps.all_device_type)
                     ps.prot_instrument_list = ListInstruments(
                         ps.all_instrument_type, ps.upstream_prot_id
                     )
@@ -1032,8 +1034,7 @@ class PowerSystemAnalysis:
                 if ps.prot_dev:
                     ps.prot_eq_id = ps.prot_dev.EquipmentID
 
-                    ps.prot_normal_status = ps.prot_dev.GetValue(
-                        "NormalStatus")
+                    ps.prot_normal_status = ps.prot_dev.GetValue("NormalStatus")
                     ps.prot_tcc_desc = QueryInfoDevice(
                         "TccDesc", ps.upstream_prot_id, ps.prot_dev.DeviceType, -1
                     ).strip()
@@ -1041,10 +1042,8 @@ class PowerSystemAnalysis:
                 if ps.prot_instrument_list:
                     for inst in ps.prot_instrument_list:
                         if inst.InstrumentType != 1:
-                            ps.protection_vendor.append(
-                                inst.GetValue("Manufacturer"))
-                            ps.protection_type.append(
-                                inst.GetValue("ProtectionType"))
+                            ps.protection_vendor.append(inst.GetValue("Manufacturer"))
+                            ps.protection_type.append(inst.GetValue("ProtectionType"))
                             ps.relay_type.append(inst.GetValue("RelayType"))
                             ps.instrument_type.append(inst.GetObjType())
                             ps.instrument_number.append(inst.InstrumentNumber)
@@ -1064,37 +1063,33 @@ class PowerSystemAnalysis:
                     print_and_write("\n{}".format(ps.prot_tcc_desc))
 
                 print_and_write(
-                    "\n{:<25} {}".format(
-                        "Normal Status:", ps.prot_normal_status)
+                    "\n{:<25} {}".format("Normal Status:", ps.prot_normal_status)
                 )
 
                 if ps.protection_vendor:
                     print_and_write(
-                        "\n{:<25} {}".format(
-                            "Manufacturer:", ps.protection_vendor)
+                        "\n{:<25} {}".format("Manufacturer:", ps.protection_vendor)
                     )
 
                 if ps.instrument_number:
                     print_and_write(
-                        "\n{:<25} {}".format(
-                            "Instrument Number:", ps.instrument_number)
+                        "\n{:<25} {}".format("Instrument Number:", ps.instrument_number)
                     )
 
                 if ps.instrument_type:
                     print_and_write(
-                        "\n{:<25} {}".format(
-                            "Instrument Type:", ps.instrument_type)
+                        "\n{:<25} {}".format("Instrument Type:", ps.instrument_type)
                     )
 
                 if ps.protection_type:
                     print_and_write(
-                        "\n{:<25} {}".format(
-                            "Protection Type:", ps.protection_type)
+                        "\n{:<25} {}".format("Protection Type:", ps.protection_type)
                     )
 
                 if ps.relay_type:
-                    print_and_write("\n{:<25} {}\n".format(
-                        "Relay Type:", ps.relay_type))
+                    print_and_write(
+                        "\n{:<25} {}\n".format("Relay Type:", ps.relay_type)
+                    )
 
                 print_and_write("\n{}".format(ps.table_separator))
 
@@ -1119,24 +1114,18 @@ class PowerSystemAnalysis:
                         ) = queryDevice(ps.xfmr_equipment, Eq[2], Eq[1])
                         print_and_write("\n{}".format(XfmrType))
                         if Type == "Single-phase":
-                            print_and_write(
-                                "\n {} x {} kVA".format(Type, KVAnom))
+                            print_and_write("\n {} x {} kVA".format(Type, KVAnom))
                         else:
                             print_and_write("\nType: {}".format(Type))
                             print_and_write(
-                                "\nTotal Nominal Bank Rating: {} kVA".format(
-                                    KVATot)
+                                "\nTotal Nominal Bank Rating: {} kVA".format(KVATot)
                             )
                             print_and_write(
-                                "\n{} kVLL x {} kVLL".format(
-                                    PrimVolts, SecVolts)
+                                "\n{} kVLL x {} kVLL".format(PrimVolts, SecVolts)
                             )
-                            print_and_write(
-                                "\nWinding Configuration: {}".format(Conn))
-                            print_and_write(
-                                "\nZ1: {}%, Z0: {}%".format(Z1PU, Z0PU))
-                            print_and_write(
-                                "\nX1/R1: {}, X0/R0: {}".format(X1R1, X0R0))
+                            print_and_write("\nWinding Configuration: {}".format(Conn))
+                            print_and_write("\nZ1: {}%, Z0: {}%".format(Z1PU, Z0PU))
+                            print_and_write("\nX1/R1: {}, X0/R0: {}".format(X1R1, X0R0))
                     elif Eq[1] == 33:
                         ps.phase_number = Eq[3]
 
@@ -1153,11 +1142,9 @@ class PowerSystemAnalysis:
                             KVANom,
                         ) = queryDevice(ps.xfmr_equipment_by_phase, Eq[2], Eq[1])
                         print_and_write("\n{} : {} kVA".format(Type, KVANom))
-                        print_and_write(
-                            "\n{} kV x {} kV".format(PrimVolts, SecVolts))
+                        print_and_write("\n{} kV x {} kV".format(PrimVolts, SecVolts))
 
-                        print_and_write(
-                            "\nInsulation: {}".format(InsulationType))
+                        print_and_write("\nInsulation: {}".format(InsulationType))
                         print_and_write("\nZ: {}%".format(Z1PU))
                         print_and_write("\nX/R: {}".format(X1R1))
 
@@ -1189,20 +1176,17 @@ class PowerSystemAnalysis:
                             "\nZ0: {:>8.4f} + j{:<8.4f} ohms/km".format(R0, X0)
                         )
                         print_and_write(
-                            "\n" +
-                            textwrap.fill("Comments: {}".format(Comments), 70)
+                            "\n" + textwrap.fill("Comments: {}".format(Comments), 70)
                         )
                         if ImpedancesNote:
                             print_and_write(
-                                "\n" +
-                                textwrap.fill("{}".format(ImpedancesNote), 70)
+                                "\n" + textwrap.fill("{}".format(ImpedancesNote), 70)
                             )
 
                     elif Eq[1] == 11:  # cympy.enums.DeviceType.OverheadLine
                         print_and_write("\nOverhead Line")
                         R1, X1, R0, X0, PhCond, NeCond, Spacing, Comments = (
-                            get_value_eq(
-                                ps.line_info, Eq[0], ps.eq_type_ohline)
+                            get_value_eq(ps.line_info, Eq[0], ps.eq_type_ohline)
                         )
                         print_and_write(
                             "\nZ1: {:>8.4f} + j{:<8.4f} ohms/km".format(R1, X1)
@@ -1210,15 +1194,11 @@ class PowerSystemAnalysis:
                         print_and_write(
                             "\nZ0: {:>8.4f} + j{:<8.4f} ohms/km".format(R0, X0)
                         )
+                        print_and_write("\nPhase Conductor:   {}".format(PhCond))
+                        print_and_write("\nNetural Conductor: {}".format(NeCond))
+                        print_and_write("\nConductor Spacing: {}".format(Spacing))
                         print_and_write(
-                            "\nPhase Conductor:   {}".format(PhCond))
-                        print_and_write(
-                            "\nNetural Conductor: {}".format(NeCond))
-                        print_and_write(
-                            "\nConductor Spacing: {}".format(Spacing))
-                        print_and_write(
-                            "\n" +
-                            textwrap.fill("Comments: {}".format(Comments), 70)
+                            "\n" + textwrap.fill("Comments: {}".format(Comments), 70)
                         )
                     elif Eq[1] == "Source":
                         print_and_write("\nSource Equivalent")
