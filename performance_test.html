@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>createElement Performance Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+    }
+
+    .metric {
+      margin: 10px 0;
+      font-family: monospace;
+    }
+
+    .improvement {
+      color: green;
+      font-weight: bold;
+    }
+
+    .regression {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>createElement Performance Comparison</h1>
+  <p>Testing performance improvements between original and optimized implementations</p>
+
+  <button onclick="runPerformanceTest()">Run Performance Test</button>
+
+  <div id="results" class="results" style="display:none;">
+    <h3>Performance Results:</h3>
+    <div id="performance-metrics"></div>
+  </div>
+
+  <script>
+    // Original implementation (from the provided code)
+    function createElementOriginal(tag, options = {}) {
+      const element = document.createElement(tag);
+
+      const setters = {
+        style: (el, val) => (el.style.cssText = val),
+        textContent: (el, val) => (el.textContent = val),
+        className: (el, val) => (el.className = val),
+        onclick: (el, val) => (el.onclick = val),
+        innerHTML: (el, val) => (el.innerHTML = val),
+      };
+
+      for (const [key, value] of Object.entries(options)) {
+        const setter = setters[key];
+        if (setter) {
+          setter(element, value);
+        } else {
+          element.setAttribute(key, value);
+        }
+      }
+
+      return element;
+    }
+
+    // Optimized implementation
+    function createElementOptimized(tag, options = {}) {
+      // Input validation
+      if (typeof tag !== 'string' || !tag.trim()) {
+        throw new Error('Invalid tag name: must be a non-empty string');
+      }
+
+      if (options !== null && typeof options !== 'object') {
+        throw new Error('Invalid options: must be an object or null');
+      }
+
+      const element = document.createElement(tag);
+
+      // Early return for empty options
+      if (!options || Object.keys(options).length === 0) {
+        return element;
+      }
+
+      // Optimized property assignment using direct access
+      const domProperties = {
+        style: (el, val) => {
+          if (typeof val === 'string') el.style.cssText = val;
+          else if (val && typeof val === 'object') {
+            Object.assign(el.style, val);
+          }
+        },
+        textContent: (el, val) => el.textContent = String(val),
+        className: (el, val) => el.className = String(val),
+        onclick: (el, val) => {
+          if (typeof val === 'function') el.onclick = val;
+          else if (typeof val === 'string') el.onclick = new Function(val);
+        },
+        innerHTML: (el, val) => el.innerHTML = String(val),
+        id: (el, val) => el.id = String(val),
+        title: (el, val) => el.title = String(val),
+        disabled: (el, val) => el.disabled = Boolean(val),
+        checked: (el, val) => el.checked = Boolean(val),
+        value: (el, val) => el.value = String(val),
+        placeholder: (el, val) => el.placeholder = String(val),
+        type: (el, val) => el.type = String(val),
+        name: (el, val) => el.name = String(val),
+        href: (el, val) => el.href = String(val),
+        src: (el, val) => el.src = String(val),
+        alt: (el, val) => el.alt = String(val),
+        width: (el, val) => el.width = Number(val) || val,
+        height: (el, val) => el.height = Number(val) || val,
+      };
+
+      // Process options efficiently
+      for (const [key, value] of Object.entries(options)) {
+        if (key in domProperties) {
+          domProperties[key](element, value);
+        } else {
+          element.setAttribute(key, String(value));
+        }
+      }
+
+      return element;
+    }
+
+    function runPerformanceTest() {
+      const iterations = 10000;
+      const testOptions = {
+        className: 'test-class',
+        id: 'test-id',
+        textContent: 'Test content',
+        style: 'color: red; font-size: 14px;',
+        title: 'Test title',
+        'data-test': 'test-value'
+      };
+
+      // Test original implementation
+      console.time('Original Implementation');
+      const start1 = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        createElementOriginal('div', testOptions);
+      }
+      const end1 = performance.now();
+      console.timeEnd('Original Implementation');
+      const originalTime = end1 - start1;
+
+      // Test optimized implementation
+      console.time('Optimized Implementation');
+      const start2 = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        createElementOptimized('div', testOptions);
+      }
+      const end2 = performance.now();
+      console.timeEnd('Optimized Implementation');
+      const optimizedTime = end2 - start2;
+
+      // Calculate improvement
+      const improvement = ((originalTime - optimizedTime) / originalTime) * 100;
+      const speedup = originalTime / optimizedTime;
+
+      // Display results
+      const resultsDiv = document.getElementById('results');
+      const metricsDiv = document.getElementById('performance-metrics');
+
+      resultsDiv.style.display = 'block';
+      metricsDiv.innerHTML = `
+                <div class="metric">Iterations: ${iterations.toLocaleString()}</div>
+                <div class="metric">Original Implementation: ${originalTime.toFixed(2)}ms</div>
+                <div class="metric">Optimized Implementation: ${optimizedTime.toFixed(2)}ms</div>
+                <div class="metric">Improvement: ${improvement.toFixed(1)}%</div>
+                <div class="metric">Speedup: ${speedup.toFixed(2)}x</div>
+                <div class="metric">Time Saved: ${(originalTime - optimizedTime).toFixed(2)}ms</div>
+                <div class="metric">Elements Created per Second (Original): ${(iterations / (originalTime / 1000)).toFixed(0)}</div>
+                <div class="metric">Elements Created per Second (Optimized): ${(iterations / (optimizedTime / 1000)).toFixed(0)}</div>
+            `;
+
+      // Add visual indicators
+      if (improvement > 0) {
+        metricsDiv.innerHTML += `<div class="improvement">✓ Performance improved by ${improvement.toFixed(1)}%</div>`;
+      } else {
+        metricsDiv.innerHTML += `<div class="regression">⚠ Performance regression detected</div>`;
+      }
+    }
+  </script>
+</body>
+
+</html>

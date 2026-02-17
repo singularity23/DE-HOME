@@ -126,10 +126,9 @@ div#WebPartWPQ5 tbody,
 }
 
 div#MSOZoneCell_WebPartWPQ3 {
-  padding: 10px;
-  display: table;
-  margin: 0 !important;
+  padding: 8px;
   anchor-name: --loader-anchor;
+  margin: 0 !important;
 }
 
 
@@ -146,6 +145,7 @@ div#MSOZoneCell_WebPartWPQ6 {
   box-shadow: var(--shadow);
   border-radius: 8px;
   background-color: var(--card-bg);
+  backdrop-filter: blur(1px);
 }
 
 #MSOZoneCell_WebPartWPQ3>div.ms-webpart-chrome.ms-webpart-chrome-vertical.ms-webpart-chrome-fullWidth:hover {

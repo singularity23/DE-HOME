@@ -117,6 +117,7 @@ javascript: (function () {
       placeholder: '...ABC 12F123',
       noInServiceResults: 'No In Service Settings - Obtained ISSUED Settings instead.',
       noResults: 'No Settings Found',
+      errorOccurred: 'An error occurred while processing the query.',
     },
     relayTypes: {
       SEL: 'SEL',
@@ -134,29 +135,6 @@ javascript: (function () {
   let state = createState();
 
   /*
-   * Pre-compiled regex patterns for better performance
-   */
-  const Patterns = {
-    definiteTime: {
-      '50P[234]': /^50P[234]/,
-      '67P[234]': /^67P[234]/,
-    },
-    overCurrent: {
-      50: /^50/,
-      51: /^51/,
-    },
-    special: {
-      '50[PG]5': /^50[PG]5/,
-      SV: /^SV\d?\w+/,
-    },
-    phases: {
-      PHS: /P(\.|\s|\.?\s)?PS1$/,
-      GND: /N(\.|\s|\.?\s)?PS1$/,
-      NEG: /NEG(\.|\s|\.?\s)?PS1$/,
-    },
-  };
-
-  /*
    * Enhanced DOM Utilities with better error handling and performance
    */
   const DOM = {
@@ -169,17 +147,19 @@ javascript: (function () {
     createElement (tag, options = {}) {
       const element = document.createElement(tag);
 
+      // Optimized property setters using a map
+      const setters = {
+        style: (el, val) => (el.style.cssText = val),
+        textContent: (el, val) => (el.textContent = val),
+        className: (el, val) => (el.className = val),
+        onclick: (el, val) => (el.onclick = val),
+        innerHTML: (el, val) => (el.innerHTML = val),
+      };
+
       for (const [key, value] of Object.entries(options)) {
-        if (key === 'style' && typeof value === 'string') {
-          element.style.cssText = value;
-        } else if (key === 'textContent') {
-          element.textContent = value;
-        } else if (key === 'className') {
-          element.className = value;
-        } else if (key === 'onclick') {
-          element.onclick = value;
-        } else if (key === 'innerHTML') {
-          element.innerHTML = value;
+        const setter = setters[key];
+        if (setter) {
+          setter(element, value);
         } else {
           element.setAttribute(key, value);
         }
@@ -195,7 +175,7 @@ javascript: (function () {
      */
     getElement (id) {
       const element = document.getElementById(id);
-      if (!element && id != CONFIG.selectors.searchContainerId) {
+      if (!element && id !== CONFIG.selectors.searchContainerId) {
         console.warn(`Element with id '${id}' not found`);
       }
       return element;
@@ -243,31 +223,27 @@ javascript: (function () {
    * AREVA Setting Decoder with optimized pattern matching
    */
   const AREVA_SettingDecoder = {
-    phaseMap: {
-      PHS: 'P(\\.|\\s|\\.?\\s)?PS1$',
-      GND: 'N(\\.|\\s|\\.?\\s)?PS1$',
-      NEG: 'NEG(\\.|\\s|\\.?\\s)?PS1$',
-    },
-    phaseReplacements: {
-      PHS: 'PHS ',
-      GND: 'GND ',
-      NEG: 'NEG ',
-    },
-    definiteTimeMap: {
-      'DTOC/I>': 'PHS Definite Time Pick Up (A)',
-      'DTOC/IN>': 'GND Definite Time Pick Up (A)',
-      'DTOC/INEG>': 'NEG Definite Time Pick Up (A)',
-      'DTOC/TI>': 'PHS Definite Time Delay (s)',
-      'DTOC/TIN>': 'GND Definite Time Delay (s)',
-      'DTOC/TINEG>': 'NEG Definite Time Delay (s)',
-    },
+    phaseMap: [
+      { type: 'PHS', pattern: /P(\.|\s|\.?\s)?PS1$/ },
+      { type: 'GND', pattern: /N(\.|\s|\.?\s)?PS1$/ },
+      { type: 'NEG', pattern: /NEG(\.|\s|\.?\s)?PS1$/ },
+    ],
+
+    definiteTimeMap: [
+      { text: 'DTOC/I>', replacement: 'PHS Definite Time Pick Up (A)' },
+      { text: 'DTOC/IN>', replacement: 'GND Definite Time Pick Up (A)' },
+      { text: 'DTOC/INEG>', replacement: 'NEG Definite Time Pick Up (A)' },
+      { text: 'DTOC/TI>', replacement: 'PHS Definite Time Delay (s)' },
+      { text: 'DTOC/TIN>', replacement: 'GND Definite Time Delay (s)' },
+      { text: 'DTOC/TINEG>', replacement: 'NEG Definite Time Delay (s)' },
+    ],
     TimedMap: {
       IREF: 'Pick Up (A)',
       CHARACTER: 'Curve',
       FACTOR: 'Time Dial',
     },
     overCurrentMap: {
-      IDMT1: 'Timed Overcurrent ',
+      IDMT1: 'Timed Overcurrent',
     },
     CTP: 0,
 
@@ -289,23 +265,19 @@ javascript: (function () {
 
       try {
         // Check definite time patterns first (most specific)
-        for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
-          if (code.includes(pattern)) {
-            const value = Number(setting.split(' ')[0]) || 0;
-            return [
-              replacement.toUpperCase(),
-              setting.toUpperCase().includes('INOM') ? Math.round(value * this.CTP, 0) : value,
-            ];
+        for (const { text, replacement } of this.definiteTimeMap) {
+          if (code.includes(text)) {
+            return [replacement.toUpperCase(), this.getSettingNumber(setting).toString().replace(' s', '')];
           }
         }
 
         // Check phase patterns
-        for (const [phaseType, pattern] of Object.entries(this.phaseMap)) {
-          if (new RegExp(pattern).test(code)) {
+        for (const { type, pattern } of this.phaseMap) {
+          if (pattern.test(code)) {
             const suffix = this.getSuffixDescription(code, pattern);
             const overCurrent = code.includes('IDMT1') ? this.overCurrentMap.IDMT1 : '';
             const settingValue = this.getSettingNumber(setting);
-            let decodedCode = this.phaseReplacements[phaseType] + overCurrent + suffix;
+            let decodedCode = [type, overCurrent, suffix].join(' ');
 
             if (String(settingValue).endsWith(' s')) {
               decodedCode += ' (s)';
@@ -349,7 +321,7 @@ javascript: (function () {
       if (code.includes('FACTOR')) return this.TimedMap.FACTOR;
 
       const parts = code.split('/');
-      return parts[parts.length - 1]?.replace(new RegExp(pattern), '').trim() || '';
+      return parts[parts.length - 1]?.replace(pattern, '').trim() || '';
     },
   };
 
@@ -358,16 +330,16 @@ javascript: (function () {
    */
   const SEL_SettingDecoder = {
     curveMap: {
-      1: ' (Moderately Inverse)',
-      2: ' (Inverse)',
-      3: ' (Very Inverse)',
-      4: ' (Extremely Inverse)',
+      1: '(Moderately Inverse)',
+      2: '(Inverse)',
+      3: '(Very Inverse)',
+      4: '(Extremely Inverse)',
     },
     phaseMap: {
-      G: 'GND ',
-      P: 'PHS ',
-      Q: 'NEG ',
-      N: 'GND ',
+      G: 'GND',
+      P: 'PHS',
+      Q: 'NEG',
+      N: 'GND',
     },
     suffixMap: {
       P: 'Pick Up (A)',
@@ -377,52 +349,55 @@ javascript: (function () {
       L: 'Low Set (A)',
       H: 'High Set (A)',
     },
-    definiteTimeMap: {
-      '^50P[234]': 'Definite Time Pick Up (A)',
-      '^67P[234]': 'Definite Time Delay (s)',
-    },
-    overCurrentMap: {
-      '^50': 'Inst. Overcurrent ',
-      '^51': 'Timed Overcurrent ',
-    },
-    specialPatternMap: {
-      '^50[PG]5': '(Live Line)',
-      '^SV\\d?\\w+': '_Trip Equation',
+    definiteTimePatterns: [
+      { pattern: /^50P[234]/, replacement: 'Definite Time Pick Up (A)' },
+      { pattern: /^67P[234]/, replacement: 'Definite Time Delay (s)' },
+    ],
+    overCurrentPatterns: [
+      { pattern: /^50/, replacement: 'Inst. Overcurrent' },
+      { pattern: /^51/, replacement: 'Timed Overcurrent' },
+    ],
+    specialPatterns: {
+      liveLine: /^50[PG]5/,
+      tripEquation: /^SV\d?\w+/,
     },
 
     /*
      * Decodes setting code to human-readable description
      * @param {string} code - Setting code
-     * @returns {string} Decoded description
+     * @param {string} setting - Setting value
+     * @returns {Array<string>} [description, value]
      */
     decode (code, setting) {
-      if (!code || typeof code !== 'string') return ['', ''];
-
-      if (!setting || typeof setting !== 'string') return ['', ''];
+      if (!code || typeof code !== 'string' || !setting || typeof setting !== 'string') {
+        return ['', ''];
+      }
 
       try {
-        // Check definite time patterns
-        for (const [pattern, replacement] of Object.entries(this.definiteTimeMap)) {
-          if (new RegExp(pattern).test(code)) {
-            return [this.getBaseDescription(code) + replacement, setting];
+        // Check definite time patterns first
+        for (const { pattern, replacement } of this.definiteTimePatterns) {
+          if (pattern.test(code)) {
+            return [[this.getBaseDescription(code), replacement].join(' '), setting];
           }
         }
 
         // Check overcurrent patterns
-        for (const [pattern, replacement] of Object.entries(this.overCurrentMap)) {
-          if (new RegExp(pattern).test(code)) {
+        for (const { pattern, replacement } of this.overCurrentPatterns) {
+          if (pattern.test(code)) {
             const base = this.getBaseDescription(code);
             const suffix = this.getSuffixDescription(code);
+            let finalSetting = setting;
+
             if (suffix.includes('Curve') && setting in this.curveMap) {
-              setting += this.curveMap[setting];
+              finalSetting = [setting, this.curveMap[setting]].join(' ');
             }
-            const liveLine = Patterns.special['50[PG]5'].test(code) ? '(Live Line)' : '';
-            return [base + replacement + suffix + liveLine, setting];
+
+            const liveLine = this.specialPatterns.liveLine.test(code) ? '(Live Line)' : '';
+            return [[base, replacement, suffix, liveLine].join(' '), finalSetting];
           }
         }
-
-        // Check special patterns
-        if (Patterns.special.SV.test(code)) {
+        // Check special trip equation pattern
+        if (this.specialPatterns.tripEquation.test(code)) {
           return ['_Trip Equation', setting];
         }
       } catch (err) {
@@ -439,7 +414,7 @@ javascript: (function () {
      */
     getBaseDescription (code) {
       const thirdChar = code.charAt(2);
-      return this.phaseMap[thirdChar] || 'PHS ';
+      return this.phaseMap[thirdChar] ?? 'PHS';
     },
 
     /*
@@ -450,7 +425,7 @@ javascript: (function () {
     getSuffixDescription (code) {
       const last2 = code.slice(-2);
       const last1 = code.slice(-1);
-      return this.suffixMap[last2] || this.suffixMap[last1] || '';
+      return this.suffixMap[last2] ?? this.suffixMap[last1] ?? '';
     },
   };
 
@@ -554,7 +529,7 @@ javascript: (function () {
 
     /*
      * Merges consecutive identical cells in specified columns
-     * Optimized algorithm with better performance
+     * Optimized algorithm with reduced memory allocation
      * @param {Array<Array>} rows - Table rows
      * @returns {Array<Array>} Rows with merged cell information
      */
@@ -564,19 +539,12 @@ javascript: (function () {
       const mergeColumns = CONFIG.table.mergeColumns[state.relayType];
       if (!mergeColumns?.length) return rows;
 
+      const rowCount = rows.length;
       const colCount = rows[0].length;
-      const mergeMap = Array.from(
-        {
-          length: rows.length,
-        },
-        () =>
-          Array.from(
-            {
-              length: colCount,
-            },
-            () => ({ rowspan: 1, skip: false })
-          )
-      );
+
+      // Track merged rows more efficiently
+      const mergedRows = [];
+      const skipMap = new Set();
 
       // Process each mergeable column
       for (const col of mergeColumns) {
@@ -586,17 +554,17 @@ javascript: (function () {
         let startRow = 0;
         let count = 1;
 
-        for (let row = 1; row <= rows.length; row++) {
-          const isLastRow = row === rows.length;
+        for (let row = 1; row <= rowCount; row++) {
+          const isLastRow = row === rowCount;
           const isSameValue = !isLastRow && rows[row][col] === currentValue;
 
           if (isSameValue) {
             count++;
           } else {
+            // Mark rows to skip if merged
             if (count > 1) {
-              mergeMap[startRow][col].rowspan = count;
               for (let i = startRow + 1; i < startRow + count; i++) {
-                mergeMap[i][col].skip = true;
+                skipMap.add(`${i}-${col}`);
               }
             }
 
@@ -610,15 +578,32 @@ javascript: (function () {
       }
 
       // Build merged rows
-      const mergedRows = [];
-      for (let row = 0; row < rows.length; row++) {
+      for (let row = 0; row < rowCount; row++) {
         const newRow = [];
         for (let col = 0; col < colCount; col++) {
-          if (!mergeMap[row][col].skip) {
-            newRow.push({ value: rows[row][col], rowspan: mergeMap[row][col].rowspan, colspan: 1 });
+          const skipKey = `${row}-${col}`;
+
+          if (!skipMap.has(skipKey)) {
+            // Count rowspans for this cell
+            let rowspan = 1;
+            for (let mergeCol of mergeColumns) {
+              if (mergeCol === col) {
+                for (let r = row + 1; r < rowCount; r++) {
+                  if (rows[r][col] === rows[row][col]) {
+                    rowspan++;
+                  } else {
+                    break;
+                  }
+                }
+                break;
+              }
+            }
+            newRow.push({ value: rows[row][col], rowspan, colspan: 1 });
           }
         }
-        mergedRows.push(newRow);
+        if (newRow.length > 0) {
+          mergedRows.push(newRow);
+        }
       }
 
       return mergedRows;
@@ -712,7 +697,7 @@ javascript: (function () {
     async processResults () {
       try {
         if (!this.hasRequiredGlobals()) {
-          this.showCompletionAlert();
+          DOM.showWarning(CONFIG.messages.errorOccurred);
           return false;
         }
 
@@ -730,11 +715,12 @@ javascript: (function () {
 
         this.setupDownloadButton(feederId);
         TableRenderer.removeOriginal();
+        DOM.showWarning(CONFIG.messages.queryCompleted);
 
         return this.hasValidResults();
       } catch (err) {
         console.error('Results processing error:', err);
-        this.showCompletionAlert();
+        DOM.showWarning(CONFIG.messages.errorOccurred);
         return false;
       }
     },
@@ -761,8 +747,8 @@ javascript: (function () {
      * Updates state from global query result objects
      */
     updateStateFromGlobals () {
-      state.headerRow = Array.from(window.cvAvailableTableFields._ncc);
-      state.tableRows = Array.from(window._C1MVCCtrl5._ncc);
+      state.headerRow = Array.from(window.cvAvailableTableFields?._ncc ?? []);
+      state.tableRows = Array.from(window._C1MVCCtrl5?._ncc ?? []);
     },
 
     /*
@@ -776,29 +762,30 @@ javascript: (function () {
 
       const firstRow = state.tableRows[0];
       const relayTypeCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
-      const upperRelayType = String(relayTypeCell || '').toUpperCase();
+      const upperRelayType = String(relayTypeCell ?? '').toUpperCase();
 
-      if (upperRelayType.includes(CONFIG.relayTypes.SEL)) {
-        state.relayType = CONFIG.relayTypes.SEL;
-      } else if (upperRelayType.includes(CONFIG.relayTypes.ELECTRO)) {
-        state.relayType = CONFIG.relayTypes.ELECTRO;
-      } else if (upperRelayType.includes(CONFIG.relayTypes.AREVA)) {
-        state.relayType = CONFIG.relayTypes.AREVA;
-      } else {
-        state.relayType = CONFIG.relayTypes.UNKNOWN;
-      }
+      state.relayType =
+        [
+          { type: CONFIG.relayTypes.SEL, includes: CONFIG.relayTypes.SEL },
+          { type: CONFIG.relayTypes.ELECTRO, includes: CONFIG.relayTypes.ELECTRO },
+          { type: CONFIG.relayTypes.AREVA, includes: CONFIG.relayTypes.AREVA },
+        ].find(entry => upperRelayType.includes(entry.includes))?.type ?? CONFIG.relayTypes.UNKNOWN;
     },
 
     /*
-     * Adds description column for SEL relays
+     * Adds description column for SEL/AREVA relays and applies decoders
      */
     addDescriptionColumn () {
+      if (!state.tableRows?.length || !state.headerRow?.length) return;
+
+      // Add description column header for SEL
       if (state.relayType === CONFIG.relayTypes.SEL) {
         state.headerRow.push({ Key: '5', Table: '', Name: 'PN ELEMENT DESC', Alias: null });
         TableRenderer.swapColumns(state.headerRow, 4, 5);
       }
 
-      state.tableRows = state.tableRows.map(row => {
+      // Process rows with appropriate decoders
+      state.tableRows.forEach((row, idx) => {
         const rowArray = Array.isArray(row) ? [...row] : Object.values(row);
 
         if (state.relayType === CONFIG.relayTypes.SEL) {
@@ -812,10 +799,10 @@ javascript: (function () {
           rowArray[3] = decodedSetting;
         }
 
-        return rowArray;
+        state.tableRows[idx] = rowArray;
       });
 
-      // Sort by setting value
+      // Sort by setting value column
       const columnIndex =
         state.relayType === CONFIG.relayTypes.SEL
           ? CONFIG.table.SEL_sortColumnIndex
@@ -824,11 +811,7 @@ javascript: (function () {
           : null;
 
       if (columnIndex !== null) {
-        state.tableRows.sort((a, b) => {
-          const aValue = String(a[columnIndex] || '');
-          const bValue = String(b[columnIndex] || '');
-          return aValue.localeCompare(bValue);
-        });
+        state.tableRows.sort((a, b) => String(a[columnIndex] ?? '').localeCompare(String(b[columnIndex] ?? '')));
       }
     },
 
@@ -840,8 +823,8 @@ javascript: (function () {
       if (!state.tableRows?.length) return 'unknown';
 
       const firstRow = state.tableRows[0];
-      const firstCell = Array.isArray(firstRow) ? firstRow[0] : Object.values(firstRow)[0];
-      const parts = String(firstCell || '').split(' ');
+      const firstCell = (Array.isArray(firstRow) ? firstRow[0] : Object.values(firstRow)[0]) ?? '';
+      const parts = String(firstCell).split(' ');
 
       return parts.slice(0, 2).join(' ') || 'unknown';
     },
@@ -850,13 +833,13 @@ javascript: (function () {
      * Renders the processed table
      */
     renderTable () {
-      const headers = state.headerRow.map(header => header.Name);
+      const headers = state.headerRow?.map(header => header.Name) ?? [];
 
-      if (state.relayType === CONFIG.relayTypes.SEL || state.relayType === CONFIG.relayTypes.AREVA) {
+      if ([CONFIG.relayTypes.SEL, CONFIG.relayTypes.AREVA].includes(state.relayType)) {
         state.tableRows = TableRenderer.mergeConsecutiveCells(state.tableRows);
       }
 
-      const container = document.getElementById(CONFIG.selectors.containerId) || TableManager.createContainer();
+      const container = document.getElementById(CONFIG.selectors.containerId) ?? TableManager.createContainer();
       TableRenderer.render(container, headers, state.tableRows);
     },
 
@@ -877,9 +860,6 @@ javascript: (function () {
     /*
      * Shows completion alert
      */
-    showCompletionAlert () {
-      alert(CONFIG.messages.queryCompleted);
-    },
   };
 
   /*
@@ -996,7 +976,7 @@ javascript: (function () {
       if (!button || !input) return;
 
       button.addEventListener('click', () => this.handleSearch(input));
-      input.addEventListener('keypress', e => {
+      input.addEventListener('keydown', e => {
         if (e.key === 'Enter') this.handleSearch(input);
       });
       input.addEventListener('input', () => {
@@ -1046,13 +1026,17 @@ javascript: (function () {
      */
     async executeSearch (searchValue) {
       state.isProcessing = true;
-
       try {
+        const start = performance.now();
         this.executeQuery(searchValue);
         await this.waitForQueryResults();
 
         const validAfterFirst = await DataProcessor.processResults();
-        if (validAfterFirst) return;
+        if (validAfterFirst) {
+          const end = performance.now();
+          console.log(`Query executed and results processed in:【${(end - start) / 1000}】seconds`);
+          return;
+        }
 
         DOM.showWarning(CONFIG.messages.noInServiceResults);
         this.executeQuery(searchValue, CONFIG.sql.settingStatus.issued);
@@ -1062,6 +1046,8 @@ javascript: (function () {
         if (!secondAttemptSuccess) {
           DOM.showWarning(CONFIG.messages.noResults);
         }
+        const end = performance.now();
+        console.log(`Query executed and results processed in:【${(end - start) / 1000}】seconds`);
       } catch (err) {
         console.error('Search execution error:', err);
       } finally {
@@ -1090,9 +1076,11 @@ javascript: (function () {
   };
 
   /*
-   * Optimized SQL Utilities with better structure
+   * Optimized SQL Utilities with cached fragments
    */
   const SQL = {
+    // Cache compiled fragments
+    _cache: {},
     /*
      * Minifies SQL by removing comments and extra whitespace
      * @param {string} sql - SQL query
@@ -1107,22 +1095,28 @@ javascript: (function () {
         .replace(/\s+/g, ' ')
         .trim();
     }, */
-
     /*
      * Generates SQL query for given input code
      * @param {string} inputCode - Device code (e.g., 'ABC 12F123')
+     * @param {string} status - Query status (IN SERVICE or ISSUED)
      * @returns {string} Generated SQL query
      */
     generate (inputCode, status = CONFIG.sql.settingStatus.inService) {
       if (!inputCode) return '';
 
-      // Pre-compute SQL fragments for better performance
+      // Build cache key
+      const cacheKey = `${inputCode}-${status}`;
+      if (this._cache[cacheKey]) {
+        return this._cache[cacheKey];
+      }
+
+      // Pre-compute SQL fragments
       const settingsList = CONFIG.sql.settingNames.map(name => `'${name}'`).join(',');
       const excludedSettings = CONFIG.sql.excludedArevaSettings.map(name => `'${name}'`).join(',');
       const baseCondition = `R.S01 LIKE '${inputCode}%'`;
       const lobLength = CONFIG.sql.dbmsLobLength;
 
-      return `
+      const sql = `
         SELECT
           R.S01 AS DEVICE,
           Q.RELAYTYPE AS RELAY,
@@ -1219,6 +1213,10 @@ javascript: (function () {
           AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) != 'BLOCKED'
           AND T.SETTINGNAME NOT IN (${excludedSettings})
       `;
+
+      // Cache the result
+      this._cache[cacheKey] = sql;
+      return sql;
     },
   };
 
@@ -1227,7 +1225,6 @@ javascript: (function () {
    */
   window.AspenQuery = Object.freeze({
     addSearchBar: () => SearchComponent.init(),
-    minifySqlManual: SQL.minify,
     decodeSELSettingName: SEL_SettingDecoder.decode.bind(SEL_SettingDecoder),
     decodeAREVASettingName: AREVA_SettingDecoder.decode.bind(AREVA_SettingDecoder),
     processResults: DataProcessor.processResults.bind(DataProcessor),

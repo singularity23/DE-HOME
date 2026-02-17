@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>createElement Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .test-section {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .test-result {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f0f0f0;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+
+    button {
+      margin: 5px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>createElement Function Test</h1>
+
+  <div class="test-section">
+    <h3>Test 1: Basic Element Creation</h3>
+    <div id="test1-result" class="test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>Test 2: Element with Properties</h3>
+    <div id="test2-result" class="test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>Test 3: Element with Event Handler</h3>
+    <div id="test3-result" class="test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>Test 4: Element with Style Object</h3>
+    <div id="test4-result" class="test-result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>Test 5: Error Handling</h3>
+    <div id="test5-result" class="test-result"></div>
+  </div>
+
+  <script>
+    // Copy the improved createElement function
+    const DOM = {
+      createElement(tag, options = {}) {
+        // Input validation
+        if (typeof tag !== 'string' || !tag.trim()) {
+          throw new Error('Invalid tag name: must be a non-empty string');
+        }
+
+        if (options !== null && typeof options !== 'object') {
+          throw new Error('Invalid options: must be an object or null');
+        }
+
+        const element = document.createElement(tag);
+
+        // Early return for empty options
+        if (!options || Object.keys(options).length === 0) {
+          return element;
+        }
+
+        // Optimized property assignment using direct access
+        // DOM properties that should be set directly
+        const domProperties = {
+          style: (el, val) => {
+            if (typeof val === 'string') el.style.cssText = val;
+            else if (val && typeof val === 'object') {
+              Object.assign(el.style, val);
+            }
+          },
+          textContent: (el, val) => el.textContent = String(val),
+          className: (el, val) => el.className = String(val),
+          onclick: (el, val) => {
+            if (typeof val === 'function') el.onclick = val;
+            else if (typeof val === 'string') el.onclick = new Function(val);
+          },
+          innerHTML: (el, val) => el.innerHTML = String(val),
+          id: (el, val) => el.id = String(val),
+          title: (el, val) => el.title = String(val),
+          disabled: (el, val) => el.disabled = Boolean(val),
+          checked: (el, val) => el.checked = Boolean(val),
+          value: (el, val) => el.value = String(val),
+          placeholder: (el, val) => el.placeholder = String(val),
+          type: (el, val) => el.type = String(val),
+          name: (el, val) => el.name = String(val),
+          href: (el, val) => el.href = String(val),
+          src: (el, val) => el.src = String(val),
+          alt: (el, val) => el.alt = String(val),
+          width: (el, val) => el.width = Number(val) || val,
+          height: (el, val) => el.height = Number(val) || val,
+        };
+
+        // Process options efficiently
+        for (const [key, value] of Object.entries(options)) {
+          if (key in domProperties) {
+            domProperties[key](element, value);
+          } else {
+            // Handle custom attributes
+            element.setAttribute(key, String(value));
+          }
+        }
+
+        return element;
+      }
+    };
+
+    // Test functions
+    function runTests() {
+      test1();
+      test2();
+      test3();
+      test4();
+      test5();
+    }
+
+    function test1() {
+      const result = document.getElementById('test1-result');
+      try {
+        const div = DOM.createElement('div');
+        if (div.tagName === 'DIV' && div.className === '') {
+          result.innerHTML = '<span class="success">✓ Basic element creation works</span>';
+        } else {
+          result.innerHTML = '<span class="error">✗ Basic element creation failed</span>';
+        }
+      } catch (error) {
+        result.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+      }
+    }
+
+    function test2() {
+      const result = document.getElementById('test2-result');
+      try {
+        const input = DOM.createElement('input', {
+          type: 'text',
+          name: 'username',
+          className: 'form-control',
+          id: 'username-input',
+          placeholder: 'Enter username'
+        });
+
+        const checks = [
+          input.tagName === 'INPUT',
+          input.type === 'text',
+          input.name === 'username',
+          input.className === 'form-control',
+          input.id === 'username-input',
+          input.placeholder === 'Enter username'
+        ];
+
+        if (checks.every(check => check)) {
+          result.innerHTML = '<span class="success">✓ Element with properties works</span>';
+          result.innerHTML += `<br><small>Created: <${input.outerHTML}></small>`;
+        } else {
+          result.innerHTML = '<span class="error">✗ Element with properties failed</span>';
+        }
+      } catch (error) {
+        result.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+      }
+    }
+
+    function test3() {
+      const result = document.getElementById('test3-result');
+      try {
+        let clicked = false;
+        const button = DOM.createElement('button', {
+          className: 'btn',
+          onclick: () => { clicked = true; },
+          textContent: 'Click me'
+        });
+
+        // Test the click handler
+        button.click();
+
+        if (clicked && button.textContent === 'Click me') {
+          result.innerHTML = '<span class="success">✓ Element with event handler works</span>';
+        } else {
+          result.innerHTML = '<span class="error">✗ Element with event handler failed</span>';
+        }
+      } catch (error) {
+        result.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+      }
+    }
+
+    function test4() {
+      const result = document.getElementById('test4-result');
+      try {
+        const div = DOM.createElement('div', {
+          style: {
+            color: 'red',
+            fontSize: '16px',
+            backgroundColor: 'yellow'
+          },
+          className: 'styled-div',
+          textContent: 'Styled content'
+        });
+
+        const styleChecks = [
+          div.style.color === 'red',
+          div.style.fontSize === '16px',
+          div.style.backgroundColor === 'yellow',
+          div.className === 'styled-div',
+          div.textContent === 'Styled content'
+        ];
+
+        if (styleChecks.every(check => check)) {
+          result.innerHTML = '<span class="success">✓ Element with style object works</span>';
+        } else {
+          result.innerHTML = '<span class="error">✗ Element with style object failed</span>';
+        }
+      } catch (error) {
+        result.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+      }
+    }
+
+    function test5() {
+      const result = document.getElementById('test5-result');
+      let errorsCaught = 0;
+
+      // Test invalid tag
+      try {
+        DOM.createElement('');
+      } catch (error) {
+        errorsCaught++;
+      }
+
+      // Test invalid options
+      try {
+        DOM.createElement('div', 'invalid');
+      } catch (error) {
+        errorsCaught++;
+      }
+
+      if (errorsCaught === 2) {
+        result.innerHTML = '<span class="success">✓ Error handling works correctly</span>';
+      } else {
+        result.innerHTML = '<span class="error">✗ Error handling failed</span>';
+      }
+    }
+
+    // Run tests when page loads
+    window.onload = runTests;
+  </script>
+</body>
+
+</html>
