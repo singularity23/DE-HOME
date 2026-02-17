@@ -381,7 +381,7 @@ const refreshApp = () => {
   resize();
   setTimeout(() => {
     hideLoader();
-  }, 2000);
+  }, 1000);
 };
 // Add event listener for DOM content loaded
 

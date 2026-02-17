@@ -262,9 +262,15 @@
         "title": "Human Resources",
         "links": [
           {
-            "name": "Employee Onboarding",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/DE%20Employee%20Onoboarding/Forms/AllItems.aspx",
-            "info": "Guides and resources for new hires"
+            "name": "New Employee Onboarding",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Onboarding",
+            "info": "",
+            "sub_links": [
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28DE%20Onboarding%2FMain.one%7C56358748-A663-44AC-9C38-3BC73EE1A153%2F%29",
+                "name": "Onboarding on OneNote"
+              }
+            ]
           },
           {
             "name": "CLRA Solution Office",
@@ -405,9 +411,19 @@
             "info": "Strategic Portfolio Optimization Tool - planning scope, etc."
           },
           {
-            "name": "KAM Customer Account Lookup",
-            "url": "https://kdcbchpswebp1.bchydro.bc.ca/lookup/",
-            "info": "Look for key account manager information"
+            "name": "KAM Account",
+            "url": "",
+            "info": "Looking for who is the Key Account Manager for a customer?",
+            "sub_links": [
+              {
+                "name": "KAM Feeder Lookup",
+                "url": "https://kdcbchpswebp1.bchydro.bc.ca/KeyAccountDistribution/default.aspx"
+              },
+              {
+                "name": "Commercial Cusomter Account Lookup",
+                "url": "https://kdcbchpswebp1.bchydro.bc.ca/lookup/"
+              }
+            ]
           }
         ]
       }

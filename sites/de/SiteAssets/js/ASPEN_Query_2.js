@@ -115,7 +115,8 @@ javascript: (function () {
       invalidFormat: 'Please use the correct format (e.g., ABC 12F123)!',
       inputPattern: 'Please follow the pattern: ABC 12F123',
       placeholder: '...ABC 12F123',
-      noResults: 'No In Service Settings - Obtained ISSUED Settings instead.',
+      noInServiceResults: 'No In Service Settings - Obtained ISSUED Settings instead.',
+      noResults: 'No Settings Found',
     },
     relayTypes: {
       SEL: 'SEL',
@@ -194,7 +195,7 @@ javascript: (function () {
      */
     getElement (id) {
       const element = document.getElementById(id);
-      if (!element) {
+      if (!element && id != CONFIG.selectors.searchContainerId) {
         console.warn(`Element with id '${id}' not found`);
       }
       return element;
@@ -672,21 +673,18 @@ javascript: (function () {
       const tableHtml = this.createTable(headers, data).outerHTML;
       const currentDate = new Date();
       const fullHtml = `<!DOCTYPE html>
-<html>
-<head>
-    <title>${filename}</title>
-    <style>
-        body { font-family: monospace; font-size: 12px; }
-        table { border-collapse: collapse; max-width: 100%; border:1px solid rgba(221, 221, 221, 0.5); box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px;}
-        th, td { padding: 8px; border: 1px solid rgba(221, 221, 221, 0.5); text-align: left; }
-        th { background-color:rgba(151, 151, 151, 0.5); font-weight: bold; font-size: 14px; }
-    </style>
-</head>
-<body>
-    <h2>Protection Settings - ${filename} - ${currentDate.toLocaleDateString()}</h2>
-    ${tableHtml}
-</body>
-</html>`;
+      <html>
+      <head>
+          <title>${filename}</title>
+          <style>
+              body { font-family: monospace; font-size: 12px; }
+          </style>
+      </head>
+      <body>
+          <h2>Protection Settings - ${filename} - ${currentDate.toLocaleDateString()}</h2>
+          ${tableHtml}
+      </body>
+      </html>`;
 
       const blob = new Blob([fullHtml], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
@@ -707,9 +705,11 @@ javascript: (function () {
    */
   const DataProcessor = {
     /*
-     * Main processing function for query results
+     * Main processing function for query results.
+     * Validates through hasRequiredGlobals() and hasValidResults().
+     * @returns {Promise<boolean>} true if results were valid and rendered
      */
-    processResults () {
+    async processResults () {
       try {
         if (!this.hasRequiredGlobals()) {
           this.showCompletionAlert();
@@ -717,6 +717,10 @@ javascript: (function () {
         }
 
         this.updateStateFromGlobals();
+
+        if (!this.hasValidResults()) {
+          return false;
+        }
 
         this.detectRelayType();
         const feederId = this.extractFeederId();
@@ -1004,7 +1008,7 @@ javascript: (function () {
      * Handles search action
      * @param {HTMLInputElement} inputEl - Input element
      */
-    handleSearch (inputEl) {
+    async handleSearch (inputEl) {
       if (state.isProcessing) return;
 
       DOM.clearWarning();
@@ -1016,7 +1020,7 @@ javascript: (function () {
         return;
       }
 
-      this.executeSearch(rawValue);
+      await this.executeSearch(rawValue);
     },
 
     /*
@@ -1029,40 +1033,38 @@ javascript: (function () {
     },
 
     /*
-     * Executes search query
+     * Returns a promise that resolves after query delay
+     * @returns {Promise<void>}
+     */
+    waitForQueryResults () {
+      return new Promise(resolve => setTimeout(resolve, CONFIG.sql.queryDelay));
+    },
+
+    /*
+     * Executes search query with sequential async flow
      * @param {string} searchValue - Search value
      */
-    executeSearch (searchValue) {
+    async executeSearch (searchValue) {
       state.isProcessing = true;
 
       try {
         this.executeQuery(searchValue);
+        await this.waitForQueryResults();
 
-        // First attempt after query delay
-        setTimeout(() => {
-          DataProcessor.processResults();
-          const validAfterFirst = DataProcessor.hasValidResults();
+        const validAfterFirst = await DataProcessor.processResults();
+        if (validAfterFirst) return;
 
-          if (validAfterFirst) {
-            state.isProcessing = false;
-            return;
-          }
+        DOM.showWarning(CONFIG.messages.noInServiceResults);
+        this.executeQuery(searchValue, CONFIG.sql.settingStatus.issued);
+        await this.waitForQueryResults();
 
-          // No results – inform user and retry with 'issued' status
+        const secondAttemptSuccess = await DataProcessor.processResults();
+        if (!secondAttemptSuccess) {
           DOM.showWarning(CONFIG.messages.noResults);
-          this.executeQuery(searchValue, CONFIG.sql.settingStatus.issued);
-
-          // Second attempt after retry delay
-          setTimeout(() => {
-            const secondAttemptSuccess = DataProcessor.processResults();
-            if (!secondAttemptSuccess) {
-              DOM.showWarning(CONFIG.messages.noResults);
-            }
-            state.isProcessing = false;
-          }, CONFIG.sql.queryDelay);
-        }, CONFIG.sql.queryDelay);
+        }
       } catch (err) {
         console.error('Search execution error:', err);
+      } finally {
         state.isProcessing = false;
       }
     },
@@ -1096,7 +1098,7 @@ javascript: (function () {
      * @param {string} sql - SQL query
      * @returns {string} Minified SQL
      */
-    minify (sql) {
+    /*     minify (sql) {
       if (!sql?.trim()) return '';
 
       return sql
@@ -1104,7 +1106,7 @@ javascript: (function () {
         .replace(/\/\*[\s\S]*?\*\//g, '')
         .replace(/\s+/g, ' ')
         .trim();
-    },
+    }, */
 
     /*
      * Generates SQL query for given input code
@@ -1120,7 +1122,7 @@ javascript: (function () {
       const baseCondition = `R.S01 LIKE '${inputCode}%'`;
       const lobLength = CONFIG.sql.dbmsLobLength;
 
-      return SQL.minify(`
+      return `
         SELECT
           R.S01 AS DEVICE,
           Q.RELAYTYPE AS RELAY,
@@ -1216,7 +1218,7 @@ javascript: (function () {
           )
           AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLength})) != 'BLOCKED'
           AND T.SETTINGNAME NOT IN (${excludedSettings})
-      `);
+      `;
     },
   };
 

@@ -1,62 +1,10 @@
 /* ===== Theme Variables ===== */
 :root {
-  --box-font-color: #FFFFFF;
   --box-background-color: #f5f3f2;
   --box-border-color: #05a1c6;
-  --box-text-color: #05a1c6;
   --box-text-header: #3e3935;
   --box-text-body: #3e3935;
   --box-highlight-color: #fa4616;
-  --box-abbr-color: #004F6C;
-  --box-webpart-color: #48A739;
-  --shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.15), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
-
-}
-
-/* ===== Custom Fonts ===== */
-@font-face {
-  font-family: "brand-font-light";
-  src: url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot");
-  src: url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff") format("woff"),
-    url("../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.ttf") format("truetype");
-  font-weight: 300;
-}
-
-@font-face {
-  font-family: "brand-font-regular";
-  src: url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot");
-  src: url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff") format("woff"),
-    url("../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.ttf") format("truetype");
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: "brand-font-medium";
-  src: url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot");
-  src: url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff") format("woff"),
-    url("../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.ttf") format("truetype");
-  font-weight: 500;
-}
-
-@font-face {
-  font-family: "brand-font-black";
-  src: url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot");
-  src: url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff") format("woff"),
-    url("../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.ttf") format("truetype");
-  font-weight: 900;
-}
-
-@font-face {
-  font-family: "brand-font-bold";
-  src: url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot");
-  src: url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff") format("woff"),
-    url("../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.ttf") format("truetype");
-  font-weight: 700;
 }
 
 .material-symbols-outlined {
@@ -79,110 +27,15 @@ html {
   font-size: 13px;
   color: var(--box-text-header);
   box-sizing: border-box;
-  font-optical-sizing: auto;
-
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   word-spacing: 2.1px;
-}
-
-/* ===== Layout & Grids ===== */
-section {
-  display: grid;
-  /* Modern responsive grid: auto-fit adapts columns based on available width */
-  grid-template-columns: repeat(3, minmax(400px, 1fr));
-  gap: 10px;
-  width: 100%;
-  color: var(--box-text-body);
-}
-
-/* ===== Boxes and Content Areas ===== */
-.box {
-  font-family: Arial, "Helvetica Neue", Helvetica, Roboto, sans-serif;
-  background-color: var(--box-background-color);
-  border-top: 6px solid var(--box-border-color);
-  padding: 8px;
-  min-height: 600px;
-  font-size: 1rem;
-  min-width: 400px;
-}
-
-section .box-head {
-  font-family: "brand-font-bold", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 1.6rem;
-  color: var(--box-text-header);
-  padding: 10px 20px 25px 20px;
-  display: block;
-  letter-spacing: 0.0372em;
-  font-variant: small-caps;
-  text-align: right;
-  text-transform: uppercase;
-
-}
-
-/* ===== Typography and Lists ===== */
-
-div.box>ul {
-  padding-inline-start: 40px;
-  margin-block-start: 5px;
-  margin-block-end: 5px;
-}
-
-div.box ul>li {
-  font-family: Arial, "Helvetica Neue", Helvetica, Roboto, sans-serif;
-  list-style-type: none;
-  position: relative;
-  padding-left: 5px;
-  margin-bottom: 5px;
-  margin-top: 5px;
-  /* display: table-row; */
-  font-size: 1rem !important;
-  line-height: 100%;
-}
-
-div.box>ul>li:has(ul) {
-  font-family: "brand-font-medium", Arial;
-  letter-spacing: 0.0372em;
-  margin-bottom: 5px;
-  margin-top: 5px;
-  line-height: 140%;
-  font-size: 1.1rem;
-}
-
-div.box>ul>li::before {
-  content: '\2E30';
-  left: -13pt;
-  position: absolute;
-  top: 0pt;
-  bottom: 0pt;
-  font-size: 2.5rem;
-  color: var(--box-text-color);
-  unicode-bidi: isolate;
-  /* margin: auto; */
-  /* box-sizing: border-box; */
-  line-height: 0.5;
-}
-
-div.box>ul ul {
-  padding-inline-start: 16px;
-  margin-block-start: 5px;
-  margin-block-end: 5px;
-}
-
-div.box>ul>li>ul>li::before {
-  content: '\2022';
-  left: -13pt;
-  position: absolute;
-  top: 0pt;
-  bottom: 0pt;
-  font-size: 2.2rem;
-  line-height: 0.6;
-  color: var(--box-text-color);
-
 }
 
 /* ===== Links ===== */
@@ -219,6 +72,7 @@ a:focus-visible {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: var(--shadow);
 }
 
 h1.box_text {
@@ -244,6 +98,8 @@ div#s4-workspace {
   background-size: 75%;
   background-repeat: no-repeat;
   position: static;
+  anchor-name: --loader-container;
+
 }
 
 .ms-core-listMenu-item,
@@ -270,9 +126,10 @@ div#WebPartWPQ5 tbody,
 }
 
 div#MSOZoneCell_WebPartWPQ3 {
-  padding: 8px;
+  padding: 10px;
   display: table;
   margin: 0 !important;
+  anchor-name: --loader-anchor;
 }
 
 
@@ -283,10 +140,16 @@ div#MSOZoneCell_WebPartWPQ6 {
 }
 
 #MSOZoneCell_WebPartWPQ3>div.ms-webpart-chrome.ms-webpart-chrome-vertical.ms-webpart-chrome-fullWidth {
-  border: 2px solid var(--secondary-color);
-  padding: 8px;
+  border: 1px solid var(--secondary-color);
+  padding: 10px;
   display: table;
   box-shadow: var(--shadow);
+  border-radius: 8px;
+  background-color: var(--card-bg);
+}
+
+#MSOZoneCell_WebPartWPQ3>div.ms-webpart-chrome.ms-webpart-chrome-vertical.ms-webpart-chrome-fullWidth:hover {
+  box-shadow: var(--hover-shadow);
 }
 
 #MSOZoneCell_WebPartWPQ3 h2.ms-webpart-titleText>a {
@@ -300,6 +163,18 @@ div#MSOZoneCell_WebPartWPQ6 {
   padding: 15px 10px;
   border-bottom: 2px groove var(--secondary-color);
 
+}
+
+#MSOZoneCell_WebPartWPQ3 .ms-alternating.ms-newsletteralt {
+  background-color: var(--card-bg);
+}
+
+#WebPartWPQ3 {
+  padding: 10px;
+  border: 1px solid var(--secondary-color);
+  background-color: var(--light-bg);
+  border-radius: 7px;
+  backdrop-filter: blur(2px);
 }
 
 h2.ms-webpart-titleText {
@@ -341,10 +216,11 @@ div#MSOZoneCell_WebPartWPQ7 {
   display: block;
   white-space: pre-wrap;
   line-height: 1.6em;
+  /* min-width: fit-content; */
 }
 
 /* Sticky webparts */
-.ms-webpart-zone.ms-fullWidth,
+.cell-margin.tableCol-25 .ms-webpart-zone.ms-fullWidth,
 div.right-section {
   position: sticky;
   top: 0;
@@ -362,6 +238,12 @@ div.sidebar {
   border: 6px solid var(--box-highlight-color);
   box-sizing: content-box;
   background-color: var(--box-font-color);
+  box-shadow: var(--shadow);
+}
+
+div.sidebar:hover {
+  box-shadow: var(--hover-shadow);
+
 }
 
 div.feedback-head {
@@ -430,25 +312,6 @@ img[alt="logo"] {
   margin-left: 8px;
 }
 
-sup {
-  font-size: smaller;
-  vertical-align: baseline;
-  top: -4px;
-  position: relative;
-}
-
-update, new {
-  font-size: xx-small;
-  vertical-align: baseline;
-  top: -6px;
-  left: 3px;
-  position: relative;
-  color: var(--box-highlight-color);
-  font-variant-caps: all-petite-caps;
-  font-weight: 600;
-  font-family: "brand-font-light", Arial, sans-serif;
-}
-
 tr.ms-viewheadertr.ms-vhltr {
   font-family: "brand-font-medium", Arial, sans-serif;
   letter-spacing: 0.0372em;
@@ -488,9 +351,6 @@ div.dummy-bottom {
 
 /* Medium screens: 1024px to 1440px */
 @media only screen and (min-width: 1024px) and (max-width: 1440px) {
-  section {
-    grid-template-columns: repeat(2, 1fr);
-  }
 
   .ms-fullWidth {
     width: 100%;
@@ -522,9 +382,6 @@ div.dummy-bottom {
 
 /* Small screens: up to 1024px */
 @media only screen and (max-width: 1024px) {
-  section {
-    grid-template-columns: 100%;
-  }
 
   .ms-fullWidth {
     max-width: 100%;
@@ -538,7 +395,8 @@ div.dummy-bottom {
   }
 
   #DeltaPlaceHolderPageTitleInTitleArea,
-  #sideNavBox, div.feedback {
+  #sideNavBox,
+  div.feedback {
     display: none !important;
   }
 }

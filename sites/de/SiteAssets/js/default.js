@@ -6,38 +6,34 @@ const PREFIX = '/sites/de/';
 const SUFFIX = '?download=1';
 
 // Helper Functions
-function qS (selector, scope = document) {
-  return scope.querySelector(selector);
-}
+const qS = (selector, scope = document) => scope.querySelector(selector);
 
-function qSA (selector, scope = document) {
-  return scope.querySelectorAll(selector);
-}
+const qSA = (selector, scope = document) => scope.querySelectorAll(selector);
 
-function setAttributes (el, attrs) {
+const setAttributes = (el, attrs) => {
   Object.keys(attrs).forEach(key => el.setAttribute(key, attrs[key]));
-}
+};
 
-//set announcement
-function setAnnouncement () {
+// Set announcement
+const setAnnouncement = () => {
   const fullmode = qS('body.ms-backgroundImage.ms-fullscreenmode');
   const focused = qS('body.ms-backgroundImage');
   if (!fullmode && focused) {
     focused.classList.add('ms-fullscreenmode');
   }
-}
+};
 
-// Debounce (clearly documented)
-function debounce (func, wait = 100) {
+// Debounce function
+const debounce = (func, wait = 100) => {
   let timeout;
   return (...args) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
-}
+};
 
 // Core Functions
-function changeLayout () {
+const changeLayout = () => {
   qSA('td[valign="top"][width="70%"]').forEach(td => (td.style.width = '85%'));
   qSA('td[valign="top"][width="30%"]').forEach(td => (td.style.width = '15%'));
 
@@ -46,13 +42,13 @@ function changeLayout () {
 
   const icon = qS('#favicon');
   if (icon) icon.href = ICON_URL;
-}
+};
 
-function removeZerowidth () {
+const removeZerowidth = () => {
   qSA('.ms-rtestate-field br').forEach(br => br.remove());
-}
+};
 
-function showPopup (msg) {
+const showPopup = msg => {
   const popup = qS('.popup');
   if (!popup) return;
 
@@ -61,9 +57,9 @@ function showPopup (msg) {
 
   popup.classList.add('show');
   setTimeout(() => popup.classList.remove('show'), 4000);
-}
+};
 
-function changeLogoTitle () {
+const changeLogoTitle = () => {
   const logo = qS('#ctl00_onetidHeadbnnr2');
   if (logo) logo.src = LOGO_URL;
 
@@ -72,9 +68,9 @@ function changeLogoTitle () {
 
   const content = qS('#ctl00_PlaceHolderMain_ctl01__ControlWrapper_RichHtmlField');
   if (content?.firstChild) content.firstChild.remove();
-}
+};
 
-function tagUpdate () {
+const tagUpdate = () => {
   const futureDate = new Date();
   futureDate.setMonth(futureDate.getMonth() + 3);
   const updateDateString = futureDate.toLocaleDateString();
@@ -82,8 +78,6 @@ function tagUpdate () {
   qSA('new, update').forEach(tag => {
     const tagDate = tag.getAttribute('date');
     const currentDate = new Date();
-    // console.log(tagDate);
-    // console.log(currentDate);
 
     if (!tagDate) {
       setAttributes(tag, { date: updateDateString });
@@ -93,22 +87,25 @@ function tagUpdate () {
     } else {
       tag.textContent = tag.tagName.toLowerCase();
     }
-    // console.log(tag);
   });
-}
+};
 
-function handleLinks () {
+const handleLinks = () => {
   document.body.addEventListener('click', event => {
     const linkEl = event.target.closest('links dd .sub_link a') || event.target.closest('.links dd a');
 
     if (!linkEl) return;
 
     event.preventDefault();
-    gtag('event', 'link_click', {
-      link_name: linkEl.innerText.trim(),
-      link_url: linkEl.href,
-    });
-    //console.log('Gtag logged link click:', linkEl.innerText.trim(), linkEl.href);
+
+    // Check if gtag is available before calling it
+    if (typeof gtag === 'function') {
+      gtag('event', 'link_click', {
+        link_name: linkEl.innerText.trim(),
+        link_url: linkEl.href,
+      });
+    }
+
     const linkUrl = linkEl.href;
 
     if (isValidUrl(linkUrl) && linkUrl) {
@@ -146,28 +143,28 @@ function handleLinks () {
       console.error(`Invalid URL: ${linkUrl}`);
     }
   });
-}
+};
 
 // Helper function to check if a link is healthy
-function checkLinkHealth (url) {
-  return fetch(url, { method: 'GET' })
-    .then(response => {
-      //console.log(response); // Log the response for debugging
-      return response.ok; // Returns true if status is 200-299
-    })
-    .catch(() => false);
-} // Returns false if the request fails
+const checkLinkHealth = async url => {
+  try {
+    const response = await fetch(url, { method: 'GET' });
+    return response.ok; // Returns true if status is 200-299
+  } catch {
+    return false;
+  }
+};
 
-function isValidUrl (url) {
+const isValidUrl = url => {
   try {
     new URL(url);
     return true;
   } catch {
     return false;
   }
-}
+};
 
-function scrollHandler () {
+const scrollHandler = () => {
   const hand = qS('#s4-workspace');
   if (!hand) return;
 
@@ -180,23 +177,23 @@ function scrollHandler () {
       refresh();
     }
   });
-}
+};
 
-function getCurrentYear () {
+const getCurrentYear = () => {
   const yearElement = qS('#year');
   if (yearElement) {
     yearElement.firstChild.textContent = new Date().getFullYear();
   }
-}
+};
 
-function removeBreadcrumb () {
+const removeBreadcrumb = () => {
   ['.ms-breadcrumb-top', 'td.ms-bottompagingline1'].forEach(selector => {
     const el = qS(selector);
     el && el.remove();
   });
-}
+};
 
-function resizeWindow () {
+const resizeWindow = () => {
   window.addEventListener(
     'resize',
     debounce(() => {
@@ -210,24 +207,31 @@ function resizeWindow () {
       }
     })
   );
-}
+};
 
-function firstListener () {
-  qS('#Ribbon\\.EditingTools\\.CPEditTab\\.Markup\\.Html\\.Menu\\.Html\\.EditSource-Large')?.addEventListener(
-    'click',
-    secondListener
-  );
-}
+const firstListener = () => {
+  const ribbonElement = qS('#Ribbon\\.EditingTools\\.CPEditTab\\.Markup\\.Html\\.Menu\\.Html\\.EditSource-Large');
+  if (ribbonElement) {
+    ribbonElement.addEventListener('click', secondListener);
+  }
+};
 
-function secondListener () {
+const secondListener = () => {
   const editor = qS('#PropertyEditor');
-  if (editor) editor.value = editor.value.replace(/(?<=\n\s)\s+/gm, '');
-}
+  if (editor) {
+    editor.value = editor.value.replace(/(?<=\n\s)\s+/gm, '');
+  }
+};
 
-qS('#MSOZoneCell_WebPartWPQ6')?.addEventListener('click', () => setTimeout(firstListener, 500));
+const setupWebPartListener = () => {
+  const webPartElement = qS('#MSOZoneCell_WebPartWPQ6');
+  if (webPartElement) {
+    webPartElement.addEventListener('click', () => setTimeout(firstListener, 500));
+  }
+};
 
 // Initialization
-function refresh () {
+const refresh = () => {
   setAnnouncement();
   changeLogoTitle();
   removeZerowidth();
@@ -238,6 +242,7 @@ function refresh () {
   getCurrentYear();
   removeBreadcrumb();
   resizeWindow();
-}
+  setupWebPartListener();
+};
 
 document.addEventListener('DOMContentLoaded', refresh);
