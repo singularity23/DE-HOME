@@ -68,7 +68,7 @@
   top: 0;
   left: 0;
   width: min(100%, 1600px);
-  height: 100%;
+  height: auto;
   background-color: transparent;
   /* display: flex; */
   justify-content: center;
@@ -86,7 +86,7 @@
   position: absolute;
   top: 50%;
   left: anchor(center);
-  /* display: flex; */
+  display: flex;
   gap: 2em;
   transform: translate(-50%, -50%);
   z-index: 9999;
@@ -138,7 +138,11 @@
 }
 
 .hidden {
-  display: none;
+  content-visibility: hidden;
+}
+
+.shown {
+  content-visibility: visible;
 }
 
 html {
@@ -220,10 +224,13 @@ h1 {
   box-shadow: var(--shadow);
   border: 1px solid var(--secondary-color);
   backdrop-filter: blur(1px);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+
 }
 
-.links.panel:hover {
-  box-shadow: var(--hover-shadow);
+.links.panel:nth-of-type(n+3) {
+  content-visibility: auto;
 }
 
 .panel-heading {
@@ -265,8 +272,6 @@ h1 {
   cursor: default;
   font-family: 'brand-font-medium';
   text-decoration: none !important;
-  text-wrap-style: pretty;
-  text-wrap-mode: wrap;
   white-space: normal;
   line-height: 1.38em;
   letter-spacing: 0.075em;
@@ -318,13 +323,11 @@ h1 {
   overflow: hidden;
   display: block;
   line-height: 1.08em;
-  text-wrap: pretty;
-  text-wrap-mode: wrap;
   white-space: break-spaces;
   font-size: 1.1rem;
   font-weight: 500;
   letter-spacing: 0.015em;
-  font-family: 'GT-Haptik-Regular', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'brand-font-regular', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .link-info {
@@ -332,7 +335,6 @@ h1 {
   font-size: 0.95rem;
   color: var(--box-text-sub);
   line-height: 1.15em;
-  text-wrap: pretty;
   white-space: normal;
   letter-spacing: 0.015em;
   padding-bottom: 0.45em;

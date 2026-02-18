@@ -354,10 +354,12 @@ const showLoader = () => {
   const container = document.getElementById('DEcontainer');
 
   if (loader) {
-    loader.style.display = 'flex';
+    loader.classList.add('shown');
+    loader.classList.remove('hidden');
   }
   if (container) {
     container.classList.add('hidden');
+    container.classList.remove('shown');
   }
 };
 
@@ -367,11 +369,12 @@ const hideLoader = () => {
   const container = document.getElementById('DEcontainer');
 
   if (loader) {
-    loader.style.display = 'none';
     loader.classList.add('hidden');
+    loader.classList.remove('shown');
   }
   if (container) {
     container.classList.remove('hidden');
+    container.classList.add('shown');
   }
 };
 
@@ -381,7 +384,7 @@ const refreshApp = () => {
   resize();
   setTimeout(() => {
     hideLoader();
-  }, 1000);
+  }, 1500);
 };
 // Add event listener for DOM content loaded
 
