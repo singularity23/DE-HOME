@@ -9,7 +9,41 @@ const CONFIG = {
   },
 };
 
-let categories = [];
+// State management using modern ES6+ features
+const state = {
+  categories: [],
+  searchCache: new Map(),
+  isInitialized: false,
+};
+
+/*
+ * Creates a DOM element with attributes using modern ES6+ patterns
+ * @param {string} tag - HTML tag name
+ * @param {Object} attrs - Attributes to set
+ * @returns {HTMLElement} The created element
+ */
+const createElement = (tag, attrs = {}) => {
+  const element = document.createElement(tag);
+
+  // Use modern object destructuring and optional chaining
+  Object.entries(attrs).forEach(([key, value]) => {
+    switch (key) {
+      case 'className':
+        element.className = value;
+        break;
+      case 'textContent':
+        element.textContent = value;
+        break;
+      case 'innerHTML':
+        element.innerHTML = value;
+        break;
+      default:
+        element.setAttribute(key, value);
+    }
+  });
+
+  return element;
+};
 
 /*
  * Fetches and processes files from the server
@@ -61,33 +95,11 @@ const readFile = async txtFile => {
       throw new Error(`HTTP error! status: ${fileResponse.status}`);
     }
 
-    const content = await fileResponse.text();
-    categories = JSON.parse(content); // Using JSON.parse instead of eval for security
-    renderCategories(categories);
-    return categories;
+    return await fileResponse.text();
   } catch (error) {
     console.error('Error reading file:', error);
     return [];
   }
-};
-/*
- * Creates a DOM element with attributes
- * @param {string} tag - HTML tag name
- * @param {Object} attrs - Attributes to set
- * @returns {HTMLElement} The created element
- */
-const createElement = (tag, attrs = {}) => {
-  const element = document.createElement(tag);
-  Object.entries(attrs).forEach(([key, value]) => {
-    if (key === 'className') {
-      element.className = value;
-    } else if (key === 'textContent') {
-      element.textContent = value;
-    } else {
-      element.setAttribute(key, value);
-    }
-  });
-  return element;
 };
 
 /*
@@ -102,10 +114,33 @@ const renderCategories = categoriesToRender => {
       throw new Error('Invalid container or categories data');
     }
 
+    // Early return if no categories to render
+    if (categoriesToRender.length === 0) {
+      container.innerHTML = `<div class="links panel">
+      <div class="panel-heading"> </div>
+      <div class="panel-body">
+      <dl class="grid-container">
+      <dt class="special" style="grid-area: span 1 / span 4;">
+      <a class="nogo">
+        <span class="link-title">Search found nothing! </span><span class="link-info"> </span>
+      </a>
+      </dt>
+      <dd class="item">
+      <a href=" " target="_blank" class="" data-category-index="0" data-subheader-index="0" data-link-index="1">
+        <span class="link-title"> </span><span class="link-info"> </span>
+      </a>
+      </dd>
+      </dl>
+      </div>
+      </div>`;
+      return;
+    }
+
     // Use DocumentFragment for better performance
     const fragment = document.createDocumentFragment();
 
-    categoriesToRender.forEach((category, categoryIndex) => {
+    // Pre-calculate all elements to minimize DOM operations
+    const panels = categoriesToRender.map((category, categoryIndex) => {
       const panel = createElement('div', { className: 'links panel' });
       panel.appendChild(
         createElement('div', {
@@ -116,27 +151,37 @@ const renderCategories = categoriesToRender => {
 
       const body = createElement('div', { className: 'panel-body' });
 
-      category.subheaders.forEach((subheader, subheaderIndex) => {
+      const subheaders = category.subheaders.map((subheader, subheaderIndex) => {
         const dl = createElement('dl', { className: 'grid-container' });
         let dt;
         if (subheader.title) {
           dt = createSubheaderTitle(subheader, categoryIndex, subheaderIndex);
           dl.appendChild(dt);
         }
-        subheader.links.forEach((link, linkIndex) => {
-          dl.appendChild(createLinkElement(link, categoryIndex, subheaderIndex, linkIndex));
-        });
+
+        const links = subheader.links.map((link, linkIndex) =>
+          createLinkElement(link, categoryIndex, subheaderIndex, linkIndex)
+        );
+
+        links.forEach(linkEl => dl.appendChild(linkEl));
 
         body.appendChild(dl);
         if (dt) {
           adjustGridLayout(dl, dt, columns);
         }
+
+        return dl;
       });
 
+      subheaders.forEach(subheaderEl => body.appendChild(subheaderEl));
       panel.appendChild(body);
-      fragment.appendChild(panel);
+      return panel;
     });
 
+    // Append all panels at once
+    panels.forEach(panel => fragment.appendChild(panel));
+
+    // Single DOM update
     container.innerHTML = '';
     container.appendChild(fragment);
   } catch (error) {
@@ -146,14 +191,32 @@ const renderCategories = categoriesToRender => {
 
 // Debounce function for resize events
 const debounceFunc = (func, wait) => {
-  let timeout;
-  return function executedFunction (...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+  // Use closure to maintain state without function properties
+  let timeoutId = null;
+  let lastCallTime = 0;
+
+  return (...args) => {
+    const currentTime = Date.now();
+    const timeSinceLastCall = currentTime - lastCallTime;
+
+    // Clear existing timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    if (timeSinceLastCall >= wait) {
+      // Execute immediately if enough time has passed
+      lastCallTime = currentTime;
+      func.apply(this, args);
+    } else {
+      // Set timeout for later execution
+      lastCallTime = currentTime;
+      timeoutId = setTimeout(() => {
+        timeoutId = null;
+        lastCallTime = Date.now();
+        func.apply(this, args);
+      }, wait - timeSinceLastCall);
+    }
   };
 };
 
@@ -188,17 +251,201 @@ const getColumns = () => {
 };
 
 // Initialize the application
-const initializeApp = () => {
-  try {
-    const endpoint = `${CONFIG.apiEndpoint}/GetFolderByServerRelativeUrl('${CONFIG.folderUrl}')/Files`;
-    getFile(endpoint);
-    initializeSearch();
-    // Event listeners
+// Application module using modern ES6+ patterns with TypeScript-style annotations
+const App = {
+  /*
+   * Initialize the application with modern async/await patterns
+   * @returns {Promise<void>}
+   */
+  async init () {
+    try {
+      // Load categories from external file
+      const endpoint = `${CONFIG.apiEndpoint}/GetFolderByServerRelativeUrl('${CONFIG.folderUrl}')/Files`;
+      const categoriesData = await getFile(endpoint);
+
+      if (categoriesData) {
+        state.categories = JSON.parse(categoriesData);
+        this.initializeSearch();
+        this.renderCategories(state.categories);
+        state.isInitialized = true;
+      } else {
+        console.error('Failed to load categories data');
+      }
+
+      // Set up event listeners
+      this.setupEventListeners();
+
+      // Log successful initialization
+      console.log('Application initialized successfully');
+
+      // #region agent log
+      // Check s4-bodyContainer layout issue
+      const bodyContainer = document.getElementById('s4-bodyContainer');
+      let bodyContainerData = {};
+      if (bodyContainer) {
+        const computedStyle = getComputedStyle(bodyContainer);
+        bodyContainerData = {
+          height: computedStyle.height,
+          overflowY: computedStyle.overflowY,
+          offsetHeight: bodyContainer.offsetHeight,
+          scrollHeight: bodyContainer.scrollHeight,
+          viewportHeight: window.innerHeight,
+          isVisible: bodyContainer.offsetHeight > 0,
+          actualHeightVsViewport: `${bodyContainer.offsetHeight}px vs ${window.innerHeight}px`,
+        };
+      } else {
+        bodyContainerData = { error: 's4-bodyContainer element not found' };
+      }
+
+      fetch('http://127.0.0.1:7904/ingest/c0ba5003-5be6-4723-b532-ae5185df8f69', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'd493a0' },
+        body: JSON.stringify({
+          sessionId: 'd493a0',
+          location: 'default2.js:280',
+          message: 's4-bodyContainer Layout Issue Check',
+          data: { bodyContainer: bodyContainerData },
+          timestamp: Date.now(),
+          hypothesisId: 'F',
+        }),
+      }).catch(() => {});
+      // #endregion
+    } catch (error) {
+      console.error('Error initializing app:', error);
+      this.handleInitializationError(error);
+    }
+  },
+
+  /*
+   * Set up all event listeners
+   */
+  setupEventListeners () {
+    // Debounced resize listener
     window.addEventListener('resize', resize);
     window.addEventListener('scroll', resize);
-  } catch (error) {
-    console.error('Error initializing app:', error);
-  }
+
+    // DOM content loaded listener
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!state.isInitialized) {
+        this.init();
+      }
+    });
+
+    // #region agent log
+    // Add a delayed check for page layout after DOM loads
+    setTimeout(() => {
+      const contentBox = document.getElementById('contentBox');
+      const sideNavBox = document.getElementById('sideNavBox');
+      const categoriesContainer = document.getElementById('categoriesContainer');
+
+      let layoutData = {
+        contentBoxExists: !!contentBox,
+        sideNavBoxExists: !!sideNavBox,
+        categoriesExists: !!categoriesContainer,
+      };
+
+      if (contentBox) {
+        const style = getComputedStyle(contentBox);
+        layoutData.contentBox = {
+          height: style.height,
+          marginLeft: style.marginLeft,
+          maxWidth: style.maxWidth,
+          offsetHeight: contentBox.offsetHeight,
+        };
+      }
+
+      fetch('http://127.0.0.1:7904/ingest/c0ba5003-5be6-4723-b532-ae5185df8f69', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'd493a0' },
+        body: JSON.stringify({
+          sessionId: 'd493a0',
+          location: 'default2.js:315',
+          message: 'Page Layout Check After DOM Load',
+          data: layoutData,
+          timestamp: Date.now(),
+          hypothesisId: 'F',
+        }),
+      }).catch(() => {});
+    }, 1000);
+    // #endregion
+  },
+
+  /*
+   * Initialize search functionality
+   */
+  initializeSearch () {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) {
+      console.error('Search input element not found');
+      return;
+    }
+
+    // Debounce the search to improve performance
+    const debouncedSearch = debounceFunc(searchTerms => {
+      if (!searchTerms || searchTerms.length === 0) {
+        this.renderCategories(state.categories);
+        return;
+      }
+
+      const filteredCategories = filterCategories(searchTerms);
+      this.renderCategories(filteredCategories);
+    }, 300);
+
+    searchInput.addEventListener('input', e => {
+      const inputValue = e.target.value.toLowerCase();
+      const searchTerms = getSearchTerms(inputValue);
+      debouncedSearch(searchTerms);
+    });
+  },
+
+  /*
+   * Render categories with error handling
+   * @param {Array} categoriesToRender - Categories to display
+   */
+  renderCategories (categoriesToRender) {
+    try {
+      renderCategories(categoriesToRender);
+    } catch (error) {
+      console.error('Error rendering categories:', error);
+      this.handleRenderingError(error);
+    }
+  },
+
+  /*
+   * Handle initialization errors
+   * @param {Error} error - The error object
+   */
+  handleInitializationError (error) {
+    // Display user-friendly error message
+    const container = document.getElementById('categoriesContainer');
+    if (container) {
+      container.innerHTML = `
+        <div class="error-message">
+          <h3>Application Error</h3>
+          <p>Unable to load application data. Please try refreshing the page.</p>
+          <p>Error: ${error.message}</p>
+        </div>
+      `;
+    }
+  },
+
+  /*
+   * Handle rendering errors
+   * @param {Error} error - The error object
+   */
+  handleRenderingError (error) {
+    // Fallback to empty state
+    const container = document.getElementById('categoriesContainer');
+    if (container) {
+      container.innerHTML = `
+        <div class="error-message">
+          <h3>Rendering Error</h3>
+          <p>Unable to display categories. Please try refreshing the page.</p>
+          <p>Error: ${error.message}</p>
+        </div>
+      `;
+    }
+  },
 };
 
 /*
@@ -242,7 +489,6 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
         className: link.class || '',
       })
     : createElement('a', { className: 'nogo' });
-
   // Add link content
   linkEl.innerHTML = `
     <span class="link-title">${link.name}</span>
@@ -293,9 +539,54 @@ const adjustGridLayout = (container, firstItem, columns) => {
 };
 
 /*
+ * Extracts search terms from input value with proper fallback logic
+ * @param {string} inputValue - The raw input value
+ * @returns {Array<string>} Array of search terms
+ */
+const getSearchTerms = inputValue => {
+  if (!inputValue || typeof inputValue !== 'string') {
+    return [];
+  }
+  // First try splitting by commas (for comma-separated search terms)
+  const separated = inputValue.includes(',')
+    ? inputValue
+        .split(',')
+        .map(term => term.trim())
+        .filter(term => term.length > 0)
+    : inputValue
+        .split(/\s+/)
+        .map(term => term.trim())
+        .filter(term => term.length > 0);
+
+  if (separated.length > 1) {
+    return separated;
+  }
+
+  if (inputValue.includes(',')) {
+    return [inputValue.replace(/,/g, '').trim()];
+  } // Final fallback: return the single input value if it's not empty
+  return inputValue.trim().length > 0 ? [inputValue.trim()] : [];
+};
+
+/*
  * Initializes the search functionality
  */
 const initializeSearch = () => {
+  // #region agent log
+  fetch('http://127.0.0.1:7904/ingest/c0ba5003-5be6-4723-b532-ae5185df8f69', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'd493a0' },
+    body: JSON.stringify({
+      sessionId: 'd493a0',
+      location: 'default2.js:504',
+      message: 'initializeSearch function called',
+      data: {},
+      timestamp: Date.now(),
+      hypothesisId: 'B,C',
+    }),
+  }).catch(() => {});
+  // #endregion
+
   const searchInput = document.getElementById('searchInput');
   if (!searchInput) {
     console.error('Search input element not found');
@@ -303,50 +594,121 @@ const initializeSearch = () => {
   }
 
   // Debounce the search to improve performance
-  const debouncedSearch = debounceFunc(searchTerm => {
-    if (!searchTerm) {
-      renderCategories(categories);
+  const debouncedSearch = debounceFunc(searchTerms => {
+    if (!searchTerms || searchTerms.length === 0) {
+      renderCategories(state.categories);
       return;
     }
 
-    const filteredCategories = filterCategories(searchTerm);
+    const filteredCategories = filterCategories(searchTerms);
     renderCategories(filteredCategories);
   }, 300);
 
   searchInput.addEventListener('input', e => {
-    const searchTerm = e.target.value.toLowerCase().trim();
-    debouncedSearch(searchTerm);
+    const inputValue = e.target.value.toLowerCase();
+    const searchTerms = getSearchTerms(inputValue);
+    debouncedSearch(searchTerms);
   });
 };
 
 /*
- * Filters categories based on search term
+ * Filters categories based on a single search term using modern functional programming patterns
+ * @param {Array} categoriesToFilter - Categories to filter
  * @param {string} searchTerm - The search term
  * @returns {Array} Filtered categories
  */
-const filterCategories = searchTerm => {
-  return categories
-    .map(category => {
-      const categoryMatches = category.name?.toLowerCase().includes(searchTerm);
-      const filteredSubheaders = category.subheaders
-        .map(subheader => {
-          const subheaderMatches = subheader.title?.toLowerCase().includes(searchTerm);
-          const filteredLinks = subheader.links.filter(
-            link =>
-              link.name?.toLowerCase().includes(searchTerm) ||
-              link.info?.toLowerCase().includes(searchTerm) ||
-              link.sub_links?.some(subLink => subLink.name?.toLowerCase().includes(searchTerm)) ||
-              subheaderMatches ||
-              categoryMatches
-          );
+const filterCategoriesByTerm = (categoriesToFilter, searchTerm) => {
+  // Input validation with early returns
+  if (!Array.isArray(categoriesToFilter) || !searchTerm?.trim()) {
+    return [];
+  }
 
-          return filteredLinks.length > 0 || subheaderMatches ? { ...subheader, links: filteredLinks } : null;
-        })
-        .filter(Boolean);
+  // Pre-compile search term to lowercase for performance
+  const lowerSearchTerm = searchTerm.toLowerCase().trim();
+
+  // Early termination for empty results
+  if (categoriesToFilter.length === 0) {
+    return [];
+  }
+
+  // Use functional programming with modern array methods
+  return categoriesToFilter
+    .map(category => {
+      // Use optional chaining and nullish coalescing for safer property access
+      const categoryMatches = category?.name?.toLowerCase().includes(lowerSearchTerm) ?? false;
+
+      const filteredSubheaders =
+        category.subheaders
+          ?.map(subheader => {
+            const subheaderMatches = subheader?.title?.toLowerCase().includes(lowerSearchTerm) ?? false;
+
+            // Early return pattern for performance
+            if (categoryMatches || subheaderMatches) {
+              return { ...subheader, links: subheader.links };
+            }
+
+            // Use functional composition for link filtering
+            const filteredLinks = subheader.links.filter(link => {
+              // Use optional chaining for safer property access
+              const nameMatch = link?.name?.toLowerCase().includes(lowerSearchTerm) ?? false;
+              const infoMatch = link?.info?.toLowerCase().includes(lowerSearchTerm) ?? false;
+
+              // Check sub-links with functional approach
+              const subLinkMatch =
+                link?.sub_links?.some(subLink => subLink?.name?.toLowerCase().includes(lowerSearchTerm) ?? false) ??
+                false;
+
+              return nameMatch || infoMatch || subLinkMatch;
+            });
+
+            return filteredLinks.length > 0 || subheaderMatches ? { ...subheader, links: filteredLinks } : null;
+          })
+          .filter(Boolean) ?? [];
 
       return filteredSubheaders.length > 0 ? { ...category, subheaders: filteredSubheaders } : null;
     })
     .filter(Boolean);
+};
+
+/*
+ * Filters categories based on multiple search terms with modern caching and performance optimizations
+ * @param {Array<string>} searchTerms - Array of search terms
+ * @returns {Array} Filtered categories
+ */
+const filterCategories = searchTerms => {
+  // Input validation with modern optional chaining
+  if (!Array.isArray(searchTerms) || searchTerms.length === 0) {
+    return state.categories;
+  }
+
+  // Create cache key from sorted search terms for consistent caching
+  const cacheKey = searchTerms.sort().join('|');
+
+  // Check cache first using modern Map methods
+  if (state.searchCache.has(cacheKey)) {
+    return state.searchCache.get(cacheKey);
+  }
+
+  // Use functional programming approach for filtering
+  const filtered = searchTerms.reduce((acc, term) => {
+    // Early termination if any term produces empty results
+    if (acc.length === 0) {
+      return [];
+    }
+
+    return filterCategoriesByTerm(acc, term);
+  }, state.categories);
+
+  // Cache management with modern Map methods
+  if (state.searchCache.size >= 50) {
+    // Use iterator protocol for cache cleanup
+    const firstKey = state.searchCache.keys().next().value;
+    state.searchCache.delete(firstKey);
+  }
+
+  state.searchCache.set(cacheKey, filtered);
+
+  return filtered;
 };
 // Show the loader
 const showLoader = () => {
@@ -380,41 +742,78 @@ const hideLoader = () => {
 
 const refreshApp = () => {
   showLoader();
-  initializeApp();
-  resize();
+  ModuleLoader.init();
   setTimeout(() => {
     hideLoader();
-  }, 1500);
-};
-// Add event listener for DOM content loaded
-
-const insertGoogleAnalytics = () => {
-  // Create the first script element (external gtag.js)
-  const script1 = document.createElement('script');
-  script1.async = true;
-  script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-MYQM69XE6F';
-
-  // Create the second script element (inline configuration)
-  const script2 = document.createElement('script');
-  script2.textContent = `
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-MYQM69XE6F');
-  `;
-
-  // Insert both into head
-  document.head.appendChild(script1);
-  document.head.appendChild(script2);
+  }, 1000); // Ensure loader is visible for at least 500ms
 };
 
-// Run when DOM is ready
+// Modern module initialization with proper error handling
+const ModuleLoader = {
+  /*
+   * Initialize all application modules
+   */
+  async init () {
+    try {
+      // Initialize the main application
+      await App.init();
+
+      // Initialize analytics after app is ready
+      this.initializeAnalytics();
+
+      console.log('All modules initialized successfully');
+    } catch (error) {
+      console.error('Module initialization failed:', error);
+      this.handleModuleError(error);
+    }
+  },
+
+  /*
+   * Initialize Google Analytics with modern patterns
+   */
+  initializeAnalytics () {
+    // Create the first script element (external gtag.js)
+    const script1 = document.createElement('script');
+    script1.async = true;
+    script1.src = 'https://www.googletagmanager.com/gtag/js?id=G-MYQM69XE6F';
+
+    // Create the second script element (inline configuration)
+    const script2 = document.createElement('script');
+    script2.textContent = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-MYQM69XE6F');
+    `;
+
+    // Insert scripts into head using modern DOM manipulation
+    const head = document.head || document.getElementsByTagName('head')[0];
+    [script1, script2].forEach(script => head.appendChild(script));
+  },
+
+  /*
+   * Handle module initialization errors
+   * @param {Error} error - The error object
+   */
+  handleModuleError (error) {
+    // Display user-friendly error message
+    const container = document.getElementById('categoriesContainer');
+    if (container) {
+      container.innerHTML = `
+        <div class="error-message">
+          <h3>Module Loading Error</h3>
+          <p>The application failed to initialize properly.</p>
+          <p>Error: ${error.message}</p>
+          <button onclick="location.reload()">Refresh Page</button>
+        </div>
+      `;
+    }
+  },
+};
+
+// Modern DOM content loaded handling with async/await
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    refreshApp();
-    insertGoogleAnalytics();
-  });
+  document.addEventListener('DOMContentLoaded', () => refreshApp());
 } else {
   refreshApp();
-  insertGoogleAnalytics();
 }

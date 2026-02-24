@@ -36,6 +36,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   word-spacing: 2.1px;
+  box-sizing: border-box;
 }
 
 /* ===== Links ===== */
@@ -86,20 +87,61 @@ h1.box_text {
 
 /* ===== Table & Content Formatting ===== */
 td.ms-vb {
-  font-family: "brand-font-medium", Arial, sans-serif;
+  font-family: "brand-font-medium", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--box-text-header) !important;
   letter-spacing: 0.0372em;
 }
 
 /* ===== SharePoint or Webpart Specific Styles ===== */
-div#s4-workspace {
+.ms-backgroundImage {
   background-image: url(https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/img/Background%20with%20bucket%20down-01.jpg);
+  background-position: bottom right;
   background-position: bottom right;
   background-size: 75%;
   background-repeat: no-repeat;
   position: static;
-  anchor-name: --loader-container;
+}
 
+.tableCol-25 {
+  display: table-cell;
+  width: calc(24.9% - 210px);
+}
+
+.tableCol-75 {
+  display: table-cell;
+  max-width: calc(74.9% - 210px);
+}
+
+.ms-fullWidth {
+  /* min-width: 100%; */
+  width: min(100%, 1760px);
+}
+
+#aspnetForm {
+  max-width: 1760px;
+}
+
+.ms-core-overlay {
+  background-color: transparent;
+  max-width: 1760px;
+}
+
+#s4-ribbonrow {
+  position: relative;
+  anchor-name: --de-anchor;
+  max-width: 1760px;
+}
+
+div#s4-workspace {
+  /* position: fixed; */
+  /* position-anchor: --de-anchor; */
+  /* top: anchor(bottom); */
+  /* left: anchor(left); */
+  /* max-width: 1760px; */
+  /* anchor-name:
+  --loader-container; */
+  padding-right: 40px;
+  width: min(100%, 1760px) !important;
 }
 
 .ms-core-listMenu-item,
@@ -116,19 +158,20 @@ div#s4-workspace {
 
 #s4-bodyContainer {
   padding-bottom: 35px;
-  overflow-y: scroll;
-  height: 100vh;
+  height: 1vh;
+  width: min(100%, 1760px) !important;
 }
 
 div#WebPartWPQ5 tbody,
 .ms-core-navigation {
-  font-family: Arial, "Helvetica Neue", Helvetica, "Segoe UI", Roboto, sans-serif;
+  font-family: Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 div#MSOZoneCell_WebPartWPQ3 {
-  padding: 8px;
-  anchor-name: --loader-anchor;
+  padding: 10px;
+  display: table;
   margin: 0 !important;
+  anchor-name: --loader-anchor;
 }
 
 
@@ -145,7 +188,6 @@ div#MSOZoneCell_WebPartWPQ6 {
   box-shadow: var(--shadow);
   border-radius: 8px;
   background-color: var(--card-bg);
-  backdrop-filter: blur(1px);
 }
 
 #MSOZoneCell_WebPartWPQ3>div.ms-webpart-chrome.ms-webpart-chrome-vertical.ms-webpart-chrome-fullWidth:hover {
@@ -153,7 +195,7 @@ div#MSOZoneCell_WebPartWPQ6 {
 }
 
 #MSOZoneCell_WebPartWPQ3 h2.ms-webpart-titleText>a {
-  font-family: "brand-font-bold", Arial, "Helvetica Neue", Helvetica, "Segoe UI", Roboto, sans-serif;
+  font-family: "brand-font-bold", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 1.4rem;
   color: var(--box-webpart-color);
   letter-spacing: 0.075em;
@@ -185,11 +227,10 @@ h2.ms-webpart-titleText {
 /* ===== Layout Adjustments ===== */
 #contentBox {
   margin-left: 210px !important;
-  width: 1465px !important;
-}
-
-.ms-fullscreenmode #sideNavBox {
-  display: inherit;
+  margin-right: 20px;
+  /* width: 1465px !important; */
+  max-width: calc(100% - 210px);
+  /* box-sizing: border-box; */
 }
 
 #sideNavBox {
@@ -208,7 +249,7 @@ div#MSOZoneCell_WebPartWPQ7 {
 }
 
 #DeltaPlaceHolderPageTitleInTitleArea {
-  font-family: "brand-font-bold", Arial, "Helvetica Neue", Helvetica, "Segoe UI", Roboto, sans-serif;
+  font-family: "brand-font-bold", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 1.6rem;
   color: var(--box-webpart-color);
   letter-spacing: 0.025em;
@@ -229,7 +270,7 @@ div.right-section {
 /* Adjustments for right-section (if needed) */
 div.right-section {
   word-wrap: break-word;
-  max-width: 200px;
+  max-width: 155px;
 }
 
 /* ===== Sidebar and Popup ===== */
@@ -250,7 +291,7 @@ div.feedback-head {
   font-family: "brand-font-bold", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 1.3rem;
   background-color: var(--box-highlight-color);
-  padding: 16px 24px;
+  padding: 16px 16px;
   color: var(--box-font-color);
   letter-spacing: 0.0372em;
   vertical-align: middle;
@@ -261,9 +302,9 @@ div.feedback {
 }
 
 div.feedback-info {
-  font-family: Arial, "Helvetica Neue", Helvetica, Roboto, sans-serif;
+  font-family: Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 0.9rem;
-  padding: 24px;
+  padding: 16px;
 }
 
 div.sidebar a::after {
@@ -313,7 +354,7 @@ img[alt="logo"] {
 }
 
 tr.ms-viewheadertr.ms-vhltr {
-  font-family: "brand-font-medium", Arial, sans-serif;
+  font-family: "brand-font-medium", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   letter-spacing: 0.0372em;
 }
 
@@ -350,19 +391,45 @@ div.dummy-bottom {
 /* ===== Responsive Media Queries ===== */
 
 /* Medium screens: 1024px to 1440px */
-@media only screen and (min-width: 1024px) and (max-width: 1440px) {
-
-  .ms-fullWidth {
-    width: 100%;
+@media only screen and (min-width: 1440px) and (max-width: 1600px) {
+  div.feedback {
+    display: none;
   }
 
   #contentBox {
+    margin-left: 210px !important;
+    margin-right: 20px;
+    /* width: 1465px !important; */
+    max-width: calc(100% - 210px);
+    /* box-sizing: border-box; */
+  }
+
+  #sideNavBox {
+    display: block;
+  }
+
+  .ms-fullWidth {
+    width: min(100%, 1300px);
+  }
+
+}
+
+
+@media only screen and (min-width: 1024px) and (max-width: 1440px) {
+
+
+  #contentBox {
     margin-left: 15% !important;
-    width: calc(85% - 10px) !important;
+    max-width: 100% !important;
+  }
+
+  .ms-fullWidth {
+    width: 90%;
   }
 
   #sideNavBox {
     width: 15%;
+    display: block;
   }
 
   div.right-section {
@@ -378,13 +445,37 @@ div.dummy-bottom {
   #DeltaPlaceHolderPageTitleInTitleArea {
     padding-right: 100px;
   }
+
+
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .ms-fullWidth {
+    width: 100%;
+  }
+
+  div.feedback {
+    display: none;
+  }
+
+  #contentBox {
+    margin-left: 20px !important;
+    margin-right: 20px;
+    max-width: 100% !important;
+  }
+
+  #DeltaPlaceHolderPageTitleInTitleArea,
+  #sideNavBox,
+  div.feedback {
+    display: none !important;
+  }
 }
 
 /* Small screens: up to 1024px */
-@media only screen and (max-width: 1024px) {
+@media only screen and (max-width: 768px) {
 
   .ms-fullWidth {
-    max-width: 100%;
+    width: min(100%, 1760px);
   }
 
   #contentBox {

@@ -48,9 +48,7 @@ class ChromeBrowser:
         platform_key = (
             "windows"
             if os.name == "nt"
-            else "darwin"
-            if sys.platform == "darwin"
-            else "linux"
+            else "darwin" if sys.platform == "darwin" else "linux"
         )
 
         for path in CHROME_PATHS.get(platform_key, []):
@@ -65,9 +63,7 @@ class ChromeBrowser:
         platform_key = (
             "windows"
             if os.name == "nt"
-            else "darwin"
-            if sys.platform == "darwin"
-            else "linux"
+            else "darwin" if sys.platform == "darwin" else "linux"
         )
 
         for path in CHROME_PATHS.get(platform_key, []):
@@ -153,7 +149,7 @@ class QueryHelper:
         """
         Query a list of keywords using the provided query function with fallback mechanism.
         """
-        output_list = []
+        output_list = list(map(query_func, keyword_list, *args))
         for keyword in keyword_list:
             result = query_func(keyword, *args)
             try:

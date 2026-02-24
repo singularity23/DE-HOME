@@ -371,6 +371,7 @@ else:
     LG_imp = cympy.study.QueryInfoNode("LGampZ", "FAULT_POINT")
     LL_imp = cympy.study.QueryInfoNode("LLampZ", "FAULT_POINT")
     LLG_imp = cympy.study.QueryInfoNode("LLGampZ", "FAULT_POINT")
+
     LG_Fault_Resistance = sc.GetValue(
         "ParametersConfigurations[" + str(i) + "].LGFaultResistanceOHMS"
     )
@@ -468,7 +469,8 @@ else:
                 or Device.DeviceType == 9
             ):  # Transformer, by-phase transformer, autotransformer, or series reactor
                 if (
-                    Device.Location == 0 or Device.Location == 1
+                    Device.Location == 0
+                    or Device.Location == 1
                     # if device is at From node (source side of section) or in the middle of the section
                 ):
                     DeviceList.append(
@@ -649,8 +651,8 @@ else:
             elif Device.DeviceType == 9:  # Series Reactor
                 R1 = R1ohm - float(cympy.study.QueryInfoNode("$R1ohm$", UpstreamNode))
                 X1 = X1ohm - float(cympy.study.QueryInfoNode("$X1ohm$", UpstreamNode))
-                R0 = (
-                    R0ohm - float(cympy.study.QueryInfoNode("$R0ohm$", UpstreamNode))
+                R0 = R0ohm - float(
+                    cympy.study.QueryInfoNode("$R0ohm$", UpstreamNode)
                 )  # calculate the impedance difference between DownstreamNode and UpstreamNode
                 X0 = X0ohm - float(cympy.study.QueryInfoNode("$X0ohm$", UpstreamNode))
                 # it was found that the feeder series reactors were showing up two times in two different sections in the interator
@@ -660,9 +662,9 @@ else:
                 ) and NetworkParam[i][0] == (
                     "Series Reactor: " + str(Device.EquipmentID)
                 ):
-                    NetworkParam[i][3] = (
-                        R1  # assumes the duplicate reactor is within the previously iterated section
-                    )
+                    NetworkParam[i][
+                        3
+                    ] = R1  # assumes the duplicate reactor is within the previously iterated section
                     NetworkParam[i][4] = X1  # overwrite the impedance data
                     NetworkParam[i][5] = R0
                     NetworkParam[i][6] = X0

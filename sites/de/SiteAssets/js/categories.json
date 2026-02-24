@@ -343,8 +343,8 @@
         "links": [
           {
             "name": "RDE Request Tracking",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DESRT/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf",
-            "info": "#FlowChart #Process #Deliverables"
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338",
+            "info": "Tracking program work requests"
           },
           {
             "name": "OE Review Evaluation Summary",
@@ -744,7 +744,7 @@
                 "name": "Short circuit python script"
               },
               {
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook.one%7C87ab0379-742a-41da-ae6b-8a9367348bd8%2FLoad%20Balancing%7C2da8a071-ada6-478a-90e9-8334ff4b84c6%2F%29",
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook.one%7C87ab0379-742a-41da-ae6b-8a9367348bd8%2FLoad%20Balancing%7C2da8a071-ada6-478a-90e9-8334ff4b84c6%2F%29&wdorigin=703",
                 "name": "Load flow python script"
               }
             ]

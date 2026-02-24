@@ -1,8 +1,6 @@
 class solution:
 
     def smallestSumOfTwoIndexMutiplication(self, array1: list, array2: list):
-        print(array1)
-        print(array2)
         if len(array1) == 0 or len(array2) == 0:
             return []
 
@@ -16,9 +14,8 @@ class solution:
         sol = 0
 
         for i in range(n):
-
-            sol += array1[i]*array2[i]
-
+            sol += array1[i] * array2[i]
+            print(sol)
         return sol
 
 
