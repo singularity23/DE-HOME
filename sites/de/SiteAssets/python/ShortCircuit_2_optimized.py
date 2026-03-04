@@ -1524,10 +1524,8 @@ class ShortCircuitStudy:
     ITERATION_UPSTREAM = cympy.enums.IterationOption.Upstream
     ITERATION_STOPONOPEN = cympy.enums.IterationRestriction.StopOnOpen
     LOOP_NODE = cympy.enums.NodeType.Loop
-    TABLE_HEADER_FORMAT = (
-        "\n {:<56}{:>8}{:>11}{:>9}{:>8}{:>8}{:>8}{:>10}{:>8}{:>8}{:>8}"
-    )
-    TABLE_ROW_FORMAT = "\n {:<56}{:>8.1f}{:>11.1f}{:>9.4f}{:>8.4f}{:>8.4f}{:>8.4f}{:>10.4f}{:>8.4f}{:>8.4f}{:>8.4f}"
+    TABLE_HEADER_FORMAT = "\n{:<56}{:>8}{:>11}{:>9}{:>8}{:>8}{:>8}{:>10}{:>8}{:>8}{:>8}"
+    TABLE_ROW_FORMAT = "\n{:<56}{:>8.1f}{:>11.1f}{:>9.4f}{:>8.4f}{:>8.4f}{:>8.4f}{:>10.4f}{:>8.4f}{:>8.4f}{:>8.4f}"
     IMPEDANCE_UNIT = "Ohms"
     PREFAULT_VOLTAGE = ["BaseVoltage", "OperatingVoltage"]
     FAULT_VALUES = {False: [0, 0, 0, 0], True: [40, 0, 8, 0]}
@@ -1627,7 +1625,7 @@ class ShortCircuitStudy:
 
     def _setup_table_headers(self) -> None:
         """Build report table headers with network, distance, and impedance columns."""
-        self.table_header_1 = "\n {:<56}{:>8}{:>11}  |{:-^31}||{:-^31}|".format(
+        self.table_header_1 = "\n{:<56}{:>8}{:>11}  |{:-^31}||{:-^31}|".format(
             f"Circuits: {self.NetworkID}",
             f"{self.LEN_UNIT}",
             "Distance",
@@ -1649,7 +1647,7 @@ class ShortCircuitStudy:
             "Thev_X0",
         )
 
-        self.table_separator = "\n" + "—" * len(self.table_header_1)
+        self.table_separator = "\n" + "—" * (len(self.table_header_1) - 1)
 
     def _get_file_name(self, source_name: str) -> None:
         """Generate time-stamped report filename."""

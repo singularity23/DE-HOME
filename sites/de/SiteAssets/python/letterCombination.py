@@ -1,66 +1,90 @@
 class Solution:
-  def letterCombination(self, digits: str) -> list[str]:
+    @staticmethod
+    def letterCombinations(digits: str) -> list[str]:
+        """Generate all letter combinations corresponding to phone digits.
 
-    if digits == "":
-      return []
+        Args:
+            digits: String of digits (2-9) from a phone keypad.
 
-    ret, sol = [], []
-    n = len(digits)
+        Returns:
+            List of all possible letter combinations.
+        """
+        if not digits:
+            return []
 
-    letter_map = { '2':'abc', '3':'def', '4':'ghi', '5':'jkl', '6':'mno', '7':'pqrs', '8':'tuv', '9':'wxyz'}
+        letter_map = {
+            "2": "abc",
+            "3": "def",
+            "4": "ghi",
+            "5": "jkl",
+            "6": "mno",
+            "7": "pqrs",
+            "8": "tuv",
+            "9": "wxyz",
+        }
 
-    def backtrack(i=0):
-      print(i)
-      if len(sol) == n:
-        ret.append(''.join(sol[:]))
-        print("third")
-        print(sol[:])
-        return
+        results = []
 
-      print(letter_map[digits[i]])
-      print("start")
-      for num in letter_map[digits[i]]:
-        print(num)
-        sol.append(num)
-        print("first")
-        print(sol)
-        backtrack(i+1)
-        sol.pop()
-        print("second")
-        print(sol)
-      print(letter_map[digits[i]])
-      print("end")
+        def backtrack(index: int, current: str) -> None:
+            """Build combinations recursively by appending letters for each digit."""
+            # Base case: all digits processed
+            if index == len(digits):
+                results.append(current)
+                return
 
-    backtrack(0)
-    return ret
+            # Get letters for current digit and recurse
+            letters = letter_map[digits[index]]
+            for letter in letters:
+                backtrack(index + 1, current + letter)
+
+        backtrack(0, "")
+        return results
+
+    def letterCombinations2(digits: str) -> list[str]:
+        if not digits:
+            return []
+
+        ret, sol = [], []
+        n = len(digits)
+
+        letter_map = {
+            "2": "abc",
+            "3": "def",
+            "4": "ghi",
+            "5": "jkl",
+            "6": "mno",
+            "7": "pqrs",
+            "8": "tuv",
+            "9": "wxyz",
+        }
+
+        def backtrack(index: int) -> None:
+            print(f"Sol length: {len(sol)}, n: {n}, index: {index}")
+            if len(sol) == n:
+                ret.append("".join(sol))
+                print(f"Combination found: [{''.join(sol)}], index: {index}")
+                return
+
+            letters = letter_map[digits[index]]
+            for letter in letters:
+                print(f"Under: [{digits[index]}], for [{letter}] in [{letters}]")
+                print(f"sol: [{''.join(sol)}] appends [{letter}]")
+                sol.append(letter)
+                print(f"backtrack({index} + 1)")
+                backtrack(index + 1)
+                print(f"Now Sol: [{''.join(sol)}], index: {index}")
+                sol.pop()
+                print(
+                    f"Sol after pop: [{''.join(sol)}], End: [{letter}] for [{letters}], under [{digits[index]}]"
+                )
+
+        backtrack(0)
+        return ret
+
 
 if __name__ == "__main__":
+    List1 = Solution.letterCombinations2("7465")
 
-  List = Solution().letterCombination('7465')
-  print(List)
-
-  pair = [[0,4],[2,3],[5,7]]
-  a = [1, 2 ,3, 4, 5 ,6,7, 8 ,9]
-  b = [1, 2 ,3, 4, 5 ,6,7, 8 ,9]
-
-  y = lambda i,j:abs(a[i]+b[j]-5),pair
-
-
-  min_diff = [ [i,j] for i,j in pair if y(i,j) == min([y(i,j) for i,j in pair]) ]
-
-  print(min_diff)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    List2 = Solution.letterCombinations2("7465")
+    print(List1)
+    print(List2)

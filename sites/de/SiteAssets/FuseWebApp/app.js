@@ -72,8 +72,11 @@
     const frag = document.createDocumentFragment();
     unique(subset.map(r => r.voltage)).forEach(val => {
       const o = document.createElement('option');
+      const u = document.createElement('span');
+      u.textContent = ' kV' + (t === 'LPT' ? ' (L-N)' : ' (L-N/L-L)');
       o.value = val;
-      o.textContent = val;
+      o.appendChild(u);
+      o.innerHTML = val + u.outerHTML;
       frag.appendChild(o);
     });
     els.voltage.appendChild(frag);
@@ -95,7 +98,7 @@
     unique(subset.map(r => r.kva)).forEach(val => {
       const o = document.createElement('option');
       o.value = val;
-      o.textContent = val;
+      o.textContent = val + ' kVA';
       frag.appendChild(o);
     });
     els.kva.appendChild(frag);
@@ -152,7 +155,7 @@
     const ul = document.createElement('ul');
     const fields = [
       ['Transformer', row.transformer],
-      ['Operating Voltage', row.voltage],
+      [`Operating kV (${row.transformer === 'LPT' ? 'L-N' : 'L-N/L-L'})`, row.voltage],
       ['kVA', row.kva],
       ['BON Fuse', row.bonFuse || '—', 'highlight'],
       ['Source-side Fuse', row.sourceFuse || '—', 'highlight'],

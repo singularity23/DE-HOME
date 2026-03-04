@@ -13,6 +13,7 @@ def balance_arrays(A, B, C):
         all_numbers.append((num, "C"))
 
     total_sum = sum(A) + sum(B) + sum(C)
+
     target_avg = total_sum / 3
 
     # Try all possible assignments of numbers to arrays
@@ -41,8 +42,8 @@ def balance_arrays(A, B, C):
         improved = False
         best_move = None
         best_new_balance = current_balance
-        print('Current sums:', current_sums)  # Debug print
-        print('Current balance:', current_balance)  # Debug print
+        print("Current sums:", current_sums)  # Debug print
+        print("Current balance:", current_balance)  # Debug print
         # Try all possible single moves
         for from_arr, to_arr, from_name, to_name in [
             (current_A, current_B, "A", "B"),
@@ -78,9 +79,11 @@ def balance_arrays(A, B, C):
                         new_from if from_name == "B" else new_to,
                         new_to if from_name == "B" else new_from,
                     )
-                print(f"Trying to move {moved_num} from {from_name} to {to_name}: New balance = {new_balance}")
-                
-                print(f'{new_sums}')  # Debug print
+                print(
+                    f"Trying to move {moved_num} from {from_name} to {to_name}: New balance = {new_balance}"
+                )
+
+                print(f"{new_sums}")  # Debug print
                 if new_balance < best_new_balance:
                     best_new_balance = new_balance
                     best_move = (
@@ -91,12 +94,14 @@ def balance_arrays(A, B, C):
                         new_to,
                         new_sums,
                     )
-                    print(f'Best move updated: Move {moved_num} from {from_name} to {to_name} with new balance {new_balance}')  # Debug print
+                    print(
+                        f"Best move updated: Move {moved_num} from {from_name} to {to_name} with new balance {new_balance}"
+                    )  # Debug print
 
         if best_move and best_new_balance < current_balance:
             moved_num, from_name, to_name, new_from, new_to, new_sums = best_move
             best_moves.append((moved_num, from_name, to_name))
-            print(f'Executing move: Move {moved_num} from {from_name} to {to_name}')
+            print(f"Executing move: Move {moved_num} from {from_name} to {to_name}")
             # Update current state
             if from_name == "A":
                 current_A = new_from
