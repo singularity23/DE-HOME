@@ -228,7 +228,7 @@ class ChromeBrowser:
 
     @staticmethod
     def register_chrome() -> bool:
-        """Register Chrome browser with webbrowser module"""
+        """Register Chrome with webbrowser module and return success status."""
         platform_key = ChromeBrowser.get_platform_key()
 
         for path in CHROME_PATHS.get(platform_key, []):
@@ -244,7 +244,7 @@ class ChromeBrowser:
 
     @staticmethod
     def get_chrome_path() -> Optional[str]:
-        """Get Chrome executable path"""
+        """Return path to Chrome executable or None if not found."""
         platform_key = ChromeBrowser.get_platform_key()
 
         for path in CHROME_PATHS.get(platform_key, []):
@@ -254,11 +254,13 @@ class ChromeBrowser:
 
     @staticmethod
     def open_url(url: str) -> bool:
-        """Open URL with Chrome, falling back to default browser"""
+        """Open URL with Chrome, falling back to system default browser."""
         # Try webbrowser Chrome first
         try:
             chrome = webbrowser.get("chrome")
-            chrome.open_new(url)
+
+            chrome.open(url, new=0, autoraise=True)
+
             return True
         except webbrowser.Error:
             pass
@@ -267,7 +269,8 @@ class ChromeBrowser:
         if ChromeBrowser.register_chrome():
             try:
                 chrome = webbrowser.get("chrome")
-                chrome.open_new(url)
+
+                chrome.open(url, new=0, autoraise=True)
                 return True
             except webbrowser.Error:
                 pass
@@ -286,18 +289,18 @@ class ChromeBrowser:
 
         # Final fallback
         try:
-            webbrowser.open_new(url)
+            webbrowser.open(url, new=0, autoraise=True)
             return True
         except Exception:
             return False
 
 
 class TextFormatter:
-    """Shared text formatting helper"""
+    """Text wrapping utility with indentation support."""
 
     @staticmethod
     def format_text(text: str, width: int, indent: int) -> str:
-
+        """Wrap text to width with indentation for subsequent lines."""
         return textwrap.fill(
             text, width, initial_indent="", subsequent_indent=" " * indent
         )
@@ -310,18 +313,7 @@ class ImpedanceCalculator:
     def calculate_impedance(
         Z: float, X_R_Ratio: float, KVLL: float, KVA: float
     ) -> Tuple[float, float]:
-        """
-        Calculate resistance (R) and reactance (X) of a transformer.
-
-        Args:
-            Z: Impedance in percentage
-            X_R_Ratio: Ratio of reactance to resistance
-            KVLL: Rated primary line-to-line voltage in kilovolts
-            KVA: Rated apparent power in kilovolt-amperes
-
-        Returns:
-            Tuple of calculated resistance (R) and reactance (X) in ohms
-        """
+        """Calculate R and X from impedance percentage and X/R ratio. Returns (R, X) in ohms."""
         if Z <= 0 or KVLL <= 0 or KVA <= 0:
             raise ValueError("Invalid parameters: Z, KVLL, and KVA must be positive")
 
@@ -337,39 +329,18 @@ class ImpedanceCalculator:
     def calculate_impedance_difference(
         Z1pu: float, Z2pu: float, BaseKVLL: float, BaseMVA: float
     ) -> float:
-        """
-        Calculate impedance difference between primary and secondary sides.
-
-        Args:
-            Z1pu: Primary side impedance in per unit
-            Z2pu: Secondary side impedance in per unit
-            BaseKVLL: Base line-to-line voltage in kilovolts
-            BaseMVA: Base apparent power in megavolt-amperes
-
-        Returns:
-            Impedance difference in ohms
-        """
+        """Calculate per-unit impedance difference in ohms based on base voltage and MVA."""
         return (Z2pu - Z1pu) * (BaseKVLL**2) / BaseMVA
 
 
 class QueryHelper:
-    """Helper class for querying CymDist data with fallback mechanism"""
+    """Query CymDist data with fallback keywords and automatic locale-aware parsing."""
 
     @staticmethod
     def query_with_fallback(
         query_func: Callable, keyword_list: List[str], *args
     ) -> List[Any]:
-        """
-        Query a list of keywords using the provided query function with fallback mechanism.
-
-        Args:
-            query_func: Function to call for each keyword
-            keyword_list: List of keywords to query
-            *args: Additional arguments to pass to query_func
-
-        Returns:
-            List of query results, converted to float where possible
-        """
+        """Try each keyword in order; parse to float if possible, else return raw value. Return None on failure."""
         output_list = []
         for keyword in keyword_list:
             try:
@@ -390,34 +361,34 @@ class QueryHelper:
     def query_devices(
         keyword_list: List[str], dev_num: str, dev_type: int
     ) -> List[Any]:
-        """Query device information"""
+        """Query multiple keywords for a device using fallback mechanism."""
         return QueryHelper.query_with_fallback(
             Std.QueryInfoDevice, keyword_list, dev_num, dev_type
         )
 
     @staticmethod
     def query_nodes(keyword_list: List[str], node_id: str) -> List[Any]:
-        """Query node information"""
+        """Query multiple keywords for a node using fallback mechanism."""
         return QueryHelper.query_with_fallback(Std.QueryInfoNode, keyword_list, node_id)
 
     @staticmethod
     def get_value_equipment(
         keyword_list: List[str], eq_id: str, eq_type: int
     ) -> List[Any]:
-        """Get equipment values"""
+        """Query multiple keywords for equipment using fallback mechanism."""
         return QueryHelper.query_with_fallback(
             Eqt.GetValue, keyword_list, eq_id, eq_type
         )
 
 
 class EquipmentValueSetter:
-    """Helper class for setting equipment values"""
+    """Set values on equipment and topology objects with error handling."""
 
     @staticmethod
     def set_value_dev_eqt(
         value_property_setlist: List[Tuple[Any, str]], eq_obj: Any
     ) -> None:
-        """Set values for properties in an EQ object"""
+        """Set multiple properties on an equipment object. Log warnings on failure but continue."""
         for value, property_name in value_property_setlist:
             try:
                 eq_obj.SetValue(value, property_name)
@@ -428,7 +399,7 @@ class EquipmentValueSetter:
     def set_source_value(
         value_property_setlist: List[Tuple[Any, str]], source_id: str
     ) -> None:
-        """Set values for source topology"""
+        """Set topology properties on source node. Log warnings on failure but continue."""
         for value, property_name in value_property_setlist:
             try:
                 Std.SetValueTopo(value, property_name, source_id)
@@ -438,7 +409,7 @@ class EquipmentValueSetter:
 
 @dataclass
 class StudyParameters:
-    """Data class to hold study parameters"""
+    """Container for emission study input parameters."""
 
     customer_type: str
     connection: str
@@ -449,7 +420,7 @@ class StudyParameters:
 
 
 class BaseEquipment(ABC):
-    """Base class for equipment types with common impedance calculations"""
+    """Abstract base for network equipment with impedance calculation and reporting."""
 
     BaseMVA = cympy.env.BasePower_AC_MVA
 
@@ -503,7 +474,7 @@ class BaseEquipment(ABC):
         self.fromPhase = kwargs.get("fromPhase", "")
 
     def info_table(self, NETWORK_PARAM: List) -> None:
-        """Add equipment information to network parameters"""
+        """Append equipment impedance data to network parameter table."""
         _DEVICE_INFO = [
             self.Nameplate,
             self.Length,
@@ -520,18 +491,18 @@ class BaseEquipment(ABC):
         NETWORK_PARAM.append(_DEVICE_INFO)
 
     def eq_data(self, EQUIP_LIST: List) -> None:
-        """Add equipment to equipment list"""
+        """Add this equipment to list if not duplicated. Skip internal wires."""
         if all(self.EqID not in eq for eq in EQUIP_LIST) and self.EqID != "INT_WIRE":
             EQUIP_LIST.append([self.EqID, self])
 
     @abstractmethod
     def store_info(self, SCReport) -> None:
-        """Store equipment information - must be implemented by subclasses"""
+        """Write equipment details to report. Must be overridden by subclasses."""
         pass
 
 
 class CableEquipment(BaseEquipment):
-    """Class for cable equipment with consolidation logic"""
+    """Overhead and underground cable equipment with parallel run and transposition handling."""
 
     DEVICE_TYPE_MAP = {
         11: {  # OverheadLine
@@ -607,7 +578,7 @@ class CableEquipment(BaseEquipment):
             self.X1 = self.X0 = (self.X1TN + self.X1TN + self.X0TN) / 3
 
     def info_table(self, NETWORK_PARAM: List) -> None:
-        """Append cable information to NETWORK_PARAM with consolidation"""
+        """Append cable data to table, consolidating consecutive identical cables."""
         if NETWORK_PARAM and NETWORK_PARAM[-1][0] == self.Nameplate:
             self._consolidate_cable_entry(NETWORK_PARAM)
         else:
@@ -628,7 +599,7 @@ class CableEquipment(BaseEquipment):
             )
 
     def _consolidate_cable_entry(self, NETWORK_PARAM: List) -> None:
-        """Consolidate consecutive cable entries"""
+        """Merge current cable with previous entry, summing length and impedance."""
         prev_entry = NETWORK_PARAM.pop()
         NETWORK_PARAM.append(
             [
@@ -647,7 +618,7 @@ class CableEquipment(BaseEquipment):
         )
 
     def store_info(self, SCReport) -> None:
-        """Store cable information to report"""
+        """Write cable impedance, rating, and conductor details to report."""
         SCReport.write(f"\n[{self.DeviceObj}: {self.EqID}]")
 
         def _write_info(label: str, value: str) -> None:
@@ -677,7 +648,7 @@ class CableEquipment(BaseEquipment):
 
 
 class ReactorEquipment(BaseEquipment):
-    """Class for series reactor equipment"""
+    """Series reactor with rated current and reactance."""
 
     RX_INFO = ["RatedCurrent", "ReactanceOhms"]
 
@@ -697,7 +668,7 @@ class ReactorEquipment(BaseEquipment):
         self.Nameplate = f"{self.DeviceObj}: {self.EqID}"
 
     def info_table(self, NETWORK_PARAM: List) -> None:
-        """Add reactor information to network parameters"""
+        """Append reactor impedance data to table."""
         NETWORK_PARAM.append(
             [
                 self.Nameplate,
@@ -715,7 +686,7 @@ class ReactorEquipment(BaseEquipment):
         )
 
     def store_info(self, SCReport) -> None:
-        """Store reactor information to report"""
+        """Write reactor rating, reactance, and comments to report."""
         SCReport.write(f"\n[{self.Nameplate}]")
         SCReport.write(f"\n{'Rated Current:':<25} {self.RatedCurrent:<8.0f} amps/Phase")
         SCReport.write(
@@ -734,7 +705,7 @@ class ReactorEquipment(BaseEquipment):
 
 
 class ProtectionEquipment(BaseEquipment):
-    """Class for protection equipment (breakers, reclosers, fuses)"""
+    """Breakers, reclosers, and fuses with relay/protection instrument details."""
 
     PROT_INFO = ["NestedViewId", "TccDesc", "NStatus", "ProtModel", "ProtAmps"]
 
@@ -779,7 +750,7 @@ class ProtectionEquipment(BaseEquipment):
             self.Nameplate = f"{self.DeviceObj}: {self.DevNum} @ {self.prot_nv_id}"
 
     def _process_instruments(self) -> None:
-        """Process protection instruments for detailed information"""
+        """Extract manufacturer, type, and relay details from protection instruments."""
         for inst in self.prot_instrument_list:
             if inst.InstrumentType != 1:  # Skip non-protection instruments
                 self.protection_vendor.append(inst.GetValue("Manufacturer"))
@@ -789,7 +760,7 @@ class ProtectionEquipment(BaseEquipment):
                 self.instrument_number.append(inst.InstrumentNumber)
 
     def info_table(self, NETWORK_PARAM: List) -> None:
-        """Add protection information to network parameters"""
+        """Append protection device to network table."""
         NETWORK_PARAM.append(
             [
                 self.Nameplate,
@@ -807,7 +778,7 @@ class ProtectionEquipment(BaseEquipment):
         )
 
     def store_info(self, SCReport) -> None:
-        """Store protection information to report"""
+        """Write protection device model, rating, and instrument details to report."""
         SCReport.write(f"\n[{self.DeviceObj}: {self.DevNum}]")
 
         # Write protection information based on available data
@@ -817,7 +788,7 @@ class ProtectionEquipment(BaseEquipment):
             self._store_basic_protection_info(SCReport)
 
     def _store_instrument_info(self, SCReport) -> None:
-        """Store detailed instrument information"""
+        """Write protection instruction vendor, type, and relay details."""
         if self.protection_vendor:
             self._write_multiple_values(
                 SCReport, "Manufacturer:", self.protection_vendor
@@ -842,7 +813,7 @@ class ProtectionEquipment(BaseEquipment):
             SCReport.write(f"\n{'Rating:':<25} {self.prot_rating:<8}")
 
     def _store_basic_protection_info(self, SCReport) -> None:
-        """Store basic protection information"""
+        """Write protection device description, status, model, and rating."""
         if self.prot_tcc_desc:
             self._write_description(SCReport, "Description:", self.prot_tcc_desc)
         if self.prot_normal_status:
@@ -853,13 +824,13 @@ class ProtectionEquipment(BaseEquipment):
             SCReport.write(f"\n{'Rating:':<25} {self.prot_rating:<8.0F} amps")
 
     def _write_multiple_values(self, SCReport, label: str, values: List) -> None:
-        """Write multiple values in a formatted way"""
+        """Write label followed by multiple space-separated values."""
         n = len(values)
         format_template = "{:<20} " * n
         SCReport.write(f"\n{label:<25} {format_template.format(*values)}")
 
     def _write_description(self, SCReport, label: str, description: str) -> None:
-        """Write description with proper formatting"""
+        """Write multi-line description with consistent indentation."""
         lines = description.split("\n")
         SCReport.write(f"\n{label:<25} {lines[0]}")
         for line in lines[1:]:
@@ -867,7 +838,7 @@ class ProtectionEquipment(BaseEquipment):
 
 
 class TransformerEquipment(BaseEquipment):
-    """Class for transformer equipment with validation"""
+    """Transformer with by-phase support, impedance validation, and three-phase configuration."""
 
     DEVICE_TYPE_MAP = {
         33: {  # By-Phase Transformer
@@ -957,7 +928,7 @@ class TransformerEquipment(BaseEquipment):
         self._validate_impedance_calculations()
 
     def _calculate_impedances(self) -> None:
-        """Calculate transformer impedances"""
+        """Calculate device and per-unit impedance differences from transformer specs."""
         # Calculate device impedances
         self.R1, self.X1 = ImpedanceCalculator.calculate_impedance(
             self.XfoZ1, self.XfoX1R1Ratio, self.SecVolts, self.XfoKVANomTot
@@ -984,7 +955,7 @@ class TransformerEquipment(BaseEquipment):
             )
 
     def _validate_impedance_calculations(self) -> None:
-        """Validate impedance calculations"""
+        """Check impedance calculations against tolerance. Raise error if invalid."""
         tolerance = 1e-4
         if not (
             math.isclose(
@@ -997,7 +968,7 @@ class TransformerEquipment(BaseEquipment):
             raise ValueError("Error: the transformer device impedance is not correct")
 
     def info_table(self, NETWORK_PARAM: List) -> None:
-        """Add transformer information to network parameters"""
+        """Append transformer impedance data to network table."""
         NETWORK_PARAM.append(
             [
                 self.Nameplate,
@@ -1015,7 +986,7 @@ class TransformerEquipment(BaseEquipment):
         )
 
     def store_info(self, SCReport) -> None:
-        """Store transformer information to report"""
+        """Write transformer configuration, impedance, and comments to report."""
         # Build transformer description
         if hasattr(self, "XfoByPhaseEqIdA") and self.DevType == 33:
             # By-phase transformer
@@ -1054,7 +1025,7 @@ class TransformerEquipment(BaseEquipment):
 
 
 class SourceEquivalent(BaseEquipment):
-    """Class for source equivalent analysis and reporting"""
+    """Source Thevenin equivalent with min/max impedance for fault level conditions."""
 
     SOURCE_INFO = [
         "SourceR1ohmsMax",
@@ -1111,7 +1082,7 @@ class SourceEquivalent(BaseEquipment):
         self._source_device = None
 
     def _get_source_objects(self) -> None:
-        """Retrieve source equipment and device objects"""
+        """Load source equipment and device objects from database."""
         try:
             self._source_eqt = Eqt.GetEquipment(self.SourceName, self.EqType)
         except Exception:
@@ -1125,7 +1096,7 @@ class SourceEquivalent(BaseEquipment):
             self._source_device = None
 
     def info_table(self, NETWORK_PARAM: List) -> None:
-        """Add source equivalent information to network parameters"""
+        """Append source impedance (absolute values) to network table."""
 
         def _ensure_positive(number: float) -> float:
             """Ensure impedance values are positive for reporting"""
@@ -1148,7 +1119,7 @@ class SourceEquivalent(BaseEquipment):
         )
 
     def store_info(self, SCReport) -> None:
-        """Store source equivalent information to report"""
+        """Write source fault level, impedance, and equipment origin to report."""
         SCReport.write(f"\n[{self.Nameplate}]")
 
         # Display appropriate impedance values based on fault level
@@ -1161,7 +1132,7 @@ class SourceEquivalent(BaseEquipment):
         self._store_source_comments(SCReport)
 
     def _store_low_fault_level_info(self, SCReport) -> None:
-        """Store low fault level impedance information"""
+        """Write max fault level impedances to report."""
         SCReport.write(
             f"\n{'Low Fault Level Z1:':<25} {self.R1max:<8.4f} + j{self.X1max:<8.4f} ohms"
         )
@@ -1170,7 +1141,7 @@ class SourceEquivalent(BaseEquipment):
         )
 
     def _store_high_fault_level_info(self, SCReport) -> None:
-        """Store high fault level impedance information"""
+        """Write min fault level impedances to report."""
         SCReport.write(
             f"\n{'High Fault Level Z1:':<25} {self.R1min:<8.4f} + j{self.X1min:<8.4f} ohms"
         )
@@ -1179,7 +1150,7 @@ class SourceEquivalent(BaseEquipment):
         )
 
     def _store_source_comments(self, SCReport) -> None:
-        """Store source comments and additional details"""
+        """Write source equipment comments and origin (database, user-defined, or unknown)."""
         self._get_source_objects()
         comments = self._source_eqt.GetValue("Comments") if self._source_eqt else None
         if comments:
@@ -1195,7 +1166,7 @@ class SourceEquivalent(BaseEquipment):
 
 
 class FaultPoint(BaseEquipment):
-    """Class for fault point analysis"""
+    """Study point with fault currents, impedances, and location (lat/long)."""
 
     _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Fault%20Level%20Form.html"
     FAULT_CURRENT_INFO = [
@@ -1229,7 +1200,7 @@ class FaultPoint(BaseEquipment):
         self.EqID = fault_point
 
     def info_table(self, NETWORK_PARAM: List) -> None:
-        """Add fault point information to network parameters"""
+        """Append fault point location and impedance to network table."""
         NETWORK_PARAM.append(
             [
                 f"{self.EqID} (Lat.:{self.data['Latitude']:.5f},Long.:{self.data['Longitude']:.5f})",
@@ -1247,7 +1218,7 @@ class FaultPoint(BaseEquipment):
         )
 
     def store_info(self, SCReport) -> None:
-        """Store fault point information to report"""
+        """Write bolted and impedance fault currents and prefault voltage to report."""
         SCReport.write(f"\n[{self.EqID}]")
         SCReport.write(
             "\n{:<25} {:<6}{:<6}{:<6}{:<6}{:<6}".format(
@@ -1279,7 +1250,7 @@ class FaultPoint(BaseEquipment):
         )
 
     def generate_form(self, networkID: str) -> None:
-        """Generate and open fault level form"""
+        """Build and open fault level form URL with query parameters."""
         input_params = [
             "Customer_Name",
             "Service_Address",
@@ -1342,7 +1313,7 @@ class FaultPoint(BaseEquipment):
 
 
 class EmissionStudy:
-    """Class for performing emission studies on power systems"""
+    """Harmonic/flicker emission study with customer load allocation and feeder limits."""
 
     # Constants
     PATH = "http://pq.bchydro.bc.ca:100/pqtools_MVresults.php?"
@@ -1382,6 +1353,7 @@ class EmissionStudy:
         self._initialize_variables()
 
     def _initialize_variables(self) -> None:
+        """Initialize study variables with default (empty/zero) values."""
         self.parameters = None
         self.kv_ll = 0.0
         self.phase_count = 0
@@ -1394,7 +1366,7 @@ class EmissionStudy:
         self._variables = []
 
     def run_study(self) -> None:
-        """Run the emission study"""
+        """Execute full emission study: inputs, parameters, loads, and prepare variables."""
         try:
             self._get_input_parameters()
             self._get_system_parameters()
@@ -1404,7 +1376,7 @@ class EmissionStudy:
             raise RuntimeError(f"Emission study failed: {e}") from e
 
     def _get_input_parameters(self) -> None:
-        """Get input parameters from cympy"""
+        """Read study parameters and calculate customer load power factor."""
         inputs = map(cympy.GetInputParameter, self.INPUT_PARAMETERS)
         self.parameters = StudyParameters(*inputs)
         self.power_factor = self.POWER_FACTORS.get(
@@ -1413,7 +1385,7 @@ class EmissionStudy:
         self.customer_load_mva = self.parameters.customer_load_mw / self.power_factor
 
     def _get_system_parameters(self) -> None:
-        """Get system parameters from cympy"""
+        """Query feeder voltage and phase count; use defaults if limits unspecified."""
         self.phase_count = cympy.study.QueryInfoNode("PhaseCount", self.poi)
         self.kv_ll = cympy.study.QueryInfoNode("KVLLBase", self.poi)
 
@@ -1421,7 +1393,7 @@ class EmissionStudy:
             self.parameters.feeder_limit = self.FEEDER_LIMITS.get(self.kv_ll, 0.0)
 
     def _calculate_loads(self) -> None:
-        """Calculate current loads and percentages"""
+        """Calculate MV/LV loads and estimated max LV load normalized to feeder limit."""
         spot_loads = cympy.study.ListDevices(self.SPOT_DEV_TYPE, self.feeder_id)
         self._calculate_current_loads(spot_loads)
 
@@ -1434,7 +1406,7 @@ class EmissionStudy:
         )
 
     def _calculate_current_loads(self, spot_loads: List) -> None:
-        """Calculate current MV and LV loads"""
+        """Sum MV (INT_/PRI_ prefix) and LV spot loads separately."""
         smv_load = slv_load = 0.0
 
         for spot in spot_loads:
@@ -1453,7 +1425,7 @@ class EmissionStudy:
         self.current_load_slv = slv_load
 
     def _prepare_variables(self) -> None:
-        """Prepare URL variables for the emission study report"""
+        """Build query parameters for emission study web form."""
         r1, x1, r0, x0 = self.impedance
         self._variables = [
             f"f={self.METHOD}",
@@ -1474,16 +1446,20 @@ class EmissionStudy:
         ]
 
     def generate_report(self, output_file) -> None:
-        """Generate and open the emission study report"""
+        """Open emission report URL and write results to file."""
+        ChromeBrowser.open_url("google.com")
         if not self._variables:
             raise RuntimeError("Study must be run before generating report")
 
         report_url = self.PATH + "&".join(self._variables)
+
+        time.sleep(2)
         ChromeBrowser.open_url(report_url)
+
         self._write_report(output_file, report_url)
 
     def _write_report(self, file, report_url: str) -> None:
-        """Write the emission study report to file"""
+        """Write formatted emission study results and URL to file."""
         report_data = self._prepare_report_data(report_url)
 
         def _print_and_write(content: str) -> None:
@@ -1498,7 +1474,7 @@ class EmissionStudy:
             self._write_formatted_line(file, label, value)
 
     def _prepare_report_data(self, report_url: str) -> List[Tuple[str, str]]:
-        """Prepare report data for writing"""
+        """Build list of (label, value) tuples for emission study report."""
         r1, x1, r0, x0 = self.impedance
         return [
             ("Feeder:", self.feeder_id),
@@ -1522,13 +1498,13 @@ class EmissionStudy:
         ]
 
     def _write_formatted_line(self, file, label: str, value: str) -> None:
-        """Write a formatted line to the report"""
+        """Write label-value pair with consistent 30-char label width."""
         line = f"{label:<30} {value}\n"
-        print(line, end="")
+        print(line, end="\n")
         file.write(line)
 
     def _format_url(self, url: str) -> str:
-        """Format URL for display in report"""
+        """Wrap URL for display with 31-char indentation."""
         import textwrap
 
         return textwrap.fill(
@@ -1542,7 +1518,7 @@ class EmissionStudy:
 
 
 class ShortCircuitStudy:
-    """Main class for conducting short circuit studies"""
+    """Orchestrate short circuit analysis: setup, configuration, simulation, and reporting."""
 
     # Constants
     ITERATION_UPSTREAM = cympy.enums.IterationOption.Upstream
@@ -1568,7 +1544,7 @@ class ShortCircuitStudy:
     ]
 
     def __init__(self):
-        """Initialize the ShortCircuitStudy with default values"""
+        """Initialize study with default impedance, voltage, and fault parameters. Check for network loops."""
         self.SourceName = self.NetworkID = ""
         self.NominalVoltage, self.OperatingVoltage = 12.47, 12.6
         self.FaultPoints = []
@@ -1593,7 +1569,7 @@ class ShortCircuitStudy:
             raise RuntimeError("Error: Loop exists in the loaded circuits")
 
     def get_inputs(self) -> None:
-        """Read and set essential input parameters for the power system analysis"""
+        """Read fault points and source impedances from user inputs. Validate fault points exist."""
         print("- Read input parameters")
 
         input_params = [
@@ -1632,7 +1608,7 @@ class ShortCircuitStudy:
             raise ValueError("Error: No 'Fault_Point' defined")
 
     def setup_env(self, fault_point: Any) -> None:
-        """Set up the environment required for conducting the power system study"""
+        """Initialize network, source equipment, table headers, and report filename."""
         print("- Setup study environment")
 
         self.NetworkID = Std.QueryInfoNode("$NetworkId$", fault_point)
@@ -1650,7 +1626,7 @@ class ShortCircuitStudy:
         self._get_file_name(self.SourceName)
 
     def _setup_table_headers(self) -> None:
-        """Setup table headers for reporting"""
+        """Build report table headers with network, distance, and impedance columns."""
         self.table_header_1 = "\n {:<56}{:>8}{:>11}  |{:-^31}||{:-^31}|".format(
             f"Circuits: {self.NetworkID}",
             f"{self.LEN_UNIT}",
@@ -1676,13 +1652,13 @@ class ShortCircuitStudy:
         self.table_separator = "\n" + "—" * len(self.table_header_1)
 
     def _get_file_name(self, source_name: str) -> None:
-        """Generate report filename"""
+        """Generate time-stamped report filename."""
         current_datetime = datetime.now().strftime("%Y-%m-%d-h%Hm%Ms%S")
         file_name = f"SC-Report-{source_name}-{current_datetime}.txt"
         self.Rep_Loc = os.path.join(str(self.Path), file_name)
 
     def set_source_equivalent(self) -> None:
-        """Set source impedances"""
+        """Configure source voltages, impedances, and series reactor from calculated/input values."""
         print("- Set source impedances")
 
         VOLTAGE_LIST = ["NominalKVLL", "DesiredKVLL"]
@@ -1706,7 +1682,7 @@ class ShortCircuitStudy:
         self._configure_reactor()
 
     def _create_source_set_list(self) -> List[Tuple[Any, str]]:
-        """Create the source set list for configuration"""
+        """Build list of (value, property_path) tuples for source configuration."""
         operating_voltage_ln = self.OperatingVoltage / math.sqrt(3)
 
         return [
@@ -1724,7 +1700,7 @@ class ShortCircuitStudy:
         ]
 
     def _configure_reactor(self) -> None:
-        """Configure series reactor if present"""
+        """Update reactor ID and validate/set rated current and reactance."""
         RX_List = Std.ListDevices(cympy.enums.DeviceType.SeriesReactor, self.NetworkID)
         if not RX_List:
             return
@@ -1742,7 +1718,7 @@ class ShortCircuitStudy:
             RX_Eq.SetValue(self.Reactor_X, "ReactanceOhms")
 
     def config_sc(self) -> None:
-        """Configure the parameters for the short circuit simulation"""
+        """Setup short circuit simulation: network selection, configuration, and fault impedance."""
         print("- Config short circuit study")
         self.NETWORK_PARAM = []
         self.EQUIP_LIST = []
@@ -1770,7 +1746,7 @@ class ShortCircuitStudy:
         EquipmentValueSetter.set_value_dev_eqt(set_list, self.SC_Sim)
 
     def _get_active_configuration(self, config_count: int) -> int:
-        """Get the active configuration index"""
+        """Find active configuration ID in the list and return its index."""
         active_config_id = self.SC_Sim.GetValue("ActiveConfigurationID")
         for i in range(config_count):
             if active_config_id == self.SC_Sim.GetValue(
@@ -1780,7 +1756,7 @@ class ShortCircuitStudy:
         return 0
 
     def _create_sc_set_list(self, config: int) -> List[Tuple[Any, str]]:
-        """Create short circuit set list"""
+        """Build list of (value, property_path) tuples for short circuit configuration."""
         pretxt = f"ParametersConfigurations[{config}]."
         return [
             (self.LGFaultResistance, f"{pretxt}LGFaultResistanceOHMS"),
@@ -1791,7 +1767,7 @@ class ShortCircuitStudy:
         ]
 
     def store_info(self, SCReport) -> None:
-        """Store fault impedance information"""
+        """Write bolted and impedance fault resistance and reactance to report."""
         SCReport.write("\n{:<25} {:<8}{:<8}".format("Fault Impedance (ohms)", "R", "X"))
 
         fault_impedances = [
@@ -1805,13 +1781,13 @@ class ShortCircuitStudy:
             )
 
     def query_table(self, fromNode: Any, toNode: Any) -> Tuple[List[Any], List[Any]]:
-        """Query table information for nodes"""
+        """Query impedance and distance data from both nodes. Return (fromNode, toNode) data."""
         info_toNode = QueryHelper.query_nodes(self.TABLE_VARIABLES, toNode.ID)
         info_fromNode = QueryHelper.query_nodes(self.TABLE_VARIABLES, fromNode.ID)
         return info_fromNode, info_toNode
 
     def feeder_mode(self, fault_point: Any) -> None:
-        """Configure feeder mode for the study"""
+        """Traverse network and configure cable/line equipment for new feeder setup."""
         iterator = Std.NetworkIterator(
             fault_point, self.ITERATION_UPSTREAM, self.ITERATION_STOPONOPEN
         )
@@ -1821,7 +1797,7 @@ class ShortCircuitStudy:
                 self._configure_device_line(Device)
 
     def _configure_device_line(self, Device: Any) -> None:
-        """Configure device line based on type and characteristics"""
+        """Set standard cable/line ID based on device type and phase count."""
         MainLine, PhaseCount = QueryHelper.query_devices(
             ["IsMainLine", "PhaseCount"], Device.DeviceNumber, Device.DeviceType
         )
@@ -1832,7 +1808,7 @@ class ShortCircuitStudy:
             self._configure_cable_device(Device, PhaseCount)
 
     def _configure_cable_device(self, Device: Any, PhaseCount: str) -> None:
-        """Configure cable device"""
+        """Set cable ID based on phase count and equipment ID prefix."""
         equipment_id = Device.EquipmentID
         if PhaseCount == "3" and not any(
             equipment_id.startswith(prefix)
@@ -1843,7 +1819,7 @@ class ShortCircuitStudy:
             Device.SetValue("3P_G4_-_1/C_#4/0_AWG_AL_25_KV_XLPE", "CableID")
 
     def make_report(self, file, NETWORK_PARAM: List, EQUIP_LIST: List) -> None:
-        """Generate the study report"""
+        """Write complete short circuit study report with network path and equipment details."""
         print(f"- Results Text File: {self.Rep_Loc}")
 
         def _print_and_write(content: str) -> None:
@@ -1873,7 +1849,7 @@ class ShortCircuitStudy:
 
 
 def device_handler(short_circuit_study, device_obj, Node, FromNode, Phase, FromPhase):
-    """Handle different types of devices in a short circuit study"""
+    """Route device to appropriate equipment class, query impedance, add to study."""
     device_handlers = {
         1: TransformerEquipment,  # cympy.enums.DeviceType.Transformer
         42: TransformerEquipment,  # cympy.enums.DeviceType.AutoTransformer
@@ -1902,7 +1878,7 @@ def device_handler(short_circuit_study, device_obj, Node, FromNode, Phase, FromP
 
 
 def main():
-    """Main execution function"""
+    """Run complete short circuit analysis for all fault points with optional emission studies."""
     if not Std.ListNetworks:
         raise ValueError("Error: No study is loaded")
 

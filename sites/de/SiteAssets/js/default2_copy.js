@@ -422,16 +422,8 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
 const adjustGridLayout = (container, firstItem, columns) => {
   const items = container.querySelectorAll('.item');
   const total = items.length;
-
-  // Calculate rows needed
   const rows = Math.ceil(total / columns) || 1;
   firstItem.style.gridRow = `span ${rows}`;
-  // Set grid layout
-  /*   firstItem.style.gridRow = `span ${Math.max(1, rows)}`;
-  const height = rows * 80 + (rows - 1) * 10;
-  firstItem.style.height = `${height}px`; */
-
-  //console.log('Grid layout adjusted:', { rows, columns, total });
 };
 
 /*

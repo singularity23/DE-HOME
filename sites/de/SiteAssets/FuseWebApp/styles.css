@@ -1,0 +1,138 @@
+:root {
+    --bg: #0b1020;
+    --card: #121832;
+    --ink: #e7ecff;
+    --muted: #9fb0ff;
+    --pri: #5aa8ff;
+    --accent: #ffc857;
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+    background: var(--bg);
+    color: var(--ink);
+}
+
+header {
+    padding: 2rem 1rem;
+    text-align: center;
+    background: linear-gradient(180deg, #151b36, transparent)
+}
+
+h1 {
+    margin: 0 0 .25rem;
+    font-weight: 700;
+    letter-spacing: .5px
+}
+
+.tagline {
+    margin: .25rem 0 0;
+    color: var(--muted)
+}
+
+main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    background: var(--card);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .05) inset
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem
+}
+
+label {
+    font-weight: 600;
+    color: var(--muted)
+}
+
+input,
+select,
+button {
+    padding: .6rem .75rem;
+    border-radius: 10px;
+    border: 1px solid #2a335d;
+    background: #0f1530;
+    color: var(--ink)
+}
+
+button {
+    cursor: pointer
+}
+
+button.primary {
+    background: var(--pri);
+    color: #081229;
+    border: none;
+    font-weight: 700
+}
+
+button.ghost {
+    background: transparent;
+    border: 1px solid #2a335d
+}
+
+.result {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .05) inset;
+}
+
+.highlight {
+    color: var(--accent);
+}
+
+.hidden {
+    display: none
+}
+
+.table-wrap {
+    overflow: auto;
+    max-height: 420px;
+    border: 1px solid #222b55;
+    border-radius: 10px
+}
+
+#grid {
+    width: 100%;
+    border-collapse: collapse
+}
+
+#grid th,
+#grid td {
+    padding: .5rem .75rem;
+    border-bottom: 1px solid #1d254a;
+    white-space: nowrap;
+    text-align: center;
+}
+
+#grid thead th {
+    position: sticky;
+    top: 0;
+    background: #0f1530;
+    z-index: 1
+}
+
+footer {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--muted)
+}

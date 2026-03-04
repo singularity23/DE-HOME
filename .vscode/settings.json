@@ -1,13 +1,13 @@
 {
   "vscode-edge-devtools.headless": false,
-  "editor.fontFamily": "Google Sans Code",
+  "editor.fontFamily": "Roboto Mono",
   "liveServer.settings.port": 5585,
   "editor.wordWrap": "wordWrapColumn",
   "editor.defaultFormatter": "ms-python.black-formatter",
   "files.autoSave": "onWindowChange",
   "editor.formatOnSave": true,
   "editor.fontVariations": true,
-  "editor.wordWrapColumn": 120,
+  "editor.wordWrapColumn": 72,
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
@@ -18,9 +18,10 @@
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features"
   },
-  "editor.codeLensFontFamily": "JetBrains Mono NL, Alma Mono, Roboto Mono, Cascadia Mono, SF Mono Regular, Fira Code, JetBrains Mono",
   "python-envs.defaultEnvManager": "ms-python.python:venv",
-  "python-envs.pythonProjects": [],
+  "python-envs.pythonProjects": [
+
+  ],
   "console-ninja.installBinToPath": true,
   "console-ninja.featureSet": "Community",
   "console-ninja.allowConsoleLogToTriggerPredictions": true,
@@ -30,7 +31,7 @@
     "live-preview-extension": true
   },
   "console-ninja.captureFunctions": true,
-  "editor.fontSize": 15,
+  "editor.fontSize": 14,
   "[javascript]": {
     "editor.defaultFormatter": "numso.prettier-standard-vscode"
   },

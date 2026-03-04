@@ -149,13 +149,20 @@ class QueryHelper:
         """
         Query a list of keywords using the provided query function with fallback mechanism.
         """
-        output_list = list(map(query_func, keyword_list, *args))
+        output_list = []
         for keyword in keyword_list:
-            result = query_func(keyword, *args)
             try:
-                output_list.append(locale.atof(result))
-            except (ValueError, TypeError):
-                output_list.append(result)
+                result = query_func(keyword, *args)
+                # Try to convert to float, fallback to original value
+                try:
+                    output_list.append(locale.atof(result))
+                except (ValueError, TypeError):
+                    output_list.append(result)
+            except Exception as e:
+                print(
+                    f"Warning: Failed to query {keyword}: for {args} : {e}"
+                )  # Log error but continue processing
+                output_list.append(None)
         return output_list
 
     @staticmethod

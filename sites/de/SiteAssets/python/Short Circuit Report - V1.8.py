@@ -20,6 +20,7 @@ Report_Name = "Short Circuit Report - BCH v1.8"
 ############################################################################################################################################################
 ######## Added for Emission Study###########################################################################################################################
 import cympy
+import time
 import webbrowser
 import os
 from typing import Dict, List, Tuple, Optional
@@ -225,7 +226,9 @@ class EmissionStudy:
 
         report_url = self.PATH + "&".join(self._variables)
         browser = get_chrome()
-        browser.open_new(report_url)
+        browser.open_new("google.com")
+        time.sleep(2)
+        browser.open(report_url, new=0)
 
         self._write_report(output_file, report_url)
 

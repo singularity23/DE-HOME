@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fuse Selector Web App</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- dataset is required by app.js; load before main script -->
+  <script src="data/fuses.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <h1>Fuse Selector</h1>
+    <p class="tagline">From transformer <em>kVA</em> to the source-side fuse.</p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <div class="field">
+        <label for="transformer">Transformer Type</label>
+        <select id="transformer">
+          <option value="">—</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="voltage">Operating Voltage (1ph/3ph kV)</label>
+        <select id="voltage" disabled>
+          <option value="">—</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="kva">kVA</label>
+        <select id="kva" disabled>
+          <option value="">—</option>
+        </select>
+      </div>
+      <div class="field">
+        <button id="find" type="submit" class="primary">Find Fuse</button>
+        <button id="reset" type="button" class="ghost">Reset</button>
+      </div>
+    </section>
+
+    <section id="result" class="result hidden"></section>
+
+    <section hidden>
+      <details>
+        <summary>Browse the database</summary>
+        <div class="table-wrap">
+          <table id="grid">
+            <thead>
+              <tr>
+                <th>Transformer</th>
+                <th>Operating Voltage</th>
+                <th>kVA</th>
+                <th>BON Fuse</th>
+                <th>Source-side Fuse</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <p></p>
+    <!-- main logic; fuses already loaded via defer -->
+    <script src="app.js" defer></script>
+  </footer>
+</body>
+
+</html>

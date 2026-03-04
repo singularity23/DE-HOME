@@ -396,7 +396,7 @@ footer {
   box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
 }
 
-.grid-container {
+.grid-container:nth-child(n) {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
@@ -410,13 +410,14 @@ footer {
 /* The first element (special one) */
 .special {
   grid-column: 1;
+  grid-row: 1 / 999;
   /* auto-height, controlled by JS dynamically */
 }
 
 /* Responsive design */
 
 @media only screen and (min-width: 1024px) and (max-width: 1440px) {
-  .grid-container {
+  .grid-container:nth-child(n) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -426,7 +427,7 @@ footer {
     font-size: 2.2rem;
   }
 
-  .grid-container {
+  .grid-container:nth-child(n) {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -448,13 +449,13 @@ footer {
     margin-bottom: 30px;
   }
 
-  .grid-container {
+  .grid-container:nth-child(n) {
     grid-template-columns: repeat(2, 50%);
   }
 }
 
 @media only screen and (max-width: 480px) {
-  .grid-container {
+  .grid-container:nth-child(n) {
     grid-template-columns: max(95%, 320px);
   }
 
