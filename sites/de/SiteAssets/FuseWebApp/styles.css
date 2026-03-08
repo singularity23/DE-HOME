@@ -106,25 +106,25 @@ button.ghost {
 
 .table-wrap {
     overflow: auto;
-    max-height: 420px;
+    max-height: fit-content;
     border: 1px solid #222b55;
     border-radius: 10px
 }
 
-#grid {
+table {
     width: 100%;
     border-collapse: collapse
 }
 
-#grid th,
-#grid td {
+table th,
+table td {
     padding: .5rem .75rem;
     border-bottom: 1px solid #1d254a;
     white-space: nowrap;
     text-align: center;
 }
 
-#grid thead th {
+table thead th {
     position: sticky;
     top: 0;
     background: #0f1530;

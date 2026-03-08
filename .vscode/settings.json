@@ -7,7 +7,7 @@
   "files.autoSave": "onWindowChange",
   "editor.formatOnSave": true,
   "editor.fontVariations": true,
-  "editor.wordWrapColumn": 72,
+  "editor.wordWrapColumn": 120,
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
@@ -36,7 +36,7 @@
     "editor.defaultFormatter": "numso.prettier-standard-vscode"
   },
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
+    "editor.defaultFormatter": "charliermarsh.ruff"
   },
   "python.testing.unittestArgs": [
     "-v",

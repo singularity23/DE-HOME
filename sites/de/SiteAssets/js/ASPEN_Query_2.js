@@ -1086,7 +1086,7 @@ javascript: (function () {
      * @param {string} sql - SQL query
      * @returns {string} Minified SQL
      */
-    /*     minify (sql) {
+    minify (sql) {
       if (!sql?.trim()) return '';
 
       return sql
@@ -1094,7 +1094,7 @@ javascript: (function () {
         .replace(/\/\*[\s\S]*?\*\//g, '')
         .replace(/\s+/g, ' ')
         .trim();
-    }, */
+    },
     /*
      * Generates SQL query for given input code
      * @param {string} inputCode - Device code (e.g., 'ABC 12F123')
@@ -1215,8 +1215,9 @@ javascript: (function () {
       `;
 
       // Cache the result
-      this._cache[cacheKey] = sql;
-      return sql;
+      const minifiedSql = this.minify(sql);
+      this._cache[cacheKey] = minifiedSql;
+      return minifiedSql;
     },
   };
 

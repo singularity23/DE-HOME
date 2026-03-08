@@ -8,12 +8,17 @@
   <link rel="stylesheet" href="styles.css">
   <!-- dataset is required by app.js; load before main script -->
   <script src="data/fuses.js" defer></script>
+  <!-- impedance data for OH and UG transformers -->
+  <script src="data/oh_tx_impedances.js" defer></script>
+  <script src="data/ug_tx_impedances.js" defer></script>
+  <script src="data/fuses_cadid.js" defer></script>
 </head>
 
 <body>
   <header>
     <h1>Fuse Selector</h1>
     <p class="tagline">From transformer <em>kVA</em> to the source-side fuse.</p>
+    <p class="tagline">and related transformer <em>impedances</em>.</p>
   </header>
 
   <main>
@@ -66,7 +71,9 @@
   </main>
 
   <footer>
-    <p></p>
+    <p>Data from Distribution Standards <em><strong>ES43 K6 &amp; J1-09, ES53 U2 &amp; U3, ES43 &amp; ES53 Z
+        </strong></em>
+      sections</p>
     <!-- main logic; fuses already loaded via defer -->
     <script src="app.js" defer></script>
   </footer>

@@ -490,7 +490,7 @@ class BaseEquipment(ABC):
         ]
         NETWORK_PARAM.append(_DEVICE_INFO)
 
-    def eq_data(self, EQUIP_LIST: List) -> None:
+    def eq_data(self, EQUIP_LIST: list) -> None:
         """Add this equipment to list if not duplicated. Skip internal wires."""
         if all(self.EqID not in eq for eq in EQUIP_LIST) and self.EqID != "INT_WIRE":
             EQUIP_LIST.append([self.EqID, self])
@@ -1816,7 +1816,7 @@ class ShortCircuitStudy:
         elif not equipment_id.startswith("3P_G4"):
             Device.SetValue("3P_G4_-_1/C_#4/0_AWG_AL_25_KV_XLPE", "CableID")
 
-    def make_report(self, file, NETWORK_PARAM: List, EQUIP_LIST: List) -> None:
+    def make_report(self, file, NETWORK_PARAM: list, EQUIP_LIST: list) -> None:
         """Write complete short circuit study report with network path and equipment details."""
         print(f"- Results Text File: {self.Rep_Loc}")
 

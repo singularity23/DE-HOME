@@ -48,7 +48,9 @@ class ChromeBrowser:
         platform_key = (
             "windows"
             if os.name == "nt"
-            else "darwin" if sys.platform == "darwin" else "linux"
+            else "darwin"
+            if sys.platform == "darwin"
+            else "linux"
         )
 
         for path in CHROME_PATHS.get(platform_key, []):
@@ -63,7 +65,9 @@ class ChromeBrowser:
         platform_key = (
             "windows"
             if os.name == "nt"
-            else "darwin" if sys.platform == "darwin" else "linux"
+            else "darwin"
+            if sys.platform == "darwin"
+            else "linux"
         )
 
         for path in CHROME_PATHS.get(platform_key, []):
@@ -245,7 +249,7 @@ class ShortCircuitStudy:
         "Distance",
     ]
     NETWORK_PARAM = []
-    EQUIP_LIST = []
+    EQUIP_LIST = set()
 
     def __init__(self):
         """Initialize the ShortCircuitStudy with default values"""
@@ -421,7 +425,7 @@ class ShortCircuitStudy:
         """Configure the parameters for the short circuit simulation"""
         print("- Config short circuit study")
         self.NETWORK_PARAM = []
-        self.EQUIP_LIST = []
+        self.EQUIP_LIST = set()
 
         self.SC_Sim = Sim.ShortCircuit()
         n = self.SC_Sim.GetValue("AnalysisNetworks.SelectedNetworks")
@@ -518,7 +522,7 @@ class ShortCircuitStudy:
         elif not equipment_id.startswith("3P_G4"):
             Device.SetValue("3P_G4_-_1/C_#4/0_AWG_AL_25_KV_XLPE", "CableID")
 
-    def make_report(self, file, NETWORK_PARAM: List, EQUIP_LIST: List) -> None:
+    def make_report(self, file, NETWORK_PARAM: List, EQUIP_LIST: set) -> None:
         """Generate the study report"""
         print(f"- Results Text File: {self.Rep_Loc}")
 
@@ -617,10 +621,10 @@ class BaseEquipment:
         ]
         NETWORK_PARAM.append(_DEVICE_INFO)
 
-    def eq_data(self, EQUIP_LIST: List) -> None:
+    def eq_data(self, EQUIP_LIST: set) -> None:
         """Add equipment to equipment list"""
-        if all(self.EqID not in eq for eq in EQUIP_LIST) and self.EqID != "INT_WIRE":
-            EQUIP_LIST.append([self.EqID, self])
+        if self.EqID != "INT_WIRE":
+            EQUIP_LIST.add((self.EqID, self))
 
     def store_info(self, SCReport) -> None:
         """Store equipment information - to be implemented by subclasses"""

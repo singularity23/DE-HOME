@@ -6,9 +6,36 @@
       kva: Number(r.kva) || 0,
       bonFuse: (r.bonFuse || '').trim(),
       sourceFuse: (r.sourceFuse || '').trim(),
-      sheet: r.sheet || '',
     }))
     .sort((a, b) => a.kva - b.kva);
+
+  // Load impedance data
+  const ohData = (window.OH_TX_DATA || []).map(r => ({
+    transformer: 'OH',
+    cadId: (r['CAD ID'] || '').trim(),
+    kva: Number(r.kVA) || 0,
+    voltage: (r['Primary (kV)'] || '').trim() || '—',
+    secondary: (r['Secondary (V)'] || '').trim() || '—',
+    minImpedance: r['Minimum impedance (%)'] || 0,
+    maxImpedance: r['Maximum impedance (%)'] || 0,
+    bushing: (r.Bushing || '').trim(),
+    configuration: (r.Configuration || '').trim(),
+  }));
+
+  const ugData = (window.UG_TX_DATA || []).map(r => ({
+    transformer: (r['Transformer Type'] || '').trim() || '—',
+    cadId: (r['CAD ID'] || '').trim(),
+    kva: Number(r.kVA) || 0,
+    voltage: (r['Primary (kV)'] || '').trim() || '—',
+    secondary: (r['Secondary (V)'] || '').trim() || '—',
+    minImpedance: r['Minimum Impedance (%)'] || '—',
+    feed: (r.Feed || '').trim(),
+  }));
+
+  const fuseCadIdData = (window.FUSE_CADID_DATA || []).map(r => ({
+    fuse: (r.Fuse || '').trim(),
+    cadId: (r['CAD ID'] || '').trim(),
+  }));
 
   const els = {
     transformer: document.getElementById('transformer'),
@@ -34,6 +61,60 @@
       const bStr = String(b);
       return aStr.localeCompare(bStr, undefined, { numeric: true, sensitivity: 'base' });
     });
+
+  function getFuseCADId (fuse) {
+    const match = fuseCadIdData.find(r => r.fuse === fuse);
+    return match ? fuse + ' (' + match.cadId + ')' : fuse;
+  }
+  // Search impedance data based on transformer type and selections
+  function searchImpedanceData (transformerType, voltage, kva) {
+    if (transformerType === 'OH') {
+      return ohData.filter(row => row.kva === kva && checkVoltageMatch(row.voltage, voltage));
+    } else if (transformerType === 'PMT' || transformerType === 'LPT' || transformerType === 'SDT') {
+      return ugData.filter(
+        row => row.transformer === transformerType && row.kva === kva && checkVoltageMatch(row.voltage, voltage)
+      );
+    }
+    return [];
+  }
+
+  function checkVoltageMatch (rowVoltage, selectedVoltage) {
+    console.log(rowVoltage, selectedVoltage);
+    if (rowVoltage === selectedVoltage || rowVoltage.includes(selectedVoltage)) {
+      return true;
+    }
+    return false;
+  }
+
+  // Render impedance table
+  function renderImpedanceTable (rows) {
+    if (!rows || rows.length === 0) return '';
+
+    const isOH = rows[0].transformer === 'OH';
+    let html = '<h3>Transformer Details</h3>';
+    html += '<div class="table-wrap"><table class="impedance-table"><thead><tr>';
+
+    if (isOH) {
+      html += '<th>CAD ID</th><th>kVA</th><th>Primary (kV)</th><th>Secondary (V)</th>';
+      html += '<th>Min Z (%)</th><th>Max Z (%)</th><th>Bushing</th><th>Config</th></tr></thead><tbody>';
+      rows.forEach(r => {
+        html += `<tr><td>${r.cadId}</td><td>${r.kva}</td><td>${r.voltage}</td>`;
+        html += `<td>${r.secondary}</td><td>${r.minImpedance}</td><td>${r.maxImpedance}</td>`;
+        html += `<td>${r.bushing}</td><td>${r.configuration}</td></tr>`;
+      });
+    } else {
+      html += '<th>CAD ID</th><th>Type</th><th>kVA</th><th>Primary (kV)</th><th>Secondary (V)</th>';
+      html += '<th>Min Z (%)</th><th>Feed Type</th></tr></thead><tbody>';
+      rows.forEach(r => {
+        html += `<tr><td>${r.cadId}</td><td>${r.transformer}</td><td>${r.kva}</td>`;
+        html += `<td>${r.voltage}</td><td>${r.secondary}</td><td>${r.minImpedance}</td>`;
+        html += `<td>${r.feed}</td></tr>`;
+      });
+    }
+
+    html += '</tbody></table></div>';
+    return html;
+  }
 
   const setDisabled = (el, disabled) => {
     if (el) el.disabled = disabled;
@@ -73,7 +154,7 @@
     unique(subset.map(r => r.voltage)).forEach(val => {
       const o = document.createElement('option');
       const u = document.createElement('span');
-      u.textContent = ' kV' + (t === 'LPT' ? ' (L-N)' : ' (L-N/L-L)');
+      u.textContent = ' kV' + (t === 'PMT' || t === 'SDT' ? ' L-L' : ' L-N');
       o.value = val;
       o.appendChild(u);
       o.innerHTML = val + u.outerHTML;
@@ -155,10 +236,10 @@
     const ul = document.createElement('ul');
     const fields = [
       ['Transformer', row.transformer],
-      [`Operating kV (${row.transformer === 'LPT' ? 'L-N' : 'L-N/L-L'})`, row.voltage],
+      [`Operating kV (${row.transformer === 'PMT' || row.transformer === 'SDT' ? 'L-L' : 'L-N'})`, row.voltage],
       ['kVA', row.kva],
-      ['BON Fuse', row.bonFuse || '—', 'highlight'],
-      ['Source-side Fuse', row.sourceFuse || '—', 'highlight'],
+      [`${row.transformer === 'OH' ? 'Current Limiting Fuse' : 'BON Fuse'}`, getFuseCADId(row.bonFuse), 'highlight'],
+      ['Source-side Fuse', getFuseCADId(row.sourceFuse), 'highlight'],
     ];
     fields.forEach(([label, value, className]) => {
       const li = document.createElement('li');
@@ -180,6 +261,18 @@
     renderTable(matches);
     if (matches.length) {
       showResult(matches[0], true);
+
+      // Search and display impedance data if selections are complete
+      const transformerType = els.transformer.value;
+      const voltage = els.voltage.value;
+      const kva = Number(els.kva.value);
+
+      if (transformerType && voltage && kva) {
+        const impedanceMatches = searchImpedanceData(transformerType, voltage, kva);
+        if (impedanceMatches.length > 0) {
+          els.result.innerHTML += renderImpedanceTable(impedanceMatches);
+        }
+      }
     } else {
       showResult(null);
     }
