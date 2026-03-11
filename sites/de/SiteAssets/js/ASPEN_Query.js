@@ -85,7 +85,7 @@ javascript: (function () {
         inService: 'IN SERVICE',
         issued: 'ISSUED',
       },
-      queryDelay: 2000,
+      queryDelay: 2500,
       dbmsLobLength: 4000,
       timeout: 15000,
       pollInterval: 100,
@@ -781,7 +781,7 @@ javascript: (function () {
   <style>
     body { font-family: monospace; font-size: 12px; padding: 20px; }
     h2 { margin-bottom: 20px; }
-    table { border-collapse: collapse; font-size: 11px; }
+    table { border-collapse: collapse; font-size: 11px; white-space: pre-wrap; border-collapse: collapse; }
     th, td { border: 1px solid #999; padding: 8px; text-align: left; }
     th { background-color: #f0f0f0; font-weight: bold; }
   </style>
