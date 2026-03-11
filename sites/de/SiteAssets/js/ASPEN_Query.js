@@ -87,6 +87,9 @@ javascript: (function () {
       },
       queryDelay: 2000,
       dbmsLobLength: 4000,
+      timeout: 15000,
+      pollInterval: 100,
+      queryStartDelay: 300,
     },
 
     // Table layout configuration
@@ -127,6 +130,15 @@ javascript: (function () {
       AREVA: 'AREVA',
       UNKNOWN: 'unknown',
     },
+
+    // Cached set for fast relay type lookups
+    _relayTypeSet: null,
+    get relayTypeSet () {
+      if (!this._relayTypeSet) {
+        this._relayTypeSet = new Set(['SEL', 'ELECTRO', 'AREVA']);
+      }
+      return this._relayTypeSet;
+    },
   };
 
   // ============================================================================
@@ -164,20 +176,14 @@ javascript: (function () {
   };
 
   /*
-   * Converts array-like object to array
+   * Converts array-like object to array (optimized)
    */
   const toArray = row => {
-    if (Array.isArray(row)) return [...row];
-    if (row == null) return [];
-    // If it's iterable or array‑like, use Array.from
-    if (typeof row[Symbol.iterator] === 'function' || typeof row?.length === 'number') {
-      return Array.from(row);
-    }
-    // Otherwise treat as plain object and get its values
-    if (typeof row === 'object') {
-      return Object.values(row);
-    }
-    return []; // fallback for primitives (numbers, booleans)
+    if (!row) return [];
+    if (Array.isArray(row)) return row;
+    if (row?.length !== undefined) return Array.from(row);
+    if (typeof row === 'object') return Object.values(row);
+    return [];
   };
 
   /*
@@ -195,8 +201,17 @@ javascript: (function () {
   // ============================================================================
 
   const DOM = {
+    // Cached setter map for createElement optimization
+    _setters: {
+      style: (el, val) => (el.style.cssText = val),
+      textContent: (el, val) => (el.textContent = val),
+      className: (el, val) => (el.className = val),
+      onclick: (el, val) => (el.onclick = val),
+      innerHTML: (el, val) => (el.innerHTML = val),
+    },
+
     /*
-     * Creates a DOM element with properties and attributes
+     * Creates a DOM element with properties and attributes (optimized)
      * @param {string} tag - HTML tag name
      * @param {Object} options - Element options
      * @returns {HTMLElement}
@@ -204,17 +219,8 @@ javascript: (function () {
     createElement (tag, options = {}) {
       const element = document.createElement(tag);
 
-      // Optimized property setters using a map
-      const setters = {
-        style: (el, val) => (el.style.cssText = val),
-        textContent: (el, val) => (el.textContent = val),
-        className: (el, val) => (el.className = val),
-        onclick: (el, val) => (el.onclick = val),
-        innerHTML: (el, val) => (el.innerHTML = val),
-      };
-
       Object.entries(options).forEach(([key, value]) => {
-        const setter = setters[key];
+        const setter = this._setters[key];
         setter ? setter(element, value) : element.setAttribute(key, value);
       });
 
@@ -289,16 +295,22 @@ javascript: (function () {
   // ============================================================================
 
   /*
-   * AREVA Relay Setting Decoder
+   * AREVA Relay Setting Decoder (optimized)
    * Converts raw setting codes to human-readable descriptions
    */
   const AREVADecoder = {
-    // Phase mapping
-    phasePatterns: [
-      { type: 'PHS', pattern: /P(\.|\s|\.?\s)?PS1$/ },
-      { type: 'GND', pattern: /N(\.|\s|\.?\s)?PS1$/ },
-      { type: 'NEG', pattern: /NEG(\.|\s|\.?\s)?PS1$/ },
-    ],
+    // Phase mapping (cached to avoid regex recreation)
+    _phasePatterns: null,
+    get phasePatterns () {
+      if (!this._phasePatterns) {
+        this._phasePatterns = [
+          { type: 'PHS', pattern: /P(\.|\s|\.?\s)?PS1$/ },
+          { type: 'GND', pattern: /N(\.|\s|\.?\s)?PS1$/ },
+          { type: 'NEG', pattern: /NEG(\.|\s|\.?\s)?PS1$/ },
+        ];
+      }
+      return this._phasePatterns;
+    },
 
     // Definite time setting mappings
     definiteTime: [
@@ -311,11 +323,13 @@ javascript: (function () {
     ],
 
     // Suffix descriptions
-    suffixMap: {
-      IREF: 'Pick Up (A)',
-      CHARACTER: 'Curve',
-      FACTOR: 'Time Dial',
-    },
+    suffixMap: [
+      {
+        IREF: 'Pick Up (A)',
+      },
+      { CHARACTER: 'Curve' },
+      { FACTOR: 'Time Dial' },
+    ],
 
     // Overcurrent setting type
     overCurrentType: 'Timed Overcurrent',
@@ -397,7 +411,7 @@ javascript: (function () {
      * @private
      */
     _getSuffix (code, pattern) {
-      for (const [key, value] of Object.entries(this.suffixMap)) {
+      for (const { key, value } of this.suffixMap) {
         if (code.includes(key)) return value;
       }
       const parts = code.split('/');
@@ -406,7 +420,7 @@ javascript: (function () {
   };
 
   /*
-   * SEL Relay Setting Decoder
+   * SEL Relay Setting Decoder (optimized with cached patterns)
    * Converts SEL setting codes to human-readable descriptions
    */
   const SELDecoder = {
@@ -436,21 +450,33 @@ javascript: (function () {
       H: 'High Set (A)',
     },
 
-    // Definite time overcurrent patterns
-    definiteTime: [
-      { pattern: /^50P[234]/, desc: 'Definite Time Pick Up (A)' },
-      { pattern: /^67P[234]/, desc: 'Definite Time Delay (s)' },
-    ],
+    // Cached pattern lists
+    _definiteTime: null,
+    _overCurrent: null,
+    _liveLinePattern: null,
+    _tripEquationPattern: null,
 
-    // Overcurrent type patterns
-    overCurrent: [
-      { pattern: /^50/, desc: 'Inst. Overcurrent' },
-      { pattern: /^51/, desc: 'Timed Overcurrent' },
-    ],
+    get definiteTime () {
+      return (this._definiteTime ??= [
+        { pattern: /^50P[234]/, desc: 'Definite Time Pick Up (A)' },
+        { pattern: /^67P[234]/, desc: 'Definite Time Delay (s)' },
+      ]);
+    },
 
-    // Special setting patterns
-    liveLinePattern: /^50[PG]5/,
-    tripEquationPattern: /^SV\d?\w+/,
+    get overCurrent () {
+      return (this._overCurrent ??= [
+        { pattern: /^50/, desc: 'Inst. Overcurrent' },
+        { pattern: /^51/, desc: 'Timed Overcurrent' },
+      ]);
+    },
+
+    get liveLinePattern () {
+      return (this._liveLinePattern ??= /^50[PG]5/);
+    },
+
+    get tripEquationPattern () {
+      return (this._tripEquationPattern ??= /^SV\d?\w+/);
+    },
 
     /*
      * Decodes SEL setting code
@@ -641,7 +667,7 @@ javascript: (function () {
     },
 
     /*
-     * Merges consecutive identical cells in specified columns
+     * Merges consecutive identical cells in specified columns (optimized)
      * @param {Array<Array>} rows - Table rows to merge
      * @returns {Array<Array>} Rows with merge information
      */
@@ -651,38 +677,36 @@ javascript: (function () {
       const mergeColumns = CONFIG.table.mergeColumns[state.relayType];
       if (!mergeColumns?.length) return rows;
 
-      const skipSet = new Set();
       const rowCount = rows.length;
       const colCount = rows[0].length;
+      const mergeColSet = new Set(mergeColumns);
+      const rowspanMap = new Map();
 
-      // Identify cells to skip and track merges
+      // Pre-calculate all rowspans for merge columns in one pass
       for (const col of mergeColumns) {
         if (col >= colCount) continue;
-
-        let currentValue = rows[0][col];
-        let startRow = 0;
-        let count = 1;
-
-        for (let row = 1; row <= rowCount; row++) {
-          const isLastRow = row === rowCount;
-          const isSameValue = !isLastRow && rows[row][col] === currentValue;
-
-          if (isSameValue) {
-            count++;
-          } else if (count > 1) {
-            // Mark cells to skip
-            for (let i = startRow + 1; i < startRow + count; i++) {
-              skipSet.add(`${i}-${col}`);
+        for (let row = 0; row < rowCount; row++) {
+          let rowspan = 1;
+          const cellValue = rows[row][col];
+          // Skip if this cell is part of a merge from above
+          let startFound = true;
+          for (let prevRow = row - 1; prevRow >= 0; prevRow--) {
+            if (rows[prevRow][col] === cellValue) {
+              startFound = false;
+              break;
             }
-            if (!isLastRow) {
-              currentValue = rows[row][col];
-              startRow = row;
-              count = 1;
+          }
+
+          if (startFound) {
+            // Count consecutive identical cells below
+            for (let nextRow = row + 1; nextRow < rowCount; nextRow++) {
+              if (rows[nextRow][col] === cellValue) {
+                rowspan++;
+              } else {
+                break;
+              }
             }
-          } else if (!isLastRow) {
-            currentValue = rows[row][col];
-            startRow = row;
-            count = 1;
+            rowspanMap.set(`${row}-${col}`, rowspan);
           }
         }
       }
@@ -691,25 +715,15 @@ javascript: (function () {
       return rows.map((row, rowIndex) => {
         return row
           .map((cell, colIndex) => {
-            const skipKey = `${rowIndex}-${colIndex}`;
-            if (skipSet.has(skipKey)) {
-              return null;
-            }
-
-            // Calculate rowspan
-            let rowspan = 1;
-            for (const mergeCol of mergeColumns) {
-              if (mergeCol === colIndex) {
-                for (let r = rowIndex + 1; r < rowCount; r++) {
-                  if (rows[r][colIndex] === rows[rowIndex][colIndex]) {
-                    rowspan++;
-                  } else {
-                    break;
-                  }
-                }
-                break;
+            // Skip cells that are part of a rowspan from above
+            if (mergeColSet.has(colIndex) && rowIndex > 0) {
+              if (rows[rowIndex][colIndex] === rows[rowIndex - 1][colIndex]) {
+                return null;
               }
             }
+
+            const rowspan = rowspanMap.get(`${rowIndex}-${colIndex}`) || 1;
+
             return {
               value: cell,
               rowspan,
@@ -849,7 +863,7 @@ javascript: (function () {
     },
 
     /*
-     * Detects relay type from first row of data
+     * Detects relay type from first row of data (optimized)
      * @private
      */
     _detectRelayType () {
@@ -862,10 +876,10 @@ javascript: (function () {
       const relayCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
       const relayText = String(relayCell ?? '').toUpperCase();
 
-      // Match relay type
-      for (const [type, label] of Object.entries(CONFIG.relayTypes)) {
-        if (relayText.includes(label)) {
-          state.relayType = label;
+      // Quick lookup using relay type set
+      for (const type of CONFIG.relayTypeSet) {
+        if (relayText.includes(type)) {
+          state.relayType = type;
           return;
         }
       }
@@ -948,7 +962,6 @@ javascript: (function () {
       if ([CONFIG.relayTypes.SEL, CONFIG.relayTypes.AREVA].includes(state.relayType)) {
         state.tableRows = TableRenderer.mergeConsecutiveCells(state.tableRows);
       }
-
       const container = TableManager.ensureContainer();
       TableRenderer.render(container, headers, state.tableRows);
     },
@@ -970,7 +983,7 @@ javascript: (function () {
         },
       });
 
-      container.insertBefore(DOM.createElement('br'), container.firstChild);
+      container.insertBefore(DOM.createElement('p'), container.firstChild);
       container.insertBefore(btn, container.firstChild);
     },
   };
@@ -1131,8 +1144,8 @@ javascript: (function () {
 
       try {
         // First attempt: IN SERVICE
-        this._runQuery(searchValue, CONFIG.sql.settingStatus.inService);
-        await this._waitForResults();
+        const [fp1, s1] = this._runQuery(searchValue, CONFIG.sql.settingStatus.inService);
+        await this._waitForResults(fp1, s1);
 
         if (await DataProcessor.processResults()) {
           this._logExecutionTime(startTime);
@@ -1141,8 +1154,8 @@ javascript: (function () {
 
         // Fallback: ISSUED
         DOM.showWarning(CONFIG.messages.noInServiceResults);
-        this._runQuery(searchValue, CONFIG.sql.settingStatus.issued);
-        await this._waitForResults();
+        const [fp2, s2] = this._runQuery(searchValue, CONFIG.sql.settingStatus.issued);
+        await this._waitForResults(fp2, s2);
 
         if (!(await DataProcessor.processResults())) {
           DOM.showWarning(CONFIG.messages.noResults);
@@ -1164,7 +1177,10 @@ javascript: (function () {
       const sql = SQL.generate(searchValue, status);
       this._displaySql(sql);
       if (typeof window.runQuery === 'function') {
+        const fingerPrint = window._C1MVCCtrl5?._src;
+        const start = Date.now();
         window.runQuery();
+        return [fingerPrint, start];
       }
     },
 
@@ -1183,8 +1199,33 @@ javascript: (function () {
      * Waits for query to complete
      * @private
      */
-    async _waitForResults () {
-      return new Promise(resolve => setTimeout(resolve, CONFIG.sql.queryDelay));
+    async _waitForResults (fingerPrint, startTime) {
+      return new Promise((resolve, reject) => {
+        const poll = () => {
+          const elapsed = Date.now() - startTime;
+
+          if (elapsed > CONFIG.sql.timeout) {
+            reject(new Error('Query timed out'));
+            return;
+          }
+
+          if (window._C1MVCCtrl5?._src !== fingerPrint) {
+            resolve();
+            console.log(`Query completed after : ${elapsed} ms`);
+            return;
+          }
+
+          if (elapsed > CONFIG.sql.queryDelay) {
+            resolve();
+            console.log(`Query delay exceeded after : ${elapsed} ms`);
+            return;
+          }
+
+          setTimeout(poll, CONFIG.sql.pollInterval);
+        };
+
+        setTimeout(poll, CONFIG.sql.queryStartDelay);
+      });
     },
 
     /*
@@ -1193,6 +1234,7 @@ javascript: (function () {
      */
     _logExecutionTime (startTime) {
       const duration = formatTime(performance.now() - startTime);
+      console.log(`Query executed and results processed in: ${duration} seconds`);
     },
   };
 
@@ -1203,8 +1245,15 @@ javascript: (function () {
   const SQL = {
     // Cache for generated SQL queries
     _cache: {},
+    // Cached regex patterns for minification
+    _regexCache: {
+      lineComments: /--.*$/gm,
+      blockComments: /\/\*[\s\S]*?\*\//g,
+      whitespace: /\s+/g,
+    },
+
     /*
-     * Minifies SQL by removing comments and extra whitespace
+     * Minifies SQL by removing comments and extra whitespace (optimized)
      * @param {string} sql - SQL query
      * @returns {string} Minified SQL
      */
@@ -1212,9 +1261,9 @@ javascript: (function () {
       if (!sql?.trim()) return '';
 
       return sql
-        .replace(/--.*$/gm, '')
-        .replace(/\/\*[\s\S]*?\*\//g, '')
-        .replace(/\s+/g, ' ')
+        .replace(this._regexCache.lineComments, '')
+        .replace(this._regexCache.blockComments, '')
+        .replace(this._regexCache.whitespace, ' ')
         .trim();
     },
     /*
@@ -1239,12 +1288,25 @@ javascript: (function () {
     },
 
     /*
-     * Builds SQL query string
+     * Cached SQL components for efficient generation
+     * @private
+     */
+    _cachedComponents: {},
+
+    _getCachedList (key, arr) {
+      if (!this._cachedComponents[key]) {
+        this._cachedComponents[key] = this._formatList(arr);
+      }
+      return this._cachedComponents[key];
+    },
+
+    /*
+     * Builds SQL query string (optimized)
      * @private
      */
     _buildSQL (inputCode, status) {
-      const settingsList = this._formatList(CONFIG.sql.settingNames);
-      const excludedList = this._formatList(CONFIG.sql.excludedArevaSettings);
+      const settingsList = this._getCachedList('settings', CONFIG.sql.settingNames);
+      const excludedList = this._getCachedList('excluded', CONFIG.sql.excludedArevaSettings);
       const baseCondition = `R.S01 LIKE '${inputCode}%'`;
       const lobLen = CONFIG.sql.dbmsLobLength;
 

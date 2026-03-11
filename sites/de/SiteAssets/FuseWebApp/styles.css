@@ -54,7 +54,8 @@ main {
 .field {
     display: flex;
     flex-direction: column;
-    gap: .5rem
+    gap: .5rem;
+    justify-content: flex-end;
 }
 
 label {
@@ -125,8 +126,6 @@ table td {
 }
 
 table thead th {
-    position: sticky;
-    top: 0;
     background: #0f1530;
     z-index: 1
 }
@@ -135,4 +134,26 @@ footer {
     padding: 2rem 1rem;
     text-align: center;
     color: var(--muted)
+}
+
+.col-1 {
+    width: 10%;
+}
+
+.col-1-5 {
+    width: 15%;
+}
+
+.col-2 {
+    width: 20%;
+}
+
+.col-3 {
+    width: 30%;
+}
+
+.contact {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 600
 }

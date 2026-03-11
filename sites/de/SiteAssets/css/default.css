@@ -126,6 +126,10 @@ td.ms-vb {
   max-width: 1760px;
 }
 
+#sideNavBox {
+  display: block;
+}
+
 #s4-ribbonrow {
   position: relative;
   anchor-name: --de-anchor;
@@ -168,7 +172,7 @@ div#WebPartWPQ5 tbody,
 }
 
 div#MSOZoneCell_WebPartWPQ3 {
-  padding: 10px;
+  padding: 8px;
   display: table;
   margin: 0 !important;
   anchor-name: --loader-anchor;
@@ -452,10 +456,6 @@ div.dummy-bottom {
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
   .ms-fullWidth {
     width: 100%;
-  }
-
-  div.feedback {
-    display: none;
   }
 
   #contentBox {

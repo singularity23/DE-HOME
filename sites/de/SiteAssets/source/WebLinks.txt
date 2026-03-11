@@ -430,7 +430,7 @@
     ]
   },
   {
-    "name": "Technical Tools & Analysis",
+    "name": "Engineering Drawings & Tasks",
     "subheaders": [
       {
         "title": "Drafting & Visualization",
@@ -477,17 +477,6 @@
             ]
           },
           {
-            "name": "ASPEN Relay Database™",
-            "url": "http://kdcssweb1/aspen/rdbweb.exe",
-            "info": "Database for relay settings and configurations",
-            "sub_links": [
-              {
-                "name": "ASPEN PN Query Tool",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Aspen%20PN.html"
-              }
-            ]
-          },
-          {
             "name": "P&C Bus Fault Summary",
             "url": "file:///J:/Engineering/Distribution/CYME/Development/Equipment%20Database/Source%20Equivalent",
             "info": "Updated source impedances of distribution feeders for fault studies"
@@ -522,6 +511,11 @@
             "name": "Distribution Connection Variance Request Guide",
             "url": "https://app.bchydro.com/content/dam/BCHydro/customer-portal/documents/distribution/info-packages/customer-guide-to-variance-requests.pdf",
             "info": "Customer variance application process"
+          },
+          {
+            "name": "Distribution Request List",
+            "url": "https://hydroshare.bchydro.bc.ca/workgroup/d_requests/Lists/D_Requests/Default.aspx",
+            "info": "Request to Transmission Engineering - Whenever distribution design that will affect transmission assets"
           }
         ]
       }
@@ -549,7 +543,7 @@
             "info": "#Switchgear #Recloser"
           },
           {
-            "name": "Distribution Planning - Tableau®",
+            "name": "Distribution Planning - TableauÂ®",
             "url": "https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home",
             "info": "Feeder planning databases - capacity, peak demand, reliability, etc."
           },
@@ -564,7 +558,7 @@
             "info": "Repository for distribution planning memos"
           },
           {
-            "name": "BCH ArcGIS®",
+            "name": "BCH ArcGISÂ®",
             "url": "https://kdcesriweb1.bchydro.adroot.bchydro.bc.ca/gisportal/home/index.html",
             "info": "Distribution planning GIS data"
           }
@@ -629,7 +623,7 @@
         "title": "Asset Management & Maintenance",
         "links": [
           {
-            "name": "Feeder Load Research Tool - SAS®",
+            "name": "Feeder Load Research Tool - SASÂ®",
             "url": "https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/",
             "info": "#LoadFactors #LoadProfile",
             "class": "_clipboard"
@@ -719,7 +713,42 @@
       {
         "title": "Technical Tools & Resources",
         "links": [
+		    {
+            "name": "ASPEN Relay Databaseâ„¢",
+            "url": "http://kdcssweb1/aspen/rdbweb.exe",
+            "info": "Database for relay settings and configurations",
+            "sub_links": [
+              {
+                "name": "ASPEN PN Query Tool",
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Aspen%20PN.html"
+              }
+            ]
+          },
+		    {
+            "name": "Fuse Selector",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/webapp/index.html",
+            "info": "Quickly get standard fuse size for standard transformers and its impedances"
+          },
           {
+            "name": "EATONÂ® CYME",
+            "url": "file:///J:/Engineering/Distribution/CYME",
+            "info": "",
+            "sub_links": [
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29",
+                "name": "Short circuit python script"
+              },
+			     {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook%2FCYME.one%7C24cd4d78-abf8-4647-8e9b-be28f3c88939%2FEmission%20Study%7C086dacb2-4881-442f-a317-38b7f955b1bd%2F%29&wdorigin=703",
+                "name": "Short circuit with Emission Study python script"
+              },
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook.one%7C87ab0379-742a-41da-ae6b-8a9367348bd8%2FLoad%20Balancing%7C2da8a071-ada6-478a-90e9-8334ff4b84c6%2F%29&wdorigin=703",
+                "name": "Load flow python script"
+              }
+            ]
+          },
+  		{
             "name": "Conductor Slap",
             "url": "",
             "info": "",
@@ -733,24 +762,10 @@
                 "name": "Modelling / Calculator"
               }
             ]
-          },
-          {
-            "name": "EATON® CYME",
-            "url": "file:///J:/Engineering/Distribution/CYME",
-            "info": "",
-            "sub_links": [
-              {
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29",
-                "name": "Short circuit python script"
-              },
-              {
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook.one%7C87ab0379-742a-41da-ae6b-8a9367348bd8%2FLoad%20Balancing%7C2da8a071-ada6-478a-90e9-8334ff4b84c6%2F%29&wdorigin=703",
-                "name": "Load flow python script"
-              }
-            ]
           }
         ]
       }
+
     ]
   },
   {

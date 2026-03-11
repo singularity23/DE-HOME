@@ -15,12 +15,8 @@ const setAttributes = (el, attrs) => {
 };
 
 // Set announcement
-const setAnnouncement = () => {
-  const fullmode = qS('body.ms-backgroundImage.ms-fullscreenmode');
-  const focused = qS('body.ms-backgroundImage');
-  if (!fullmode && focused) {
-    focused.classList.add('ms-fullscreenmode');
-  }
+const setFullScreen = () => {
+  SetFullScreenMode(false);
 };
 
 // Debounce function
@@ -232,7 +228,6 @@ const setupWebPartListener = () => {
 
 // Initialization
 const refresh = () => {
-  setAnnouncement();
   changeLogoTitle();
   removeZerowidth();
   changeLayout();
@@ -243,6 +238,7 @@ const refresh = () => {
   removeBreadcrumb();
   resizeWindow();
   setupWebPartListener();
+  setFullScreen();
 };
 
 document.addEventListener('DOMContentLoaded', refresh);
