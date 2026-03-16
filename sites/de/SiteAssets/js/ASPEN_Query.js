@@ -776,22 +776,7 @@ WHERE ${baseCondition}
       const relayCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
       const relayText = String(relayCell ?? '').toUpperCase();
       const matchedRelayTypes = Object.values(CONFIG.relayTypes).filter(type => relayText.includes(type));
-      // #region agent log
-      fetch('http://127.0.0.1:7904/ingest/e7fd369f-a2d3-4090-a477-28310f9779a9', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'ab71b5' },
-        body: JSON.stringify({
-          sessionId: 'ab71b5',
-          runId: 'initial',
-          hypothesisId: 'H3',
-          location: 'ASPEN_Query.js:776',
-          message: 'Relay detection input and matches',
-          data: { relayText, matchedRelayTypes },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
-
+      
       if (relayText === 'SEL-151') {
         state.relayModel = 'SEL-151';
       }
