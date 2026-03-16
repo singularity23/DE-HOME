@@ -543,7 +543,7 @@
             "info": "#Switchgear #Recloser"
           },
           {
-            "name": "Distribution Planning - TableauÂ®",
+            "name": "Distribution Planning - Tableau®",
             "url": "https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home",
             "info": "Feeder planning databases - capacity, peak demand, reliability, etc."
           },
@@ -558,7 +558,7 @@
             "info": "Repository for distribution planning memos"
           },
           {
-            "name": "BCH ArcGISÂ®",
+            "name": "BCH ArcGIS®",
             "url": "https://kdcesriweb1.bchydro.adroot.bchydro.bc.ca/gisportal/home/index.html",
             "info": "Distribution planning GIS data"
           }
@@ -623,7 +623,7 @@
         "title": "Asset Management & Maintenance",
         "links": [
           {
-            "name": "Feeder Load Research Tool - SASÂ®",
+            "name": "Feeder Load Research Tool - SAS®",
             "url": "https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/",
             "info": "#LoadFactors #LoadProfile",
             "class": "_clipboard"
@@ -714,7 +714,7 @@
         "title": "Technical Tools & Resources",
         "links": [
 		    {
-            "name": "ASPEN Relay Databaseâ„¢",
+            "name": "ASPEN Relay Database™",
             "url": "http://kdcssweb1/aspen/rdbweb.exe",
             "info": "Database for relay settings and configurations",
             "sub_links": [
@@ -730,7 +730,7 @@
             "info": "Quickly get standard fuse size for standard transformers and its impedances"
           },
           {
-            "name": "EATONÂ® CYME",
+            "name": "EATON® CYME",
             "url": "file:///J:/Engineering/Distribution/CYME",
             "info": "",
             "sub_links": [

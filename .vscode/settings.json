@@ -1,7 +1,7 @@
 {
   "vscode-edge-devtools.headless": false,
-  "editor.fontFamily": "Roboto Mono",
-  "liveServer.settings.port": 5585,
+  "editor.fontFamily": "JetBrains Mono NL Light",
+  "liveServer.settings.port": 5586,
   "editor.wordWrap": "wordWrapColumn",
   "editor.defaultFormatter": "ms-python.black-formatter",
   "files.autoSave": "onWindowChange",
@@ -50,5 +50,6 @@
   "[css]": {
     "editor.defaultFormatter": "vscode.css-language-features"
   },
+  "editor.tabSize": 2,
 
 }

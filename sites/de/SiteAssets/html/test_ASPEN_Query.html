@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASPEN Query Test Suite</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .test-controls {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .manual-test {
+            margin: 10px 0;
+        }
+
+        .manual-test input {
+            padding: 5px;
+            margin: 0 5px;
+            border: 1px solid #bdc3c7;
+            border-radius: 3px;
+        }
+
+        #console-output {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 400px;
+            overflow-y: scroll;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background-color: #d5e8d4;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 ASPEN Query Test Suite</h1>
+
+        <div class="info-box">
+            <strong>Instructions:</strong>
+            <ul>
+                <li>Click "Run All Tests" to execute the complete test suite</li>
+                <li>Use the manual test controls to test individual functions</li>
+                <li>Check the console output below for detailed results</li>
+                <li>Open browser DevTools (F12) to see additional console output</li>
+            </ul>
+        </div>
+
+        <div class="test-controls">
+            <h3>Automated Tests</h3>
+            <button onclick="runAllTests()">🚀 Run All Tests</button>
+            <button onclick="clearConsole()">🧹 Clear Console</button>
+        </div>
+
+        <div class="test-controls">
+            <h3>Manual Testing</h3>
+
+            <div class="manual-test">
+                <strong>SEL Decoder Test:</strong>
+                <input type="text" id="sel-code" placeholder="51P1P" value="51P1P">
+                <input type="text" id="sel-setting" placeholder="1.5" value="1.5">
+                <button onclick="testSELDecoder()">Test SEL</button>
+            </div>
+
+            <div class="manual-test">
+                <strong>AREVA Decoder Test:</strong>
+                <input type="text" id="areva-code" placeholder="FUNCTION PARAMETERS/.../IREF" style="width: 300px;"
+                    value="FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/IREF P PS1">
+                <input type="text" id="areva-setting" placeholder="1.2 INOM" value="1.2 INOM">
+                <button onclick="testAREVADecoder()">Test AREVA</button>
+            </div>
+
+            <div class="manual-test">
+                <strong>SQL Generation Test:</strong>
+                <input type="text" id="device-code" placeholder="ABC 12F123" value="ABC 12F123">
+                <select id="status">
+                    <option value="IN SERVICE">IN SERVICE</option>
+                    <option value="ISSUED">ISSUED</option>
+                </select>
+                <button onclick="testSQLGeneration()">Generate SQL</button>
+            </div>
+
+            <div class="manual-test">
+                <strong>Input Validation Test:</strong>
+                <input type="text" id="validation-input" placeholder="Enter pattern to test" value="ABC 12F123">
+                <button onclick="testInputValidation()">Validate Input</button>
+            </div>
+        </div>
+
+        <h3>Console Output</h3>
+        <div id="console-output">Ready to run tests...\n</div>
+    </div>
+
+    <!-- Load the main ASPEN_Query script -->
+    <script src="../js/ASPEN_Query.js"></script>
+
+    <!-- Load the test suite -->
+    <script src="../js/test_ASPEN_Query.js"></script>
+
+    <script>
+        // Redirect console output to our display
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function appendToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : 'ℹ️';
+            consoleOutput.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = function (...args) {
+            originalLog.apply(console, args);
+            appendToConsole(args.join(' '), 'log');
+        };
+
+        console.error = function (...args) {
+            originalError.apply(console, args);
+            appendToConsole(args.join(' '), 'error');
+        };
+
+        console.warn = function (...args) {
+            originalWarn.apply(console, args);
+            appendToConsole(args.join(' '), 'warn');
+        };
+
+        // Test runner functions
+        function runAllTests() {
+            clearConsole();
+            console.log('🚀 Starting test suite...');
+            if (typeof runAspenQueryTests === 'function') {
+                runAspenQueryTests();
+            } else {
+                console.error('Test framework not loaded properly');
+            }
+        }
+
+        function clearConsole() {
+            consoleOutput.textContent = '';
+        }
+
+        function testSELDecoder() {
+            const code = document.getElementById('sel-code').value;
+            const setting = document.getElementById('sel-setting').value;
+            console.log(`\n🔍 Testing SEL Decoder: ${code} = ${setting}`);
+
+            if (typeof testDecoder === 'function') {
+                testDecoder(code, setting, 'SEL');
+            } else {
+                console.error('testDecoder function not available');
+            }
+        }
+
+        function testAREVADecoder() {
+            const code = document.getElementById('areva-code').value;
+            const setting = document.getElementById('areva-setting').value;
+            console.log(`\n🔍 Testing AREVA Decoder: ${code} = ${setting}`);
+
+            if (typeof testDecoder === 'function') {
+                testDecoder(code, setting, 'AREVA');
+            } else {
+                console.error('testDecoder function not available');
+            }
+        }
+
+        function testSQLGeneration() {
+            const deviceCode = document.getElementById('device-code').value;
+            const status = document.getElementById('status').value;
+            console.log(`\n🗃️ Testing SQL Generation: ${deviceCode} (${status})`);
+
+            if (typeof testSqlGeneration === 'function') {
+                const sql = testSqlGeneration(deviceCode, status);
+                console.log('Generated SQL length:', sql.length, 'characters');
+            } else {
+                console.error('testSqlGeneration function not available');
+            }
+        }
+
+        function testInputValidation() {
+            const input = document.getElementById('validation-input').value;
+            console.log(`\n✅ Testing Input Validation: "${input}"`);
+
+            if (window.AspenQuery && window.AspenQuery.CONFIG) {
+                const pattern = window.AspenQuery.CONFIG.patterns.searchInput;
+                const isValid = pattern.test(input);
+                console.log(`Result: ${isValid ? '✅ VALID' : '❌ INVALID'}`);
+                console.log(`Pattern: ${pattern.source}`);
+            } else {
+                console.error('AspenQuery.CONFIG not available');
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', function () {
+            console.log('🎯 Test page loaded successfully!');
+            console.log('📋 Use the buttons above to run tests or check browser DevTools for detailed output');
+        });
+    </script>
+</body>
+
+</html>

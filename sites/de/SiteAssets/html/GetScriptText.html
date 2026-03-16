@@ -167,8 +167,6 @@
           .replace(/\/{2}\s.+/gm, '') // Remove single-line comments
           .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
           .replace(/\s+/g, ' ') // Replace multiple spaces/newlines with a single space
-          .replace(/(?<=[^\w'\=])\s(?=[a-z])/g, '')
-          .replace(/(?<=[a-z])\s(?=[^\w'\()])/g, '')
           .replace(/\(\s*/g, '(') // Remove leading spaces inside parentheses
           .replace(/\{\s*/g, '{') // Remove leading spaces inside parentheses
           .replace(/\s*\)/g, ')')
@@ -179,6 +177,8 @@
       ); // Remove leading and trailing spaces
     }
 
+    //.replace(/(?<=[^\w'\=])\s(?=[a-z])/g, '')
+    //.replace(/(?<=[a-z])\s(?=[^\w'\()])/g, '')
     // Utility function to fetch data from a URL
     async function fetchData(url) {
       try {
