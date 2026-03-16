@@ -1175,7 +1175,7 @@ WHERE ${baseCondition}
         }
 
         if (regexValidator(this.autoReclosingPattern, code)) {
-          return ['_Auto Reclosing Initiation (s)', setting];
+          return ['_Auto-Reclose Interval (s)', setting];
         }
       } catch (err) {
         console.error('SEL decoder error:', err);
