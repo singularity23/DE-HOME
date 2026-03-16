@@ -469,7 +469,7 @@ WHERE ${baseCondition}
           z-index: 1000;
         }
         .aspen-warning { color: #fa4616; font-size: 0.9rem; margin: auto 5px; font-weight: bold; }
-        .aspen-table { border-collapse: collapse; max-width: 100%; font-family: monospace; font-size: 12px; border: 1px solid #ddd; box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px; text-wrap-style: balance; }
+        .aspen-table { border-collapse: collapse; max-width: 100%; font-family: monospace; font-size: 15px; border: 1px solid #ddd; box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px; text-wrap-style: balance; }
         .aspen-table th { padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold; }
         .aspen-table td { padding: 6px; border: 1px solid #ddd; vertical-align: middle; white-space: pre-wrap; }
         .aspen-container { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
@@ -1389,9 +1389,9 @@ WHERE ${baseCondition}
   <meta charset='UTF-8'>
   <title>${filename}</title>
   <style>
-    body { font-family: monospace; font-size: 12px; padding: 20px; }
+    body { font-family: monospace; font-size: 16px; padding: 20px; }
     h2 { margin-bottom: 20px; }
-    table { border-collapse: collapse; font-size: 11px; white-space: pre-wrap; border-collapse: collapse; text-wrap-style: balance; }
+    table { border-collapse: collapse; font-size: 15px; white-space: pre-wrap; border-collapse: collapse; text-wrap-style: balance; }
     th, td { border: 1px solid #999; padding: 8px; text-align: left; }
     th { background-color: #f0f0f0; font-weight: bold; }
   </style>
