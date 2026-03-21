@@ -1,0 +1,14 @@
+<div id="aspen-search-container" class="input-group aspen-search-wrapper"><input type="text" id="searchInput"
+    placeholder="...ABC 12F123" class="text-uppercase app-search app-wj-search wj-control wj-content mr-2 pl-3 valid"
+    pattern="^(?&lt;prefix&gt;[A-Z]{3})\s(?&lt;type&gt;4|12|25|35)F(?&lt;number&gt;\d{2,3})(?&lt;suffix&gt;[A-Z]?)$">
+  <div class="dropdown menu-user-query show">
+    <button type="button" id="searchButton" class="btn app-btn app-btn-outline-primary dropdown-toggle dropdown-trigger"
+      data-toggle="dropdown" aria-expanded="true" aria-haspopup="true"
+      aria-controls="aspen-search-status-menu">Search</button>
+    <ul id="aspen-search-status-menu" class="dropdown-menu show" x-placement="bottom-start">
+      <li><a class="dropdown-item" href="#">IN SERVICE</a></li>
+      <li><a class="dropdown-item" href="#">ISSUED</a></li>
+    </ul>
+  </div>
+  <em id="warning" class="aspen-warning success">Query Completed for [IN SERVICE] Settings</em>
+</div>

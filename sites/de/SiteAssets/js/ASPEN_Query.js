@@ -87,15 +87,6 @@ javascript: (function () {
         '51QC',
         '79OI1',
       ],
-      excludedArevaSettings: [
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/PULS.PROL.IN>,INTPS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/HOLD-T. TIN>,INTMPS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/TIN>>>> PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/EVALUATION IN PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/EVAL. IN>,>>,>>> PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC/ENABLE PS1',
-        'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/ENABLE PS1',
-      ],
 
       queryDelay: 3000,
       dbmsLobLength: 4000,
@@ -215,6 +206,7 @@ javascript: (function () {
      * @private
      */
     _formatList (arr) {
+      if (!Array.isArray(arr)) return '';
       return arr.map(item => `'${item}'`).join(',');
     },
 
@@ -224,110 +216,207 @@ javascript: (function () {
      */
     _buildSQL (inputCode, status) {
       const settingsList = this._getCachedList('settings', CONFIG.sql.settingNames);
-      const excludedList = this._getCachedList('excluded', CONFIG.sql.excludedArevaSettings);
-      const baseCondition = `R.S01 LIKE '${inputCode}%'`;
       const lobLen = CONFIG.sql.dbmsLobLength;
 
       return `
-SELECT
-  R.S01 AS DEVICE,
-  Q.RELAYTYPE AS RELAY,
-  T.SETTINGNAME AS ELEMENT,
-  CASE
-    WHEN T.SETTINGNAME NOT LIKE '%C'
-    AND T.SETTINGNAME NOT LIKE '%D'
-    AND T.SETTINGNAME NOT LIKE '%T'
-    AND T.SETTINGNAME NOT LIKE '%OI%'
-    AND S.GROUPNAME = '1'
-    AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}) <> 'OFF' THEN UPPER(
-      TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) * (
-        SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) AS CTR
-        FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-        WHERE ${baseCondition}
-          AND R.RELAYTYPE LIKE 'SEL%'
-          AND R.ID = Q.RELAYID
-          AND Q.ID = S.REQUESTID
-          AND T.RELAYTYPE = Q.RELAYTYPE
-          AND T.ROWNUMBER = S.ROWNUMBER
-          AND S.GROUPNAME = '1'
-          AND T.SETTINGNAME = 'CTR'
-          AND UPPER(Q.S02) = '${status}'
-      )
-    )
-    WHEN ((T.SETTINGNAME LIKE '%OI%')
-    OR
-    ((T.SETTINGNAME LIKE '67%D' OR T.SETTINGNAME LIKE '%LT')
-    AND S.GROUPNAME = '1'))
-    AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}) <> 'OFF' THEN UPPER(
-      TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) / 60
-    )
-    ELSE DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})
-  END AS SETTING,
-  Q.M01 AS MEMO
-FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-WHERE ${baseCondition}
-  AND R.RELAYTYPE LIKE 'SEL%'
-  AND R.ID = Q.RELAYID
-  AND Q.ID = S.REQUESTID
-  AND T.RELAYTYPE = Q.RELAYTYPE
-  AND T.ROWNUMBER = S.ROWNUMBER
-  AND UPPER(Q.S02) = '${status}'
-  AND (
-    (S.GROUPNAME = '1' AND T.SETTINGNAME IN (${settingsList}))
-    OR (
-      S.GROUPNAME = 'L1' AND (
-        T.SETTINGNAME LIKE (
-          SELECT S.SETTING AS TR
-          FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-          WHERE ${baseCondition}
-            AND R.RELAYTYPE LIKE 'SEL%'
-            AND R.ID = Q.RELAYID
-            AND Q.ID = S.REQUESTID
-            AND T.RELAYTYPE = Q.RELAYTYPE
-            AND T.ROWNUMBER = S.ROWNUMBER
-            AND S.GROUPNAME = 'L1'
-            AND T.SETTINGNAME = 'TR'
-            AND UPPER(Q.S02) = '${status}'
+      WITH base_settings AS (
+    SELECT
+        R.S01 AS DEVICE,
+        Q.RELAYTYPE AS RELAY,
+        T.SETTINGNAME AS ELEMENT,
+        DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}, 1) AS SETTING,
+        Q.M01 AS MEMO,
+        S.REQUESTID,
+        S.ROWNUMBER,
+        -- Extract subset number from the setting name (e.g., 'SUBSET 1' -> 1)
+        TO_NUMBER(
+            REGEXP_SUBSTR(T.SETTINGNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1)
+        ) AS SUBSET_NUM
+    FROM
+        TRELAY R
+        INNER JOIN TREQUEST Q ON R.ID = Q.RELAYID
+        INNER JOIN TSETTING1 S ON Q.ID = S.REQUESTID
+        INNER JOIN TSETTYPE1 T ON T.RELAYTYPE = Q.RELAYTYPE
+        AND T.ROWNUMBER = S.ROWNUMBER
+    WHERE
+        R.S01 LIKE '${inputCode}%'
+        AND R.RELAYTYPE LIKE 'AREVA%'
+        AND UPPER(Q.S02) = '${status}'
+        AND S.GROUPNAME = 'PARAMETERS'
+        AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}, 1)) != 'BLOCKED' -- Keep only IDMT1 and DTOC settings (all subsets)
+        AND (
+            T.SETTINGNAME LIKE '%/IDMT1%'
+            OR T.SETTINGNAME LIKE '%/DTOC%'
         )
-        OR T.SETTINGNAME IN ('51P1TC', '51PTC')
-      )
+),
+enable_settings AS (
+    SELECT
+        SE.REQUESTID,
+        TE.ROWNUMBER,
+        SE.SETTING AS ENABLE_VALUE,
+        TO_NUMBER(
+            REGEXP_SUBSTR(TE.SETTINGNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1)
+        ) AS SUBSET_NUM
+    FROM
+        TSETTING1 SE
+        INNER JOIN TSETTYPE1 TE ON TE.ROWNUMBER = SE.ROWNUMBER
+        INNER JOIN TREQUEST QE ON QE.ID = SE.REQUESTID
+        AND TE.RELAYTYPE = QE.RELAYTYPE -- to get RELAYTYPE
+        INNER JOIN TRELAY RE ON RE.ID = QE.RELAYID
+    WHERE
+        SE.GROUPNAME = 'PARAMETERS'
+        AND TE.SETTINGNAME LIKE '%SUBSET _/F<>/ENABLE%'
+        AND RE.S01 LIKE '${inputCode}%'
+        AND RE.RELAYTYPE LIKE 'AREVA%'
+        AND UPPER(QE.S02) = '${status}'
+)
+SELECT
+    b.DEVICE,
+    b.RELAY,
+    b.ELEMENT,
+    b.SETTING,
+    b.MEMO
+FROM
+    base_settings b
+    LEFT JOIN enable_settings e ON e.REQUESTID = b.REQUESTID
+    AND e.SUBSET_NUM = b.SUBSET_NUM
+WHERE
+    UPPER(DBMS_LOB.SUBSTR(e.ENABLE_VALUE, ${lobLen}, 1)) = 'YES'
+    AND b.ELEMENT NOT LIKE '%/PULS.PROL.IN>%'
+    AND b.ELEMENT NOT LIKE '%/HOLD-T. TIN>%'
+    AND b.ELEMENT NOT LIKE '%/EVALUATION IN%'
+    AND b.ELEMENT NOT LIKE '%/EVAL. IN%'
+UNION
+ALL
+SELECT
+    R.S01 AS DEVICE,
+    Q.RELAYTYPE AS RELAY,
+    T.SETTINGNAME AS ELEMENT,
+    DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}, 1) AS SETTING,
+    Q.M01 AS MEMO
+FROM
+    TRELAY R
+    INNER JOIN TREQUEST Q ON R.ID = Q.RELAYID
+    INNER JOIN TSETTING1 S ON Q.ID = S.REQUESTID
+    INNER JOIN TSETTYPE1 T ON T.RELAYTYPE = Q.RELAYTYPE
+    AND T.ROWNUMBER = S.ROWNUMBER
+WHERE
+    R.S01 LIKE '${inputCode}%'
+    AND R.RELAYTYPE LIKE 'AREVA%'
+    AND UPPER(Q.S02) = '${status}'
+    AND S.GROUPNAME = 'PARAMETERS'
+    AND T.SETTINGNAME LIKE '%/GLOBAL/MAIN/INOM C.T. PRIM.%'
+    AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}, 1)) != 'BLOCKED'
+UNION
+ALL
+SELECT
+    R.S01 AS DEVICE,
+    Q.RELAYTYPE AS RELAY,
+    T.SETTINGNAME AS ELEMENT,
+    CASE
+        WHEN T.SETTINGNAME NOT LIKE '%C'
+        AND T.SETTINGNAME NOT LIKE '%D'
+        AND T.SETTINGNAME NOT LIKE '%T'
+        AND T.SETTINGNAME NOT LIKE '%OI%'
+        AND S.GROUPNAME = '1'
+        AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}) <> 'OFF' THEN UPPER(
+            TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) * (
+                SELECT
+                    TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) AS CTR
+                FROM
+                    TSETTING1 S,
+                    TSETTYPE1 T,
+                    TRELAY R,
+                    TREQUEST Q
+                WHERE
+                    R.S01 LIKE '${inputCode}%'
+                    AND R.RELAYTYPE LIKE 'SEL%'
+                    AND R.ID = Q.RELAYID
+                    AND Q.ID = S.REQUESTID
+                    AND T.RELAYTYPE = Q.RELAYTYPE
+                    AND T.ROWNUMBER = S.ROWNUMBER
+                    AND S.GROUPNAME = '1'
+                    AND T.SETTINGNAME = 'CTR'
+                    AND UPPER(Q.S02) = '${status}'
+            )
+        )
+        WHEN (
+            (T.SETTINGNAME LIKE '%OI%')
+            OR (
+                (
+                    T.SETTINGNAME LIKE '67%D'
+                    OR T.SETTINGNAME LIKE '%LT'
+                )
+                AND S.GROUPNAME = '1'
+            )
+        )
+        AND DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}) <> 'OFF' THEN UPPER(
+            TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) / 60
+        )
+        ELSE DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})
+    END AS SETTING,
+    Q.M01 AS MEMO
+FROM
+    TSETTING1 S,
+    TSETTYPE1 T,
+    TRELAY R,
+    TREQUEST Q
+WHERE
+    R.S01 LIKE '${inputCode}%'
+    AND R.RELAYTYPE LIKE 'SEL%'
+    AND R.ID = Q.RELAYID
+    AND Q.ID = S.REQUESTID
+    AND T.RELAYTYPE = Q.RELAYTYPE
+    AND T.ROWNUMBER = S.ROWNUMBER
+    AND UPPER(Q.S02) = '${status}'
+    AND (
+        (
+            S.GROUPNAME = '1'
+            AND T.SETTINGNAME IN (${settingsList})
+        )
+        OR (
+            S.GROUPNAME = 'L1'
+            AND (
+                T.SETTINGNAME LIKE (
+                    SELECT
+                        S.SETTING AS TR
+                    FROM
+                        TSETTING1 S,
+                        TSETTYPE1 T,
+                        TRELAY R,
+                        TREQUEST Q
+                    WHERE
+                        R.S01 LIKE '${inputCode}%'
+                        AND R.RELAYTYPE LIKE 'SEL%'
+                        AND R.ID = Q.RELAYID
+                        AND Q.ID = S.REQUESTID
+                        AND T.RELAYTYPE = Q.RELAYTYPE
+                        AND T.ROWNUMBER = S.ROWNUMBER
+                        AND S.GROUPNAME = 'L1'
+                        AND T.SETTINGNAME = 'TR'
+                        AND UPPER(Q.S02) = '${status}'
+                )
+                OR T.SETTINGNAME IN ('51P1TC', '51PTC')
+            )
+        )
     )
-  )
-UNION ALL
+UNION
+ALL
 SELECT
-  R.S01 AS DEVICE,
-  Q.RELAYTYPE AS RELAY,
-  R.S06 AS VENDER,
-  TO_CHAR(R.S04) AS MODEL,
-  Q.M01 AS MEMO
-FROM TRELAY R, TREQUEST Q
-WHERE ${baseCondition}
-  AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
-  AND R.ID = Q.RELAYID
-  AND UPPER(Q.S02) = '${status}'
-UNION ALL
-SELECT
-  R.S01 AS DEVICE,
-  Q.RELAYTYPE AS RELAY,
-  T.SETTINGNAME AS ELEMENT,
-  TO_CHAR(S.SETTING) AS SETTING,
-  Q.M01 AS MEMO
-FROM TSETTING1 S, TSETTYPE1 T, TRELAY R, TREQUEST Q
-WHERE ${baseCondition}
-  AND R.RELAYTYPE LIKE 'AREVA%'
-  AND R.ID = Q.RELAYID
-  AND Q.ID = S.REQUESTID
-  AND T.RELAYTYPE = Q.RELAYTYPE
-  AND T.ROWNUMBER = S.ROWNUMBER
-  AND UPPER(Q.S02) = '${status}'
-  AND S.GROUPNAME = 'PARAMETERS'
-  AND (
-    T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1%'
-    OR T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/PARAMETER SUBSET 1/DTOC%'
-    OR T.SETTINGNAME LIKE 'FUNCTION PARAMETERS/GLOBAL/MAIN/INOM C.T. PRIM.%'
-  )
-  AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) != 'BLOCKED'
-  AND T.SETTINGNAME NOT IN (${excludedList})`;
+    R.S01 AS DEVICE,
+    Q.RELAYTYPE AS RELAY,
+    R.S06 AS VENDER,
+    TO_CHAR(R.S04) AS MODEL,
+    Q.M01 AS MEMO
+FROM
+    TRELAY R,
+    TREQUEST Q
+WHERE
+    R.S01 LIKE '${inputCode}%'
+    AND UPPER(R.RELAYTYPE) LIKE 'ELECTRO%'
+    AND R.ID = Q.RELAYID
+    AND UPPER(Q.S02) = '${status}'
+      `;
     },
   };
 
@@ -469,9 +558,9 @@ WHERE ${baseCondition}
           z-index: 1000;
         }
         .aspen-warning { color: #fa4616; font-size: 0.9rem; margin: auto 5px; font-weight: bold; }
-        .aspen-table { border-collapse: collapse; max-width: 100%; font-family: monospace; font-size: 15px; border: 1px solid #ddd; box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px; text-wrap-style: balance; }
-        .aspen-table th { padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #97979780; font-weight: bold; }
-        .aspen-table td { padding: 6px; border: 1px solid #ddd; vertical-align: middle; white-space: pre-wrap; }
+        .aspen-table { border-collapse: collapse; max-width: 100%; font-family: monospace; font-size: 0.9rem; border: 1px solid #bbb; box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px; text-wrap-style: balance; }
+        .aspen-table th { padding: 8px;  text-align: left; background-color: #eee; font-weight: bold; border: 1px solid #bbb;}
+        .aspen-table td { padding: 6px;  vertical-align: middle; white-space: pre-wrap; border: 1px solid #bbb; }
         .aspen-container { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
       `;
       document.head.appendChild(style);
@@ -776,16 +865,11 @@ WHERE ${baseCondition}
       const relayCell = Array.isArray(firstRow) ? firstRow[1] : Object.values(firstRow)[1];
       const relayText = String(relayCell ?? '').toUpperCase();
       const matchedRelayTypes = Object.values(CONFIG.relayTypes).filter(type => relayText.includes(type));
-      
+
       if (relayText === 'SEL-151') {
         state.relayModel = 'SEL-151';
       }
-      // Quick lookup using relay type set
-      if (matchedRelayTypes) {
-        state.relayType = matchedRelayTypes[0];
-        return;
-      }
-      state.relayType = CONFIG.relayTypes.UNKNOWN;
+      state.relayType = matchedRelayTypes[0] ?? CONFIG.relayTypes.UNKNOWN;
     },
 
     /*
@@ -803,18 +887,30 @@ WHERE ${baseCondition}
       state.tableRows.forEach((row, idx) => {
         const rowArray = toArray(row);
 
-        if (state.relayType === CONFIG.relayTypes.SEL) {
-          const [desc, val] = SELDecoder.decode(rowArray[2], rowArray[3]);
-          rowArray[5] = desc;
-          rowArray[3] = val;
-          this._swapColumns(rowArray, 4, 5);
-        } else if (state.relayType === CONFIG.relayTypes.AREVA) {
-          const [desc, val] = AREVADecoder.decode(rowArray[2], rowArray[3]);
+        debugLog('Decoding row:', rowArray[2], rowArray[3]);
+        if (state.relayType === CONFIG.relayTypes.AREVA) {
+          const [desc, val] = AREVADecoder.preDecode(rowArray[2], rowArray[3]);
           rowArray[2] = desc;
           rowArray[3] = val;
         }
-
         state.tableRows[idx] = rowArray;
+      });
+
+      state.tableRows.forEach((row, idx) => {
+        if (state.relayType === CONFIG.relayTypes.SEL) {
+          const [desc, val] = SELDecoder.decode(row[2], row[3]);
+          row[5] = desc;
+          row[3] = val;
+          this._swapColumns(row, 4, 5);
+        } else if (state.relayType === CONFIG.relayTypes.AREVA) {
+          debugLog('Decoding AREVA row:', row[2], row[3]);
+
+          const [desc, val] = AREVADecoder.decode(row[2], row[3]);
+          row[2] = desc;
+          row[3] = val;
+        }
+
+        state.tableRows[idx] = row;
       });
 
       // Sort by appropriate column
@@ -950,30 +1046,13 @@ WHERE ${baseCondition}
       }
       return this._phasePatterns;
     },
-
-    definiteTime: [
-      { text: 'DTOC/I> ', desc: 'PHS Definite Time 1st Stage Pick Up (A)' },
-      { text: 'DTOC/IN> ', desc: 'GND Definite Time 1st Stage Pick Up (A)' },
-      { text: 'DTOC/INEG> ', desc: 'NEG Definite Time 1st Stage Pick Up (A)' },
-      { text: 'DTOC/TI> ', desc: 'PHS Definite Time 1st Stage Delay (s)' },
-      { text: 'DTOC/TIN> ', desc: 'GND Definite Time 1st Stage Delay (s)' },
-      { text: 'DTOC/TINEG> ', desc: 'NEG Definite Time 1st Stage Delay (s)' },
-      { text: 'DTOC/I>> ', desc: 'PHS Definite Time 2nd Stage Pick Up (A)' },
-      { text: 'DTOC/IN>> ', desc: 'GND Definite Time 2nd Stage Pick Up (A)' },
-      { text: 'DTOC/INEG>> ', desc: 'NEG Definite Time 2nd Stage Pick Up (A)' },
-      { text: 'DTOC/TI>> ', desc: 'PHS Definite Time 2nd Stage Delay (s)' },
-      { text: 'DTOC/TIN>> ', desc: 'GND Definite Time 2nd Stage Delay (s)' },
-      { text: 'DTOC/TINEG>> ', desc: 'NEG Definite Time 2nd Stage Delay (s)' },
-      { text: 'DTOC/I>>> ', desc: 'PHS Definite Time 3rd Stage Pick Up (A)' },
-      { text: 'DTOC/IN>>> ', desc: 'GND Definite Time 3rd Stage Pick Up (A)' },
-      { text: 'DTOC/INEG>>> ', desc: 'NEG Definite Time 3rd Stage Pick Up (A)' },
-      { text: 'DTOC/TI>>> ', desc: 'PHS Definite Time 3rd Stage Delay (s)' },
-      { text: 'DTOC/TIN>>> ', desc: 'GND Definite Time 3rd Stage Delay (s)' },
-      { text: 'DTOC/TINEG>>> ', desc: 'NEG Definite Time 3rd Stage Delay (s)' },
-    ],
-
+    phaseText: {
+      I: 'PHS',
+      IN: 'GND',
+      INEG: 'NEG',
+    },
     // Suffix descriptions
-    suffixMap: [
+    OCSuffix: [
       {
         text: 'IREF',
         desc: 'Pick Up (A)',
@@ -983,39 +1062,49 @@ WHERE ${baseCondition}
       { text: 'TRIP TIME', desc: 'Min. Trip Time (s)' },
       { text: 'HOLD TIME', desc: 'Hold Time (s)' },
       { text: 'RELEASE', desc: 'Release' },
+      { text: 'ENABLE', desc: 'Enabled' },
+    ],
+
+    DTSuffix: [
+      { pattern: /\/(I(?:NEG)?N?)(>+)\s/, desc: 'Pick Up (A)' },
+      { pattern: /\/T(I(?:NEG)?N?)(>+)\s/, desc: 'Delay (s)' },
+      { pattern: /\/(ENABLE)/, desc: 'Enabled' },
     ],
 
     // Overcurrent setting type
     overCurrentType: 'Timed Overcurrent',
+    definiteTimeType: 'Definite Time',
     ctPrimary: 0,
 
+    preDecode (settingName, settingValue) {
+      debugLog('AREVA preDecoder:', settingName, settingValue);
+      if (settingName.includes('INOM')) {
+        const returnValue = Number(settingValue.toString().split(' ')[0]) || 0;
+        this.ctPrimary = returnValue;
+        debugLog('CT PRIMARY:', returnValue);
+        return ['CT PRIMARY (A)', returnValue];
+      } else return [settingName, settingValue];
+    },
     /*
-     * Decodes AREVA setting code
-     * @param {string} code - Setting code
-     * @param {string|number} setting - Setting value
+     * Decodes AREVA
+     * @param {string} settingName - Setting Name
+     * @param {string|number} settingValue - Setting value
      * @returns {Array<string>} [description, value]
      */
-    decode (code, setting) {
-      if (!this._isValid(code, setting)) return ['', ''];
-
+    decode (settingName, settingValue) {
+      if (!this._isValid(settingName, settingValue)) return ['', ''];
+      debugLog('AREVA decoder:', settingName, settingValue);
       try {
-        // Handle CT primary current
-        if (code.includes('INOM')) {
-          this.ctPrimary = Number(setting.toString().split(' ')[0]) || 0;
-          return ['CT PRIMARY (A)', this.ctPrimary];
-        }
-
-        // Check definite time patterns first
-        const dtMatch = this.definiteTime.find(dt => code.includes(dt.text));
-        if (dtMatch) {
-          return [dtMatch.desc.toUpperCase(), this._parseSettingValue(setting)];
-        }
-
         // Check phase patterns
-        for (const { type, pattern } of this.phasePatterns) {
-          if (regexValidator(pattern, code)) {
-            return this._decodePhasePattern(code, type, setting);
-          }
+        const isTimed = settingName.includes('IDMT1');
+        const isDefinateTime = settingName.includes('DTOC');
+        if (settingName == 'CT PRIMARY (A)') return [settingName, settingValue];
+        if (isTimed) {
+          return this._decodeOverCurrent(settingName, settingValue);
+        }
+
+        if (isDefinateTime) {
+          return this._decodeDefiniteTime(settingName, settingValue);
         }
       } catch (err) {
         console.error('AREVA decoder error:', err);
@@ -1028,47 +1117,86 @@ WHERE ${baseCondition}
      * Validates input parameters
      * @private
      */
-    _isValid (code, setting) {
-      return !!(code && typeof code === 'string' && setting);
+    _isValid (settingName, settingValue) {
+      return !!(settingName && typeof settingName === 'string' && settingValue !== undefined);
     },
 
     /*
      * Parses setting value with INOM conversion
      * @private
      */
-    _parseSettingValue (setting) {
-      if (setting.toString().toUpperCase().includes('INOM')) {
-        const value = Number(setting.toString().split(' ')[0]) || 0;
+    _parseSettingValue (settingValue) {
+      if (settingValue.toString().toUpperCase().includes('INOM')) {
+        const value = Number(settingValue.toString().split(' ')[0]) || 0;
         return Math.round(value * this.ctPrimary);
       }
-      if (setting.toString().endsWith(' s')) {
-        setting = setting.toString().replace(' s', '');
+      if (settingValue.toString().endsWith(' s')) {
+        settingValue = settingValue.toString().replace(' s', '');
       }
-      return setting.toString();
+      return settingValue.toString();
     },
 
     /*
      * Decodes phase-specific pattern
      * @private
      */
-    _decodePhasePattern (code, type, setting) {
-      const suffix = this._getSuffix(code);
-      const isTimed = code.includes('IDMT1');
-      const description = [type, isTimed ? this.overCurrentType : '', suffix].filter(Boolean).join(' ').toUpperCase();
+    _decodeOverCurrent (settingName, settingValue) {
+      let [phase, description, suffix] = ['', '', ''];
+      for (const { type, pattern } of this.phasePatterns) {
+        if (regexValidator(pattern, settingName)) {
+          phase = type;
+        }
+      }
+      suffix = this._getOCSuffix(settingName);
+      description = [phase, this.overCurrentType, suffix].filter(Boolean).join(' ').toUpperCase();
 
-      let value = this._parseSettingValue(setting);
-
+      let value = this._parseSettingValue(settingValue);
+      debugLog(['description', description, 'value', value]);
       return [description, value];
     },
 
+    _decodeDefiniteTime (settingName, settingValue) {
+      let [phase, description, suffix] = ['', '', ''];
+
+      const dt_desc = this._getDTSuffix(settingName);
+      debugLog('DT DESC:', dt_desc);
+      phase = dt_desc[0];
+      suffix = dt_desc[1];
+      description = [phase, this.definiteTimeType, suffix].filter(Boolean).join(' ').toUpperCase();
+
+      let value = this._parseSettingValue(settingValue);
+      debugLog(['description', description, 'value', value]);
+      return [description, value];
+    },
     /*
      * Gets suffix description from code
      * @private
      */
-    _getSuffix (code) {
-      for (const { text, desc } of this.suffixMap) {
-        if (code.includes(text)) return desc;
+    _getOCSuffix (settingName) {
+      for (const { text, desc } of this.OCSuffix) {
+        if (settingName.includes(text)) return desc;
       }
+      return '';
+    },
+
+    _getDTSuffix (settingName) {
+      let [part1, part2] = ['', ''];
+      for (const { pattern, desc } of this.DTSuffix) {
+        debugLog('DT Suffix pattern:', pattern, settingName, desc);
+        if (regexValidator(pattern, settingName)) {
+          const match = settingName.match(pattern);
+          if (match[1] === 'ENABLE') {
+            part1 = '';
+            part2 = desc;
+          } else if (match[2]) {
+            const base = match[1];
+            const stage = match[2].length;
+            part1 = this.phaseText[base] ?? base;
+            part2 = `Stage ${stage ?? ''} ${desc}`;
+          }
+        }
+      }
+      return [part1, part2];
     },
   };
 
@@ -1105,9 +1233,9 @@ WHERE ${baseCondition}
     // Cached pattern lists
     _definiteTime: null,
     _overCurrent: null,
-    _liveLinePattern: null,
-    _tripEquationPattern: null,
-    _autoReclosingPattern: null,
+    _liveLine: null,
+    _tripEquation: null,
+    _autoReclose: null,
 
     get definiteTime () {
       return (this._definiteTime ??= [
@@ -1123,59 +1251,57 @@ WHERE ${baseCondition}
       ]);
     },
 
-    get liveLinePattern () {
-      return (this._liveLinePattern ??= /^50[PG]5/);
+    get liveLine () {
+      return (this._liveLine ??= { pattern: /^50[PG]5/, desc: 'Live Line' });
     },
 
-    get tripEquationPattern () {
-      return (this._tripEquationPattern ??= /^SV\d?\w+/);
+    get tripEquation () {
+      return (this._tripEquation ??= { pattern: /^SV\d?\w+/, desc: '_Trip Equation' });
     },
 
-    get autoReclosingPattern () {
-      return (this._autoReclosingPattern ??= /^79/);
+    get autoReclose () {
+      return (this._autoReclose ??= { pattern: /^79/, desc: '_Auto-Reclose Interval (s)' });
     },
 
     /*
      * Decodes SEL setting code
-     * @param {string} code - Setting code
-     * @param {string|number} setting - Setting value
+     * @param {string} settingName - Setting Name
+     * @param {string|number} settingValue - Setting value
      * @returns {Array<string>} [description, value]
      */
-    decode (code, setting) {
-      if (!this._isValid(code, setting)) return ['', ''];
+    decode (settingName, settingValue) {
+      if (!this._isValid(settingName, settingValue)) return ['', ''];
 
       try {
         // Check definite time patterns first (most specific)
         for (const { pattern, desc } of this.definiteTime) {
-          if (regexValidator(pattern, code)) {
-            const base = this._getPhaseDescription(code);
+          if (regexValidator(pattern, settingName)) {
+            const base = this._getPhaseDescription(settingName);
             const stage =
-              typeof code === 'string'
-                ? code.match(/(?:50P[234]P|67P[234]D)/)
-                  ? code
+              typeof settingValue === 'string'
+                ? settingValue.match(/(?:50P[234]P|67P[234]D)/)
+                  ? settingValue
                       .replace(/50P([234])P/g, (match, num) => `Stage ${String(num)} `)
                       .replace(/67P([234])D/g, (match, num) => `Stage ${String(num)} `)
                   : ''
                 : '';
-            debugLog(`${base} ${stage}${desc}`, setting);
-            return [`${base} ${stage}${desc}`, setting];
+            debugLog(`${base} ${stage}${desc}`, settingValue);
+            return [`${base} ${stage}${desc}`, settingValue];
           }
         }
 
         // Check overcurrent patterns
         for (const { pattern, desc } of this.overCurrent) {
-          if (regexValidator(pattern, code)) {
-            return this._decodeOverCurrent(code, desc, setting);
+          if (regexValidator(pattern, settingName)) {
+            return this._decodeOverCurrent(settingName, desc, settingValue);
           }
         }
-
         // Check special trip equation pattern
-        if (regexValidator(this.tripEquationPattern, code)) {
-          return ['_Trip Equation', setting];
+        if (regexValidator(this.tripEquation.pattern, settingName)) {
+          return [this.tripEquation.desc, settingValue];
         }
-
-        if (regexValidator(this.autoReclosingPattern, code)) {
-          return ['_Auto-Reclose Interval (s)', setting];
+        if (regexValidator(this.autoReclose.pattern, settingName)) {
+          return [this.autoReclose.desc, settingValue];
         }
       } catch (err) {
         console.error('SEL decoder error:', err);
@@ -1188,12 +1314,12 @@ WHERE ${baseCondition}
      * Validates input parameters
      * @private
      */
-    _isValid (code, setting) {
+    _isValid (settingName, settingValue) {
       return !!(
-        code &&
-        typeof code === 'string' &&
-        setting &&
-        (typeof setting === 'string' || typeof setting === 'number')
+        settingName &&
+        typeof settingName === 'string' &&
+        settingValue &&
+        (typeof settingValue === 'string' || typeof settingValue === 'number')
       );
     },
 
@@ -1201,8 +1327,8 @@ WHERE ${baseCondition}
      * Gets phase description from code
      * @private
      */
-    _getPhaseDescription (code) {
-      const thirdChar = code.charAt(2);
+    _getPhaseDescription (settingName) {
+      const thirdChar = settingName.charAt(2);
       return this.phases[thirdChar] ?? 'PHS';
     },
 
@@ -1210,9 +1336,9 @@ WHERE ${baseCondition}
      * Gets suffix description from code
      * @private
      */
-    _getSuffix (code) {
-      const last2 = code.slice(-2);
-      const last1 = code.slice(-1);
+    _getOCSuffix (settingName) {
+      const last2 = settingName.slice(-2);
+      const last1 = settingName.slice(-1);
       return this.suffixes[last2] ?? this.suffixes[last1] ?? '';
     },
 
@@ -1220,18 +1346,18 @@ WHERE ${baseCondition}
      * Decodes overcurrent setting
      * @private
      */
-    _decodeOverCurrent (code, OC_desc, setting) {
-      const phase = this._getPhaseDescription(code);
-      const suffix = this._getSuffix(code);
-      const isLiveLine = regexValidator(this.liveLinePattern, code);
+    _decodeOverCurrent (settingName, OC_desc, settingValue) {
+      const phase = this._getPhaseDescription(settingName);
+      const suffix = this._getOCSuffix(settingName);
+      const isLiveLine = regexValidator(this.liveLine.pattern, settingName);
 
-      let finalSetting = setting.toString();
-      if (suffix.includes('Curve') && setting in this.curves) {
-        finalSetting = `${setting} ${this.curves[setting]}`;
+      let finalSetting = settingValue.toString();
+      if (suffix.includes('Curve') && settingValue in this.curves) {
+        finalSetting = `${settingValue} ${this.curves[settingValue]}`;
       }
 
-      const liveLine = isLiveLine ? '(Live Line)' : '';
-      const description = [phase, OC_desc, suffix, liveLine].filter(Boolean).join(' ');
+      const addLiveLine = isLiveLine ? this.liveLine.desc : '';
+      const description = [phase, OC_desc, suffix, addLiveLine].filter(Boolean).join(' ');
 
       return [description, finalSetting];
     },
@@ -1389,11 +1515,12 @@ WHERE ${baseCondition}
   <meta charset='UTF-8'>
   <title>${filename}</title>
   <style>
-    body { font-family: monospace; font-size: 16px; padding: 20px; }
+    body { font-family: monospace; font-size: 0.9rem; padding: 20px; }
     h2 { margin-bottom: 20px; }
-    table { border-collapse: collapse; font-size: 15px; white-space: pre-wrap; border-collapse: collapse; text-wrap-style: balance; }
-    th, td { border: 1px solid #999; padding: 8px; text-align: left; }
-    th { background-color: #f0f0f0; font-weight: bold; }
+    table { border: 1px solid #999; border-collapse: collapse; font-size: 0.9rem; white-space: pre-wrap;  text-wrap-style: balance; }
+    table th { background-color: #eee; font-weight: bold; }
+    table th, td { padding: 6px; text-align: left;border: 1px solid #999; }
+    
   </style>
 </head>
 <body>

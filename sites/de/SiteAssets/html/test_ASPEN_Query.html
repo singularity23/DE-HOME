@@ -60,6 +60,10 @@
             border-radius: 3px;
         }
 
+        .areva-input {
+            width: 300px;
+        }
+
         #console-output {
             background-color: #2c3e50;
             color: #ecf0f1;
@@ -98,8 +102,8 @@
 
         <div class="test-controls">
             <h3>Automated Tests</h3>
-            <button onclick="runAllTests()">🚀 Run All Tests</button>
-            <button onclick="clearConsole()">🧹 Clear Console</button>
+            <button type="button" onclick="runAllTests()">🚀 Run All Tests</button>
+            <button type="button" onclick="clearConsole()">🧹 Clear Console</button>
         </div>
 
         <div class="test-controls">
@@ -109,15 +113,15 @@
                 <strong>SEL Decoder Test:</strong>
                 <input type="text" id="sel-code" placeholder="51P1P" value="51P1P">
                 <input type="text" id="sel-setting" placeholder="1.5" value="1.5">
-                <button onclick="testSELDecoder()">Test SEL</button>
+                <button type="button" onclick="testSELDecoder()">Test SEL</button>
             </div>
 
             <div class="manual-test">
                 <strong>AREVA Decoder Test:</strong>
-                <input type="text" id="areva-code" placeholder="FUNCTION PARAMETERS/.../IREF" style="width: 300px;"
+                <input type="text" id="areva-code" placeholder="FUNCTION PARAMETERS/.../IREF" class="areva-input"
                     value="FUNCTION PARAMETERS/PARAMETER SUBSET 1/IDMT1/IREF P PS1">
                 <input type="text" id="areva-setting" placeholder="1.2 INOM" value="1.2 INOM">
-                <button onclick="testAREVADecoder()">Test AREVA</button>
+                <button type="button" onclick="testAREVADecoder()">Test AREVA</button>
             </div>
 
             <div class="manual-test">
@@ -127,13 +131,13 @@
                     <option value="IN SERVICE">IN SERVICE</option>
                     <option value="ISSUED">ISSUED</option>
                 </select>
-                <button onclick="testSQLGeneration()">Generate SQL</button>
+                <button type="button" onclick="testSQLGeneration()">Generate SQL</button>
             </div>
 
             <div class="manual-test">
                 <strong>Input Validation Test:</strong>
                 <input type="text" id="validation-input" placeholder="Enter pattern to test" value="ABC 12F123">
-                <button onclick="testInputValidation()">Validate Input</button>
+                <button type="button" onclick="testInputValidation()">Validate Input</button>
             </div>
         </div>
 
