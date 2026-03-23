@@ -1,4 +1,5 @@
 const CONFIG = Object.freeze({
+  debug: false,
   status: Object.freeze({
     IN_SERVICE: 'IN SERVICE',
     ISSUED: 'ISSUED',
@@ -12,60 +13,32 @@ const CONFIG = Object.freeze({
   }),
 });
 
-console.log(CONFIG.status.settingStatus.inService);
-console.log(CONFIG.status.settingStatus.issued);
+const myConsole = {
+  silent: true,
+  log (...args) {
+    if (CONFIG.debug || !this.silent) {
+      const timestamp = new Date().toISOString();
+      console.log(`[ASPEN ${timestamp}]:`, ...args);
+    }
+  },
 
-const _formatSqlList = array => {
-  array
-    .filter(item => item != null)
-    .map(item => `'${String(item).replace(/'/g, /\"''\"/g)}'`)
-    .join(', ');
-  console.log(array);
+  debug (...args) {
+    if (CONFIG.debug) {
+      const timestamp = new Date().toISOString();
+      console.log(`[ASPEN ${timestamp}]:`, ...args);
+    }
+  },
+
+  table (...args) {
+    if (CONFIG.debug) {
+      const timestamp = new Date().toISOString();
+      console.group(`[ASPEN ${timestamp}]:`);
+      console.table(...args);
+      console.groupEnd();
+    }
+  },
 };
 
-const settingNames = [
-  '51P1P',
-  '51P1TD',
-  '51P1C',
-  '50P1P',
-  '50P2P',
-  '50P3P',
-  '50P4P',
-  '50P5P',
-  '67P2D',
-  '67P3D',
-  '67P4D',
-  '51G1P',
-  '51G1TD',
-  '51G1C',
-  '50G1P',
-  '50G5P',
-  '51PP',
-  '51PTD',
-  '51PC',
-  '51GP',
-  '51GTD',
-  '51GC',
-  '51P',
-  '51TD',
-  '51C',
-  '50L',
-  '50LT',
-  '50H',
-  '51NP',
-  '51NTD',
-  '51NC',
-  '50NL',
-  '50NLT',
-  '50NH',
-  '51QP',
-  '51QTD',
-  '51QC',
-  '79OI1',
-];
-
-_formatSqlList(settingNames);
-
-const values = ["O'Reilly", 'Smith', null];
-const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
-console.log(placeholders);
+myConsole.log(CONFIG.status.settingStatus.inService);
+myConsole.debug(CONFIG.status.settingStatus.issued);
+myConsole.table([CONFIG.status.settingStatus.inService, CONFIG.status.settingStatus.issued]);

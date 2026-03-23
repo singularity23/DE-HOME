@@ -431,17 +431,6 @@ WHERE
   // ============================================================================
 
   /*
-   * Safe property getter with default value
-   */
-  const safeGet = (obj, path, defaultValue = null) => {
-    try {
-      return path.split('.').reduce((acc, part) => acc?.[part], obj) ?? defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  };
-
-  /*
    * Converts array-like object to array (optimized)
    */
   const toArray = row => {
@@ -979,7 +968,14 @@ WHERE
      */
     _swapColumns (array, index1, index2) {
       [array[index1], array[index2]] = [array[index2], array[index1]];
-      if (array[index1].Key) {
+      const hasKeyOnBoth =
+        typeof array[index1] === 'object' &&
+        array[index1] !== null &&
+        typeof array[index2] === 'object' &&
+        array[index2] !== null &&
+        'Key' in array[index1] &&
+        'Key' in array[index2];
+      if (hasKeyOnBoth) {
         [array[index1].Key, array[index2].Key] = [array[index2].Key, array[index1].Key];
       }
     },

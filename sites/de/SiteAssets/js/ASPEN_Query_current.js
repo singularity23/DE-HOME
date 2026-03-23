@@ -7,6 +7,7 @@ javascript: (function () {
     isProcessing: false,
     relayType: '',
     relayModel: '',
+    feederId: '',
     lastError: null,
     lastQuery: null,
     queryCount: 0,
@@ -113,9 +114,9 @@ javascript: (function () {
 
       // Query timing configuration (in milliseconds)
       timing: Object.freeze({
-        queryDelay: 4500,
+        queryDelay: 2500,
         timeout: 15000,
-        pollInterval: 150,
+        pollInterval: 200,
         startDelay: 300,
       }),
 
@@ -221,12 +222,27 @@ javascript: (function () {
       state.cacheIdleTimer = null;
       SQL.clearCache();
       DOM.clearCache();
-      debugLog(false, 'SQL and DOM caches auto-cleared after idle period');
+      myConsole.debug('SQL and DOM caches auto-cleared after idle period');
     }, delay);
   };
 
-  const ErrorHandler = {
-    log (error, context = '') {
+  const errorHandler = {
+    _normalizeLogArgs (contextOrError = '', errorOrContext = null) {
+      const contextFirst = typeof contextOrError === 'string';
+      const errorFirst = typeof errorOrContext === 'string' && !contextFirst;
+
+      if (contextFirst) {
+        return { context: contextOrError, error: errorOrContext };
+      }
+
+      if (errorFirst) {
+        return { context: errorOrContext, error: contextOrError };
+      }
+
+      return { context: '', error: contextOrError };
+    },
+    log (contextOrError = '', errorOrContext = null) {
+      const { context, error } = this._normalizeLogArgs(contextOrError, errorOrContext);
       const contextText = context ? ` [${context}]` : '';
       console.error(`ASPEN Query Error${contextText}:`, error);
       if (CONFIG.debug) {
@@ -236,12 +252,36 @@ javascript: (function () {
     notify (userMessage, error = null) {
       DOM.showWarning(userMessage);
       if (error) {
-        this.log(error, 'User Notification');
+        this.log('User Notification', error);
       }
     },
     handle (error, context = '', userMessage = CONFIG.messages.error.general) {
-      this.log(error, context);
+      this.log(context, error);
       this.notify(userMessage);
+    },
+  };
+
+  const myConsole = {
+    silent: true,
+    log (...args) {
+      this.silent = false;
+      if (CONFIG.debug || !this.silent) {
+        const timestamp = new Date().toISOString();
+        console.log(`[ASPEN ${timestamp}]:`, ...args);
+      }
+    },
+
+    debug (...args) {
+      if (CONFIG.debug) {
+        const timestamp = new Date().toISOString();
+        console.log(`[ASPEN ${timestamp}]:`, ...args);
+      }
+    },
+
+    table (...args) {
+      if (CONFIG.debug) {
+        console.table(...args);
+      }
     },
   };
 
@@ -314,7 +354,7 @@ javascript: (function () {
           .replace(this._regexPatterns.trailingSpaces, '')
           .trim();
       } catch (error) {
-        console.warn('SQL minification failed:', error);
+        errorHandler.log('SQL minification failed:', error);
         return sql.trim(); // Return original if minification fails
       }
     },
@@ -337,7 +377,7 @@ javascript: (function () {
 
         if (this._cache.has(cacheKey)) {
           this._stats.hits++;
-          debugLog(`SQL cache hit for: ${cacheKey}`);
+          myConsole.debug(`SQL cache hit for: ${cacheKey}`);
           return this._cache.get(cacheKey);
         }
 
@@ -350,10 +390,10 @@ javascript: (function () {
         this._cacheWithLimit(cacheKey, minifiedSql);
         this._stats.generated++;
 
-        debugLog(`SQL generated for: ${cacheKey}`);
+        myConsole.debug(`SQL generated for: ${cacheKey}`);
         return minifiedSql;
       } catch (error) {
-        console.error('SQL generation failed:', error);
+        errorHandler.log('SQL generation failed:', error);
         throw error;
       } finally {
         _touchCacheIdleClear();
@@ -381,7 +421,7 @@ javascript: (function () {
       if (!Array.isArray(array)) {
         throw new Error(`Expected array for key '${key}', got ${typeof array}`);
       }
-      debugLog(`Getting cached list for: ${this._formatSqlList(array)}`);
+      myConsole.debug(`Getting cached list for: ${this._formatSqlList(array)}`);
       if (!this._componentCache.has(key)) {
         this._componentCache.set(key, this._formatSqlList(array));
       }
@@ -607,7 +647,7 @@ WHERE
     AND R.ID = Q.RELAYID
     AND UPPER(Q.S02) = '${status}'`;
       } catch (error) {
-        console.error('SQL building failed:', error);
+        errorHandler.log('SQL building failed:', error);
         throw new Error(`Failed to build SQL query: ${error.message}`);
       }
     },
@@ -619,7 +659,7 @@ WHERE
       this._cache.clear();
       this._componentCache.clear();
       this._stats = { hits: 0, misses: 0, generated: 0 };
-      debugLog('SQL caches cleared');
+      myConsole.debug('SQL caches cleared');
     },
 
     /*
@@ -652,26 +692,6 @@ WHERE
         return 'Unknown';
       }
     },
-
-    /*
-     * Validates cache integrity
-     * @returns {boolean} True if cache is valid
-     */
-    validateCache () {
-      try {
-        // Check for cache corruption
-        for (const [key, value] of this._cache.entries()) {
-          if (typeof key !== 'string' || typeof value !== 'string') {
-            console.warn('Invalid cache entry detected:', key, typeof value);
-            return false;
-          }
-        }
-        return true;
-      } catch (error) {
-        console.error('Cache validation failed:', error);
-        return false;
-      }
-    },
   };
 
   // ============================================================================
@@ -699,7 +719,7 @@ WHERE
       const previousState = { ...state };
       Object.assign(state, updates);
 
-      debugLog('State updated:', {
+      myConsole.debug('State updated:', {
         previous: previousState,
         current: state,
         changes: updates,
@@ -707,39 +727,11 @@ WHERE
     },
 
     /*
-     * Gets a safe copy of current state
-     * @returns {Object} Current state snapshot
-     */
-    getSnapshot () {
-      return { ...state };
-    },
-
-    /*
      * Resets state to initial values
      */
     reset () {
       Object.assign(state, { ...INITIAL_STATE });
-      debugLog('State reset to initial values');
-    },
-
-    /*
-     * Validates state integrity
-     * @returns {boolean} True if state is valid
-     */
-    validate () {
-      const requiredKeys = Object.keys(INITIAL_STATE);
-      const stateKeys = Object.keys(state);
-
-      const isValid =
-        requiredKeys.every(key => stateKeys.includes(key)) &&
-        typeof state.isProcessing === 'boolean' &&
-        typeof state.queryCount === 'number';
-
-      if (!isValid) {
-        console.error('Invalid state detected:', state);
-      }
-
-      return isValid;
+      myConsole.debug('State reset to initial values');
     },
   };
 
@@ -767,7 +759,7 @@ WHERE
           }, obj) ?? defaultValue
         );
       } catch (error) {
-        debugLog('SafeGet error:', error);
+        myConsole.debug('SafeGet error:', error);
         return defaultValue;
       }
     },
@@ -786,7 +778,7 @@ WHERE
         try {
           return Array.from(value);
         } catch (error) {
-          debugLog('Array conversion failed:', error);
+          myConsole.debug('Array conversion failed:', error);
           return [];
         }
       }
@@ -817,14 +809,14 @@ WHERE
      */
     validatePattern (pattern, value) {
       if (!(pattern instanceof RegExp)) {
-        console.warn('Invalid regex pattern provided');
+        myConsole.debug('Invalid regex pattern provided');
         return false;
       }
 
       try {
         return pattern.test(String(value.trim() || ''));
       } catch (error) {
-        debugLog('Pattern validation error:', error);
+        myConsole.debug('Pattern validation error:', error);
         return false;
       }
     },
@@ -858,17 +850,6 @@ WHERE
           setTimeout(() => (inThrottle = false), limit);
         }
       };
-    },
-
-    /*
-     * Enhanced debug logging with timestamps and context
-     * @param {...*} args - Arguments to log
-     */
-    debugLog (silent = true, ...args) {
-      if (CONFIG.debug || !silent) {
-        const timestamp = new Date().toISOString();
-        console.log(`[ASPEN ${timestamp}]:`, ...args);
-      }
     },
 
     /*
@@ -907,7 +888,7 @@ WHERE
             lastError = error;
 
             if (attempt < maxRetries) {
-              debugLog(`Retry attempt ${attempt + 1}/${maxRetries} after error:`, error.message);
+              myConsole.debug(`Retry attempt ${attempt + 1}/${maxRetries} after error:`, error.message);
               await new Promise(resolve => setTimeout(resolve, delay * (attempt + 1))); // Exponential backoff
             }
           }
@@ -926,14 +907,11 @@ WHERE
       const startTime = performance.now();
       return function endTiming () {
         const duration = performance.now() - startTime;
-        debugLog(false, `${label}: ${duration.toFixed(2)}ms`);
+        myConsole.log(`${label}: ${duration.toFixed(2)}ms`);
         return duration;
       };
     },
   };
-
-  // Utility alias for concise debug logging
-  const debugLog = Utils.debugLog.bind(Utils);
 
   // ============================================================================
   // DOM UTILITIES
@@ -991,7 +969,7 @@ WHERE
 
         return element;
       } catch (error) {
-        console.error('Element creation failed:', error);
+        errorHandler.log('Element creation failed:', error);
         throw new Error(`Failed to create ${tag} element: ${error.message}`);
       }
     },
@@ -1004,7 +982,7 @@ WHERE
      */
     getElement (id, silent = false) {
       if (!id || typeof id !== 'string') {
-        if (!silent) debugLog('Invalid element ID provided:', id);
+        if (!silent) myConsole.debug('Invalid element ID provided:', id);
         return null;
       }
 
@@ -1024,7 +1002,7 @@ WHERE
         const element = document.getElementById(id);
 
         if (!element && !silent) {
-          debugLog(`Element with id '${id}' not found in DOM`);
+          myConsole.debug(`Element with id '${id}' not found in DOM`);
         }
 
         // Cache successful lookups
@@ -1035,7 +1013,7 @@ WHERE
         return element;
       } catch (error) {
         if (!silent) {
-          console.error('Element lookup failed:', error);
+          errorHandler.log('Element lookup failed:', error);
         }
         return null;
       } finally {
@@ -1072,7 +1050,7 @@ WHERE
         // Add type-specific styling
         warningEl.className = `${CONFIG.classes.warning} ${type}`;
       } catch (error) {
-        console.error('Warning display failed:', error);
+        errorHandler.log('Warning display failed:', error);
       }
     },
 
@@ -1131,7 +1109,7 @@ WHERE
         // Clear element cache for removed elements
         this._clearStaleCache();
       } catch (error) {
-        console.error('Clear all failed:', error);
+        errorHandler.log('Clear all failed:', error);
       }
     },
 
@@ -1157,14 +1135,14 @@ WHERE
       style.textContent = `
         input:valid { background-color: #dcf1da; }
         input:invalid { background-color: #fedad0; }
-        .aspen-search-wrapper {padding: 10px;box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px; justify-content: center; display: grid;grid-template-columns: minmax(100px, 12%) minmax(100px, 7%);grid-template-rows: 1fr 1fr;grid-column-gap: 10px; z-index: 1000;}
-        .aspen-warning { color: #fa4616; font-size: 0.9rem; margin: auto 5px; font-weight: bold; grid-column: 1 / span 2; grid-row: 2; text-align: center; }
-        .aspen-table { border-collapse: collapse; max-width: 100%; font-family: monospace; font-size: 0.9rem; border: 1px solid #bbb; box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px; text-wrap-style: balance; }
+        .aspen-search-wrapper {padding: 10px;box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2px; justify-content: center; display: grid;grid-template-columns: minmax(150px, 13%) minmax(150px, 7%);grid-template-rows: 1fr 1fr;grid-column-gap: 10px; z-index: 1000;}
+        .aspen-warning { color: #fa4616; font-size: 0.9rem; margin: auto 5px; font-weight: bold; grid-column: 1 / span 2; grid-row: 2; }
+        .aspen-table { border-collapse: collapse; max-width: 100%; font-family: monospace; font-size: 0.9rem; border: 1px solid #bbb; box-shadow: rgba(23, 43, 77, 0.1) 0px 2px 2px, rgba(23, 43, 77, 0.1) 2px 2px 2pxs; text-wrap-style: balance; }
         .aspen-table th { padding: 8px;  text-align: left; background-color: #eee; font-weight: bold; border: 1px solid #bbb;}
         .aspen-table td { padding: 6px;  vertical-align: middle; white-space: pre-wrap; border: 1px solid #bbb; }
         .aspen-container { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
         #aspen-search-status-menu { position: absolute; transform: translate3d(0px, 33px, 0px); top: 0; left: 0; will-change: transform; }
-        #searchInput { grid-column: 1 / 2; grid-row: 1; text-align: center;}
+        #searchInput { grid-column: 1 / 2; grid-row: 1; }
         #searchButton { grid-column: 2 / 3; grid-row: 1;  } #searchButton:focus-visible { outline: none; }
         .dropdown:focus-within .dropdown-menu { display: block; }
       `;
@@ -1181,14 +1159,14 @@ WHERE
           try {
             return handler(e);
           } catch (error) {
-            console.error(`Event handler error for ${event}:`, error);
+            errorHandler.log(`Event handler error for ${event}:`, error);
           }
         };
 
         element.addEventListener(event, wrappedHandler, options);
         return () => element.removeEventListener(event, wrappedHandler, options);
       } catch (error) {
-        console.error('Failed to attach event listener:', error);
+        errorHandler.log('Failed to attach event listener:', error);
         return () => {};
       }
     },
@@ -1210,7 +1188,7 @@ WHERE
      */
     clearCache () {
       this._elementCache.clear();
-      debugLog('DOM cache cleared');
+      myConsole.debug('DOM cache cleared');
     },
   };
   // ============================================================================
@@ -1225,7 +1203,7 @@ WHERE
      */
     async init () {
       if (this._initialized) {
-        debugLog('Search component already initialized');
+        myConsole.debug('Search component already initialized');
         return;
       }
 
@@ -1238,9 +1216,9 @@ WHERE
 
         this._initialized = true;
 
-        debugLog('Search component initialized successfully');
+        myConsole.debug('Search component initialized successfully');
       } catch (error) {
-        console.error('Search component initialization failed:', error);
+        errorHandler.log('Search component initialization failed:', error);
         DOM.showError('Failed to initialize search interface');
         throw error;
       } finally {
@@ -1254,17 +1232,16 @@ WHERE
      */
     _switchQueryEditor () {
       try {
-        if (window.editorType === 'Wizard' && typeof window.switchEditor === 'function') {
-          window.switchEditor();
-          debugLog('Query editor switched to Wizard mode');
-        }
-
         if (typeof window.editorReady === 'function') {
           window.editorReady('SQLEditor');
-          debugLog('SQL editor initialized');
+          myConsole.debug('SQL editor initialized');
+        }
+        if (window.editorType === 'Wizard' && typeof window.switchEditor === 'function') {
+          window.switchEditor();
+          myConsole.debug('Query editor switched to Wizard mode');
         }
       } catch (error) {
-        debugLog('Query editor switch failed:', error);
+        myConsole.debug('Query editor switch failed:', error);
         // Non-critical error, continue initialization
       }
     },
@@ -1345,7 +1322,7 @@ WHERE
 
         DOM.injectStyles();
       } catch (error) {
-        console.error('Failed to create search UI:', error);
+        errorHandler.log('Failed to create search UI:', error);
         throw new Error('Search interface creation failed');
       }
     },
@@ -1366,20 +1343,17 @@ WHERE
       }
 
       try {
-        // Create debounced search handler
-        const debouncedSearch = Utils.debounce(inputElement => {
-          this._handleSearch(inputElement);
-        }, CONFIG.performance.debounceDelay);
-
         const inServiceHandler = event => {
           event.preventDefault();
           this._handleSearch(input, CONFIG.status.IN_SERVICE);
+          DOM.showInfo(CONFIG.messages.info.searching);
         };
         this._eventHandlers.set('in-service-click', DOM.attachEventListener(inService, 'click', inServiceHandler));
 
         const issuedHandler = event => {
           event.preventDefault();
           this._handleSearch(input, CONFIG.status.ISSUED);
+          DOM.showInfo(CONFIG.messages.info.searching);
         };
         this._eventHandlers.set('issued-click', DOM.attachEventListener(issued, 'click', issuedHandler));
 
@@ -1388,6 +1362,7 @@ WHERE
           if (event.key === 'Enter') {
             event.preventDefault();
             this._handleSearch(input);
+            DOM.showInfo(CONFIG.messages.info.searching);
           }
         };
         this._eventHandlers.set('input-keydown', DOM.attachEventListener(input, 'keydown', keyHandler));
@@ -1409,11 +1384,20 @@ WHERE
         };
         this._eventHandlers.set('input-focusin', DOM.attachEventListener(input, 'focusin', focusHandler));
 
-        debugLog('Event handlers attached successfully');
+        myConsole.debug('Event handlers attached successfully');
       } catch (error) {
-        console.error('Failed to attach event handlers:', error);
+        errorHandler.log('Failed to attach event handlers:', error);
         throw error;
       }
+    },
+
+    _cleanupEventHandlers () {
+      for (const [key, cleanup] of this._eventHandlers.entries()) {
+        if (typeof cleanup === 'function') {
+          cleanup();
+        }
+      }
+      this._eventHandlers.clear();
     },
 
     /*
@@ -1444,14 +1428,14 @@ WHERE
      */
     async _handleSearch (inputEl, status = null) {
       if (state.isProcessing) {
-        debugLog('Search already in progress, ignoring request');
+        myConsole.debug('Search already in progress, ignoring request');
         return;
       }
 
       try {
         // Clear previous state and UI
         DOM.clearAll();
-        // Validate and format input
+        // Validate and format inputs
         const searchValue = Utils.formatDeviceCode(inputEl.value);
         state.startTime = performance.now();
 
@@ -1473,7 +1457,7 @@ WHERE
         // Execute search
         await this._executeSearch(searchValue, status);
       } catch (error) {
-        console.error('Search execution failed:', error);
+        errorHandler.log('Search execution failed:', error);
 
         if (error.message === CONFIG.messages.validation.invalidFormat) {
           DOM.showWarning(error.message, 'warning');
@@ -1496,16 +1480,16 @@ WHERE
 
       try {
         // Try IN SERVICE first
-        debugLog(`Executing search for: ${searchValue}`);
+        myConsole.debug(`Executing search for: ${searchValue}`);
         if (status !== CONFIG.status.ISSUED) {
           const inServiceSuccess = await this._executeStatusSearch(searchValue, CONFIG.status.IN_SERVICE);
           if (inServiceSuccess) {
-            debugLog('IN SERVICE results found and processed');
+            myConsole.debug('IN SERVICE results found and processed');
             DOM.showSuccess(CONFIG.messages.success.inService);
             return;
           }
 
-          debugLog('No IN SERVICE results found, trying ISSUED settings');
+          myConsole.debug('No IN SERVICE results found, trying ISSUED settings');
           DOM.showInfo(CONFIG.messages.info.noInServiceResults);
         }
 
@@ -1517,10 +1501,10 @@ WHERE
           }
         }
         // No results found for either status
-        debugLog('No results found for either status');
+        myConsole.debug('No results found for either status');
         DOM.showWarning(CONFIG.messages.info.noResults, 'warning');
       } catch (error) {
-        console.error('Search execution failed:', error);
+        errorHandler.log('Search execution failed:', error);
 
         // Provide specific error messages based on error type
         if (error.message.includes('timeout')) {
@@ -1545,19 +1529,23 @@ WHERE
      * @private
      */
     async _executeStatusSearch (searchValue, status) {
-      debugLog(`Starting ${status} search for: ${searchValue}`);
+      myConsole.debug(`Starting ${status} search for: ${searchValue}`);
 
       try {
         const [fingerPrint, startTime] = this._runQuery(searchValue, status);
-        debugLog(`Query initiated for ${status}, waiting for results...`);
-
-        await DataProcessor.getQueryResults(fingerPrint, startTime, status);
+        myConsole.debug(`Query initiated for ${status}, waiting for results...`);
+        const getQueryResultsWithRetry = Utils.withRetry(
+          () => DataProcessor.getQueryResults(fingerPrint, startTime, status),
+          1,
+          300
+        );
+        await getQueryResultsWithRetry();
         const success = await DataProcessor.processResults();
 
-        debugLog(`${status} search completed with success: ${success}`);
+        myConsole.debug(`${status} search completed with success: ${success}`);
         return success;
       } catch (error) {
-        console.error(`${status} search failed:`, error);
+        errorHandler.log(`${status} search failed:`, error);
         throw new Error(`${status} query failed: ${error.message}`);
       }
     },
@@ -1574,7 +1562,7 @@ WHERE
       try {
         // Generate SQL with validation
         const sql = SQL.generate(searchValue, status);
-        debugLog(`Generated SQL for ${status}:`, sql);
+        myConsole.debug(`Generated SQL for ${status}:`, sql);
         this._displaySql(sql);
 
         // Validate query system availability
@@ -1599,10 +1587,10 @@ WHERE
         // Execute query
         window.runQuery();
 
-        debugLog(`Query executed for ${status}: fingerprint=${fingerPrint}`);
+        myConsole.debug('fingerprint:', fingerPrint);
         return [fingerPrint, startTime];
       } catch (error) {
-        console.error('Query execution setup failed:', error);
+        errorHandler.log('Query execution setup failed:', error);
         throw new Error(`Query setup failed: ${error.message}`);
       }
     },
@@ -1615,7 +1603,7 @@ WHERE
     _displaySql (sql) {
       const editor = DOM.getElement(CONFIG.selectors.sqlEditor, true);
       if (!editor) {
-        debugLog('SQL editor not available for display');
+        myConsole.debug('SQL editor not available for display');
         return;
       }
 
@@ -1628,46 +1616,10 @@ WHERE
         editor.setAttribute('role', 'textbox');
         editor.setAttribute('aria-readonly', 'true');
 
-        debugLog('SQL query displayed in editor');
+        myConsole.debug('SQL query displayed in editor');
       } catch (error) {
-        console.error('Failed to display SQL:', error);
+        errorHandler.log('Failed to display SQL:', error);
       }
-    },
-
-    /*
-     * Cleanup method to remove event listeners
-     */
-    destroy () {
-      try {
-        // Remove all tracked event listeners
-        for (const [name, cleanup] of this._eventHandlers) {
-          debugLog(`Removing event handler: ${name}`);
-          if (typeof cleanup === 'function') {
-            cleanup();
-          }
-        }
-
-        this._eventHandlers.clear();
-        this._initialized = false;
-
-        debugLog('SearchComponent destroyed');
-      } catch (error) {
-        console.error('SearchComponent cleanup failed:', error);
-      }
-    },
-
-    /*
-     * Gets component status and statistics
-     * @returns {Object} Component status
-     */
-    getStatus () {
-      return {
-        initialized: this._initialized,
-        eventHandlers: this._eventHandlers.size,
-        lastQuery: state.lastQuery,
-        queryCount: state.queryCount,
-        processing: state.isProcessing,
-      };
     },
   };
 
@@ -1684,44 +1636,49 @@ WHERE
       const endProcessingTiming = Utils.startTiming('DataProcessor.processResults');
 
       try {
-        debugLog('Starting comprehensive results processing pipeline');
+        DOM.showInfo(CONFIG.messages.info.processing);
+        myConsole.debug('Starting comprehensive results processing pipeline');
 
         // Step 1: Prepare and validate table data
         if (!this._prepareTableData()) {
-          debugLog('No table data available - query returned empty results');
+          myConsole.debug('No table data available - query returned empty results');
           return false;
         }
-        debugLog('✓ Table data prepared and validated');
+        myConsole.debug('✓ Table data prepared and validated');
 
         // Step 2: Detect and validate relay type
-        this._detectRelayType();
-        debugLog(`✓ Relay type detected: ${state.relayType} ${state.relayModel ? `(${state.relayModel})` : ''}`);
+        this._detectFeederRelay();
+        myConsole.debug(`✓ Relay type detected: ${state.relayType} ${state.relayModel ? `(${state.relayModel})` : ''}`);
 
         // Step 3: Enhance and process table data
         this._rearrangeTableData();
-        debugLog('✓ Table data rearranged');
+        const validation = this.validateData();
+        if (!validation.isValid) {
+          myConsole.debug('Data validation issues detected:', validation.issues);
+        }
+        myConsole.debug('✓ Table data rearranged');
 
         // Step 4: Render results
-        const feederId = this._extractFeederId();
+        const feederId = state.feederId;
         this._renderResults();
-        debugLog(`✓ Results rendered for feeder: ${feederId}`);
+        myConsole.debug(`✓ Results rendered for feeder: ${feederId}`);
 
         // Step 5: Setup additional features
         TableRenderer.setupDownloadButton(feederId);
         TableRenderer.hideOriginalResults();
-        debugLog('✓ UI enhancements completed');
+        myConsole.debug('✓ UI enhancements completed');
 
         this._logExecutionTime(state.startTime);
         return true;
       } catch (error) {
-        console.error('Results processing pipeline failed:', error);
+        errorHandler.log('Results processing pipeline failed:', error);
         DOM.showError('Failed to process query results');
 
         // Attempt graceful degradation
         try {
           this._handleProcessingFailure(error);
         } catch (fallbackError) {
-          console.error('Fallback processing also failed:', fallbackError);
+          errorHandler.log('Fallback processing also failed:', fallbackError);
         }
 
         return false;
@@ -1731,11 +1688,11 @@ WHERE
     },
 
     _handleProcessingFailure (originalError) {
-      debugLog('Attempting graceful degradation after processing failure');
+      myConsole.debug('Attempting graceful degradation after processing failure');
 
       // Try to show raw data if processing failed
       if (Utils.hasElements(state.tableRows) && Utils.hasElements(state.headerRow)) {
-        debugLog('Rendering raw data as fallback');
+        myConsole.debug('Rendering raw data as fallback');
         const container = TableRenderer.ensureContainer();
         TableRenderer.render(container, state.headerRow, state.tableRows);
         DOM.showWarning('Results displayed with limited processing due to an error', 'warning');
@@ -1748,7 +1705,7 @@ WHERE
      */
     async getQueryResults (fingerPrint, startTime, status) {
       return new Promise((resolve, reject) => {
-        // Validate inputsf
+        // Validate inputs
         if (typeof startTime !== 'number' || startTime <= 0) {
           reject(new Error(`Invalid query start time for '${status}': ${startTime}`));
           return;
@@ -1759,7 +1716,7 @@ WHERE
           return;
         }
 
-        debugLog(`Monitoring query completion for ${status}`, { fingerPrint, startTime });
+        myConsole.debug(`Monitoring query completion for ${status}`, { fingerPrint, startTime });
 
         let pollCount = 0;
         const maxPolls = Math.ceil(CONFIG.sql.timing.timeout / CONFIG.sql.timing.pollInterval);
@@ -1787,7 +1744,7 @@ WHERE
             const fingerprintChanged = currentFingerprint !== fingerPrint;
             const timeExceeded = elapsed > CONFIG.sql.timing.queryDelay;
 
-            debugLog(`Query poll ${pollCount}/${maxPolls}:`, {
+            myConsole.debug(`Query poll ${pollCount}/${maxPolls}:`, {
               elapsed: `${elapsed}ms`,
               fingerprintChanged,
               timeExceeded,
@@ -1796,14 +1753,14 @@ WHERE
 
             // Query completion conditions
             if (fingerprintChanged) {
-              debugLog(false, `✓ Query completed for '${status}' after ${elapsed}ms`);
+              myConsole.log(`✓ Query completed for '${status}' after ${elapsed}ms`);
               resolve();
               return;
             }
 
             if (timeExceeded) {
-              debugLog(false, `Query for '${status}' - delay exceeded after ${elapsed}ms`);
-              resolve();
+              myConsole.log(`Query for '${status}' - delay exceeded after ${elapsed}ms`);
+              reject(new Error(`Query delay exceeded after ${elapsed}ms for '${status}'`));
               return;
             }
 
@@ -1832,7 +1789,7 @@ WHERE
         // Access global result grid with comprehensive null checking
         const resultGrid = window.resultGrid;
         if (!resultGrid) {
-          debugLog('No resultGrid found in window object');
+          myConsole.debug('No resultGrid found in window object');
           return false;
         }
 
@@ -1842,16 +1799,16 @@ WHERE
 
         // Extract and validate rows
         const rawRows = Utils.safeGet(resultGrid, '_rows', []);
-        const tableRows = Utils.toArray(rawRows).map(row => Utils.toArray(Utils.safeGet(row, '_data', row)));
+        const tableRows = Utils.toArray(rawRows).map(row => Utils.safeGet(row, '_data', row));
 
         // Validate data integrity
         if (!Utils.hasElements(headerRow)) {
-          debugLog('No valid header data found');
+          myConsole.debug('No valid header data found');
           return false;
         }
 
         if (!Utils.hasElements(tableRows)) {
-          debugLog('No valid row data found');
+          myConsole.debug('No valid row data found');
           return false;
         }
 
@@ -1860,22 +1817,18 @@ WHERE
         const invalidRows = tableRows.filter(row => row.length !== expectedColumns);
 
         if (invalidRows.length > 0) {
-          debugLog(`Warning: ${invalidRows.length} rows have inconsistent column count`);
+          myConsole.debug(`Warning: ${invalidRows.length} rows have inconsistent column count`);
         }
+        myConsole.debug('_prepareTableData:');
+        myConsole.table(headerRow);
+        myConsole.table(tableRows);
 
         // Update state with validated data
-        StateManager.update({ headerRow, tableRows });
-
-        debugLog('Table data prepared successfully:', {
-          headers: headerRow.length,
-          rows: tableRows.length,
-          sampleHeader: headerRow.slice(0, 3),
-          firstRowSample: tableRows[0]?.slice(0, 3),
-        });
+        StateManager.update({ headerRow: headerRow, tableRows: tableRows });
 
         return true;
       } catch (error) {
-        console.error('Table data preparation failed:', error);
+        errorHandler.log('Table data preparation failed:', error);
         StateManager.update({ headerRow: [], tableRows: [] });
         return false;
       }
@@ -1884,34 +1837,21 @@ WHERE
      * Detects relay type from first row of data (optimized)
      * @private
      */
-    _detectRelayType () {
+    _detectFeederRelay () {
       try {
-        if (!Utils.hasElements(state.tableRows)) {
-          StateManager.update({
-            relayType: CONFIG.relayTypes.UNKNOWN,
-            relayModel: '',
-          });
-          return;
-        }
-
-        const firstRow = state.tableRows[0];
-        if (!Array.isArray(firstRow) || firstRow.length < 2) {
-          debugLog('Invalid first row structure for relay detection');
-          StateManager.update({
-            relayType: CONFIG.relayTypes.UNKNOWN,
-            relayModel: '',
-          });
-          return;
-        }
-
         // Extract relay information from second column (index 1)
+        const firstRow = state.tableRows[0];
         const relayCell = firstRow[1];
         const relayText = String(relayCell || '')
           .trim()
           .toUpperCase();
+        const feederCell = firstRow[0];
+        const feederText = String(feederCell || '')
+          .trim()
+          .toUpperCase();
 
-        if (!relayText) {
-          debugLog('No relay information found in data');
+        if (!relayText || !feederText) {
+          myConsole.debug('No relay or feeder information found in data');
           StateManager.update({
             relayType: CONFIG.relayTypes.UNKNOWN,
             relayModel: '',
@@ -1919,7 +1859,7 @@ WHERE
           return;
         }
 
-        debugLog('Analyzing relay text:', relayText);
+        myConsole.debug('Analyzing relay text:', relayText);
 
         // Detect specific models first
         let detectedModel = '';
@@ -1938,27 +1878,31 @@ WHERE
           }
         }
 
-        // Apply smart defaults
-        if (detectedModel && !detectedType) {
-          detectedType = CONFIG.relayTypes.SEL; // SEL-151 implies SEL type
-        }
+        myConsole.debug('Analyzing feeder text:', feederText);
+        let parts = feederText.split(/\s+/).filter(part => part.length > 0);
+        let feederId = parts.slice(0, 2).join(' ') || feederText;
+
+        myConsole.debug(`Extracted feeder ID: '${feederId}' from cell: '${feederText}'`);
 
         // Update state with detection results
         StateManager.update({
           relayType: detectedType,
           relayModel: detectedModel,
+          feederId: feederId,
         });
 
-        debugLog('Relay detection completed:', {
+        myConsole.debug('Relay detection completed:', {
           detectedType,
           detectedModel,
           originalText: relayText,
+          feederId,
         });
       } catch (error) {
-        console.error('Relay type detection failed:', error);
+        errorHandler.log('Relay type detection failed:', error);
         StateManager.update({
           relayType: CONFIG.relayTypes.UNKNOWN,
           relayModel: '',
+          feederId: '',
         });
       }
     },
@@ -1968,16 +1912,18 @@ WHERE
      * @private
      */
     _rearrangeTableData () {
+      let headerRow = [...state.headerRow];
+      let tableRows = [...state.tableRows];
+
       // Add description column for decodable types
       if (state.relayType === CONFIG.relayTypes.SEL) {
-        state.headerRow.push('PN ELEMENT DESC');
-        this._swapColumns(state.headerRow, 4, 5);
+        headerRow.push('PN ELEMENT DESC');
+        this._swapColumns(headerRow, 4, 5);
       }
 
-      state.tableRows = state.tableRows.map(row => {
+      tableRows = tableRows.map(row => {
         const rowArray = Utils.toArray(row);
 
-        debugLog('Pre-decoding:', rowArray[2], rowArray[3]);
         if (state.relayType === CONFIG.relayTypes.AREVA) {
           [rowArray[2], rowArray[3]] = AREVADecoder.preDecode(rowArray[2], rowArray[3]);
         }
@@ -1985,27 +1931,28 @@ WHERE
         return rowArray;
       });
       // Decode and normalize each row in a single pass.
-      state.tableRows = state.tableRows.map((row, idx) => {
-        debugLog('Decoding SEL:', idx, row[2], row[3]);
-        if (state.relayType === CONFIG.relayTypes.AREVA) {
-          [row[2], row[3]] = AREVADecoder.preDecode(row[2], row[3]);
-        }
-
+      tableRows = tableRows.map(row => {
         if (state.relayType === CONFIG.relayTypes.SEL) {
           const [desc, val] = SELDecoder.decode(row[2], row[3]);
           row[5] = desc;
           row[3] = val;
           this._swapColumns(row, 4, 5);
-        } else if (state.relayType === CONFIG.relayTypes.AREVA) {
-          debugLog('Decoding AREVA:', idx, row[2], row[3]);
+        }
+
+        if (state.relayType === CONFIG.relayTypes.AREVA) {
           [row[2], row[3]] = AREVADecoder.decode(row[2], row[3]);
         }
 
         return row;
       });
 
-      // Sort by appropriate column
+      myConsole.debug('_rearrangeTableData:');
+      myConsole.table(headerRow);
+      myConsole.table(tableRows);
+
+      StateManager.update({ headerRow: headerRow, tableRows: tableRows });
       this._sortResults();
+      // Sort by appropriate column
     },
 
     /*
@@ -2016,23 +1963,23 @@ WHERE
     _mergeConsecutiveCells (rows) {
       try {
         if (!Array.isArray(rows) || rows.length === 0) {
-          debugLog('No rows provided for cell merging');
+          myConsole.debug('No rows provided for cell merging');
           return rows;
         }
 
         const mergeColumns = CONFIG.table.mergeColumns[state.relayType];
         if (!Array.isArray(mergeColumns) || mergeColumns.length === 0) {
-          debugLog(`No merge configuration for relay type: ${state.relayType}`);
+          myConsole.debug(`No merge configuration for relay type: ${state.relayType}`);
           return rows;
         }
 
-        debugLog(`Merging cells for columns: [${mergeColumns.join(', ')}]`);
+        myConsole.debug(`Merging cells for columns: [${mergeColumns.join(', ')}]`);
 
         const rowCount = rows.length;
         const colCount = rows[0]?.length || 0;
 
         if (colCount === 0) {
-          debugLog('No columns found in first row');
+          myConsole.debug('No columns found in first row');
           return rows;
         }
 
@@ -2066,12 +2013,12 @@ WHERE
           }
         }
 
-        debugLog(`Generated ${rowspanMap.size} rowspan mappings`);
+        myConsole.debug(`Generated ${rowspanMap.size} rowspan mappings`);
 
         // Build enhanced rows with merge information
         const mergedRows = rows.map((row, rowIndex) => {
           if (!Array.isArray(row)) {
-            debugLog(`Row ${rowIndex} is not an array, skipping merge`);
+            myConsole.debug(`Row ${rowIndex} is not an array, skipping merge`);
             return Utils.toArray(row);
           }
 
@@ -2101,11 +2048,12 @@ WHERE
             .filter(cellData => cellData !== null);
         });
 
-        debugLog(`Cell merging completed: ${mergedRows.length} rows processed`);
+        myConsole.debug(`Cell merging completed: ${mergedRows.length} rows processed`);
+        myConsole.table(mergedRows.map(row => row.map(cell => cell.value)));
         return mergedRows;
       } catch (error) {
-        console.error('Cell merging failed:', error);
-        debugLog('Returning original rows without merging');
+        errorHandler.log('Cell merging failed:', error);
+        myConsole.debug('Returning original rows without merging');
         return rows;
       }
     },
@@ -2116,12 +2064,14 @@ WHERE
      */
     _swapColumns (array, index1, index2) {
       if (!Array.isArray(array)) {
-        debugLog('Cannot swap columns: not an array');
+        myConsole.debug('Cannot swap columns: not an array');
         return;
       }
 
       if (index1 < 0 || index1 >= array.length || index2 < 0 || index2 >= array.length) {
-        debugLog(`Cannot swap columns: indices out of bounds (${index1}, ${index2}) for array length ${array.length}`);
+        myConsole.debug(
+          `Cannot swap columns: indices out of bounds (${index1}, ${index2}) for array length ${array.length}`
+        );
         return;
       }
 
@@ -2134,7 +2084,7 @@ WHERE
           [array[index1].Key, array[index2].Key] = [array[index2].Key, array[index1].Key];
         }
       } catch (error) {
-        debugLog('Column swap failed:', error);
+        myConsole.debug('Column swap failed:', error);
       }
     },
     /*
@@ -2145,25 +2095,27 @@ WHERE
       try {
         const sortIdx = CONFIG.table.sortColumnIndex[state.relayType];
         if (typeof sortIdx !== 'number') {
-          debugLog(`No sort configuration for relay type: ${state.relayType}`);
+          myConsole.debug(`No sort configuration for relay type: ${state.relayType}`);
           return;
         }
 
-        if (!Utils.hasElements(state.tableRows)) {
-          debugLog('No rows to sort');
+        let tableRows = [...state.tableRows];
+
+        if (!Utils.hasElements(tableRows)) {
+          myConsole.debug('No rows to sort');
           return;
         }
 
         // Validate sort index against row structure
-        const firstRowLength = state.tableRows[0]?.length || 0;
+        const firstRowLength = tableRows[0]?.length || 0;
         if (sortIdx >= firstRowLength) {
-          debugLog(`Sort index ${sortIdx} exceeds row length ${firstRowLength}`);
+          myConsole.debug(`Sort index ${sortIdx} exceeds row length ${firstRowLength}`);
           return;
         }
 
-        const originalRowCount = state.tableRows.length;
+        const originalRowCount = tableRows.length;
 
-        state.tableRows.sort((a, b) => {
+        tableRows.sort((a, b) => {
           try {
             const aVal = String(a?.[sortIdx] || '');
             const bVal = String(b?.[sortIdx] || '');
@@ -2172,56 +2124,18 @@ WHERE
               sensitivity: 'base',
             });
           } catch (error) {
-            debugLog('Individual row sort comparison failed:', error);
+            myConsole.debug('Individual row sort comparison failed:', error);
             return 0; // Maintain original order on error
           }
         });
+        myConsole.debug('Results sorted');
+        myConsole.table(tableRows);
+        StateManager.update({ tableRows: tableRows });
 
-        debugLog(`Results sorted by column ${sortIdx}: ${originalRowCount} rows`);
+        myConsole.debug(`Results sorted by column ${sortIdx}: ${originalRowCount} rows`);
       } catch (error) {
-        console.error('Result sorting failed:', error);
-        debugLog('Continuing with unsorted results');
-      }
-    },
-
-    /*
-     * Extracts feeder ID from first row's first cell
-     * @private
-     */
-    _extractFeederId () {
-      try {
-        if (!Utils.hasElements(state.tableRows)) {
-          debugLog('No table rows available for feeder ID extraction');
-          return 'Unknown';
-        }
-
-        const firstRow = state.tableRows[0];
-        if (!Array.isArray(firstRow) || firstRow.length === 0) {
-          debugLog('Invalid first row structure');
-          return 'Unknown';
-        }
-
-        const firstCell = firstRow[0];
-        if (!firstCell) {
-          debugLog('First cell is empty');
-          return 'Unknown';
-        }
-
-        const cellText = String(firstCell).trim();
-        if (!cellText) {
-          debugLog('First cell contains no text');
-          return 'Unknown';
-        }
-
-        // Extract meaningful parts (typically first two space-separated components)
-        const parts = cellText.split(/\s+/).filter(part => part.length > 0);
-        const feederId = parts.slice(0, 2).join(' ') || cellText;
-
-        debugLog(`Extracted feeder ID: '${feederId}' from cell: '${cellText}'`);
-        return feederId;
-      } catch (error) {
-        console.error('Feeder ID extraction failed:', error);
-        return 'Unknown';
+        errorHandler.log('Result sorting failed:', error);
+        myConsole.debug('Continuing with unsorted results');
       }
     },
 
@@ -2231,12 +2145,12 @@ WHERE
      */
     _renderResults () {
       try {
-        debugLog('Starting result rendering process');
+        myConsole.debug('Starting result rendering process');
 
         // Apply cell merging for supported relay types
         const mergingTypes = [CONFIG.relayTypes.SEL, CONFIG.relayTypes.AREVA];
         if (mergingTypes.includes(state.relayType)) {
-          debugLog(`Applying cell merging for ${state.relayType} relay type`);
+          myConsole.debug(`Applying cell merging for ${state.relayType} relay type`);
           const mergedRows = this._mergeConsecutiveCells(state.tableRows);
           StateManager.update({ tableRows: mergedRows });
         }
@@ -2251,9 +2165,11 @@ WHERE
         }
 
         TableRenderer.render(container, state.headerRow, state.tableRows);
-        debugLog(`Results rendered successfully: ${state.tableRows.length} rows, ${state.headerRow.length} columns`);
+        myConsole.debug(
+          `Results rendered successfully: ${state.tableRows.length} rows, ${state.headerRow.length} columns`
+        );
       } catch (error) {
-        console.error('Result rendering failed:', error);
+        errorHandler.log('Result rendering failed:', error);
         DOM.showError('Failed to display query results');
         throw error;
       }
@@ -2287,7 +2203,7 @@ WHERE
         const sqlStats = SQL.getStats();
         const domStats = DOM.getCacheStats();
 
-        debugLog(`${context} Performance Metrics:`, {
+        myConsole.debug(`${context} Performance Metrics:`, {
           duration: `${duration}s`,
           sqlCacheHitRatio: sqlStats.hitRatio,
           sqlCacheSize: sqlStats.cacheSize,
@@ -2301,7 +2217,7 @@ WHERE
             : 'Not available',
         });
       } catch (error) {
-        debugLog('Performance logging failed:', error);
+        myConsole.debug('Performance logging failed:', error);
       }
     },
 
@@ -2328,6 +2244,11 @@ WHERE
           issues.push(`${inconsistentRows} rows have inconsistent column count`);
         }
       }
+
+      return {
+        isValid: issues.length === 0,
+        issues,
+      };
     },
   };
   // ============================================================================
@@ -2382,7 +2303,7 @@ WHERE
 
       const parsed = this._parseLeadingNumber(settingValue);
       this.ctPrimary = parsed;
-      debugLog('CT PRIMARY:', parsed);
+      myConsole.debug('CT PRIMARY:', parsed);
       return ['_CT PRIMARY (A)', parsed];
     },
     /*
@@ -2404,8 +2325,8 @@ WHERE
         if (settingName.includes('DTOC')) {
           return this._decodeDefiniteTime(settingName, settingValue);
         }
-      } catch (err) {
-        ErrorHandler.log(err, 'AREVADecoder.decode');
+      } catch (error) {
+        errorHandler.log('AREVADecoder.decode', error);
       }
 
       return ['', ''];
@@ -2462,7 +2383,6 @@ WHERE
       const description = [phase, this.overCurrentType, suffix].filter(Boolean).join(' ').toUpperCase();
 
       let value = this._parseSettingValue(settingValue);
-      debugLog(['description', description, 'value', value]);
       return [description, value];
     },
 
@@ -2470,13 +2390,11 @@ WHERE
       let [phase, description, suffix] = ['', '', ''];
 
       const dtDesc = this._getDTSuffix(settingName);
-      debugLog('DT DESC:', dtDesc);
       phase = dtDesc[0];
       suffix = dtDesc[1];
       description = [phase, this.definiteTimeType, suffix].filter(Boolean).join(' ').toUpperCase();
 
       let value = this._parseSettingValue(settingValue);
-      debugLog(['description', description, 'value', value]);
       return [description, value];
     },
     /*
@@ -2501,7 +2419,6 @@ WHERE
 
     _getDTSuffix (settingName) {
       for (const { pattern, desc } of this.DTSuffix) {
-        debugLog('DT Suffix pattern:', pattern, settingName, desc);
         const match = settingName.match(pattern);
         if (!match) {
           continue;
@@ -2589,8 +2506,8 @@ WHERE
         if (this.autoReclose.pattern.test(settingName)) {
           return [this.autoReclose.desc, settingValue];
         }
-      } catch (err) {
-        ErrorHandler.log(err, 'SELDecoder.decode');
+      } catch (error) {
+        errorHandler.log('SELDecoder.decode', error);
       }
 
       return ['', ''];
@@ -2621,7 +2538,7 @@ WHERE
         const stageNum = stageMatch ? stageMatch[1] ?? stageMatch[2] : '';
         const stageText = stageNum ? `Stage ${stageNum} ` : '';
         const description = `${base} ${stageText}${desc}`.replace(/\s+/g, ' ').trim();
-        debugLog(description, settingName);
+        myConsole.debug(description, settingName);
         return [description, settingValue];
       }
 
