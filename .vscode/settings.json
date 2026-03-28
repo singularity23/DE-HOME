@@ -1,58 +1,61 @@
 {
-  "vscode-edge-devtools.headless": false,
-  "editor.fontFamily": "JetBrains Mono NL Light",
-  "liveServer.settings.port": 5586,
-  "editor.wordWrap": "wordWrapColumn",
-  "editor.defaultFormatter": "ms-python.black-formatter",
-  "files.autoSave": "onWindowChange",
-  "editor.formatOnSave": true,
-  "editor.fontVariations": true,
-  "editor.wordWrapColumn": 120,
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-  "[sql]": {
-    "editor.defaultFormatter": "mtxr.sqltools"
-  },
-  "djlint.showInstallError": false,
-  "[html]": {
-    "editor.defaultFormatter": "vscode.html-language-features"
-  },
-  "python-envs.defaultEnvManager": "ms-python.python:venv",
-  "python-envs.pythonProjects": [
-
-  ],
-  "console-ninja.installBinToPath": true,
-  "console-ninja.featureSet": "Community",
-  "console-ninja.allowConsoleLogToTriggerPredictions": true,
-  "console-ninja.fontSize": 12,
-  "console-ninja.toolsToEnableSupportAutomaticallyFor": {
-    "live-server-extension": true,
-    "live-preview-extension": true
-  },
-  "console-ninja.captureFunctions": true,
-  "editor.fontSize": 14,
-  "[javascript]": {
-    "editor.defaultFormatter": "numso.prettier-standard-vscode"
-  },
-  "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff"
-  },
-  "python.testing.unittestArgs": [
-    "-v",
-    "-s",
-    "./sites",
-    "-p",
-    "test_*.py"
-  ],
-  "python.testing.pytestEnabled": false,
-  "python.testing.unittestEnabled": true,
-  "[css]": {
-    "editor.defaultFormatter": "vscode.css-language-features"
-  },
-  "editor.tabSize": 2,
-  "[jsonc]": {
-    "editor.defaultFormatter": "mblode.pretty-formatter"
-  },
+    "vscode-edge-devtools.headless": false,
+    "editor.fontFamily": "Google Sans Code",
+    "liveServer.settings.port": 5588,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "files.autoSave": "onWindowChange",
+    "editor.formatOnSave": true,
+    "editor.fontVariations": true,
+    "editor.wordWrapColumn": 120,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[sql]": {
+        "editor.defaultFormatter": "mtxr.sqltools"
+    },
+    "djlint.showInstallError": false,
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python-envs.pythonProjects": [],
+    "console-ninja.installBinToPath": true,
+    "console-ninja.featureSet": "Community",
+    "console-ninja.allowConsoleLogToTriggerPredictions": true,
+    "console-ninja.fontSize": 12,
+    "console-ninja.toolsToEnableSupportAutomaticallyFor": {
+        "live-server-extension": true,
+        "live-preview-extension": true
+    },
+    "console-ninja.captureFunctions": true,
+    "editor.fontSize": 14,
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "javascript.format.wrapLineLength": 180,
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./sites",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "[css]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "editor.tabSize": 2,
+    "[jsonc]": {
+        "editor.defaultFormatter": "mblode.pretty-formatter"
+    }
 
 }

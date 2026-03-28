@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paste Screenshot Saver</title>
+  <link rel="stylesheet" href="paste-screenshot.css">
+  <script src="paste-screenshot.js" defer></script>
+</head>
+
+<body>
+  <main class="app">
+    <h1>Paste Screenshot Saver</h1>
+    <p class="hint">
+      Click the box and press <kbd>Ctrl</kbd> + <kbd>V</kbd> to paste a screenshot.
+      Then click <strong>Save as PNG</strong>.
+    </p>
+
+    <div class="actions">
+      <button id="saveBtn" class="primary" type="button" disabled>Save as PNG</button>
+      <button id="clearBtn" type="button" disabled>Clear</button>
+    </div>
+
+    <p id="status" class="status">Waiting for pasted image...</p>
+
+    <section class="preview-wrap">
+      <canvas id="previewCanvas" tabindex="0">Screenshot preview</canvas>
+    </section>
+  </main>
+</body>
+
+</html>

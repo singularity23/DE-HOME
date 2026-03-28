@@ -1,44 +1,41 @@
-const CONFIG = Object.freeze({
-  debug: false,
-  status: Object.freeze({
-    IN_SERVICE: 'IN SERVICE',
-    ISSUED: 'ISSUED',
-    // Legacy support
-    get settingStatus () {
-      return {
-        inService: this.IN_SERVICE,
-        issued: this.ISSUED,
-      };
-    },
-  }),
+var FIELD_MAP = {
+  signatureC: 'Signature - Checker',
+  dateC: 'Date - Checker_af_date',
+  C: 'Checker1',
+  signatureTL: 'Signature - TL',
+  dateTL: 'Date - TL_af_date',
+  R: 'Assigned Type 1 Reviewer Name',
+  signaturePR: 'Signature - Peer Reviewer',
+  datePR: 'Date - Peer Reviewer_af_date',
+  PR: 'Peer Reviewer Name',
+  structwarning: 'Structural Warning',
+  low: 'Risk - Low',
+  medium: 'Risk - Medium',
+  high: 'Risk - High',
+  riskwarning: 'High Risk Warning',
+};
+var visibilityStates = {};
+
+VISIBILITY_KEYS = Object.keys(FIELD_MAP);
+var sig = getOwnValues(FIELD_MAP);
+console.log(VISIBILITY_KEYS);
+VISIBILITY_KEYS.forEach(function (key) {
+  visibilityStates[key] = [0, 0, 0, 0, 0, 0, 0];
 });
 
-const myConsole = {
-  silent: true,
-  log (...args) {
-    if (CONFIG.debug || !this.silent) {
-      const timestamp = new Date().toISOString();
-      console.log(`[ASPEN ${timestamp}]:`, ...args);
-    }
-  },
+console.log(visibilityStates);
+console.log(sig);
 
-  debug (...args) {
-    if (CONFIG.debug) {
-      const timestamp = new Date().toISOString();
-      console.log(`[ASPEN ${timestamp}]:`, ...args);
-    }
-  },
+function getOwnValues (obj) {
+  if (Object.values)
+    return Object.values(obj);
 
-  table (...args) {
-    if (CONFIG.debug) {
-      const timestamp = new Date().toISOString();
-      console.group(`[ASPEN ${timestamp}]:`);
-      console.table(...args);
-      console.groupEnd();
-    }
-  },
-};
+  var vals = [];
+  var value;
+  for (value in obj) {
+    if (obj.hasOwnProperty(value))
+      vals.push(obj[value]);
 
-myConsole.log(CONFIG.status.settingStatus.inService);
-myConsole.debug(CONFIG.status.settingStatus.issued);
-myConsole.table([CONFIG.status.settingStatus.inService, CONFIG.status.settingStatus.issued]);
+  }
+  return vals;
+}

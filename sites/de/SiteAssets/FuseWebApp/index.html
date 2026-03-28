@@ -30,7 +30,7 @@
         </select>
       </div>
       <div class="field">
-        <label for="voltage">Operating Voltage (LN/LL kV)</label>
+        <label for="voltage">Operating Voltage (kV)</label>
         <select id="voltage" disabled>
           <option value="">—</option>
         </select>
@@ -75,8 +75,14 @@
       sections</p>
     Please report issues to
     <a href="mailto:kan.tang@bchydro.com" class="contact">Kan Tang</a>
+    <p>Revision: 0.1.0 | Updated: <span id="updated"></span></p>
+
     <!-- main logic; fuses already loaded via defer -->
     <script src="app.js" defer></script>
+
+    <script>
+      document.getElementById('updated').innerText = new Intl.DateTimeFormat("en-CA").format(new Date(document.lastModified));
+    </script>
   </footer>
 </body>
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Impedance Updater</title>
+  <link rel="stylesheet" href="impedance-updater.css">
+  <script src="data/ug_tx_impedances.js" defer></script>
+  <script src="data/oh_tx_impedances.js" defer></script>
+  <script src="data/fuses.js" defer></script>
+  <script src="data/fuses_cadid.js" defer></script>
+  <script src="impedance-updater.js" defer></script>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Transformer Minimum Impedance Updater</h1>
+    <p class="hint">
+      Paste table rows copied from the source (like your screenshot). The tool matches <strong>Material number (CAD
+        ID)</strong>
+      and updates <strong>Minimum impedance</strong> in UG/OH datasets.
+    </p>
+
+    <section class="card">
+      <label for="sourceInput">Pasted table rows</label>
+      <textarea id="sourceInput" rows="12" placeholder="Paste rows here..."></textarea>
+
+      <div class="actions">
+        <button id="runBtn" class="primary" type="button">Apply Updates</button>
+        <button id="sampleBtn" type="button">Load Sample</button>
+        <button id="clearBtn" type="button">Clear</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Results</h2>
+      <div id="summary" class="summary">No updates run yet.</div>
+      <pre id="details" class="details"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Updated UG Data</h2>
+      <div class="actions">
+        <button id="copyUgBtn" type="button">Copy UG JS</button>
+        <button id="downloadUgBtn" type="button">Download UG JS</button>
+      </div>
+      <textarea id="ugOutput" rows="10" readonly></textarea>
+    </section>
+
+    <section class="card">
+      <h2>Updated OH Data</h2>
+      <div class="actions">
+        <button id="copyOhBtn" type="button">Copy OH JS</button>
+        <button id="downloadOhBtn" type="button">Download OH JS</button>
+      </div>
+      <textarea id="ohOutput" rows="10" readonly></textarea>
+    </section>
+  </main>
+</body>
+
+</html>

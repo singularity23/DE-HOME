@@ -51,6 +51,13 @@ window.FUSE_DATA = [
   {
     transformer: 'LPT',
     voltage: '14.4',
+    kva: 75.0,
+    bonFuse: '358C08',
+    sourceFuse: '25T',
+  },
+  {
+    transformer: 'LPT',
+    voltage: '14.4',
     kva: 100.0,
     bonFuse: '358C08',
     sourceFuse: '25T',

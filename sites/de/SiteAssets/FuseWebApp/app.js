@@ -15,21 +15,25 @@
     },
     transformerTypes: {
       OH: 'OH',
-      PMT: 'PMT',
       LPT: 'LPT',
+      PMT: 'PMT',
       SDT: 'SDT',
+      SUBMERSIBLE_1: 'SUBMERSIBLE 1P',
+      SUBMERSIBLE_3: 'SUBMERSIBLE 3P',
     },
     voltageLabels: {
       OH: 'L-N',
       PMT: 'L-L',
       SDT: 'L-L',
       LPT: 'L-N',
+      SUBMERSIBLE_1: 'L-N',
+      SUBMERSIBLE_3: 'L-L',
     },
     placeholders: {
       default: '—',
       transformer: 'Select Transformer Type',
       voltage: 'Select Voltage',
-      kva: 'Select kVA',
+      kva: 'Select Size',
     },
     classes: {
       hidden: 'hidden',
@@ -125,7 +129,8 @@
      * Sanitize string values
      */
     sanitize (value) {
-      return (value || '').trim() || CONFIG.placeholders.default;
+      if (value === null || value === undefined) return CONFIG.placeholders.default;
+      return String(value).trim() || CONFIG.placeholders.default;
     },
 
     /**
@@ -173,15 +178,20 @@
      * Search overhead transformer data
      */
     searchOH (voltage, kva, ohData) {
-      return ohData.filter(row => row.kva === kva && this.checkVoltageMatch(row.voltage, voltage));
+      const hasKVA = Number.isFinite(kva);
+      return ohData.filter(row => this.checkVoltageMatch(row.voltage, voltage) && (!hasKVA || row.kva === kva));
     },
 
     /**
      * Search underground transformer data
      */
     searchUG (transformerType, voltage, kva, ugData) {
+      const hasKVA = Number.isFinite(kva);
       return ugData.filter(
-        row => row.transformer === transformerType && row.kva === kva && this.checkVoltageMatch(row.voltage, voltage)
+        row =>
+          row.transformer === transformerType &&
+          this.checkVoltageMatch(row.voltage, voltage) &&
+          (!hasKVA || row.kva === kva)
       );
     },
 
@@ -189,7 +199,7 @@
      * Check if transformer type is underground
      */
     isUnderground (type) {
-      return [CONFIG.transformerTypes.PMT, CONFIG.transformerTypes.LPT, CONFIG.transformerTypes.SDT].includes(type);
+      return [CONFIG.transformerTypes.PMT, CONFIG.transformerTypes.LPT, CONFIG.transformerTypes.SDT, CONFIG.transformerTypes.SUBMERSIBLE_1, CONFIG.transformerTypes.SUBMERSIBLE_3].includes(type);
     },
 
     /**
@@ -299,6 +309,145 @@
   };
 
   /**
+   * Custom select UI layer
+   */
+  const CustomSelect = {
+    _instances: new WeakMap(),
+    _docListenerAttached: false,
+
+    init (select) {
+      if (!select || this._instances.has(select)) return;
+
+      select.classList.add('native-select-hidden');
+
+      const root = document.createElement('div');
+      root.className = 'custom-select';
+
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'custom-select__trigger';
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'false');
+
+      const label = document.createElement('span');
+      label.className = 'custom-select__label';
+      trigger.appendChild(label);
+
+      const chevron = document.createElement('span');
+      chevron.className = 'custom-select__chevron';
+      chevron.textContent = '⏷';
+      trigger.appendChild(chevron);
+
+      const menu = document.createElement('div');
+      menu.className = 'custom-select__menu hidden';
+
+      root.appendChild(trigger);
+      root.appendChild(menu);
+      select.insertAdjacentElement('afterend', root);
+
+      const instance = { root, trigger, label, menu };
+      this._instances.set(select, instance);
+
+      trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        if (select.disabled) return;
+        const isOpen = !menu.classList.contains('hidden');
+        this.closeAll(select);
+        if (!isOpen) {
+          menu.classList.remove('hidden');
+          trigger.setAttribute('aria-expanded', 'true');
+          root.classList.add('is-open');
+        }
+      });
+
+      menu.addEventListener('click', e => {
+        const optionButton = e.target.closest('[data-value]');
+        if (!optionButton) return;
+        const value = optionButton.getAttribute('data-value');
+        if (select.value !== value) {
+          select.value = value;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        } else {
+          this.sync(select);
+        }
+        this.close(select);
+      });
+
+      if (!this._docListenerAttached) {
+        document.addEventListener('click', () => this.closeAll());
+        this._docListenerAttached = true;
+      }
+
+      select.addEventListener('change', () => this.sync(select));
+      this.sync(select);
+    },
+
+    sync (select) {
+      const instance = this._instances.get(select);
+      if (!instance) return;
+
+      const { root, trigger, label, menu } = instance;
+      menu.innerHTML = '';
+
+      for (const option of select.options) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'custom-select__option';
+        if (option.selected) btn.classList.add('is-selected');
+        const parts = this._splitVoltageLabel(option.textContent);
+        if (parts) {
+          const content = document.createElement('span');
+          content.className = 'custom-select__option-content';
+
+          const left = document.createElement('span');
+          left.className = 'custom-select__option-left';
+          left.textContent = parts.left;
+
+          const right = document.createElement('span');
+          right.className = 'custom-select__option-right';
+          right.textContent = parts.right;
+
+          content.appendChild(left);
+          content.appendChild(right);
+          btn.appendChild(content);
+        } else {
+          btn.textContent = option.textContent;
+        }
+        btn.setAttribute('data-value', option.value);
+        menu.appendChild(btn);
+      }
+
+      const selectedOption = select.options[select.selectedIndex] || select.options[0];
+      label.textContent = selectedOption ? selectedOption.textContent : '';
+
+      root.classList.toggle('is-disabled', !!select.disabled);
+      trigger.disabled = !!select.disabled;
+    },
+
+    _splitVoltageLabel (text) {
+      const value = String(text || '').trim();
+      const match = value.match(/^(.*)\s((kV\sL-[NL])|(kVA))$/);
+      if (!match) return null;
+      return { left: match[1], right: match[2] };
+    },
+
+    close (select) {
+      const instance = this._instances.get(select);
+      if (!instance) return;
+      instance.menu.classList.add('hidden');
+      instance.trigger.setAttribute('aria-expanded', 'false');
+      instance.root.classList.remove('is-open');
+    },
+
+    closeAll (exceptSelect = null) {
+      for (const select of [document.getElementById(CONFIG.selectors.transformer), document.getElementById(CONFIG.selectors.voltage), document.getElementById(CONFIG.selectors.kva)]) {
+        if (!select || select === exceptSelect) continue;
+        this.close(select);
+      }
+    },
+  };
+
+  /**
    * DOM utilities for element manipulation
    */
   const DOM = {
@@ -325,6 +474,11 @@
         return null;
       }
 
+      // Attach custom dropdown layer to native selects
+      CustomSelect.init(elements.transformer);
+      CustomSelect.init(elements.voltage);
+      CustomSelect.init(elements.kva);
+
       return elements;
     },
 
@@ -334,6 +488,7 @@
     setDisabled (element, disabled) {
       if (element) {
         element.disabled = disabled;
+        CustomSelect.sync(element);
       }
     },
 
@@ -343,6 +498,7 @@
     resetSelect (element, placeholder = CONFIG.placeholders.default) {
       if (element) {
         element.innerHTML = `<option value="">${placeholder}</option>`;
+        CustomSelect.sync(element);
       }
     },
 
@@ -361,13 +517,14 @@
       if (!element) return;
 
       const fragment = document.createDocumentFragment();
-      values.forEach(value => {
+      for (const value of Object.values(values)) {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = formatter ? formatter(value) : value;
         fragment.appendChild(option);
-      });
+      };
       element.appendChild(fragment);
+      CustomSelect.sync(element);
     },
 
     /**
@@ -402,7 +559,7 @@
    * UI Controller - manages user interface interactions
    */
   class UIController {
-    constructor (elements, fuseData, ohData, ugData, fuseCadData) {
+    constructor(elements, fuseData, ohData, ugData, fuseCadData) {
       this.els = elements;
       this.fuseData = fuseData;
       this.ohData = ohData;
@@ -424,7 +581,14 @@
      */
     populateTransformers () {
       DOM.resetSelect(this.els.transformer, CONFIG.placeholders.transformer);
-      const types = DataProcessor.getUnique(this.fuseData.map(r => r.transformer));
+      const txTypesByFuse = this.fuseData.map(r => r.transformer);
+      const txTypesByImpedance = [...this.ohData.map(r => r.transformer), ...this.ugData.map(r => r.transformer)];
+      const availableTypes = DataProcessor.getUnique([...txTypesByFuse, ...txTypesByImpedance]);
+      const availableSet = new Set(availableTypes);
+      const preferredOrder = Object.values(CONFIG.transformerTypes);
+      const orderedConfiguredTypes = preferredOrder.filter(type => availableSet.has(type));
+      const otherTypes = availableTypes.filter(type => !preferredOrder.includes(type));
+      const types = [...orderedConfiguredTypes, ...otherTypes];
       DOM.populateSelect(this.els.transformer, types);
       DOM.resetAndDisable(this.els.voltage, CONFIG.placeholders.voltage);
       DOM.resetAndDisable(this.els.kva, CONFIG.placeholders.kva);
@@ -444,11 +608,15 @@
         return;
       }
 
-      const subset = this.fuseData.filter(r => r.transformer === transformer);
-      const voltages = DataProcessor.getUnique(subset.map(r => r.voltage));
+      const VoltageByFuse = this.fuseData.filter(r => r.transformer === transformer).map(r => r.voltage);
+      const dataRows = transformer === CONFIG.transformerTypes.OH
+        ? this.ohData
+        : this.ugData.filter(r => r.transformer === transformer);
+      const voltagesByImpedance = dataRows.map(r => r.voltage);
+      const voltages = DataProcessor.getUnique([...VoltageByFuse, ...voltagesByImpedance]);
 
-      const voltageLabel = CONFIG.voltageLabels[transformer] || 'kV';
-      DOM.populateSelect(this.els.voltage, voltages, v => `${v} kV ${voltageLabel}`);
+      const voltageLabel = `kV ${CONFIG.voltageLabels[transformer]}`;
+      DOM.populateSelect(this.els.voltage, voltages, v => `${v} ${voltageLabel}`);
 
       DOM.setDisabled(this.els.voltage, false);
       DOM.resetAndDisable(this.els.kva, CONFIG.placeholders.kva);
@@ -468,9 +636,14 @@
       }
 
       const transformer = this.els.transformer.value;
-      const subset = this.fuseData.filter(r => r.voltage === voltage && r.transformer === transformer);
-
-      const kvas = DataProcessor.getUnique(subset.map(r => r.kva));
+      const fuseKVAs = this.fuseData.filter(r => r.voltage === voltage && r.transformer === transformer).map(r => r.kva);
+      const dataRows = transformer === CONFIG.transformerTypes.OH
+        ? this.ohData
+        : this.ugData.filter(r => r.transformer === transformer);
+      const impedanceKVAs = dataRows
+        .filter(r => ImpedanceHandler.checkVoltageMatch(r.voltage, voltage))
+        .map(r => r.kva);
+      const kvas = DataProcessor.getUnique([...fuseKVAs, ...impedanceKVAs]);
       DOM.populateSelect(this.els.kva, kvas, k => `${k} kVA`);
       DOM.setDisabled(this.els.kva, false);
     }
@@ -485,6 +658,7 @@
 
       this.els.voltage.addEventListener('change', () => {
         this.populateKVA();
+        this.showResult();
       });
 
       this.els.kva.addEventListener('change', () => {
@@ -500,10 +674,11 @@
      * Get current selections
      */
     getSelections () {
+      const kvaValue = this.els.kva.value;
       return {
         transformer: this.els.transformer.value,
         voltage: this.els.voltage.value,
-        kva: Number(this.els.kva.value),
+        kva: kvaValue === '' ? NaN : Number(kvaValue),
       };
     }
 
@@ -523,27 +698,38 @@
     showResult () {
       const { transformer, voltage, kva } = this.getSelections();
       const matches = DataProcessor.filterData(this.fuseData, transformer, voltage, kva);
+      const hasKVA = Number.isFinite(kva);
 
       DOM.show(this.els.result);
       DOM.clear(this.els.result);
 
-      if (matches.length === 0) {
+      if (matches.length === 0 && hasKVA) {
         this.renderNoMatch();
-        return;
+      } else if (matches.length > 0 && hasKVA) {
+        this.renderMatch(matches[0]);
       }
 
-      this.renderMatch(matches[0]);
-
       // Search and display impedance data
-      if (transformer && voltage && kva) {
+      if (transformer && voltage) {
         const impedanceMatches = ImpedanceHandler.search(transformer, voltage, kva, this.ohData, this.ugData);
-
         if (impedanceMatches.length > 0) {
           const tableHTML = ImpedanceHandler.renderTable(impedanceMatches);
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = tableHTML;
           this.els.result.appendChild(tempDiv);
         }
+        if (impedanceMatches.length === 0) {
+          const msg = document.createElement('h3');
+          msg.textContent = 'No Transformer Details Info.';
+          this.els.result.appendChild(msg);
+        }
+
+      }
+
+      if (matches.length === 0 && !hasKVA) {
+        const msg = document.createElement('p');
+        msg.textContent = 'Select kVA to see fuse recommendations.';
+        this.els.result.appendChild(msg);
       }
     }
 
@@ -551,8 +737,8 @@
      * Render no match message
      */
     renderNoMatch () {
-      const msg = document.createElement('p');
-      msg.textContent = 'No match found. Try adjusting filters.';
+      const msg = document.createElement('h3');
+      msg.textContent = 'No Fuse Information Found';
       this.els.result.appendChild(msg);
     }
 
@@ -563,7 +749,7 @@
       if (!row) return;
 
       const h2 = document.createElement('h2');
-      h2.textContent = 'Match Found';
+      h2.textContent = 'Fuse Match Found';
       this.els.result.appendChild(h2);
 
       const ul = document.createElement('ul');
@@ -575,15 +761,15 @@
         ['kVA', row.kva],
         [
           row.transformer === CONFIG.transformerTypes.OH ? 'Current Limiting Fuse' : 'BON Fuse',
-          this.getFuseCADId(row.bonFuse),
+          this.getFuseCADId(row.bonFuse) ? this.getFuseCADId(row.bonFuse) : 'Unknown',
           CONFIG.classes.highlight,
         ],
-        ['Source-side Fuse', this.getFuseCADId(row.sourceFuse), CONFIG.classes.highlight],
+        ['Source-side Fuse', this.getFuseCADId(row.sourceFuse) ? this.getFuseCADId(row.sourceFuse) : 'Unknown', CONFIG.classes.highlight],
       ];
 
       fields.forEach(([label, value, className]) => {
         const li = document.createElement('li');
-        if (className && value !== CONFIG.placeholders.default) {
+        if (className && value !== CONFIG.placeholders.default && value !== 'Unknown') {
           li.className = className;
         }
 
@@ -597,6 +783,7 @@
       this.els.result.appendChild(ul);
     }
 
+
     /**
      * Hide result
      */
@@ -609,10 +796,7 @@
      * Reset form
      */
     reset () {
-      DOM.resetSelect(this.els.transformer, CONFIG.placeholders.transformer);
-      DOM.resetAndDisable(this.els.voltage, CONFIG.placeholders.voltage);
-      DOM.resetAndDisable(this.els.kva, CONFIG.placeholders.kva);
-      this.hideResult();
+      this.populateTransformers();
     }
   }
 
