@@ -22,12 +22,12 @@
       SUBMERSIBLE_3: 'SUBMERSIBLE 3P',
     },
     voltageLabels: {
-      OH: 'L-N',
-      PMT: 'L-L',
-      SDT: 'L-L',
-      LPT: 'L-N',
-      SUBMERSIBLE_1: 'L-N',
-      SUBMERSIBLE_3: 'L-L',
+      'OH': 'L-N',
+      'PMT': 'L-L',
+      'SDT': 'L-L',
+      'LPT': 'L-N',
+      'SUBMERSIBLE 1P': { '2.4 x 7.2': 'L-N', '12 x 25': 'L-L' },
+      'SUBMERSIBLE 3P': 'L-L',
     },
     placeholders: {
       default: '—',
@@ -615,8 +615,8 @@
       const voltagesByImpedance = dataRows.map(r => r.voltage);
       const voltages = DataProcessor.getUnique([...VoltageByFuse, ...voltagesByImpedance]);
 
-      const voltageLabel = `kV ${CONFIG.voltageLabels[transformer]}`;
-      DOM.populateSelect(this.els.voltage, voltages, v => `${v} ${voltageLabel}`);
+      const voltageLabel = (v) => `kV ${transformer === CONFIG.transformerTypes.SUBMERSIBLE_1 ? CONFIG.voltageLabels[transformer][v] : CONFIG.voltageLabels[transformer]}`;
+      DOM.populateSelect(this.els.voltage, voltages, v => `${v} ${voltageLabel(v)}`);
 
       DOM.setDisabled(this.els.voltage, false);
       DOM.resetAndDisable(this.els.kva, CONFIG.placeholders.kva);

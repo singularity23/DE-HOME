@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-ca" lang="en-ca">
+
+<head>
+  <meta charset="utf-8">
+  <title>Fault Level Form</title>
+  <meta name="author" content="Tang, Kan">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #ffffff;
+      padding: 16px;
+    }
+
+    form {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #ffffff;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+
+    .header-logo {
+      width: 190px;
+    }
+
+    .form-grid {
+      border: 5pt solid #000;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "info"
+        "fault"
+        "disclaimer"
+        "footer";
+    }
+
+    .zone {
+      border-top: 1pt solid #000;
+      font-size: 0.9rem;
+    }
+
+    .zone-title {
+      grid-area: title;
+      border-top: 0;
+      background: #f36f6f;
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 12px 10px;
+    }
+
+    .zone-info {
+      grid-area: info;
+      background: #77c6b4;
+      border-top: 3pt solid #000;
+      display: grid;
+      grid-template-columns: 31% 69%;
+      font-size: 10.5pt;
+    }
+
+    .info-label,
+    .info-value {
+      border-top: 1pt solid rgba(0, 0, 0, 0.45);
+      padding: 8px 10px;
+      min-height: 36px;
+    }
+
+    .info-label {
+      font-weight: bold;
+      border-right: 1pt solid rgba(0, 0, 0, 0.45);
+    }
+
+    .info-upstream-left {
+      min-height: 140px;
+    }
+
+    .info-upstream-right {
+      min-height: 140px;
+    }
+
+    .radio-group {
+      margin-top: 8px;
+      display: grid;
+      row-gap: 6px;
+      font-weight: normal;
+    }
+
+    .radio-group label {
+      display: flex;
+      gap: 7px;
+      align-items: flex-start;
+      font-weight: normal;
+      line-height: 1.2;
+    }
+
+    .radio-group input[type="radio"] {
+      width: 15px;
+      height: 15px;
+      margin-top: 1px;
+      accent-color: #222;
+    }
+
+    .protection-top {
+      display: grid;
+      grid-template-columns: auto minmax(170px, 1fr) auto minmax(90px, 120px);
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .protection-top select,
+    .protection-top input,
+    .settings-row textarea {
+      border: 1pt solid #8a8a8a;
+      background: #ffffff;
+      padding: 2px 5px;
+      font-size: 10pt;
+      width: 100%;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px;
+      align-items: start;
+    }
+
+    .settings-row textarea {
+      min-height: 46px;
+      resize: none;
+    }
+
+    .zone-fault {
+      grid-area: fault;
+      background: #c67ad6;
+      border-top: 3pt solid #000;
+      display: grid;
+      grid-template-columns: 31% 69%;
+      font-size: 0.9rem;
+    }
+
+    .fault-left {
+      border-right: 1pt solid rgba(0, 0, 0, 0.55);
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    .fault-right {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(6, minmax(30px, 1fr));
+
+    }
+
+    .fault-block-title {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-weight: bold;
+      padding: 10px 8px 5px;
+      border-bottom: 1pt solid rgba(0, 0, 0, 0.5);
+    }
+
+    .fault-block-subtitle {
+      font-weight: normal;
+      font-size: 10pt;
+      padding-bottom: 6px;
+      display: block;
+    }
+
+    .fault-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
+    }
+
+    .fault-row div {
+      padding: 7px 8px;
+    }
+
+    .fault-row .amp-val {
+      text-align: right;
+      padding-right: 10px;
+    }
+
+    .voltage-row {
+      grid-column: 1 / -1;
+      display: inline-grid;
+      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
+      padding: 5px 10px;
+      font-size: 10.5pt;
+      grid-template-columns: repeat(9, 1fr);
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .voltage-row span {
+      grid-column: 1 / span 1;
+    }
+
+    .voltage-row label {
+      grid-column: span 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .voltage-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: #222;
+    }
+
+    .imp-title {
+      grid-column: 1 / -1;
+      text-align: center;
+      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
+      padding: 7px 10px;
+    }
+
+    .imp-row {
+      grid-column: 1 / -1;
+      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
+      min-height: 33px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 0 5px;
+    }
+
+    .imp-row div[class="R1"],
+    .imp-row div[class="X1"],
+    .imp-row div[class="R0"],
+    .imp-row div[class="X0"] {
+      grid-column: 1 / span 1;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-right: 1pt solid rgba(0, 0, 0, 0.45);
+      height: 100%;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .imp-row label[for="R1"],
+    .imp-row label[for="X1"],
+    .imp-row label[for="R0"],
+    .imp-row label[for="X0"] {
+      grid-column: 1 / span 1;
+    }
+
+    .imp-row input[name="R1"],
+    .imp-row input[name="X1"],
+    .imp-row input[name="R0"],
+    .imp-row input[name="X0"] {
+      grid-column: 2 / span 3;
+      border: none;
+      font-size: 0.9rem;
+    }
+
+    .imp-row span {
+      grid-column: 5 / 6;
+    }
+
+    .imp-row div[class="R1"],
+    .imp-row div[class="X1"],
+    .imp-row div[class="R0"],
+    .imp-row div[class="X0"] {
+      grid-column: span 1;
+      padding: 0 5px;
+    }
+
+    .imp-row div:last-child {
+      border-right: 0;
+    }
+
+    .zone-disclaimer {
+      grid-area: disclaimer;
+      background: #6bc8ec;
+      border-top: 3pt solid #000;
+      padding: 12px 14px;
+      line-height: 1.45;
+      font-size: 10pt;
+    }
+
+    .zone-disclaimer a {
+      color: #1155cc;
+    }
+
+    .zone-footer {
+      grid-area: footer;
+      background: #c7c4ea;
+      border-top: 3pt solid #000;
+      display: grid;
+      grid-template-columns: 80% 20%;
+      min-height: 118px;
+    }
+
+    .footer-main {
+      display: grid;
+      grid-template-columns: 40% 60%;
+      grid-template-rows: repeat(3, minmax(36px, auto));
+      border-right: 1pt solid rgba(0, 0, 0, 0.45);
+    }
+
+    .footer-label,
+    .footer-value {
+      border-top: 1pt solid rgba(0, 0, 0, 0.45);
+      padding: 8px 10px;
+    }
+
+    .footer-label {
+      font-weight: bold;
+      border-right: 1pt solid rgba(0, 0, 0, 0.45);
+    }
+
+    .footer-stamp {
+      background: #f7a167;
+      border-left: 4pt solid #c95f1c;
+    }
+  </style>
+</head>
+
+<body>
+  <form action="#" method="post">
+    <div class="header-container">
+      <img class="header-logo" src="../../SiteAssets/img/image001.jpg" alt="BC Hydro Logo">
+    </div>
+
+    <div class="form-grid">
+      <section class="zone zone-title">Fault Level Information for Primary Customers</section>
+
+      <section class="zone zone-info">
+        <div class="info-label">Customer Name</div>
+        <div class="info-value">
+          <p id="customer_name"></p>
+        </div>
+        <div class="info-label">Service Address</div>
+        <div class="info-value">
+          <p id="service_address"></p>
+        </div>
+        <div class="info-label">Point used for Fault<br>Level Calculation</div>
+        <div class="info-value">
+          <p id="fault_location"></p>
+          <span id="fault_desc"></span>
+        </div>
+        <div class="info-label info-upstream-left">
+          <p>Upstream Protection:</p>
+          <div class="radio-group">
+            <label><input type="radio" name="protection_type" id="radio_new_proposed">New Device - Proposed
+              Settings</label>
+            <label><input type="radio" name="protection_type" id="radio_existing_proposed">Existing Device - Proposed
+              Settings</label>
+            <label><input type="radio" name="protection_type" id="radio_existing_existing">Existing Device - Existing
+              Settings</label>
+          </div>
+        </div>
+        <div class="info-value info-upstream-right">
+          <div class="protection-top">
+            <span><strong>Type:</strong></span>
+            <select id="protection_device_type">
+              <option value="">-- Select --</option>
+              <option value="SC Positrol Fuse">S&amp;C Positrol Fuse</option>
+              <option value="Recloser">Recloser</option>
+              <option value="Fuse">Fuse</option>
+              <option value="Sectionalizer">Sectionalizer</option>
+              <option value="Breaker">Breaker</option>
+              <option value="Other">Other</option>
+            </select>
+            <span><strong>Device ID:</strong></span>
+            <input type="text" id="device_id" placeholder="">
+          </div>
+          <div class="settings-row">
+            <span><strong>Settings:</strong></span>
+            <textarea id="settings_text"></textarea>
+          </div>
+        </div>
+        <div class="info-label">Date Issued:</div>
+        <div class="info-value">
+          <p id="date"></p>
+        </div>
+      </section>
+
+      <section class="zone zone-fault">
+        <div class="fault-left">
+          <div class="fault-block-title">Bolted Fault Current<span class="fault-block-subtitle">(Symmetrical
+              Amps)</span></div>
+          <div class="fault-row">
+            <div>LLL:</div>
+            <div class="amp-val"><span id="LLL"></span> A</div>
+          </div>
+          <div class="fault-row">
+            <div>LLG:</div>
+            <div class="amp-val"><span id="LLG"></span> A</div>
+          </div>
+          <div class="fault-row">
+            <div>LL:</div>
+            <div class="amp-val"><span id="LL"></span> A</div>
+          </div>
+          <div class="fault-row">
+            <div>LG:</div>
+            <div class="amp-val"><span id="LG"></span> A</div>
+          </div>
+        </div>
+        <div class="fault-right">
+          <div class="fault-block-title">Nominal System Voltage</div>
+          <div class="voltage-row">
+            <span>3 ph:</span>
+            <label><input type="checkbox" id="v3_416">4.16 kV</label>
+            <label><input type="checkbox" id="v3_1247">12.47 kV</label>
+            <label><input type="checkbox" id="v3_2494">24.94 kV</label>
+            <label><input type="checkbox" id="v3_345">34.5 kV</label>
+          </div>
+          <div class="voltage-row">
+            <span>1 ph:</span>
+            <label><input type="checkbox" id="v1_24">2.4 kV</label>
+            <label><input type="checkbox" id="v1_72">7.2 kV</label>
+            <label><input type="checkbox" id="v1_144">14.4 kV</label>
+            <label><input type="checkbox" id="v1_1992">19.92 kV</label>
+          </div>
+          <div class="imp-title">Equivalent System Impedance at point of fault (Ohms)</div>
+          <div class="imp-row">
+            <div class="R1"> <label for="R1">R1:</label>
+              <input type="text" id="R1" name="R1" readonly>
+              <span>Ohms</span>
+            </div>
+            <div class="X1"> <label for="X1">X1:</label>
+              <input type="text" id="X1" name="X1" readonly>
+              <span>Ohms</span>
+            </div>
+          </div>
+          <div class="imp-row">
+            <div class="R0"><label for="R0">R0:</label>
+              <input type="text" id="R0" name="R0" readonly>
+              <span>Ohms</span>
+            </div>
+            <div class="X0"><label for="X0">X0:</label>
+              <input type="text" id="X0" name="X0" readonly>
+              <span>Ohms</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="zone zone-disclaimer">
+        The information provided is based on the BC Hydro system configuration as of the date this form is issued at
+        normal system operating conditions and does not consider any customer motor contribution. The fault values
+        provided should be considered accurate within +/-25%. This margin includes 10% for voltage fluctuations from
+        1.0 p.u and 15% allowance for data accuracy. This fault level can increase or decrease at any time without
+        notification. This data is provided for the purpose of conducting power system studies only (ie. arc flash,
+        coordination, motor starting) and should not be used for equipment specification. For equipment specification
+        and all other requirements, please refer to the BCH Primary Guide which can be found at
+        <a rel="noopener" href="https://app.bchydro.com/accounts-billing/electrical-connections/forms-guides.html"
+          target="_blank">https://app.bchydro.com/accounts-billing/electrical-connections/forms-guides.html</a>
+      </section>
+
+      <section class="zone zone-footer">
+        <div class="footer-main">
+          <div class="footer-label">BC Hydro Distribution Engineer</div>
+          <div class="footer-value"><span id="engineer"></span><span id="eng_suffix"></span></div>
+          <div class="footer-label">E-mail</div>
+          <div class="footer-value"><a id="email_link" href=""><span id="email_text">Email</span></a></div>
+          <div class="footer-label">Phone Number</div>
+          <div class="footer-value">
+            <p id="phone"></p>
+          </div>
+        </div>
+        <div class="footer-stamp"></div>
+      </section>
+    </div>
+    <button type="submit" hidden aria-hidden="true" tabindex="-1">Submit</button>
+  </form>
+
+  <script>
+    const qp = new URLSearchParams(window.location.search);
+
+    // Basic fields
+    document.getElementById("customer_name").textContent = qp.get("customer_name") || "";
+    document.getElementById("service_address").textContent = qp.get("service_address") || "";
+
+    // Fault location
+    const faultLocation = qp.get("fault_location") || "";
+    const equipmentId = qp.get("equipment_id") || "";
+    const networkId = qp.get("network_id") || "";
+    const distance = qp.get("distance") || "";
+
+    if (faultLocation) {
+      document.getElementById("fault_location").textContent = faultLocation;
+    } else if (equipmentId || networkId || distance) {
+      document.getElementById("fault_desc").textContent =
+        `Primary connection at ${equipmentId} on feeder ${networkId}, about ${distance} m away from substation`;
+    }
+
+    // Date
+    document.getElementById("date").textContent = qp.get("date") || "";
+
+    // Upstream protection radio
+    const protType = qp.get("protection_type") || "";
+    if (protType === "new_proposed") document.getElementById("radio_new_proposed").checked = true;
+    else if (protType === "existing_proposed") document.getElementById("radio_existing_proposed").checked = true;
+    else if (protType === "existing_existing") document.getElementById("radio_existing_existing").checked = true;
+
+    // Device type dropdown
+    const devTypeVal = qp.get("protection_device_type") || "";
+    const sel = document.getElementById("protection_device_type");
+    if (devTypeVal) {
+      for (const opt of sel.options) {
+        if (opt.value === devTypeVal) { opt.selected = true; break; }
+      }
+    }
+
+    // Device ID & Settings
+    document.getElementById("device_id").value = qp.get("device_id") || "";
+    document.getElementById("settings_text").value = qp.get("settings") || "";
+
+    // Voltage checkboxes — 3 ph
+    const v3Map = { "4.16": "v3_416", "12.47": "v3_1247", "24.94": "v3_2494", "34.5": "v3_345" };
+    const v3ph = qp.get("prefault") || "";
+    if (v3Map[v3ph]) document.getElementById(v3Map[v3ph]).checked = true;
+
+    // Voltage checkboxes — 1 ph
+    const v1Map = { "2.4": "v1_24", "7.2": "v1_72", "14.4": "v1_144", "19.92": "v1_1992" };
+    const v1ph = qp.get("prefaultLN") || "";
+    if (v1Map[v1ph]) document.getElementById(v1Map[v1ph]).checked = true;
+
+    // Fault currents
+    document.getElementById("LLL").textContent = qp.get("LLL") || "";
+    document.getElementById("LLG").textContent = qp.get("LLG") || "";
+    document.getElementById("LL").textContent = qp.get("LL") || "";
+    document.getElementById("LG").textContent = qp.get("LG") || "";
+
+    // Impedances
+    document.getElementById("R1").textContent = qp.get("R1") || "";
+    document.getElementById("X1").textContent = qp.get("X1") || "";
+    document.getElementById("R0").textContent = qp.get("R0") || "";
+    document.getElementById("X0").textContent = qp.get("X0") || "";
+
+    // Engineer
+    const engName = qp.get("engineer") || "";
+    document.getElementById("engineer").textContent = engName;
+    if (engName) document.getElementById("eng_suffix").textContent = ", P.Eng";
+
+    // Email
+    const emailAddr = qp.get("email") || "";
+    document.getElementById("email_text").textContent = emailAddr;
+    document.getElementById("email_link").href = emailAddr ? `mailto:${emailAddr}` : "";
+
+    // Phone
+    document.getElementById("phone").textContent = qp.get("phone") || "";
+  </script>
+</body>
+
+</html>

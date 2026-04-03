@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distribution Engineering Check Form</title>
+  <link rel="stylesheet" type="text/css" href="/sites/de/SiteAssets/fonts/adobe-clean/stylesheet.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Epilogue:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f7f6f3;
+      --surface: #ffffff;
+      --border: #e2e0da;
+      --border-soft: #eeede9;
+      --text: #1a1a18a6;
+      --text-muted: #7a7870;
+      --accent: #1c4ed8;
+      --accent-light: #eff4ff;
+      --accent-border: #c7d9fa;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --success: #047857;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --radius: 8px;
+      --radius-sm: 5px;
+      --selector-bg: #7a7870;
+    }
+
+    /* Fonts */
+    @font-face {
+      font-family: 'brand-font-light';
+      src: url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff') format('woff');
+      font-weight: 300;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-regular';
+      src: url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff') format('woff');
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-medium';
+      src: url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff') format('woff');
+      font-weight: 500;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-bold';
+      src: url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff') format('woff');
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-black';
+      src: url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff') format('woff');
+      font-weight: 900;
+      font-display: swap;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Adobe Clean', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px 64px;
+    }
+
+    .pill-group label[disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* ── Layout ── */
+    .shell {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--selector-bg);
+      color: #fff;
+      padding: 32px 40px;
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .header-logo {
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-logo svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .header-title {
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: 0.025em;
+      line-height: 1.2;
+    }
+
+    .header-sub {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #9ca3af;
+      margin-top: 4px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Progress Bar ── */
+    .progress-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .progress-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: 'brand-font-medium', sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .progress-pct {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      font-family: 'brand-font-medium', sans-serif;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+      overflow: hidden;
+    }
+
+    /* ── Role Selector ── */
+    .role-selector {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      height: 28px;
+    }
+
+    .role-selector input[type="radio"] {
+      display: none;
+    }
+
+    .role-selector label {
+      padding: 4px 14px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      font-family: 'brand-font-medium', sans-serif;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      align-content: center;
+      text-transform: uppercase;
+    }
+
+    .role-selector label:last-of-type {
+      border-right: none;
+    }
+
+    .role-selector input[type="radio"]:checked+label {
+      background: var(--selector-bg);
+      color: #fff;
+      border-color: var(--border);
+      align-content: center;
+      text-transform: uppercase;
+    }
+
+    .role-selector label:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .role-selector input[type="radio"]:checked+label:hover {
+      color: #fff;
+    }
+
+    /* ── Section Header ── */
+    .sec-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-soft);
+      user-select: none;
+      gap: 12px;
+    }
+
+    .sec-head:hover {
+      background: var(--bg);
+    }
+
+    .sec-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      width: 50%;
+    }
+
+    .sec-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+
+    .sec-num.complete {
+      background: var(--success);
+    }
+
+    .sec-title {
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .sec-badge {
+      font-family: 'brand-font-medium', sans-serif;
+      min-width: max-content;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+      border: 1px solid var(--accent-border);
+    }
+
+    .sec-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 50%;
+      justify-content: flex-end;
+    }
+
+    .sec-right:has(.role-selector) {
+      justify-content: flex-start;
+    }
+
+    .chevron {
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      transition: transform 0.25s ease;
+    }
+
+    .sec-head.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    /* ── Section Body ── */
+    .sec-body {
+      display: none;
+      padding: 0;
+    }
+
+    .sec-body.open {
+      display: block;
+    }
+
+    /* ── Meta Grid ── */
+    .meta-grid-1 {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      grid-template-areas:
+        "title title title title title revision"
+        "engineer engineer engineer checker checker checker"
+        "deliverable deliverable deliverable review review review"
+        "level level level level date date"
+      ;
+      gap: 1px;
+      background: var(--border-soft);
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border-soft);
+    }
+
+    .work-title-cell {
+      grid-area: title;
+    }
+
+    .revision-cell {
+      grid-area: revision;
+    }
+
+    .engineer-cell {
+      grid-area: engineer;
+    }
+
+    .checker-cell {
+      grid-area: checker;
+    }
+
+    .deliverable-cell {
+      grid-area: deliverable;
+    }
+
+    .review-level-cell {
+      grid-area: review;
+    }
+
+    .risk-level-cell {
+      grid-area: level;
+    }
+
+    .review-date-cell {
+      grid-area: date;
+    }
+
+    @media (max-width: 600px) {
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .meta-cell {
+      background: var(--surface);
+      padding: 18px 24px;
+    }
+
+    .meta-cell.span2 {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 600px) {
+      .meta-cell.span2 {
+        grid-column: span 1;
+      }
+    }
+
+    /* ── Field ── */
+    .field-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+      font-family: 'brand-font-medium', sans-serif;
+    }
+
+    .field-input[type="date"] {
+      line-height: 0.8;
+      padding: 8px 11px;
+      min-height: 36px;
+
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.025em;
+      color: var(--text-muted);
+      background: var(--bg);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+      min-height: 36px;
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(28, 78, 216, 0.08);
+      background: #fff;
+    }
+
+    select.field-input {
+      cursor: pointer;
+    }
+
+    /* ── Risk Toggle ── */
+    .risk-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .risk-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      color: var(--text-muted);
+      min-height: 36px;
+    }
+
+    .risk-btn:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+
+    .risk-btn[data-risk="low"].active {
+      background: #d1fae5;
+      border-color: #6ee7b7;
+      color: #065f46;
+    }
+
+    .risk-btn[data-risk="medium"].active {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    .risk-btn[data-risk="high"].active {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #991b1b;
+    }
+
+    .risk-btn[data-risk="low"]:hover {
+      color: #d1fae5;
+      border-color: #6ee7b7;
+      background: #065f46;
+    }
+
+    .risk-btn[data-risk="medium"]:hover {
+      color: #fef3c7;
+      border-color: #fcd34d;
+      background: #92400e;
+    }
+
+    .risk-btn[data-risk="high"]:hover {
+      color: #fee2e2;
+      border-color: #fca5a5;
+      background: #991b1b;
+    }
+
+    /* ── Check Row ── */
+    .check-row {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border-soft);
+      transition: background 0.1s;
+    }
+
+    .check-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .check-row:hover {
+      background: var(--bg);
+    }
+
+    .check-text {
+      flex: 1;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    .check-num {
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 28px;
+    }
+
+    /* ── Yes/No/NA Pill group ── */
+    .pill-group {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .pill-group input[type="radio"] {
+      display: none;
+    }
+
+    .pill-group label {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'brand-font-medium', sans-serif;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+
+    .pill-group label:last-of-type {
+      border-right: none;
+    }
+
+    .pill-group input[type="radio"]:checked+label {
+      color: #fff;
+    }
+
+    .pill-group input[id$="_yes"]:checked+label {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .pill-group input[id$="_no"]:checked+label {
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .pill-group input[id$="_na"]:checked+label {
+      background: var(--text-muted);
+      border-color: var(--text-muted);
+    }
+
+    .pill-group label:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .pill-group input[type="radio"]:checked+label:hover {
+      color: #fff;
+    }
+
+    /* ── Notice Boxes ── */
+    .notice {
+      display: flex;
+      gap: 12px;
+      padding: 13px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      line-height: 1.5;
+      margin: 16px 24px;
+    }
+
+    .notice.warn {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      color: var(--warn);
+    }
+
+    .notice.info {
+      background: var(--accent-light);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+    }
+
+    .notice-icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .notice strong {
+      font-weight: 600;
+    }
+
+    /* ── Sig Grid ── */
+    .sig-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border-soft);
+      border-top: 1px solid var(--border-soft);
+    }
+
+    @media (max-width: 580px) {
+      .sig-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sig-cell {
+      background: var(--bg);
+      padding: 16px 20px;
+    }
+
+    .sig-cell-wide {
+      grid-column: span 2;
+    }
+
+    .check-date {
+      max-width: 220px;
+    }
+
+    .sec-subtle {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    .field-label-secondary {
+      margin-top: 10px;
+    }
+
+    /* ── Textarea ── */
+    textarea.field-input {
+      min-height: 80px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    /* ── Actions Row ── */
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 20px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-top: 6px;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    .btn-clear {
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .btn-clear:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    .btn-primary {
+      background: var(--text);
+      border-color: var(--text);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-family: 'brand-font-medium', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #fff;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #toast.success {
+      background: var(--success);
+    }
+
+    #toast.error {
+      background: var(--danger);
+    }
+
+    #toast.info {
+      background: var(--accent);
+    }
+
+    /* ── Hidden ── */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ── Divider within section ── */
+    .comments-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border-soft);
+    }
+
+    @media (max-width: 580px) {
+      .comments-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comments-cell {
+      background: var(--surface);
+      padding: 18px 24px;
+    }
+
+    /* ── Fade-in animation ── */
+    .shell {
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shell {
+        animation: none;
+      }
+
+      .chevron,
+      .progress-fill,
+      #toast {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path
+            d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" />
+        </svg>
+      </div>
+      <div>
+        <div class="header-title">Distribution Engineering Check Form</div>
+        <div class="header-sub">BC Hydro · Quality &amp; Assurance</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-strip">
+      <span class="progress-label">Completion</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <!-- ── Section 0: Document Info ── -->
+    <div class="card">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-role">R</div>
+          <span class="sec-title">Your Role</span>
+        </div>
+        <div class="sec-right">
+          <div class="role-selector">
+            <input type="radio" name="sc_role" id="sc_role_eng" value="Engineer" checked>
+            <label for="sc_role_eng">Engineer</label>
+            <input type="radio" name="sc_role" id="sc_role_eit" value="Engineer-in-Training">
+            <label for="sc_role_eit">Engineer-in-Training</label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ── Section 0: Document Info ── -->
+    <div class="card">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-info">i</div>
+          <span class="sec-title">Document Information</span>
+        </div>
+        <div class="sec-right">
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+      <div class="sec-body open">
+        <div class="meta-grid">
+          <div class="meta-cell work-title-cell">
+            <div class="field-label">Work Title</div>
+            <input class="field-input" id="workTitle" type="text" placeholder="Enter work title">
+          </div>
+          <div class="meta-cell revision-cell">
+            <div class="field-label">Revision</div>
+            <input class="field-input" id="revision" type="text" placeholder="Rev. NO.">
+          </div>
+          <div class="meta-cell engineer-cell" id="engineer_eit">
+            <div class="field-label">Engineer</div>
+            <input class="field-input" id="engineer" type="text" placeholder="Engineer name">
+          </div>
+          <div class="meta-cell checker-cell" id="checker_por">
+            <div class="field-label">Checker</div>
+            <input class="field-input" id="checker" type="text" placeholder="Checker name">
+          </div>
+          <div class="meta-cell deliverable-cell">
+            <div class="field-label">Check / Review Deliverable or Milestone</div>
+            <select class="field-input" id="deliverable">
+              <option value="">Choose an item…</option>
+              <option>Design Document</option>
+              <option>Calculation Package</option>
+              <option>Engineering Drawing</option>
+              <option>Technical Report</option>
+              <option>Specification Document</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="meta-cell risk-level-cell">
+            <div class="field-label">Risk Level</div>
+            <div class="risk-row">
+              <button class="risk-btn" type="button" data-risk="low" onclick="selectRisk('low')">Low</button>
+              <button class="risk-btn" type="button" data-risk="medium" onclick="selectRisk('medium')">Medium</button>
+              <button class="risk-btn" type="button" data-risk="high" onclick="selectRisk('high')">High</button>
+            </div>
+          </div>
+          <div class="meta-cell review-level-cell">
+            <div class="field-label">Minimum Check / Review Level</div>
+            <select class="field-input" id="minCheckLevel">
+              <option value="">Select level…</option>
+              <option>Self-Check</option>
+              <option>Direct Supervision</option>
+              <option>Check</option>
+              <option>Peer Review</option>
+              <option>Independent Review</option>
+            </select>
+          </div>
+          <div class="meta-cell review-date-cell">
+            <div class="field-label">Check / Review Date</div>
+            <input class="field-input check-date" id="checkDate" type="date">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 1: Self-Check ── -->
+    <div class="card">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-1">1</div>
+          <span class="sec-title">Self-Check</span>
+          <span class="sec-badge" id="badge-1">0 / 12</span>
+        </div>
+        <div class="sec-right">
+          <button class="btn-clear" type="button" onclick="clearSection('s1', event)">Clear</button>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+      <div class="sec-body open" id="s1">
+
+        <!-- check rows -->
+        <div id="sc-rows">
+          <!-- items injected by JS -->
+        </div>
+
+        <div class="notice info hidden" id="dsNotice">
+          <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" />
+          </svg>
+          <span><strong>Action required:</strong> Since Q1.12 is "No", the Professional of Record must complete the
+            Direct Supervision section below.</span>
+        </div>
+
+        <!-- sig -->
+        <div class="sig-grid">
+          <div class="sig-cell">
+            <div class="field-label">Date</div>
+            <input class="field-input" id="sc_date" type="date">
+          </div>
+          <div class="sig-cell sig-cell-wide">
+            <div class="field-label">Signature (Engineer)</div>
+            <input class="field-input" id="sc_sig" type="text" placeholder="Type full name as signature">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Section 2: Direct Supervision (hidden by default) ── -->
+    <div class="card hidden" id="card-ds">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-2">2</div>
+          <span class="sec-title">Direct Supervision <span class="sec-subtle">— to be
+              completed by POR</span></span>
+          <span class="sec-badge" id="badge-2">0 / 5</span>
+        </div>
+        <div class="sec-right">
+          <button class="btn-clear" type="button" onclick="clearSection('s2', event)">Clear</button>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+      <div class="sec-body open" id="s2">
+        <div id="ds-rows"></div>
+        <div class="sig-grid">
+          <div class="sig-cell">
+            <div class="field-label">Date</div>
+            <input class="field-input" id="ds_date" type="date">
+          </div>
+          <div class="sig-cell sig-cell-wide">
+            <div class="field-label">Signature (POR)</div>
+            <input class="field-input" id="ds_sig" type="text" placeholder="Type full name as signature">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 3: Check ── -->
+    <div class="card">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-3">3</div>
+          <span class="sec-title">Check</span>
+          <span class="sec-badge" id="badge-3">0 / 11</span>
+        </div>
+        <div class="sec-right">
+          <button class="btn-clear" type="button" onclick="clearSection('s3', event)">Clear</button>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+      <div class="sec-body open" id="s3">
+        <div id="ch-rows"></div>
+        <div class="notice warn hidden" id="chNotice">
+          <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" />
+          </svg>
+          <span><strong>Attention:</strong> A "No" answer requires your Team Lead to complete a Peer Review for
+            acceptance.</span>
+        </div>
+        <div class="sig-grid">
+          <div class="sig-cell">
+            <div class="field-label">Date</div>
+            <input class="field-input" id="ch_date" type="date">
+          </div>
+          <div class="sig-cell sig-cell-wide">
+            <div class="field-label">Signature (Team Lead)</div>
+            <input class="field-input" id="ch_sig" type="text" placeholder="Type full name as signature">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 4: Peer Review ── -->
+    <div class="card">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-4">4</div>
+          <span class="sec-title">Peer Review <span class="sec-subtle">—
+              Not a Type 1 High Risk Work Independent Review</span></span>
+          <span class="sec-badge" id="badge-4">0 / 10</span>
+        </div>
+        <div class="sec-right">
+          <button class="btn-clear" type="button" onclick="clearSection('s4', event)">Clear</button>
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+      <div class="sec-body open" id="s4">
+        <div id="pr-rows"></div>
+        <div class="sig-grid">
+          <div class="sig-cell">
+            <div class="field-label">Date</div>
+            <input class="field-input" id="pr_date" type="date">
+          </div>
+          <div class="sig-cell sig-cell-wide">
+            <div class="field-label">Signature (Peer Reviewer)</div>
+            <input class="field-input" id="pr_sig" type="text" placeholder="Type full name as signature">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 5: Comments ── -->
+    <div class="card">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-5">5</div>
+          <span class="sec-title">Comments &amp; Corrective Actions</span>
+        </div>
+        <div class="sec-right">
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+      <div class="sec-body open" id="s5">
+        <div class="comments-grid">
+          <div class="comments-cell">
+            <div class="field-label">Checker / Reviewer Comments &amp; Corrections</div>
+            <textarea class="field-input" id="comments"
+              placeholder="Enter comments, corrections, or corrective actions…"></textarea>
+          </div>
+          <div class="comments-cell">
+            <div class="field-label">Engineer's Response</div>
+            <textarea class="field-input" id="engineerResponse"
+              placeholder="Accept / Reject / Address comments…"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Section 6: Final Signatures ── -->
+    <div class="card">
+      <div class="sec-head open" onclick="toggleSection(this)">
+        <div class="sec-left">
+          <div class="sec-num" id="snum-6">6</div>
+          <span class="sec-title">Final Signatures</span>
+        </div>
+        <div class="sec-right">
+          <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+      <div class="sec-body open">
+        <div class="meta-grid">
+          <div class="meta-cell">
+            <div class="field-label">Engineer Name</div><input class="field-input" id="fEng" type="text"
+              placeholder="Full name">
+          </div>
+          <div class="meta-cell">
+            <div class="field-label">Date</div><input class="field-input" id="fEngDate" type="date">
+          </div>
+          <div class="meta-cell span2">
+            <div class="field-label">Signature</div><input class="field-input" id="fEngSig" type="text"
+              placeholder="Type full name as signature">
+          </div>
+
+          <div class="meta-cell">
+            <div class="field-label">Checker Name</div><input class="field-input" id="fChk" type="text"
+              placeholder="Full name">
+          </div>
+          <div class="meta-cell">
+            <div class="field-label">Date</div><input class="field-input" id="fChkDate" type="date">
+          </div>
+          <div class="meta-cell span2">
+            <div class="field-label">Signature</div><input class="field-input" id="fChkSig" type="text"
+              placeholder="Type full name as signature">
+          </div>
+
+          <div class="meta-cell">
+            <div class="field-label">Peer Reviewer Name</div><input class="field-input" id="fPR" type="text"
+              placeholder="Full name">
+          </div>
+          <div class="meta-cell">
+            <div class="field-label">Date</div><input class="field-input" id="fPRDate" type="date">
+          </div>
+          <div class="meta-cell span2">
+            <div class="field-label">Signature</div><input class="field-input" id="fPRSig" type="text"
+              placeholder="Type full name as signature">
+          </div>
+
+          <div class="meta-cell">
+            <div class="field-label">Assigned Type 1 Reviewer</div><input class="field-input" id="fT1" type="text"
+              placeholder="Full name">
+          </div>
+          <div class="meta-cell">
+            <div class="field-label">Date</div><input class="field-input" id="fT1Date" type="date">
+          </div>
+          <div class="meta-cell span2">
+            <div class="field-label">DE TL Signature</div><input class="field-input" id="fT1Sig" type="text"
+              placeholder="Type full name as signature">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-ghost" type="button" onclick="resetForm()">Reset Form</button>
+      <button class="btn btn-primary" type="button" onclick="submitForm()">Submit Form</button>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script>
+    /* ─── Data ─── */
+    const SC_ITEMS = [
+      "Meets client/user objectives and requirements?",
+      "Meets construction/operation requirements?",
+      "Relevant field observations and data used?",
+      "Meets BCH standards (ES43, ES54, ES55, ES41 etc.)?",
+      "Have appropriate text and grammar been used?",
+      "Meets BCH format and template standards?",
+      "Includes standard BCH waivers/disclaimers?",
+      "Completed with correct calculations / up-to-date software?",
+      'Engineering Work is deemed as "Low Risk" as per the latest DE Documents and Processes sheet, or per a completed Project Based Risk Assessment for work not listed in that sheet.',
+      "Work is not a non-standard structural design. Non-standard structural designs shall use the DE Independent Structural Review form.",
+      "Work is not defined as High-Risk. High-Risk work shall also be documented with the High-Risk Work Independent Review Record.",
+      'I am the Professional of Record and have sufficient experience and knowledge in the discipline and type of work to self-check. If "No", POR to complete Direct Supervision and Check requirements.'
+    ];
+    const DS_ITEMS = [
+      "I have active involvement, control, and interaction in delegated work.",
+      "I have adequate supervision of field reviews.",
+      "I am involved in all engineering and geoscience decisions.",
+      "I have provided supervision appropriate to the experience of the professional registrant and subordinate.",
+      "Supporting documentation such as meeting minutes, markups, discussion notes and dates are recorded in writing and kept."
+    ];
+    const CH_ITEMS = [
+      "I have sufficient experience and knowledge in the discipline and type of work to complete a check.",
+      "Meets client/user objectives and requirements?",
+      "Meets construction/operation requirements?",
+      "Relevant field observations and data used?",
+      "Meets BCH standards (ES43, ES54, ES55, ES41 etc.)?",
+      "Have appropriate text and grammar been used?",
+      "Meets BCH format and drawing standards?",
+      "Includes standard BCH waivers/disclaimers?",
+      "Completed with correct calculations / up-to-date software?",
+      "Meets applicable codes, standards, regulations and bylaws?",
+      "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?"
+    ];
+    const PR_ITEMS = [
+      "Meets client/user objectives and requirements?",
+      "Meets construction/operation requirements?",
+      "Meets BCH standards (ES43, ES54, ES55, ES41 etc.)?",
+      "Meets applicable codes, standards, regulations and bylaws?",
+      "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?",
+      "Meets health, safety and environmental requirements?",
+      "Meets other stakeholders (e.g. Local Government, First Nations) requirements?",
+      "Have all major risks been identified?",
+      "Considered safety by design?",
+      "Have opportunities for innovation or cost savings been identified?"
+    ];
+
+    /* ─── Build rows ─── */
+    function buildRows (container, prefix, items, onChangeExtra) {
+      container.innerHTML = '';
+      items.forEach((text, i) => {
+        const n = i + 1;
+        const id = `${prefix}${n}`;
+        const row = document.createElement('div');
+        row.className = 'check-row';
+        row.innerHTML = `
+      <span class="check-num">${prefix.slice(0, 1).toUpperCase()}${prefix.slice(1, 2) || ''}.${n}</span>
+      <span class="check-text">${text}</span>
+      <div class="pill-group">
+        <input type="radio" name="${id}" id="${id}_yes" value="yes">
+        <label for="${id}_yes">Yes</label>
+        <input type="radio" name="${id}" id="${id}_no" value="no">
+        <label for="${id}_no">No</label>
+        <input type="radio" name="${id}" id="${id}_na" value="na">
+        <label for="${id}_na">N/A</label>
+      </div>`;
+        container.appendChild(row);
+      });
+      container.addEventListener('change', event => {
+        if (event.target.matches('input[type="radio"]')) {
+          updateProgress();
+          if (onChangeExtra) onChangeExtra();
+        }
+      });
+    }
+
+    /* ─── Init ─── */
+    buildRows(document.getElementById('sc-rows'), 'sc', SC_ITEMS, checkDS);
+    buildRows(document.getElementById('ds-rows'), 'ds', DS_ITEMS);
+    buildRows(document.getElementById('ch-rows'), 'ch', CH_ITEMS, checkChWarning);
+    buildRows(document.getElementById('pr-rows'), 'pr', PR_ITEMS);
+
+    /* Prefix badge labels correctly */
+    function fixBadgePrefix () {
+      document.querySelectorAll('#sc-rows .check-num').forEach((el, i) => el.textContent = `1.${i + 1}`);
+      document.querySelectorAll('#ds-rows .check-num').forEach((el, i) => el.textContent = `2.${i + 1}`);
+      document.querySelectorAll('#ch-rows .check-num').forEach((el, i) => el.textContent = `3.${i + 1}`);
+      document.querySelectorAll('#pr-rows .check-num').forEach((el, i) => el.textContent = `4.${i + 1}`);
+    }
+    fixBadgePrefix();
+
+    /* ─── Direct Supervision toggle ─── */
+    function checkDS () {
+      const noRadio = document.getElementById('sc12_no');
+      const dsCard = document.getElementById('card-ds');
+      const notice = document.getElementById('dsNotice');
+      if (noRadio && noRadio.checked) {
+        dsCard.classList.remove('hidden');
+        notice.classList.remove('hidden');
+      } else {
+        dsCard.classList.add('hidden');
+        notice.classList.add('hidden');
+      }
+    }
+    // fix IDs after build — sc12 = item index 11 (0-based) → prefix sc, n=12
+    // IDs are sc12_yes / sc12_no / sc12_na — already correct
+
+    /* ─── Check section warning ─── */
+    function checkChWarning () {
+      const hasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
+      document.getElementById('chNotice').classList.toggle('hidden', !hasNo);
+    }
+
+    /* ─── Progress ─── */
+    function updateProgress () {
+      const sections = [
+        { rows: '#sc-rows', count: SC_ITEMS.length, badge: 'badge-1', num: 'snum-1', sectionNumber: '1' },
+        { rows: '#ds-rows', count: DS_ITEMS.length, badge: 'badge-2', num: 'snum-2', sectionNumber: '2' },
+        { rows: '#ch-rows', count: CH_ITEMS.length, badge: 'badge-3', num: 'snum-3', sectionNumber: '3' },
+        { rows: '#pr-rows', count: PR_ITEMS.length, badge: 'badge-4', num: 'snum-4', sectionNumber: '4' },
+      ];
+      let total = 0, answered = 0;
+      sections.forEach(s => {
+        const cnt = document.querySelectorAll(`${s.rows} input[type="radio"]:checked`).length;
+        const tot = s.count;
+        document.getElementById(s.badge).textContent = `${cnt} / ${tot}`;
+        const num = document.getElementById(s.num);
+        if (cnt === tot) {
+          num.classList.add('complete');
+          num.innerHTML = `<svg width="14" height="14" viewBox="0 0 20 20" fill="white"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>`;
+        } else {
+          num.classList.remove('complete');
+          num.textContent = s.sectionNumber;
+        }
+        // Only count sections that are visible
+        const card = s.rows === '#ds-rows' ? document.getElementById('card-ds') : null;
+        if (!card || !card.classList.contains('hidden')) {
+          total += tot;
+          answered += cnt;
+        }
+      });
+      const pct = total ? Math.round((answered / total) * 100) : 0;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressPct').textContent = pct + '%';
+    }
+
+    // fix section num text after build
+    document.getElementById('snum-1').textContent = '1';
+    document.getElementById('snum-2').textContent = '2';
+    document.getElementById('snum-3').textContent = '3';
+    document.getElementById('snum-4').textContent = '4';
+
+    /* ─── Section collapse ─── */
+    function toggleSection (head) {
+      head.classList.toggle('open');
+      const body = head.nextElementSibling;
+      if (body) body.classList.toggle('open');
+    }
+
+    /* ─── Risk ─── */
+    function selectRisk (level) {
+      document.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`.risk-btn[data-risk="${level}"]`).classList.add('active');
+    }
+
+    /* ─── Clear section ─── */
+    function clearSection (id, e) {
+      if (e) e.stopPropagation();
+      const sec = document.getElementById(id);
+      sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+      sec.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
+      sec.querySelectorAll('textarea').forEach(t => t.value = '');
+      updateProgress();
+      checkDS();
+      checkChWarning();
+      toast('Section cleared', 'info');
+    }
+
+    /* ─── Reset ─── */
+    function resetForm () {
+      if (!confirm('Reset entire form? All data will be lost.')) return;
+      document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+      document.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
+      document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+      document.querySelectorAll('textarea').forEach(t => t.value = '');
+      document.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('card-ds').classList.add('hidden');
+      document.getElementById('dsNotice').classList.add('hidden');
+      document.getElementById('chNotice').classList.add('hidden');
+      updateProgress();
+      const today = new Date().toISOString().split('T')[0];
+      document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
+      toast('Form reset', 'info');
+    }
+
+    /* ─── Submit ─── */
+    function submitForm () {
+      const title = document.getElementById('workTitle').value.trim();
+      const eng = document.getElementById('engineer').value.trim();
+      if (!title || !eng) { toast('Work Title and Engineer are required', 'error'); return; }
+      const anyAnswered = !!document.querySelector('input[type="radio"]:checked');
+      if (!anyAnswered) { toast('Please answer at least one check item', 'error'); return; }
+      const dsVisible = !document.getElementById('card-ds').classList.contains('hidden');
+      if (dsVisible && !document.querySelector('#s2 input[type="radio"]:checked')) {
+        toast('Direct Supervision section must be completed', 'error'); return;
+      }
+      toast('Form submitted successfully', 'success');
+    }
+
+    /* ─── Toast ─── */
+    let toastTimer;
+    function toast (msg, type = 'info') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = `show ${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.classList.remove('show'); }, 2800);
+    }
+    /* ─── Role selector label sync ─── */
+    document.querySelectorAll('input[name="sc_role"]').forEach(r => {
+      r.addEventListener('change', () => {
+        const val = document.querySelector('input[name="sc_role"]:checked').value;
+        document.querySelector('#engineer_eit div').textContent = `${val}`;
+        document.querySelector('#engineer_eit input').setAttribute('placeholder', `${val === "Engineer-in-Training" ? "EIT" : "Engineer"} name`);
+
+        const val2 = (val === "Engineer" ? "Checker" : "Professional of Record");
+        document.querySelector('#checker_por div').textContent = `${val2}`;
+        document.querySelector('#checker_por input').setAttribute('placeholder', `${val2 === "Professional of Record" ? "PoR" : "Checker"} name`);
+      });
+    });
+    document.querySelectorAll('input[name="ch_role"]').forEach(r => {
+      r.addEventListener('change', () => {
+
+      });
+    });
+    /* ─── Default dates ─── */
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
+
+    updateProgress();
+  </script>
+</body>
+
+</html>

@@ -363,7 +363,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 1P",
     "CAD ID": "360-3212",
     "kVA": 50,
-    "Primary (kV)": "2.4/7.2",
+    "Primary (kV)": "2.4 x 7.2",
     "Secondary (V)": "120/240",
     "Minimum Impedance (%)": "2-5",
     "Feed": "—"
@@ -372,7 +372,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 1P",
     "CAD ID": "360-3213",
     "kVA": 75,
-    "Primary (kV)": "2.4/7.2",
+    "Primary (kV)": "2.4 x 7.2",
     "Secondary (V)": "120/240",
     "Minimum Impedance (%)": "2.5-5",
     "Feed": "—"
@@ -381,7 +381,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 1P",
     "CAD ID": "9700-5605",
     "kVA": 167,
-    "Primary (kV)": "12/25",
+    "Primary (kV)": "12 x 25",
     "Secondary (V)": "120/208",
     "Minimum Impedance (%)": "4-6",
     "Feed": "3 x 167 kVA"
@@ -390,7 +390,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 1P",
     "CAD ID": "9600-6210",
     "kVA": 333,
-    "Primary (kV)": "12/25",
+    "Primary (kV)": "12 x 25",
     "Secondary (V)": "347/600",
     "Minimum Impedance (%)": "5-6",
     "Feed": "3 x 333 kVA"
@@ -399,7 +399,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 1P",
     "CAD ID": "9600-6211",
     "kVA": 500,
-    "Primary (kV)": "12/25",
+    "Primary (kV)": "12 x 25",
     "Secondary (V)": "347/600",
     "Minimum Impedance (%)": "5-6",
     "Feed": "3 x 500 kVA"
@@ -408,7 +408,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 3P",
     "CAD ID": "9700-0685",
     "kVA": 500,
-    "Primary (kV)": "12/25",
+    "Primary (kV)": "12 x 25",
     "Secondary (V)": "347/600",
     "Minimum Impedance (%)": "5-6",
     "Feed": "1 x 500 kVA"
@@ -417,7 +417,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 3P",
     "CAD ID": "9700-0686",
     "kVA": 500,
-    "Primary (kV)": "12/25",
+    "Primary (kV)": "12 x 25",
     "Secondary (V)": "120/208",
     "Minimum Impedance (%)": "5-6",
     "Feed": "1 x 500 kVA"
@@ -426,7 +426,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 3P",
     "CAD ID": "9700-0687",
     "kVA": 750,
-    "Primary (kV)": "12/25",
+    "Primary (kV)": "12 x 25",
     "Secondary (V)": "347/600",
     "Minimum Impedance (%)": "5-6",
     "Feed": "1 x 750 kVA"
@@ -435,7 +435,7 @@ window.UG_TX_DATA = [
     "Transformer Type": "SUBMERSIBLE 3P",
     "CAD ID": "9700-0688",
     "kVA": 750,
-    "Primary (kV)": "12/25",
+    "Primary (kV)": "12 x 25",
     "Secondary (V)": "120/208",
     "Minimum Impedance (%)": "5-6",
     "Feed": "1 x 750 kVA"

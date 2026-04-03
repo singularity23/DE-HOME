@@ -458,7 +458,6 @@ function onEngineerEITChange (event) {
   if (!event || !event.target || event.target.name !== 'Engineer_EIT')
     return;
 
-
   isEIT = event.target.value === 'Engineer-in-Training:';
 
   safeDisplay(SELECTOR.labelChkr, !isEIT);
