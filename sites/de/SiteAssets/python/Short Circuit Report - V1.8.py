@@ -25,6 +25,7 @@ import webbrowser
 import os
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
+from urllib.parse import urlencode, quote
 
 
 def get_chrome():
@@ -274,6 +275,77 @@ class EmissionStudy:
         file.write(line)
 
 
+def FaultForm(LLL, LLG, LL, LG, PreFaultVolts, R1, X1, R0, X0):
+    _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Fault%20Level%20Form.html"
+    PROT_TYPE = {
+        "New Device - Proposed Settings": "new_proposed",
+        "Existing Device - Proposed Settings": "existing_proposed",
+        "Existing Device - Existing Settings": "existing_existing",
+    }
+    input_params = [
+        "Customer_Name",
+        "Service_Address",
+        "Fault_Location",
+        "Protection_Type",
+        "Device_Type",
+        "Device_ID",
+        "Settings_Text",
+        "Engineer",
+        "Email_Address",
+        "Phone_Number",
+        "Primary_Form",
+    ]
+
+    inputs = map(cympy.GetInputParameter, input_params)
+
+    (
+        customerName,
+        serviceAddress,
+        faultLocation,
+        protectionType,
+        deviceType,
+        deviceID,
+        settings,
+        engineer,
+        email,
+        phone,
+        primaryForm,
+    ) = inputs
+
+    if primaryForm != "Yes":
+        return
+
+    """Generate a fault level report form URL with the given parameters"""
+    _params = {
+        "customer_name": customerName,
+        "service_address": serviceAddress,
+        "fault_location": faultLocation,
+        "protection_type": PROT_TYPE.get(protectionType, ""),
+        "device_type": deviceType,
+        "device_id": deviceID,
+        "settings_text": settings,
+        "engineer": engineer,
+        "email_address": email,
+        "phone_number": phone,
+        "date_issued": datetime.now().strftime("%Y-%m-%d"),
+        "LLL": int(round(LLL, -2)),
+        "LLG": int(round(LLG, -2)),
+        "LL": int(round(LL, -2)),
+        "LG": int(round(LG, -2)),
+        "R1": "{:.4f}".format(R1),
+        "X1": "{:.4f}".format(X1),
+        "R0": "{:.4f}".format(R0),
+        "X0": "{:.4f}".format(X0),
+        "prefault": PreFaultVolts,
+    }
+
+    query_string = urlencode(_params, quote_via=quote)
+
+    link = f"{_PATH}?{query_string}"
+    browser = get_chrome()
+    browser.open_new(link)
+
+
 ############################################################################################################################################################
 ############################################################################################################################################################
 
@@ -420,6 +492,10 @@ else:
     study = EmissionStudy(
         "FAULT_POINT", network_id, Dist_to_Sub, R1ohm, X1ohm, R0ohm, X0ohm
     )
+
+    FaultForm(
+        LLL_max, LLG_max, LL_max, LG_max, PreFaultVolts, R1ohm, X1ohm, R0ohm, X0ohm
+    )
     ############################################################################################################################################################
     ############################################################################################################################################################
 
@@ -472,8 +548,7 @@ else:
                 or Device.DeviceType == 9
             ):  # Transformer, by-phase transformer, autotransformer, or series reactor
                 if (
-                    Device.Location == 0
-                    or Device.Location == 1
+                    Device.Location == 0 or Device.Location == 1
                     # if device is at From node (source side of section) or in the middle of the section
                 ):
                     DeviceList.append(
@@ -654,8 +729,8 @@ else:
             elif Device.DeviceType == 9:  # Series Reactor
                 R1 = R1ohm - float(cympy.study.QueryInfoNode("$R1ohm$", UpstreamNode))
                 X1 = X1ohm - float(cympy.study.QueryInfoNode("$X1ohm$", UpstreamNode))
-                R0 = R0ohm - float(
-                    cympy.study.QueryInfoNode("$R0ohm$", UpstreamNode)
+                R0 = (
+                    R0ohm - float(cympy.study.QueryInfoNode("$R0ohm$", UpstreamNode))
                 )  # calculate the impedance difference between DownstreamNode and UpstreamNode
                 X0 = X0ohm - float(cympy.study.QueryInfoNode("$X0ohm$", UpstreamNode))
                 # it was found that the feeder series reactors were showing up two times in two different sections in the interator
@@ -665,9 +740,9 @@ else:
                 ) and NetworkParam[i][0] == (
                     "Series Reactor: " + str(Device.EquipmentID)
                 ):
-                    NetworkParam[i][
-                        3
-                    ] = R1  # assumes the duplicate reactor is within the previously iterated section
+                    NetworkParam[i][3] = (
+                        R1  # assumes the duplicate reactor is within the previously iterated section
+                    )
                     NetworkParam[i][4] = X1  # overwrite the impedance data
                     NetworkParam[i][5] = R0
                     NetworkParam[i][6] = X0

@@ -1,5 +1,10 @@
 javascript: (function () {
   'use strict';
+  const pathname = window.location.pathname;
+  if (pathname !== '/Aspen/query') {
+    window.alert(`You are not on the correct page. Please navigate to the ASPEN 'Query' page to use this tool.`);
+    return;
+  }
 
   const INITIAL_STATE = Object.freeze({
     headerRow: null,

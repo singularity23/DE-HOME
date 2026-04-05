@@ -605,7 +605,7 @@
             <label><input type="radio" id="v1_144" name="v1_voltage">14.4 kV</label>
             <label><input type="radio" id="v1_1992" name="v1_voltage">19.92 kV</label>
           </div>
-          <div class="imp-title row-1">Equivalent System Impedance at Point of Fault (Ohms)</div>
+          <div class="imp-title row-1"><strong>Equivalent System Impedance at Point of Fault (Ohms)</strong></div>
           <div class="imp-row">
             <div class="R1 row-1"> <label for="R1">R1:</label>
               <input type="text" id="R1" name="R1">
@@ -630,7 +630,8 @@
       </section>
 
       <section class="zone zone-disclaimer">
-        The information provided is based on the BC Hydro system configuration as of the date this form is issued at
+        <strong>Disclaimer:</strong> The information provided is based on the BC Hydro system configuration as of the
+        date this form is issued at
         normal system operating conditions and does not consider any customer motor contribution. The fault values
         provided should be considered accurate within +/-25%. This margin includes 10% for voltage fluctuations from
         1.0 p.u and 15% allowance for data accuracy. This fault level can increase or decrease at any time without
@@ -709,6 +710,9 @@
     const X1Ele = document.getElementById("X1");
     const R0Ele = document.getElementById("R0");
     const X0Ele = document.getElementById("X0");
+
+    const filename = `${serviceAddress ? serviceAddress : ''}_${customerName ? customerName : ''}_fault_level_form_filled.html`;
+    document.querySelector("title").textContent = filename;
 
     // Only overwrite fields when the URL has query params (avoids clearing values baked into a saved HTML file).
     if (qp.toString()) {
@@ -887,9 +891,6 @@
       var blob = new Blob([html], { type: "text/html;charset=utf-8" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
-
-      var filename = `${serviceAddress}_${customerName}_fault_level_form_filled.html`;
-      document.querySelector("title").textContent = filename;
 
       a.href = url;
       a.download = filename;

@@ -1188,6 +1188,11 @@ class FaultPoint(BaseEquipment):
     """Study point with fault currents, impedances, and location (lat/long)."""
 
     _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Fault%20Level%20Form.html"
+    PROT_TYPE = {
+        "New Device - Proposed Settings": "new_proposed",
+        "Existing Device - Proposed Settings": "existing_proposed",
+        "Existing Device - Existing Settings": "existing_existing",
+    }
     FAULT_CURRENT_INFO = [
         "LLLamp",
         "LGamp",
@@ -1564,11 +1569,6 @@ class ShortCircuitStudy:
         "X0pu",
         "Distance",
     ]
-    PROT_TYPE = {
-        "New Device - Proposed Settings": "new_proposed",
-        "Existing Device - Proposed Settings": "existing_proposed",
-        "Existing Device - Existing Settings": "existing_existing",
-    }
 
     def __init__(self):
         """Initialize study with default impedance, voltage, and fault parameters. Check for network loops."""
