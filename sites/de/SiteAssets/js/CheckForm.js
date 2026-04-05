@@ -482,28 +482,33 @@ function printDebugInfo () {
 
   var debugField = getF('DebugOutput');
   if (!debugField) return;
-  debugField.display = DEBUG ? display.visible : display.hidden;
+  try {
+    debugField.display = DEBUG ? display.visible : display.hidden;
 
-  var numFlags = objectKeys(LOGICS).length;
-  var debugText = '=== VISIBILITY STATES (BITMASK) ===\n';
-  debugText += padRight('Field', 13) + ' | ' + padRight('Value', 8) + ' | Binary\n';
-  debugText += '------------------------------------\n';
+    var numFlags = objectKeys(LOGICS).length;
+    var debugText = '=== VISIBILITY STATES (BITMASK) ===\n';
+    debugText += padRight('Field', 13) + ' | ' + padRight('Value', 8) + ' | Binary\n';
+    debugText += '------------------------------------\n';
 
-  for (var i = 0; i < VISIBILITY_KEYS.length; i++) {
-    var key = VISIBILITY_KEYS[i];
-    if (!visibilityStates.hasOwnProperty(key)) continue;
-    var val = visibilityStates[key];
-    var binary = padBinary(val, numFlags);
-    var chars = binary.split('').reverse();
-    var activeBits = [];
-    for (var b = 0; b < chars.length; b++) {
-      if (chars[b] === '1') activeBits.push(b);
+    for (var i = 0; i < VISIBILITY_KEYS.length; i++) {
+      var key = VISIBILITY_KEYS[i];
+      if (!visibilityStates.hasOwnProperty(key)) continue;
+      var val = visibilityStates[key];
+      var binary = padBinary(val, numFlags);
+      var chars = binary.split('').reverse();
+      var activeBits = [];
+      for (var b = 0; b < chars.length; b++) {
+        if (chars[b] === '1') activeBits.push(b);
+      }
+      debugText += padRight(key, 13) + ' | ' + padRight(activeBits.join(','), 8) + ' | ' + binary + '\n';
+      debugPrint('@printDebugInfo - visibilityStates[' + key + '] = ' + val);
     }
-    debugText += padRight(key, 13) + ' | ' + padRight(activeBits.join(','), 8) + ' | ' + binary + '\n';
-    debugPrint('@printDebugInfo - visibilityStates[' + key + '] = ' + val);
+
+    debugField.value = debugText;
+    debugPrint(debugText);
+  } catch (e) {
+    debugPrint('Error printing debug info: ' + e.message);
   }
-  debugField.value = debugText;
-  debugPrint(debugText);
 }
 
 function debugPrint (msg) {
@@ -584,20 +589,25 @@ function lockFields (fieldList) {
 
 // --- 12. Required Field Checks ---
 function checkRequiredFields (requiredFields) {
-  for (var i = 0; i < requiredFields.length; i++) {
-    var f = getF(requiredFields[i]);
-    if (!f) continue;
-    if (f.type === 'combobox' && String(f.value) === String(f.getItemAt(0, false))) {
-      debugPrint('@checkRequiredFields - ' + f.name + ' is still the combobox default');
-      return false;
+  try {
+    for (var i = 0; i < requiredFields.length; i++) {
+      var f = getF(requiredFields[i]);
+      if (!f) continue;
+      if ((f.type === 'combobox') && String(f.value) === String(f.getItemAt(0, false))) {
+        debugPrint('@checkRequiredFields - ' + f.name + ' is still the combobox default');
+        return false;
+      }
+      if ((f.display === display.visible) && (f.value === '' || f.value === 'Off')) {
+        debugPrint('@checkRequiredFields - ' + f.name + ' is empty or Off');
+        return false;
+      }
     }
-    if (f.display === display.visible && (f.value === '' || f.value === 'Off')) {
-      debugPrint('@checkRequiredFields - ' + f.name + ' is empty or Off');
-      return false;
-    }
+    debugPrint('@checkRequiredFields - All required fields filled: ' + requiredFields);
+    return true;
+  } catch (e) {
+    debugPrint('Error checking required fields: ' + e.message);
+    return false;
   }
-  debugPrint('@checkRequiredFields - All required fields filled: ' + requiredFields);
-  return true;
 }
 
 // FIX: original always ended with `readonly = false` regardless of pass/fail,
@@ -607,44 +617,64 @@ function checkEngineerRequired () {
   if (!isInitialized) initFields();
   var sig = getF('Signature - Engineer');
   if (!sig) return false;
-  sig.readonly = true;
+  if (!sig.readonly) sig.readonly = true;
   var ok = checkRequiredFields(RequiredFields) && checkRequiredFields(EngineerRequiredFields);
-  if (ok) { sig.readonly = false; doc.calculateNow(); }
-  debugPrint(ok ? 'Unlock Engineer Signature' : 'Lock Engineer Signature');
-  return ok;
+  if (ok) {
+    sig.readonly = false; doc.calculateNow();
+    debugPrint('Unlock Engineer Signature');
+    return true;
+  } else {
+    debugPrint('Lock Engineer Signature');
+    return false;
+  }
 }
 
 function checkCheckerRequired () {
   if (!isInitialized) initFields();
   var sig = getF('Signature - Checker');
   if (!sig) return false;
-  sig.readonly = true;
+  if (!sig.readonly) sig.readonly = true;
   var ok = checkRequiredFields(RequiredFields) && checkRequiredFields(CheckerRequiredFields);
-  if (ok) { sig.readonly = false; doc.calculateNow(); }
-  debugPrint(ok ? 'Unlock Checker Signature' : 'Lock Checker Signature');
-  return ok;
+  if (ok) {
+    sig.readonly = false; doc.calculateNow();
+    debugPrint('Unlock Checker Signature');
+    return true;
+  } else {
+    debugPrint('Lock Checker Signature');
+    return false;
+  }
 }
 
 function checkPRRequired () {
   if (!isInitialized) initFields();
   var sig = getF('Signature - Peer Reviewer');
   if (!sig) return false;
-  sig.readonly = true;
+  if (!sig.readonly) sig.readonly = true;
   var ok = checkRequiredFields(RequiredFields) && checkRequiredFields(PRRequiredFields);
-  if (ok) { sig.readonly = false; doc.calculateNow(); }
-  debugPrint(ok ? 'Unlock PR Signature' : 'Lock PR Signature');
-  return ok;
+  if (ok) {
+    sig.readonly = false; doc.calculateNow();
+    debugPrint('Unlock PR Signature');
+    return true;
+  } else {
+    debugPrint('Lock PR Signature');
+    return false;
+  }
 }
 
 function checkTLRequired () {
   if (!isInitialized) initFields();
   var sig = getF('Signature - TL');
   if (!sig) return false;
-  sig.readonly = true;
+  if (!sig.readonly) sig.readonly = true;
   var ok = checkRequiredFields(RequiredFields) && checkRequiredFields(TLRequiredFields);
-  if (ok) { sig.readonly = false; doc.calculateNow(); }
-  debugPrint(ok ? 'Unlock TL Signature' : 'Lock TL Signature');
-  return ok;
+  if (ok) {
+    sig.readonly = false; doc.calculateNow();
+    debugPrint('Unlock TL Signature');
+    return true;
+  } else {
+    debugPrint('Lock TL Signature');
+    return false;
+  }
 }
 
 // --- 13. Signature Change & Locking ---

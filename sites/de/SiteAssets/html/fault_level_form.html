@@ -7,6 +7,17 @@
   <meta name="author" content="Tang, Kan">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type="text/css">
+    :root {
+      --background-color: #fff;
+      --light-background: #e6e6e6;
+      --text-background: #e4e4e4;
+      --border-color: #222;
+      --inner-border: #555;
+      --text-frame: #bababa;
+      --text-body: #303030;
+      --highlight-color: #fa4616;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -15,20 +26,93 @@
     }
 
     body {
-      background: #ffffff;
+      background: var(--background-color);
       padding: 16px;
+      color: var(--text-body);
     }
 
     form {
       max-width: 680px;
       margin: 0 auto;
-      background: #ffffff;
+      background: var(--background-color);
+    }
+
+    input[name="customer_name"] {
+      width: 100%;
+      border: none;
+    }
+
+    .span-1 {
+      grid-column: span 1;
+    }
+
+    .span-2 {
+      grid-column: span 2;
+    }
+
+    .span-3 {
+      grid-column: span 3;
+    }
+
+    .row-1 {
+      min-height: max(24px, 2rem);
+      align-content: center;
+      align-items: center;
+    }
+
+    .row-1_5 {
+      height: 3rem;
+      align-content: center;
+
+    }
+
+    .row-2 {
+      height: 4rem;
+      align-content: center;
+
+    }
+
+    .row-4 {
+      height: 8rem;
+      align-content: center;
+    }
+
+    .row-5 {
+      height: 10rem;
+      align-content: center;
+
+    }
+
+    .row-6 {
+      height: 12rem;
+      align-content: center;
     }
 
     .header-container {
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
       margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-save-html {
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--text-background);
+      color: var(--text-body);
+    }
+
+    .btn-save-html:hover {
+      background: var(--light-background);
+    }
+
+    .btn-save-html:focus-visible {
+      outline: 2px solid var(--highlight-color);
+      outline-offset: 2px;
     }
 
     .header-logo {
@@ -36,7 +120,7 @@
     }
 
     .form-grid {
-      border: 5pt solid #000;
+      border: 6pt solid var(--border-color);
       display: grid;
       grid-template-columns: 1fr;
       grid-template-areas:
@@ -48,14 +132,14 @@
     }
 
     .zone {
-      border-top: 1pt solid #000;
+      border-top: 1px solid var(--inner-border);
       font-size: 0.9rem;
     }
 
     .zone-title {
       grid-area: title;
       border-top: 0;
-      background: #f36f6f;
+      background: var(--light-background);
       font-size: 1.3rem;
       font-weight: bold;
       text-align: center;
@@ -64,98 +148,115 @@
 
     .zone-info {
       grid-area: info;
-      background: #77c6b4;
-      border-top: 3pt solid #000;
+      background: var(--background-color);
+      border-top: 6pt solid var(--border-color);
       display: grid;
-      grid-template-columns: 31% 69%;
-      font-size: 10.5pt;
+      grid-template-columns: 30% 70%;
+      font-size: 0.9rem;
+    }
+
+    .info-label:has(label):first-of-type,
+    .info-value:has(input):nth-of-type(2) {
+      border-top: none;
     }
 
     .info-label,
     .info-value {
-      border-top: 1pt solid rgba(0, 0, 0, 0.45);
-      padding: 8px 10px;
-      min-height: 36px;
+      border-top: 1px solid var(--inner-border);
+    }
+
+    .info-value {
+      padding: 2px 10px;
     }
 
     .info-label {
       font-weight: bold;
-      border-right: 1pt solid rgba(0, 0, 0, 0.45);
-    }
-
-    .info-upstream-left {
-      min-height: 140px;
-    }
-
-    .info-upstream-right {
-      min-height: 140px;
+      border-right: 1px solid var(--inner-border);
+      padding: 5px 10px;
     }
 
     .radio-group {
-      margin-top: 8px;
       display: grid;
       row-gap: 6px;
       font-weight: normal;
+      text-wrap: pretty;
+      grid-template-columns: 20% 1fr;
+      align-items: center;
+      justify-items: center;
     }
 
     .radio-group label {
-      display: flex;
       gap: 7px;
-      align-items: flex-start;
       font-weight: normal;
       line-height: 1.2;
     }
 
+    .radio-group input[type="radio"]:checked {
+      border: 2px solid var(--text-body);
+      background-color: var(--text-frame);
+      box-shadow: inset 0 0 0 2px white;
+    }
+
     .radio-group input[type="radio"] {
-      width: 15px;
-      height: 15px;
-      margin-top: 1px;
-      accent-color: #222;
+      appearance: none;
+      width: 1.1em;
+      height: 1.1em;
+      border: 2px solid var(--text-frame);
+      border-radius: 50%;
+      margin-right: 0.5em;
+      vertical-align: middle;
     }
 
     .protection-top {
       display: grid;
-      grid-template-columns: auto minmax(170px, 1fr) auto minmax(90px, 120px);
-      gap: 6px;
+      grid-template-columns: minmax(25px, 15%) minmax(170px, 1fr) minmax(25px, 15%) minmax(90px, 120px);
+      gap: 5px;
       align-items: center;
-      margin-bottom: 8px;
+      padding: 3px 0px;
     }
 
+    .footer-value input,
+    .fault-row input,
+    .imp-row input,
+    .info-value input,
+    .info-value textarea,
     .protection-top select,
     .protection-top input,
     .settings-row textarea {
-      border: 1pt solid #8a8a8a;
-      background: #ffffff;
+      border: none;
+      background: var(--background-color);
       padding: 2px 5px;
-      font-size: 10pt;
+      font-size: 0.9rem;
       width: 100%;
     }
 
     .settings-row {
       display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 6px;
+      grid-template-columns: minmax(25px, 15%) 1fr;
+      gap: 5px;
       align-items: start;
+      padding: 3px 0px;
     }
 
-    .settings-row textarea {
-      min-height: 46px;
+    textarea {
       resize: none;
+      align-content: start !important;
     }
 
     .zone-fault {
       grid-area: fault;
-      background: #c67ad6;
-      border-top: 3pt solid #000;
+      background: var(--background-color);
+      border-top: 6pt solid var(--border-color);
       display: grid;
-      grid-template-columns: 31% 69%;
+      grid-template-columns: 30% 70%;
       font-size: 0.9rem;
     }
 
     .fault-left {
-      border-right: 1pt solid rgba(0, 0, 0, 0.55);
+      border-right: 4pt solid var(--border-color);
       display: grid;
       grid-template-columns: 1fr;
+
     }
 
     .fault-right {
@@ -165,12 +266,14 @@
 
     }
 
+    .fault-block-title.row-2 {
+      border-bottom: 4pt solid var(--border-color);
+    }
+
     .fault-block-title {
       grid-column: 1 / -1;
       text-align: center;
       font-weight: bold;
-      padding: 10px 8px 5px;
-      border-bottom: 1pt solid rgba(0, 0, 0, 0.5);
     }
 
     .fault-block-subtitle {
@@ -182,8 +285,16 @@
 
     .fault-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
+      grid-template-columns: minmax(30px, 15%) 1fr 1fr 1fr minmax(20px, 10%);
+      border-bottom: 1px solid var(--inner-border);
+      gap: 5px;
+      padding: 5px 10px;
+
+    }
+
+    .fault-row label,
+    .imp-row label {
+      font-weight: bold;
     }
 
     .fault-row div {
@@ -198,9 +309,8 @@
     .voltage-row {
       grid-column: 1 / -1;
       display: inline-grid;
-      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
       padding: 5px 10px;
-      font-size: 10.5pt;
+      font-size: 0.9rem;
       grid-template-columns: repeat(9, 1fr);
       flex-wrap: wrap;
       gap: 5px;
@@ -218,24 +328,34 @@
       white-space: nowrap;
     }
 
-    .voltage-row input[type="checkbox"] {
-      width: 14px;
-      height: 14px;
+    .voltage-row input[type="radio"] {
+      width: 0.9rem;
+      height: 0.9rem;
       margin: 0;
-      accent-color: #222;
+      border-radius: 50%;
+      border: none;
+      appearance: none;
+      border: 2px solid var(--text-frame);
+    }
+
+    .voltage-row input[type="radio"]:checked {
+      background-color: var(--text-frame);
+      box-shadow: inset 0 0 0 2px white;
+      border: 2px solid var(--text-body);
+
     }
 
     .imp-title {
       grid-column: 1 / -1;
       text-align: center;
-      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
+      border-bottom: 1px solid var(--inner-border);
       padding: 7px 10px;
+      border-top: 4pt solid var(--border-color);
     }
 
     .imp-row {
       grid-column: 1 / -1;
-      border-bottom: 1pt solid rgba(0, 0, 0, 0.45);
-      min-height: 33px;
+      border-bottom: 1px solid var(--inner-border);
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       flex-wrap: wrap;
@@ -243,17 +363,23 @@
       padding: 0 5px;
     }
 
-    .imp-row div[class="R1"],
-    .imp-row div[class="X1"],
-    .imp-row div[class="R0"],
-    .imp-row div[class="X0"] {
-      grid-column: 1 / span 1;
+    .imp-row:last-child,
+    .fault-row:last-child {
+      border-bottom: 0;
+    }
+
+    .imp-row .R1,
+    .imp-row .X1,
+    .imp-row .R0,
+    .imp-row .X0 {
+      grid-column: span 1;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      border-right: 1pt solid rgba(0, 0, 0, 0.45);
+      border-right: 1px solid var(--inner-border);
       height: 100%;
       align-items: center;
       gap: 5px;
+      padding: 0 5px;
     }
 
     .imp-row label[for="R1"],
@@ -263,25 +389,15 @@
       grid-column: 1 / span 1;
     }
 
-    .imp-row input[name="R1"],
-    .imp-row input[name="X1"],
-    .imp-row input[name="R0"],
-    .imp-row input[name="X0"] {
+    .fault-row input,
+    .imp-row input {
       grid-column: 2 / span 3;
-      border: none;
       font-size: 0.9rem;
+      text-align: right;
     }
 
     .imp-row span {
       grid-column: 5 / 6;
-    }
-
-    .imp-row div[class="R1"],
-    .imp-row div[class="X1"],
-    .imp-row div[class="R0"],
-    .imp-row div[class="X0"] {
-      grid-column: span 1;
-      padding: 0 5px;
     }
 
     .imp-row div:last-child {
@@ -290,47 +406,86 @@
 
     .zone-disclaimer {
       grid-area: disclaimer;
-      background: #6bc8ec;
-      border-top: 3pt solid #000;
+      background: var(--background-color);
+      border-top: 6pt solid var(--border-color);
       padding: 12px 14px;
       line-height: 1.45;
-      font-size: 10pt;
-    }
-
-    .zone-disclaimer a {
-      color: #1155cc;
+      font-size: 0.8rem;
+      background-color: var(--light-background);
     }
 
     .zone-footer {
       grid-area: footer;
-      background: #c7c4ea;
-      border-top: 3pt solid #000;
+      background: var(--background-color);
+      border-top: 6pt solid var(--border-color);
       display: grid;
       grid-template-columns: 80% 20%;
-      min-height: 118px;
     }
 
     .footer-main {
       display: grid;
-      grid-template-columns: 40% 60%;
-      grid-template-rows: repeat(3, minmax(36px, auto));
-      border-right: 1pt solid rgba(0, 0, 0, 0.45);
+      grid-template-columns: 37.5% 62.5%;
     }
 
     .footer-label,
     .footer-value {
-      border-top: 1pt solid rgba(0, 0, 0, 0.45);
-      padding: 8px 10px;
+      border-top: 1px solid var(--inner-border);
+      padding: 2px 10px;
     }
 
     .footer-label {
       font-weight: bold;
-      border-right: 1pt solid rgba(0, 0, 0, 0.45);
+      border-right: 1px solid var(--inner-border);
     }
 
     .footer-stamp {
-      background: #f7a167;
-      border-left: 4pt solid #c95f1c;
+      background: var(--background-color);
+      border-left: 6pt solid var(--border-color);
+    }
+
+    label {
+      font-size: 0.9rem;
+    }
+
+    .footer-label:first-child {
+      border-top: none;
+    }
+
+    .footer-value:has(input[name="engineer"]) {
+      display: inline-flex;
+      align-items: center;
+      border-top: none;
+      border-right: none;
+    }
+
+    #eng_suffix {
+      margin-left: 5px;
+      font-weight: bold;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Print / PDF: letter portrait, minimum practical margins; tuned to fit one page when possible */
+    @media print {
+      @page {
+        size: letter portrait;
+        margin: 0.15in;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
     }
   </style>
 </head>
@@ -338,118 +493,135 @@
 <body>
   <form action="#" method="post">
     <div class="header-container">
+      <div class="toolbar-actions ">
+        <button type="button" class="btn-save-html no-print" id="btn_save_filled_html"
+          title="Saves a copy of this page with your current entries in the file (unlike Ctrl+S, which only saves the blank template).">
+          Download filled form (HTML)
+        </button>
+        <button type="button" class="btn-save-html no-print" id="btn_print_form"
+          title="Opens the print dialog. Choose &quot;Save as PDF&quot; or your printer; page is styled for US Letter portrait with small margins. If a second page appears, enable &quot;Fit to page&quot; in the print dialog.">
+          Print / Save as PDF
+        </button>
+      </div>
+      <button type="submit" hidden aria-hidden="true" tabindex="-1">Submit</button>
       <img class="header-logo" src="../../SiteAssets/img/image001.jpg" alt="BC Hydro Logo">
     </div>
 
     <div class="form-grid">
-      <section class="zone zone-title">Fault Level Information for Primary Customers</section>
+      <section class="zone zone-title row-1_5">Fault Level Information for Primary Customers</section>
 
       <section class="zone zone-info">
-        <div class="info-label">Customer Name</div>
-        <div class="info-value">
-          <p id="customer_name"></p>
+        <div class="info-label row-1"><label for="customer_name">Customer Name</label></div>
+        <div class="info-value row-1">
+          <input type="text" id="customer_name" name="customer_name">
         </div>
-        <div class="info-label">Service Address</div>
-        <div class="info-value">
-          <p id="service_address"></p>
+        <div class="info-label row-1"><label for="service_address">Service Address</label></div>
+        <div class="info-value row-1">
+          <input type="text" id="service_address" name="service_address">
         </div>
-        <div class="info-label">Point used for Fault<br>Level Calculation</div>
-        <div class="info-value">
-          <p id="fault_location"></p>
-          <span id="fault_desc"></span>
+        <div class="info-label row-1_5"><label for="fault_location">Point Used for Fault Level Calculation</label>
         </div>
-        <div class="info-label info-upstream-left">
-          <p>Upstream Protection:</p>
-          <div class="radio-group">
-            <label><input type="radio" name="protection_type" id="radio_new_proposed">New Device - Proposed
-              Settings</label>
-            <label><input type="radio" name="protection_type" id="radio_existing_proposed">Existing Device - Proposed
-              Settings</label>
-            <label><input type="radio" name="protection_type" id="radio_existing_existing">Existing Device - Existing
-              Settings</label>
+        <div class="info-value row-1_5">
+          <textarea id="fault_location" name="fault_location" rows="2"></textarea>
+        </div>
+        <div class="info-label">
+          <div class="row-1">Upstream Protection:</div>
+          <div class="radio-group row-4">
+            <input type="radio" name="protection_type" id="radio_new_proposed" value="new_proposed" checked>
+            <label for="radio_new_proposed"> New Device - Proposed Settings</label>
+            <input type="radio" name="protection_type" id="radio_existing_proposed" value="existing_proposed">
+            <label for="radio_existing_proposed">Existing Device - Proposed Settings</label>
+            <input type="radio" name="protection_type" id="radio_existing_existing" value="existing_existing">
+            <label for="radio_existing_existing">Existing Device - Existing Settings</label>
           </div>
         </div>
-        <div class="info-value info-upstream-right">
-          <div class="protection-top">
+        <div class="info-value">
+          <div class="protection-top row-1">
             <span><strong>Type:</strong></span>
-            <select id="protection_device_type">
+            <select id="device_type">
               <option value="">-- Select --</option>
               <option value="SC Positrol Fuse">S&amp;C Positrol Fuse</option>
-              <option value="Recloser">Recloser</option>
-              <option value="Fuse">Fuse</option>
-              <option value="Sectionalizer">Sectionalizer</option>
-              <option value="Breaker">Breaker</option>
+              <option value="Recloser">S&amp;C SM-4 Fuse</option>
+              <option value="Fuse">Eaton Form6 Recloser</option>
+              <option value="Sectionalizer">S&amp;C 1000 Vista SWG</option>
+              <option value="Breaker">S&amp;C 2.0 Vista SWG</option>
+              <option value="Breaker">SEL-751 Relay</option>
+              <option value="Breaker">SEL-351S Relay</option>
               <option value="Other">Other</option>
             </select>
-            <span><strong>Device ID:</strong></span>
-            <input type="text" id="device_id" placeholder="">
+            <label for="device_id" class="row-1"><strong>Device #:</strong></label>
+            <input type="text" id="device_id" placeholder="" name="device_id">
           </div>
-          <div class="settings-row">
-            <span><strong>Settings:</strong></span>
-            <textarea id="settings_text"></textarea>
+          <div class="settings-row row-4">
+            <label for="settings_text"><strong>Settings:</strong></label>
+            <textarea id="settings_text" name="settings_text" rows="6"></textarea>
           </div>
         </div>
-        <div class="info-label">Date Issued:</div>
-        <div class="info-value">
-          <p id="date"></p>
+        <div class="info-label row-1"><label for="date_issued">Date Issued:</label></div>
+        <div class="info-value row-1">
+          <input type="date" id="date_issued" name="date_issued">
         </div>
       </section>
 
       <section class="zone zone-fault">
-        <div class="fault-left">
-          <div class="fault-block-title">Bolted Fault Current<span class="fault-block-subtitle">(Symmetrical
+        <div class="fault-left row-6">
+          <div class="fault-block-title row-2">Bolted Fault Current<span class="fault-block-subtitle">(Symmetrical
               Amps)</span></div>
-          <div class="fault-row">
-            <div>LLL:</div>
-            <div class="amp-val"><span id="LLL"></span> A</div>
+          <div class="fault-row row-1">
+            <label for="LLL">LLL:</label>
+            <input class="amp-val span-3" type="text" name="LLL" id="LLL">
+            <span>A</span>
           </div>
-          <div class="fault-row">
-            <div>LLG:</div>
-            <div class="amp-val"><span id="LLG"></span> A</div>
+          <div class="fault-row row-1">
+            <label for="LLG">LLG:</label>
+            <input class="amp-val span-3" type="text" name="LLG" id="LLG">
+            <span>A</span>
           </div>
-          <div class="fault-row">
-            <div>LL:</div>
-            <div class="amp-val"><span id="LL"></span> A</div>
+          <div class="fault-row row-1">
+            <label for="LL">LL:</label>
+            <input class="amp-val span-3" type="text" name="LL" id="LL">
+            <span>A</span>
           </div>
-          <div class="fault-row">
-            <div>LG:</div>
-            <div class="amp-val"><span id="LG"></span> A</div>
+          <div class="fault-row row-1">
+            <label for="LG">LG:</label>
+            <input class="amp-val span-3" type="text" name="LG" id="LG">
+            <span>A</span>
           </div>
         </div>
-        <div class="fault-right">
-          <div class="fault-block-title">Nominal System Voltage</div>
-          <div class="voltage-row">
+        <div class="fault-right row-6">
+          <div class="fault-block-title row-1">Nominal System Voltage</div>
+          <div class="voltage-row row-1">
             <span>3 ph:</span>
-            <label><input type="checkbox" id="v3_416">4.16 kV</label>
-            <label><input type="checkbox" id="v3_1247">12.47 kV</label>
-            <label><input type="checkbox" id="v3_2494">24.94 kV</label>
-            <label><input type="checkbox" id="v3_345">34.5 kV</label>
+            <label><input type="radio" id="v3_416" name="v3_voltage">4.16 kV</label>
+            <label><input type="radio" id="v3_1247" name="v3_voltage">12.47 kV</label>
+            <label><input type="radio" id="v3_2494" name="v3_voltage">24.94 kV</label>
+            <label><input type="radio" id="v3_345" name="v3_voltage">34.5 kV</label>
           </div>
-          <div class="voltage-row">
+          <div class="voltage-row row-1">
             <span>1 ph:</span>
-            <label><input type="checkbox" id="v1_24">2.4 kV</label>
-            <label><input type="checkbox" id="v1_72">7.2 kV</label>
-            <label><input type="checkbox" id="v1_144">14.4 kV</label>
-            <label><input type="checkbox" id="v1_1992">19.92 kV</label>
+            <label><input type="radio" id="v1_24" name="v1_voltage">2.4 kV</label>
+            <label><input type="radio" id="v1_72" name="v1_voltage">7.2 kV</label>
+            <label><input type="radio" id="v1_144" name="v1_voltage">14.4 kV</label>
+            <label><input type="radio" id="v1_1992" name="v1_voltage">19.92 kV</label>
           </div>
-          <div class="imp-title">Equivalent System Impedance at point of fault (Ohms)</div>
+          <div class="imp-title row-1">Equivalent System Impedance at Point of Fault (Ohms)</div>
           <div class="imp-row">
-            <div class="R1"> <label for="R1">R1:</label>
-              <input type="text" id="R1" name="R1" readonly>
+            <div class="R1 row-1"> <label for="R1">R1:</label>
+              <input type="text" id="R1" name="R1">
               <span>Ohms</span>
             </div>
-            <div class="X1"> <label for="X1">X1:</label>
-              <input type="text" id="X1" name="X1" readonly>
+            <div class="X1 row-1"> <label for="X1">X1:</label>
+              <input type="text" id="X1" name="X1">
               <span>Ohms</span>
             </div>
           </div>
           <div class="imp-row">
-            <div class="R0"><label for="R0">R0:</label>
-              <input type="text" id="R0" name="R0" readonly>
+            <div class="R0 row-1"><label for="R0">R0:</label>
+              <input type="text" id="R0" name="R0">
               <span>Ohms</span>
             </div>
             <div class="X0"><label for="X0">X0:</label>
-              <input type="text" id="X0" name="X0" readonly>
+              <input type="text" id="X0" name="X0">
               <span>Ohms</span>
             </div>
           </div>
@@ -470,97 +642,267 @@
 
       <section class="zone zone-footer">
         <div class="footer-main">
-          <div class="footer-label">BC Hydro Distribution Engineer</div>
-          <div class="footer-value"><span id="engineer"></span><span id="eng_suffix"></span></div>
-          <div class="footer-label">E-mail</div>
-          <div class="footer-value"><a id="email_link" href=""><span id="email_text">Email</span></a></div>
-          <div class="footer-label">Phone Number</div>
-          <div class="footer-value">
-            <p id="phone"></p>
+          <div class="footer-label row-1_5"><label for="engineer">BC Hydro Distribution Engineer</label></div>
+          <div class="footer-value row-1_5"><input type="text" id="engineer" name="engineer"><span
+              id="eng_suffix">P.Eng</span>
+          </div>
+          <div class="footer-label row-1"><label for="email_address">E-mail:</label></div>
+          <div class="footer-value row-1"><input type="email" id="email_address" name="email_address"></div>
+          <div class="footer-label row-1"><label for="phone_number">Phone Number:</label> </div>
+          <div class="footer-value row-1">
+            <input type="tel" id="phone_number" name="phone_number">
           </div>
         </div>
         <div class="footer-stamp"></div>
       </section>
     </div>
-    <button type="submit" hidden aria-hidden="true" tabindex="-1">Submit</button>
+
   </form>
 
   <script>
     const qp = new URLSearchParams(window.location.search);
 
     // Basic fields
-    document.getElementById("customer_name").textContent = qp.get("customer_name") || "";
-    document.getElementById("service_address").textContent = qp.get("service_address") || "";
-
+    const customerName = qp.get("customer_name") || "";
+    const serviceAddress = qp.get("service_address") || "";
     // Fault location
     const faultLocation = qp.get("fault_location") || "";
     const equipmentId = qp.get("equipment_id") || "";
     const networkId = qp.get("network_id") || "";
     const distance = qp.get("distance") || "";
+    const protectionType = qp.get("protection_type") || "";
+    const deviceType = qp.get("device_type") || "";
+    const deviceId = qp.get("device_id") || "";
+    const settingsText = qp.get("settings_text") || "";
+    const dateIssued = qp.get("date_issued") || "";
+    const engineer = qp.get("engineer") || "";
+    const emailAddress = qp.get("email_address") || "";
+    const phoneNumber = qp.get("phone_number") || "";
+    const LLL = qp.get("LLL") || "";
+    const LLG = qp.get("LLG") || "";
+    const LL = qp.get("LL") || "";
+    const LG = qp.get("LG") || "";
+    const R1 = qp.get("R1") || "";
+    const X1 = qp.get("X1") || "";
+    const R0 = qp.get("R0") || "";
+    const X0 = qp.get("X0") || "";
 
-    if (faultLocation) {
-      document.getElementById("fault_location").textContent = faultLocation;
-    } else if (equipmentId || networkId || distance) {
-      document.getElementById("fault_desc").textContent =
-        `Primary connection at ${equipmentId} on feeder ${networkId}, about ${distance} m away from substation`;
+    const customerNameEle = document.getElementById("customer_name");
+    const serviceAddressEle = document.getElementById("service_address");
+    const faultLocationEle = document.getElementById("fault_location");
+    const newProposedEle = document.getElementById("radio_new_proposed");
+    const existingProposedEle = document.getElementById("radio_existing_proposed");
+    const existingExistingEle = document.getElementById("radio_existing_existing");
+    const deviceTypeEle = document.getElementById("device_type");
+    const deviceIdEle = document.getElementById("device_id");
+    const settingsTextEle = document.getElementById("settings_text");
+    const dateIssuedEle = document.getElementById("date_issued");
+    const engineerEle = document.getElementById("engineer");
+    const emailAddressEle = document.getElementById("email_address");
+    const phoneNumberEle = document.getElementById("phone_number");
+    const LLLEle = document.getElementById("LLL");
+    const LLGEle = document.getElementById("LLG");
+    const LLEle = document.getElementById("LL");
+    const LGEle = document.getElementById("LG");
+    const R1Ele = document.getElementById("R1");
+    const X1Ele = document.getElementById("X1");
+    const R0Ele = document.getElementById("R0");
+    const X0Ele = document.getElementById("X0");
+
+    // Only overwrite fields when the URL has query params (avoids clearing values baked into a saved HTML file).
+    if (qp.toString()) {
+      customerNameEle.value = customerName || "";
+      serviceAddressEle.value = serviceAddress || "";
+      faultLocationEle.value = faultLocation || "";
+      newProposedEle.checked = protectionType === "new_proposed";
+      existingProposedEle.checked = protectionType === "existing_proposed";
+      existingExistingEle.checked = protectionType === "existing_existing";
+      deviceIdEle.value = deviceId || "";
+      settingsTextEle.value = settingsText || "";
+      dateIssuedEle.value = dateIssued || "";
+      LLLEle.value = LLL || "";
+      LLGEle.value = LLG || "";
+      LLEle.value = LL || "";
+      LGEle.value = LG || "";
+      R1Ele.value = R1 || "";
+      X1Ele.value = X1 || "";
+      R0Ele.value = R0 || "";
+      X0Ele.value = X0 || "";
+      engineerEle.value = engineer || "";
+      emailAddressEle.value = emailAddress || "";
+      phoneNumberEle.value = phoneNumber || "";
+      if (deviceTypeEle) {
+        for (const opt of deviceTypeEle.options) {
+          if (opt.innerText === deviceType) { opt.selected = true; break; }
+        }
+      }
+      const v3ph = qp.get("prefault") || "";
+      const v3Map = { "4.16": "v3_416", "12.47": "v3_1247", "24.94": "v3_2494", "34.5": "v3_345" };
+      if (v3Map[v3ph]) document.getElementById(v3Map[v3ph]).checked = true;
+      const v1Map = { "4.16": "v1_24", "12.47": "v1_72", "24.94": "v1_144", "34.5": "v1_1992" };
+      if (v1Map[v3ph]) document.getElementById(v1Map[v3ph]).checked = true;
     }
 
-    // Date
-    document.getElementById("date").textContent = qp.get("date") || "";
+    /** Build query string from current form values (matches keys used for hydration above). */
+    function buildFormSearchParams () {
+      var form = document.querySelector("form");
+      var params = new URLSearchParams();
+      if (!form) return params;
 
-    // Upstream protection radio
-    const protType = qp.get("protection_type") || "";
-    if (protType === "new_proposed") document.getElementById("radio_new_proposed").checked = true;
-    else if (protType === "existing_proposed") document.getElementById("radio_existing_proposed").checked = true;
-    else if (protType === "existing_existing") document.getElementById("radio_existing_existing").checked = true;
+      function setIfNonEmpty (key, val) {
+        if (val == null) return;
+        var s = String(val).trim();
+        if (s !== "") params.set(key, s);
+      }
 
-    // Device type dropdown
-    const devTypeVal = qp.get("protection_device_type") || "";
-    const sel = document.getElementById("protection_device_type");
-    if (devTypeVal) {
-      for (const opt of sel.options) {
-        if (opt.value === devTypeVal) { opt.selected = true; break; }
+      var textNames = [
+        "customer_name", "service_address", "fault_location", "device_id", "settings_text",
+        "date_issued", "engineer", "email_address", "phone_number",
+        "LLL", "LLG", "LL", "LG", "R1", "X1", "R0", "X0",
+      ];
+      for (var t = 0; t < textNames.length; t++) {
+        var el = form.elements[textNames[t]];
+        if (el) setIfNonEmpty(textNames[t], el.value);
+      }
+
+      var prot = form.querySelector('input[name="protection_type"]:checked');
+      if (prot) params.set("protection_type", prot.value);
+
+      if (deviceTypeEle && deviceTypeEle.selectedIndex >= 0) {
+        var opt = deviceTypeEle.options[deviceTypeEle.selectedIndex];
+        if (opt && opt.value !== "") params.set("device_type", opt.innerText);
+      }
+
+      var v3ToPrefault = { v3_416: "4.16", v3_1247: "12.47", v3_2494: "24.94", v3_345: "34.5" };
+      var v3c = form.querySelector('input[name="v3_voltage"]:checked');
+      if (v3c && v3ToPrefault[v3c.id]) params.set("prefault", v3ToPrefault[v3c.id]);
+
+      return params;
+    }
+
+    /** Push current form state into the address bar (shareable / bookmarkable) without reloading. */
+    function syncUrlFromForm () {
+      var params = buildFormSearchParams();
+      var qs = params.toString();
+      var path = window.location.pathname || "/";
+      var hash = window.location.hash || "";
+      var next = path + (qs ? "?" + qs : "") + hash;
+      if (next !== window.location.pathname + window.location.search + window.location.hash) {
+        history.replaceState(null, "", next);
       }
     }
 
-    // Device ID & Settings
-    document.getElementById("device_id").value = qp.get("device_id") || "";
-    document.getElementById("settings_text").value = qp.get("settings") || "";
+    var urlSyncTimer = null;
+    function scheduleUrlSync () {
+      if (urlSyncTimer) clearTimeout(urlSyncTimer);
+      urlSyncTimer = setTimeout(function () {
+        urlSyncTimer = null;
+        syncUrlFromForm();
+      }, 250);
+    }
 
-    // Voltage checkboxes — 3 ph
-    const v3Map = { "4.16": "v3_416", "12.47": "v3_1247", "24.94": "v3_2494", "34.5": "v3_345" };
-    const v3ph = qp.get("prefault") || "";
-    if (v3Map[v3ph]) document.getElementById(v3Map[v3ph]).checked = true;
+    var formEl = document.querySelector("form");
+    if (formEl) {
+      formEl.addEventListener("input", scheduleUrlSync);
+      formEl.addEventListener("change", function () {
+        syncUrlFromForm();
+      });
+    }
 
-    // Voltage checkboxes — 1 ph
-    const v1Map = { "2.4": "v1_24", "7.2": "v1_72", "14.4": "v1_144", "19.92": "v1_1992" };
-    const v1ph = qp.get("prefaultLN") || "";
-    if (v1Map[v1ph]) document.getElementById(v1Map[v1ph]).checked = true;
+    /**
+     * Ctrl+S / Save Page saves the original HTML source from the server, not live field values.
+     * This builds a snapshot where values are written into the markup so the downloaded file reopens with data filled in.
+     */
+    function findExportControl (exportRoot, liveEl) {
+      if (liveEl.id) {
+        return exportRoot.querySelector('[id="' + liveEl.id.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"]');
+      }
+      return null;
+    }
 
-    // Fault currents
-    document.getElementById("LLL").textContent = qp.get("LLL") || "";
-    document.getElementById("LLG").textContent = qp.get("LLG") || "";
-    document.getElementById("LL").textContent = qp.get("LL") || "";
-    document.getElementById("LG").textContent = qp.get("LG") || "";
+    function applyLiveValuesToExportNode (liveEl, cloneEl) {
+      if (!cloneEl) return;
+      var tag = liveEl.tagName.toLowerCase();
+      if (tag === "input") {
+        var t = (liveEl.type || "text").toLowerCase();
+        if (t === "checkbox" || t === "radio") {
+          if (liveEl.checked) cloneEl.setAttribute("checked", "checked");
+          else cloneEl.removeAttribute("checked");
+        } else if (t !== "file" && t !== "button" && t !== "submit" && t !== "reset") {
+          cloneEl.setAttribute("value", liveEl.value);
+        }
+      } else if (tag === "textarea") {
+        cloneEl.textContent = liveEl.value;
+      } else if (tag === "select") {
+        var opts = cloneEl.querySelectorAll("option");
+        var liveOpts = liveEl.querySelectorAll("option");
+        for (var o = 0; o < opts.length && o < liveOpts.length; o++) {
+          if (liveOpts[o].selected) opts[o].setAttribute("selected", "selected");
+          else opts[o].removeAttribute("selected");
+        }
+      }
+    }
 
-    // Impedances
-    document.getElementById("R1").textContent = qp.get("R1") || "";
-    document.getElementById("X1").textContent = qp.get("X1") || "";
-    document.getElementById("R0").textContent = qp.get("R0") || "";
-    document.getElementById("X0").textContent = qp.get("X0") || "";
+    /** Encode the header logo as a data URL so the saved file shows the image without relative paths. */
+    function headerLogoToDataUrl (imgEl) {
+      if (!imgEl || !imgEl.complete || imgEl.naturalWidth === 0) return null;
+      try {
+        var canvas = document.createElement("canvas");
+        canvas.width = imgEl.naturalWidth;
+        canvas.height = imgEl.naturalHeight;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(imgEl, 0, 0);
+        return canvas.toDataURL("image/jpeg", 0.92);
+      } catch (e) {
+        return null;
+      }
+    }
 
-    // Engineer
-    const engName = qp.get("engineer") || "";
-    document.getElementById("engineer").textContent = engName;
-    if (engName) document.getElementById("eng_suffix").textContent = ", P.Eng";
+    function downloadFilledHtmlSnapshot () {
+      var form = document.querySelector("form");
+      if (!form) return;
+      var exportRoot = document.documentElement.cloneNode(true);
+      var exportBtn = exportRoot.querySelector("#btn_save_filled_html");
+      if (exportBtn) exportBtn.remove();
 
-    // Email
-    const emailAddr = qp.get("email") || "";
-    document.getElementById("email_text").textContent = emailAddr;
-    document.getElementById("email_link").href = emailAddr ? `mailto:${emailAddr}` : "";
+      var liveLogo = document.querySelector(".header-logo");
+      var cloneLogo = exportRoot.querySelector(".header-logo");
+      if (liveLogo && cloneLogo) {
+        var dataUrl = headerLogoToDataUrl(liveLogo);
+        if (dataUrl) cloneLogo.setAttribute("src", dataUrl);
+      }
 
-    // Phone
-    document.getElementById("phone").textContent = qp.get("phone") || "";
+      var controls = form.querySelectorAll("input, select, textarea");
+      for (var i = 0; i < controls.length; i++) {
+        var liveEl = controls[i];
+        var cloneEl = findExportControl(exportRoot, liveEl);
+        applyLiveValuesToExportNode(liveEl, cloneEl);
+      }
+      // var scriptsOut = exportRoot.querySelectorAll("script");
+      // for (var j = scriptsOut.length - 1; j >= 0; j--) {
+      //   scriptsOut[j].parentNode.removeChild(scriptsOut[j]);
+      // }
+      var html = "<!DOCTYPE html>\n" + exportRoot.outerHTML;
+      var blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = `${serviceAddress}_${customerName}_fault_level_form_filled.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    var btnSaveFilled = document.getElementById("btn_save_filled_html");
+    if (btnSaveFilled) btnSaveFilled.addEventListener("click", downloadFilledHtmlSnapshot);
+
+    var btnPrintForm = document.getElementById("btn_print_form");
+    if (btnPrintForm) btnPrintForm.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.print();
+    });
+
   </script>
 </body>
 

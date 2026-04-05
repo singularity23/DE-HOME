@@ -1,10 +1,2 @@
-def addition(x):
-    return x**x
+a = {'A': [(<class 'cympy.dm.Section'>; '19328061', 12.52)], 'B': [], 'C': [(<class 'cympy.dm.Section'>; '2966848680', 25.49)]}
 
-
-lst = [1, 2, 3, 4]
-
-data = list(map(addition, lst))
-
-dct = dict(zip(lst, data))
-print(dct)

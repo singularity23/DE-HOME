@@ -122,6 +122,9 @@ except ImportError:
                 m = MockObject()
                 m.Unit = "m"
                 return m
+            @staticmethod
+            def ActivateRefresh(enabled):
+                pass
 
         class env:
             BasePower_AC_MVA = 100.0
@@ -154,10 +157,25 @@ except ImportError:
 
         @staticmethod
         def GetInputParameter(param):
-            return None
+            input_parameters = {
+                "Fault_Point": MockObject(),
+                "Source_R0": 0,
+                "Source_X0": 0,
+                "Source_R1": 1,
+                "Source_X1": 1,
+                "Source_RX": 0.900,
+                "New_Feeder": "No",
+                "Report_Location": ".",
+                "Source_Impedance": "No",
+            }
+
+            m = MockObject()
+            m.ID = "FP"
+            return input_parameters.get(param, None)
 
     class MockObject:
-        pass
+        def __init__(self):
+            self.ID = "FP"
 
     class MockDevice:
         def GetObjType(self):

@@ -123,5 +123,5 @@ if __name__ == "__main__":
     except Exception:
         traceback.print_exc()
     finally:
-      study.ActivateModifications(True)
+        study.ActivateModifications(True)
     print("Excution Time: {}s".format(time.time()-start))
