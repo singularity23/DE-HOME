@@ -1187,7 +1187,7 @@ class SourceEquivalent(BaseEquipment):
 class FaultPoint(BaseEquipment):
     """Study point with fault currents, impedances, and location (lat/long)."""
 
-    _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Fault%20Level%20Form.html"
+    _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/fault_level_form.html"
     PROT_TYPE = {
         "New Device - Proposed Settings": "new_proposed",
         "Existing Device - Proposed Settings": "existing_proposed",

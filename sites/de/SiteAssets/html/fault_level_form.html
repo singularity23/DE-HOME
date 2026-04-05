@@ -723,7 +723,6 @@
       existingProposedEle.checked = protectionType === "existing_proposed";
       existingExistingEle.checked = protectionType === "existing_existing";
       deviceIdEle.value = deviceId || "";
-      settingsTextEle.value = settingsText || "";
       dateIssuedEle.value = dateIssued || "";
       LLLEle.value = LLL || "";
       LLGEle.value = LLG || "";
@@ -747,7 +746,8 @@
       const v1Map = { "4.16": "v1_24", "12.47": "v1_72", "24.94": "v1_144", "34.5": "v1_1992" };
       if (v1Map[v3ph]) document.getElementById(v1Map[v3ph]).checked = true;
     }
-
+    const lines = settingsText.split("\\n"); // Normalize line breaks for consistent display and export.
+    settingsTextEle.value = lines.join("\n");
     /** Build query string from current form values (matches keys used for hydration above). */
     function buildFormSearchParams () {
       var form = document.querySelector("form");

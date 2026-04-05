@@ -276,7 +276,7 @@ class EmissionStudy:
 
 
 def FaultForm(LLL, LLG, LL, LG, PreFaultVolts, R1, X1, R0, X0):
-    _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Fault%20Level%20Form.html"
+    _PATH = r"https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/fault_level_form.html"
     PROT_TYPE = {
         "New Device - Proposed Settings": "new_proposed",
         "Existing Device - Proposed Settings": "existing_proposed",
