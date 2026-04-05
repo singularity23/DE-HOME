@@ -853,7 +853,7 @@
         canvas.height = imgEl.naturalHeight;
         var ctx = canvas.getContext("2d");
         ctx.drawImage(imgEl, 0, 0);
-        return canvas.toDataURL("image/jpeg", 0.92);
+        return canvas.toDataURL("image/jpeg", 0.99);
       } catch (e) {
         return null;
       }
@@ -887,8 +887,12 @@
       var blob = new Blob([html], { type: "text/html;charset=utf-8" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
+
+      var filename = `${serviceAddress}_${customerName}_fault_level_form_filled.html`;
+      document.querySelector("title").textContent = filename;
+
       a.href = url;
-      a.download = `${serviceAddress}_${customerName}_fault_level_form_filled.html`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
