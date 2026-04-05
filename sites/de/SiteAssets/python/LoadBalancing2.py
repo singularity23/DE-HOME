@@ -319,32 +319,41 @@ class LoadBalancing:
         """Lightweight repr — delegates heavy work to *_build_sections_summary*."""
         sections = self._build_sections_summary()
         lines = [f"Load Balancing has been run {self.counter} time(s)\n"]
-        query_headers = ["//[Gis] |O/H Primary|", "//[Gis] |U/G Primary|"]
-        query_lines = []
-        i = 0
+
         if sections:
             lines.append("Single phase sections after load transfer:\n")
-            query_lines.append("//where ")
             for phase, secs in sections.items():
                 lines.append(f"{self.separator}\n")
                 lines.append(f"{phase} Phase:\n")
                 for sec, cur in secs.items():
                     if sec != "empty":
-                        if i > 0:
-                            lines.append("//or ")
-                            i += 1
-
-                        query_lines.append(f"|System Id| = {sec.ID}")
-
                         lines.append(
                             "Section: {:<15}{:3}{:>7.2f}A\n".format(
                                 "[" + sec.ID + "]", "-", cur
                             )
                         )
+
+        return "\n//".join(lines)
+
+    def DADquery(self, picks: Dict) -> str:
+        query_headers = ["//[Gis] |O/H Primary|", "//[Gis] |U/G Primary|"]
+        query_lines = []
+
+        i = 0
+        query_lines.append("//where ")
+        if picks:
+            for phase, sections in picks.items():
+                if sections != []:
+                    for sec in sections:
+                        if sec != "empty":
+                            if i > 0:
+                                query_lines.append("//or ")
+                            i += 1
+                            query_lines.append(f"|System Id| = {sec[0].ID}")
+
         first = "\n".join([query_headers[0], *query_lines])
         second = "\n".join([query_headers[1], *query_lines])
-        self.DADquery = first + "\n//plus" + second
-        return "\n//".join(lines)
+        return f"{first}\n//\n{second}"
 
     # ------------------------------------------------------------------
     # Section discovery
@@ -811,7 +820,7 @@ class LoadBalancing:
         _log(file, self.separator)
 
         _log(file, "DAD Query:\n")
-        for q in self.DADquery.split("//"):
+        for q in self.DADquery(picks).split("//"):
             _log(file, q.strip())
 
         pst_num = study.GetModificationsCount()

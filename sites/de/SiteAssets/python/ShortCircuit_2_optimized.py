@@ -20,7 +20,7 @@ import textwrap
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Tuple, Optional, Any, Callable
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 from abc import ABC, abstractmethod
 
 try:
@@ -122,6 +122,7 @@ except ImportError:
                 m = MockObject()
                 m.Unit = "m"
                 return m
+
             @staticmethod
             def ActivateRefresh(enabled):
                 pass
@@ -1273,11 +1274,13 @@ class FaultPoint(BaseEquipment):
             "Customer_Name",
             "Service_Address",
             "Fault_Location",
-            "Equipment_ID",
-            "Protection",
+            "Protection_Type",
+            "Device_Type",
+            "Device_ID",
+            "Settings_Text",
             "Engineer",
-            "Email",
-            "Phone",
+            "Email_Address",
+            "Phone_Number",
             "Primary_Form",
         ]
 
@@ -1286,8 +1289,10 @@ class FaultPoint(BaseEquipment):
             customerName,
             serviceAddress,
             faultLocation,
-            EquipmentID,
-            protection,
+            protectionType,
+            deviceType,
+            deviceID,
+            settings,
             engineer,
             email,
             phone,
@@ -1301,32 +1306,33 @@ class FaultPoint(BaseEquipment):
         _prefaultLN = round(self.data["PrefaultVoltage"] / math.sqrt(3), 2)
         _networkID = networkID.replace("_", " ")
 
-        variables = [
-            f"customer_name={quote(customerName)}",
-            f"service_address={quote(serviceAddress)}",
-            f"fault_location={faultLocation}",
-            f"equipment_id={EquipmentID}",
-            f"network_id={_networkID}",
-            f"distance={'{:0.0f}'.format(self.data['Distance'])}",
-            f"protection={quote(protection)}",
-            f"date={_date}",
-            f"LLL={int(round(self.data['LLLamp'], -2))}",
-            f"LLG={int(round(self.data['LLGamp'], -2))}",
-            f"LL={int(round(self.data['LLamp'], -2))}",
-            f"LG={int(round(self.data['LGamp'], -2))}",
-            f"R1={'{:.4f}'.format(self.data['R1ohm'])}",
-            f"X1={'{:.4f}'.format(self.data['X1ohm'])}",
-            f"R0={'{:.4f}'.format(self.data['R0ohm'])}",
-            f"X0={'{:.4f}'.format(self.data['X0ohm'])}",
-            f"prefault={self.data['PrefaultVoltage']}",
-            f"prefaultLN={_prefaultLN}",
-            f"engineer={engineer}",
-            f"email={email}",
-            f"phone={phone}",
-        ]
+        _params = {
+            "customer_name": customerName,
+            "service_address": serviceAddress,
+            "fault_location": faultLocation,
+            "protection_type": self.PROT_TYPE.get(protectionType, ""),
+            "device_type": deviceType,
+            "device_id": deviceID,
+            "settings_text": settings,
+            "engineer": engineer,
+            "email_address": email,
+            "phone_number": phone,
+            "date_issued": _date,
+            "LLL": int(round(self.data["LLamp"], -2)),
+            "LLG": int(round(self.data["LLGamp"], -2)),
+            "LL": int(round(self.data["LLLamp"], -2)),
+            "LG": int(round(self.data["LGamp"], -2)),
+            "R1": "{:.4f}".format(self.data["R1ohm"]),
+            "X1": "{:.4f}".format(self.data["X1ohm"]),
+            "R0": "{:.4f}".format(self.data["R0ohm"]),
+            "X0": "{:.4f}".format(self.data["X0ohm"]),
+            "prefault": self.data["PrefaultVoltage"],
+        }
 
-        link = self._PATH + "?" + "&".join(variables)
-        print(link)
+        query_string = urlencode(_params, quote_via=quote)
+
+        link = f"{self._PATH}?{query_string}"
+
         ChromeBrowser.open_url(link)
 
 
@@ -1558,6 +1564,11 @@ class ShortCircuitStudy:
         "X0pu",
         "Distance",
     ]
+    PROT_TYPE = {
+        "New Device - Proposed Settings": "new_proposed",
+        "Existing Device - Proposed Settings": "existing_proposed",
+        "Existing Device - Existing Settings": "existing_existing",
+    }
 
     def __init__(self):
         """Initialize study with default impedance, voltage, and fault parameters. Check for network loops."""
