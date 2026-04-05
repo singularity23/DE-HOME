@@ -262,7 +262,7 @@ class LoadBalancing:
         self.study_points: List[str] = []
         self.sections_list: List[Dict] = []
         self.new_sections_list: List[Dict] = []
-        self.section_from_nodes: Dict = {}
+        self.DADquery: List[str] = []
 
     def _initialize_study_points(self) -> None:
         self.study_points = [
@@ -319,39 +319,32 @@ class LoadBalancing:
         """Lightweight repr — delegates heavy work to *_build_sections_summary*."""
         sections = self._build_sections_summary()
         lines = [f"Load Balancing has been run {self.counter} time(s)\n"]
+        query_headers = ["//[Gis] |O/H Primary|", "//[Gis] |U/G Primary|"]
+        query_lines = []
+        i = 0
         if sections:
             lines.append("Single phase sections after load transfer:\n")
+            query_lines.append("//where ")
             for phase, secs in sections.items():
                 lines.append(f"{self.separator}\n")
                 lines.append(f"{phase} Phase:\n")
                 for sec, cur in secs.items():
                     if sec != "empty":
+                        if i > 0:
+                            lines.append("//or ")
+                            i += 1
+
+                        query_lines.append(f"|System Id| = {sec.ID}")
+
                         lines.append(
                             "Section: {:<15}{:3}{:>7.2f}A\n".format(
                                 "[" + sec.ID + "]", "-", cur
                             )
                         )
+        first = "\n".join([query_headers[0], *query_lines])
+        second = "\n".join([query_headers[1], *query_lines])
+        self.DADquery = first + "\n//plus" + second
         return "\n//".join(lines)
-
-    def _DADquery(self, picks: Dict = None) -> str:
-
-        headers = ["//[Gis] |O/H Primary|", "//[Gis] |U/G Primary|"]
-
-        lines = []
-        lines.append(f"//where ")
-        i = 0
-        if picks:
-            for phase, secs in picks.items():
-                if secs != []:
-                    if i > 0:
-                        lines.append("//or ")
-                    i += 1
-                    sec, cur = secs[0]
-                    lines.append(f"|System Id| = {sec.ID}")
-
-        first = "\n".join([headers[0], *lines])
-        second = "\n".join([headers[1], *lines])
-        return first + "\n//plus" + second
 
     # ------------------------------------------------------------------
     # Section discovery
@@ -818,8 +811,9 @@ class LoadBalancing:
         _log(file, self.separator)
 
         _log(file, "DAD Query:\n")
-        for q in self._DADquery(picks).split("//"):
+        for q in self.DADquery.split("//"):
             _log(file, q.strip())
+
         pst_num = study.GetModificationsCount()
         study.Undo(pst_num - pre_num)
 
