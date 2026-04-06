@@ -739,7 +739,9 @@
       engineerEle.value = engineer || "";
       emailAddressEle.value = emailAddress || "";
       phoneNumberEle.value = phoneNumber || "";
-      settingsTextEle.value = settingsText || "";
+
+      const lines = settingsText.split("\\n").map(l => l.trim()).filter(l => l);
+      settingsTextEle.value = lines.join("\n") || "";
 
       if (deviceTypeEle) {
         for (const opt of deviceTypeEle.options) {
