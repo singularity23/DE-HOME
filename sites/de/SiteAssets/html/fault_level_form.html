@@ -133,7 +133,6 @@
     }
 
     .zone {
-      border-top: 1px solid var(--inner-border);
       font-size: 0.9rem;
     }
 
@@ -144,13 +143,12 @@
       font-size: 1.3rem;
       font-weight: bold;
       text-align: center;
-      padding: 12px 10px;
+      border-bottom: 6pt solid var(--border-color);
     }
 
     .zone-info {
       grid-area: info;
       background: var(--background-color);
-      border-top: 6pt solid var(--border-color);
       display: grid;
       grid-template-columns: 30% 70%;
       font-size: 0.9rem;
@@ -167,7 +165,7 @@
     }
 
     .info-value {
-      padding: 5px 10px;
+      padding: 5px 5px;
     }
 
     .info-label {
@@ -231,6 +229,11 @@
       width: 100%;
       text-wrap-style: pretty;
     }
+
+    .protection-top select {
+      padding: 2px 2px;
+    }
+
 
     .settings-row {
       display: grid;
@@ -411,6 +414,8 @@
       grid-area: disclaimer;
       background: var(--background-color);
       border-top: 6pt solid var(--border-color);
+      border-bottom: 6pt solid var(--border-color);
+
       padding: 5px 10px;
       line-height: 1.45;
       font-size: 0.8rem;
@@ -420,7 +425,6 @@
     .zone-footer {
       grid-area: footer;
       background: var(--background-color);
-      border-top: 6pt solid var(--border-color);
       display: grid;
       grid-template-columns: 80% 20%;
     }
@@ -553,7 +557,7 @@
               <option value="Breaker">SEL-351S Relay</option>
               <option value="Other">Other</option>
             </select>
-            <label for="device_id" class="row-1"><strong>Device #:</strong></label>
+            <label for="device_id"><strong>Device #:</strong></label>
             <input type="text" id="device_id" placeholder="" name="device_id">
           </div>
           <div class="settings-row row-4">
