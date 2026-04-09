@@ -230,6 +230,17 @@
       text-wrap-style: pretty;
     }
 
+    .footer-value input:focus-visible,
+    .fault-row input:focus-visible,
+    .imp-row input:focus-visible,
+    .info-value input:focus-visible,
+    .info-value textarea:focus-visible,
+    .protection-top select:focus-visible,
+    .protection-top input:focus-visible,
+    .settings-row textarea:focus-visible {
+      outline-style: dashed;
+    }
+
     .protection-top select {
       padding: 2px 1px;
     }
@@ -478,6 +489,16 @@
       gap: 8px;
     }
 
+    .footer-stamp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background-color: var(--light-background);
+    }
+
     /* Print / PDF: letter portrait, minimum practical margins; tuned to fit one page when possible */
     @media print {
       @page {
@@ -663,13 +684,16 @@
             <input type="tel" id="phone_number" name="phone_number">
           </div>
         </div>
-        <div class="footer-stamp"></div>
+        <div class="footer-stamp">
+          <p class="no-print">Seal</p>
+        </div>
       </section>
     </div>
 
   </form>
 
   <script>
+
     const qp = new URLSearchParams(window.location.search);
 
     // Basic fields
@@ -923,6 +947,8 @@
       e.preventDefault();
       window.print();
     });
+
+
 
   </script>
 </body>

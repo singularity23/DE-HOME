@@ -1,7 +1,7 @@
 {
     "vscode-edge-devtools.headless": false,
     "editor.fontFamily": "JetBrains Mono Light",
-    "liveServer.settings.port": 5588,
+    "liveServer.settings.port": 5589,
     "editor.wordWrap": "wordWrapColumn",
     "editor.defaultFormatter": "ms-python.black-formatter",
     "files.autoSave": "onWindowChange",

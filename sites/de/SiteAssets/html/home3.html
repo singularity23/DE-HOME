@@ -9,9 +9,39 @@
   <link rel="stylesheet" type="text/css" href="/sites/de/SiteAssets/css/default.css">
   <link rel="stylesheet" type="text/css" href="/sites/de/SiteAssets/css/default2_copy.css">
   <link rel="stylesheet" type="text/css" href="/sites/de/SiteAssets/fonts/adobe-clean/stylesheet.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100&icon_names=favorite,home,search,settings"
-    rel="stylesheet">
+  <style>
+    .sr-only {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      padding: 10px 12px;
+      background: #fff;
+      color: #171717;
+      border: 1px solid #E5E5E5;
+      border-radius: 10px;
+      z-index: 9999;
+      transform: translateY(-160%);
+      transition: transform 180ms ease-out;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+      outline: 3px solid rgba(23, 23, 23, 0.35);
+      outline-offset: 2px;
+    }
+  </style>
   <script src="/sites/de/SiteAssets/js/default.js"></script>
   <script src="/sites/de/SiteAssets/js/default2_copy.js" defer></script>
   <!-- Google tag (gtag.js) -->
@@ -19,7 +49,7 @@
   <script>
 
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
+    function gtag () { dataLayer.push(arguments); }
     gtag('js', new Date());
 
     gtag('config', 'G-MYQM69XE6F');
@@ -27,6 +57,7 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
   <div class="dummy"></div>
   <div class="DEhome">
     <div class="container" id="loader">
@@ -37,14 +68,24 @@
 
     <div class="DEcontainer" id="DEcontainer">
       <header>
-        <div class="search-container">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" id="searchInput" placeholder="Search for websites...">
+        <div class="search-container" role="search">
+          <span class="search-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+          </span>
+          <label class="sr-only" for="searchInput">Search websites</label>
+          <input type="search" class="search-input" id="searchInput" placeholder="Search for websites..."
+            autocomplete="off" spellcheck="false">
         </div>
       </header>
-      <div id="categoriesContainer">
-        <!-- Categories will be dynamically inserted here -->
-      </div>
+      <main id="main">
+        <div id="categoriesContainer" aria-live="polite">
+          <!-- Categories will be dynamically inserted here -->
+        </div>
+      </main>
       <footer>
         <p>Quick access to all DE related sites. Bookmark this page for easy access!</p>
       </footer>
