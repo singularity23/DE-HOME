@@ -5,23 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Distribution Engineering Check Form</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,600;0,14..32,700;1,14..32,400&display=swap"
     rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-    rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    /* StudioBlank — https://designmd.ai/chef/studioblank (minimal, flat, Inter + IBM Plex Mono) */
+    /* ---------- Optimized CSS ---------- */
     :root {
       --color-primary: rgb(50, 50, 50);
       --color-secondary: rgb(250, 250, 250);
@@ -33,27 +24,21 @@
       --color-medium: #ffb656;
       --color-error: #fa4616;
       --color-info: rgb(113, 113, 122);
-      --color-link: #0074a4;
       --header-bg: color-mix(in srgb, var(--color-secondary) 90%, var(--color-tertiary));
       --surface: #ffffff;
       --border: var(--color-tertiary);
-      --border-hard: var(--color-tertiary);
       --border-soft: var(--color-tertiary);
       --text: color-mix(in srgb, var(--color-primary) 80%, var(--surface-base));
       --text-muted: var(--color-info);
-      --muted: color-mix(in srgb, var(--color-tertiary) 10%, var(--surface));
       --muted-bg: var(--color-tertiary);
       --muted-border: var(--color-info);
       --accent: var(--color-primary);
-      --accent-light: var(--color-secondary);
-      --accent-border: var(--color-primary);
-      --warn: color-mix(in srgb, var(--color-link) 80%, var(--surface-inverse));
+      --warn: color-mix(in srgb, var(--color-warning) 50%, var(--surface-inverse));
       --warn-bg: color-mix(in srgb, var(--color-warning) 25%, var(--surface-base));
       --warn-border: var(--color-warning);
       --error: color-mix(in srgb, var(--color-error) 50%, var(--surface-inverse));
       --error-bg: color-mix(in srgb, var(--color-error) 10%, var(--surface-base));
       --error-border: var(--color-error);
-      --success: var(--color-success);
       --low: var(--color-success);
       --low-bg: color-mix(in srgb, var(--color-success) 14%, var(--surface-base));
       --low-border: var(--color-success);
@@ -65,11 +50,8 @@
       --medium-border: var(--color-medium);
       --danger: var(--color-error);
       --danger-bg: color-mix(in srgb, var(--color-error) 10%, var(--surface-base));
-      --radius: 0;
-      --radius-sm: 0;
       --selector-bg: var(--color-info);
       --bg: var(--color-secondary);
-
       --space-base: 16px;
       --space-page-y: var(--space-base);
       --space-page-x: var(--space-base);
@@ -78,8 +60,6 @@
       --space-inset-x: 15px;
       --space-cell-y: 5px;
       --space-cell-x: 15px;
-      --space-row-y: 10px;
-      --space-row-x: 15px;
       --gap-xs: 4px;
       --gap-sm: 8px;
       --gap-md: 10px;
@@ -87,9 +67,8 @@
       --touch-min: 36px;
     }
 
-
     .sr-only {
-      position: absolute !important;
+      position: absolute;
       width: 1px;
       height: 1px;
       padding: 0;
@@ -108,21 +87,15 @@
       background: var(--surface);
       color: var(--text);
       border: 1px solid var(--border);
-      border-radius: 0;
       z-index: 9999;
       transform: translateY(-160%);
-      transition: transform 180ms ease-out;
+      transition: transform 180ms;
     }
 
     .skip-link:focus {
       transform: translateY(0);
       outline: 2px solid var(--color-primary);
       outline-offset: 2px;
-    }
-
-    .pill-group label[disabled] {
-      opacity: 0.5;
-      pointer-events: none;
     }
 
     *,
@@ -134,68 +107,39 @@
     }
 
     body {
-      font-family: 'Roboto', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       font-weight: 300;
       font-size: 16px;
       line-height: 1.5;
       color: var(--text);
       min-height: 100vh;
       padding: var(--space-page-y) var(--space-page-x) var(--space-page-bottom);
-      max-width: 816px;
-      margin: 0 auto;
-      text-wrap-style: pretty;
+      background: var(--surface-base);
     }
 
-    strong {
-      color: var(--color-link);
-      text-decoration: underline;
-    }
-
-    code,
-    kbd,
-    pre,
-    .text-mono {
-      font-family: 'IBM Plex Mono', ui-monospace, monospace;
-      font-size: 13px;
-      font-weight: 400;
-    }
-
-    :where(a, button, input, select, textarea, [role='button'], [tabindex]):focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
-    }
-
-    :where(*:required):focus-within {
-      outline: 2px solid var(--color-error);
-    }
-
-    .required-field-underline {
-      width: 100%;
-      border-bottom: 1px solid red;
-    }
-
-    input.field-input:valid+.required-field-underline,
-    input.field-input:focus+.required-field-underline,
-    select.field-input:valid+.required-field-underline,
-    select.field-input:focus+.required-field-underline,
-    .role-selector:has(input[type='radio']:checked)+.required-field-underline,
-    .risk-row:has(.risk-btn.active)+.required-field-underline {
-      border-bottom-width: 0;
-    }
-
-    /* ── Layout ── */
     .shell {
       max-width: 860px;
       margin: 0 auto;
       animation: fadeUp 0.2s ease both;
     }
 
-    /* ── Header ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Header */
     .header {
       background: var(--surface-inverse);
       color: var(--color-secondary);
-      border-radius: 0;
-      border: 2px inset var(--border);
+      border: 2px solid var(--border);
       margin-bottom: var(--gap-lg);
       display: flex;
       align-items: center;
@@ -207,47 +151,32 @@
     .header-logo {
       width: 192px;
       background: var(--color-secondary);
-      border-radius: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
-    .header-group {
-      align-items: right;
-    }
-
-    .header-logo svg {
-      width: 28px;
-      height: 28px;
-    }
-
     .header-title {
-      font-family: 'Roboto', system-ui, sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 700;
       letter-spacing: -0.02em;
-      line-height: 1.2;
       text-align: right;
-      color: var(--surface);
     }
 
     .header-sub {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: 400;
       color: var(--color-tertiary);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       text-align: right;
-      color: var(--surface);
     }
 
-    /* ── Progress Bar ── */
+    /* Progress */
     .progress-strip {
       background: var(--surface);
       border: 2px solid var(--border);
-      border-radius: 0;
       padding: var(--space-inset-y) var(--space-inset-x);
       margin-bottom: var(--gap-lg);
       display: flex;
@@ -257,150 +186,53 @@
 
     .progress-strip.completed {
       background: color-mix(in srgb, var(--low-bg) 30%, #fff);
-      border: 2px solid color-mix(in srgb, var(--low-border) 60%, #fff);
-    }
-
-    .progress-strip.completed .progress-label,
-    .progress-strip.completed .progress-pct {
-      color: color-mix(in srgb, var(--low) 80%, #000);
-    }
-
-    .progress-strip.completed .progress-track::-webkit-progress-value {
-      background: var(--low);
-    }
-
-    .progress-strip.completed .progress-track::-moz-progress-bar {
-      background: var(--low);
+      border-color: color-mix(in srgb, var(--low-border) 60%, #fff);
     }
 
     .progress-label {
       font-size: 0.75rem;
       font-weight: 600;
-      font-family: 'Roboto', system-ui, sans-serif;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--text-muted);
-      white-space: nowrap;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 5px;
+      background: var(--border);
+      border: none;
+      appearance: none;
+    }
+
+    .progress-track::-webkit-progress-bar {
+      background: var(--border);
+    }
+
+    .progress-track::-webkit-progress-value {
+      background: var(--accent);
+      transition: width 0.2s;
+    }
+
+    .progress-track::-moz-progress-bar {
+      background: var(--accent);
     }
 
     .progress-pct {
       font-size: 0.75rem;
       font-weight: 600;
-      color: var(--text-muted);
-      font-family: 'Roboto', system-ui, sans-serif;
+      color: var(--accent);
       min-width: 36px;
       text-align: right;
     }
 
-    .progress-track {
-      flex: 1;
-      height: 8px;
-      background: var(--border);
-      border-radius: 0;
-      overflow: hidden;
-      appearance: none;
-      -webkit-appearance: none;
-      border: none;
-      border-radius: 999px;
-    }
-
-    .progress-track::-webkit-progress-bar {
-      background: var(--border);
-      border-radius: 0;
-      overflow: hidden;
-    }
-
-    .progress-track::-webkit-progress-value {
-      background: var(--accent);
-      border-radius: 0;
-      transition: width 0.2s ease;
-    }
-
-    .progress-track::-moz-progress-bar {
-      background: var(--accent);
-      border-radius: 0;
-      transition: width 0.2s ease;
-    }
-
-    /* ── Card ── */
+    /* Cards & Sections */
     .card {
       border: 2px solid var(--border);
-      border-radius: 0;
       margin-bottom: var(--gap-lg);
-      overflow: hidden;
       background: var(--surface);
     }
 
-    .card.role {
-      padding-bottom: 0;
-    }
-
-    .card.role .sec-head {
-      border-bottom: none;
-    }
-
-    /* ── Role Selector ── */
-    .role-selector {
-      display: inline-grid;
-      border-radius: 0;
-      overflow: hidden;
-      min-height: var(--touch-min);
-      grid-auto-columns: minmax(35%, 1fr) minmax(65%, 1fr);
-      grid-auto-flow: column;
-      box-sizing: border-box;
-    }
-
-    .role-selector input[type='radio'] {
-      display: none;
-    }
-
-    .role-selector label:first-of-type:not(:checked) {
-      border-right: 1px solid var(--border-soft);
-    }
-
-    .role-selector label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      font-family: 'Roboto', system-ui, sans-serif;
-      letter-spacing: 0.06em;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: color 0.15s ease, background 0.15s ease;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--header-bg);
-      text-transform: uppercase;
-
-    }
-
-    .role-selector input[type='radio']:not(:checked)+label {
-      border: 1px solid var(--border-soft);
-    }
-
-    .role-selector input[type='radio']:not(:checked)+label:hover {
-      background: var(--color-info);
-      color: var(--color-secondary);
-      border: 1px solid var(--color-info);
-    }
-
-    .role-selector input[type='radio']:checked+label {
-      background: var(--color-tertiary);
-      border: 1px solid var(--color-info);
-      color: var(--color-info);
-    }
-
-    .role-selector label:hover {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .role-selector input[type='radio']:checked+label:hover {
-      color: var(--color-secondary);
-    }
-
-    /* ── Section Header ── */
     .sec-head {
       display: flex;
       align-items: center;
@@ -409,16 +241,7 @@
       cursor: pointer;
       border-bottom: 1px solid var(--border-soft);
       user-select: none;
-      gap: var(--gap-md);
       background: var(--header-bg);
-    }
-
-    .sec-head[aria-label='Your role'] {
-      border-bottom: none;
-    }
-
-    .sec-head[role='button'] {
-      touch-action: manipulation;
     }
 
     .sec-head:hover {
@@ -435,16 +258,14 @@
     .sec-num {
       width: 28px;
       height: 28px;
-      border-radius: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 0.75rem;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
       border: 1px solid var(--border);
     }
 
@@ -455,7 +276,6 @@
     }
 
     .sec-title {
-      font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.875rem;
       font-weight: 700;
       letter-spacing: 0.04em;
@@ -463,16 +283,13 @@
     }
 
     .sec-badge {
-      font-family: 'Roboto', system-ui, sans-serif;
       min-width: max-content;
       font-size: 0.75rem;
-      padding: 5px 10px;
-      border-radius: 0;
+      padding: 4px 10px;
       background: var(--color-secondary);
       color: var(--color-primary);
       font-weight: 600;
       border: 1px solid var(--border);
-      letter-spacing: 0.04em;
     }
 
     .sec-right {
@@ -483,67 +300,31 @@
       justify-content: flex-end;
     }
 
-    .sec-right:has(.role-selector) {
-      justify-content: flex-start;
-    }
-
-    /* .sec-right .btn-clear {
-      background: var(--bg);
-      border-color: var(--high-bg);
-      color: var(--high-bg);
-    } */
-
-    /* .sec-right .btn-clear:hover {
-      background: var(--high-bg);
-      border: 1px solid var(--high-border);
-      color: var(--color-secondary);
-    } */
-
     .chevron {
       width: 18px;
       height: 18px;
       color: var(--text-muted);
-      transition: transform 0.2s ease;
+      transition: transform 0.2s;
     }
 
     .sec-head.open .chevron {
       transform: rotate(180deg);
     }
 
-    /* ── Section Body ── */
     .sec-body {
       display: none;
-      padding: 0;
     }
 
     .sec-body.open {
       display: block;
     }
 
-    .sec-banner {
-      padding: var(--space-inset-y) var(--space-inset-x);
-      border-bottom: 1px solid var(--border-soft);
-      background: var(--surface);
-    }
-
-    .sec-banner .notice {
-      margin: 0;
-    }
-
-    .sec-content {
-      padding-top: var(--gap-xs);
-    }
-
-    /* ── Meta Grid ── */
+    /* Meta Grid */
     .meta-grid {
       display: grid;
       padding-bottom: var(--gap-md);
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      grid-template-areas:
-        'title title title title title revision'
-        'role role role level level level'
-        'deliverable deliverable deliverable review review review'
-        'engineer engineer engineer checker checker checker';
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-areas: "title title title title title revision" "role role role level level level" "deliverable deliverable deliverable review review review" "engineer engineer engineer checker checker checker";
     }
 
     .work-title-cell {
@@ -578,108 +359,41 @@
       grid-area: level;
     }
 
-    .review-date-cell {
-      grid-area: date;
-    }
-
     @media (max-width: 600px) {
       .meta-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: 1fr;
       }
     }
 
     .meta-cell {
       display: flex;
       flex-direction: column;
-      background: var(--surface);
+      padding: var(--space-cell-y) var(--space-cell-x);
     }
 
-    .meta-cell:nth-child(2n) {
-      padding: 5px 15px 5px 10px;
-    }
-
-    .meta-cell:nth-child(2n-1) {
-      padding: 5px 10px 5px 15px;
-    }
-
-    @media (max-width: 600px) {
-      .meta-cell.span2 {
-        grid-column: span 1;
-      }
-    }
-
-    /* ── Field ── */
-    .meta-grid .field-label,
-    .sig-cell .field-label,
-    .comments-cell .field-label {
-      display: block;
+    .field-label {
       font-size: 0.75rem;
       font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
       color: var(--text-muted);
-      font-family: 'Roboto', system-ui, sans-serif;
-    }
-
-    .field-error {
-      margin-top: 6px;
-      font-size: 0.75rem;
-      color: var(--danger);
-    }
-
-    .field-input[aria-invalid='true'] {
-      border-color: var(--color-error);
-    }
-
-    .field-input[type='date'] {
-      padding: 7px 7px;
-      min-height: var(--touch-min);
-    }
-
-    .field-input::placeholder {
-      color: var(--border-soft);
-      font-weight: 400;
+      margin-bottom: var(--gap-xs);
     }
 
     .field-input {
       width: 100%;
-      padding: var(--gap-xs) var(--gap-md);
+      padding: var(--gap-sm) var(--gap-md);
       border: 1px solid var(--border);
-      border-radius: 0;
-      font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.875rem;
-      font-weight: 400;
-      letter-spacing: 0.01em;
-      color: var(--text);
       background: var(--surface);
-      transition: border-color 0.15s ease;
-      appearance: none;
-      -webkit-appearance: none;
       min-height: var(--touch-min);
-      box-sizing: border-box;
     }
 
     .field-input:focus {
       outline: none;
       border-color: var(--accent);
-      background: var(--surface);
     }
 
-    select.field-input {
-      cursor: pointer;
-      min-height: var(--touch-min);
-
-    }
-
-    select.field-input:invalid {
-      color: var(--color-tertiary);
-    }
-
-    select.field-input option {
-      color: var(--text);
-      /* normal options in dropdown */
-    }
-
-    /* ── Risk Toggle ── */
+    /* Risk Buttons */
     .risk-row {
       display: flex;
     }
@@ -687,109 +401,52 @@
     .risk-btn {
       flex: 1;
       padding: var(--gap-sm) var(--gap-xs);
-      border-radius: 0;
       background: var(--header-bg);
-      font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.75rem;
       font-weight: 600;
-      letter-spacing: 0.06em;
       cursor: pointer;
-      text-align: center;
-      color: var(--text-muted);
-      min-height: var(--touch-min);
-      border-top: 1px solid var(--border-soft);
-      border-bottom: 1px solid var(--border-soft);
-      text-transform: uppercase;
-      box-sizing: border-box;
-
+      border: 1px solid var(--border-soft);
+      border-left: none;
     }
 
-    .risk-btn:hover {
-      border-color: var(--text-muted);
-      color: var(--text);
+    .risk-btn:first-child {
+      border-left: 1px solid var(--border-soft);
     }
 
-    .risk-btn[data-risk='low'].active {
+    .risk-btn.active[data-risk="low"] {
       background: var(--low-bg);
-      border: 1px solid var(--low-border);
+      border-color: var(--low-border);
       color: var(--low);
     }
 
-    .risk-btn[data-risk='low']:hover {
-      color: var(--low-bg);
-      border-color: var(--low-border);
-      background: var(--low);
-    }
-
-    .risk-btn[data-risk='medium'].active {
+    .risk-btn.active[data-risk="medium"] {
       background: var(--medium-bg);
-      border: 1px solid var(--medium-border);
+      border-color: var(--medium-border);
       color: var(--medium);
     }
 
-    .risk-btn[data-risk='medium']:hover {
-      color: var(--medium-bg);
-      border-color: var(--medium-border);
-      background: var(--medium);
-    }
-
-    .risk-btn[data-risk='medium']:not(.active) {
-      border-left: 1px solid var(--border-soft);
-      border-right: 1px solid var(--border-soft);
-    }
-
-    .risk-btn[data-risk='high']:not(.active) {
-      border-right: 1px solid var(--border-soft);
-      border-left: 0px solid var(--border-soft);
-    }
-
-    .risk-btn[data-risk='low']:not(.active) {
-      border-left: 1px solid var(--border-soft);
-      border-right: 0px solid var(--border-soft);
-    }
-
-    .risk-btn[data-risk='high'].active {
+    .risk-btn.active[data-risk="high"] {
       background: var(--high-bg);
-      border: 1px solid var(--high-border);
+      border-color: var(--high-border);
       color: var(--high);
     }
 
-    .risk-btn[data-risk='high']:hover {
-      color: var(--high-bg);
-      border-color: var(--high-border);
-      background: var(--high);
-    }
-
-    /* ── Check Row ── */
+    /* Check Rows */
     .check-row {
       display: flex;
       align-items: center;
       gap: 24px;
-      flex-wrap: wrap;
       padding: var(--space-cell-y) var(--space-cell-x);
-      width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
       border-bottom: 1px solid var(--border-soft);
-      transition: background 0.15s ease;
-      row-gap: var(--gap-sm);
-      column-gap: 24px;
     }
 
     .check-row:last-child {
       border-bottom: none;
     }
 
-    .check-row:hover {
-      background: var(--bg);
-    }
-
     .check-text {
       flex: 1;
-      min-width: 0;
       font-size: 0.8rem;
-      line-height: 1.45;
-      align-self: center;
       color: var(--text-muted);
     }
 
@@ -797,110 +454,52 @@
       font-size: 0.8rem;
       color: var(--text-muted);
       min-width: 28px;
-      align-self: center;
     }
 
-    .row-notice-stack {
-      flex-basis: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: var(--gap-sm);
-      margin: var(--gap-sm) 0 0;
-    }
-
-    .row-notice-stack.hidden {
-      display: none !important;
-    }
-
-    .row-notice-stack .notice.row-notice {
-      margin: 0;
-    }
-
-    /* ── Pill Group ── */
     .pill-group {
       display: flex;
       border: 1px solid var(--border);
-      border-radius: 0;
-      overflow: hidden;
-      flex-shrink: 0;
     }
 
-    .pill-group input[type='radio'] {
+    .pill-group input[type="radio"] {
       display: none;
     }
 
     .pill-group label {
       padding: 4px 5px;
       font-size: 0.7rem;
-      font-weight: 600;
-      font-family: 'Roboto Mono', ui-monospace, monospace;
+      font-family: 'IBM Plex Mono', monospace;
       cursor: pointer;
-      color: var(--text-muted);
-      transition: color 0.15s ease, background 0.15s ease;
-      white-space: nowrap;
-      letter-spacing: 0.03em;
       width: 36px;
       text-align: center;
       background: var(--bg);
     }
 
-    .pill-group label:last-of-type {
-      border-right: none;
-    }
-
-    .pill-group input[id$='_yes']:checked+label {
+    .pill-group input[id$="_yes"]:checked+label {
       background: var(--low-bg);
       border: 1px solid var(--low-border);
       color: var(--low);
     }
 
-    .pill-group input[id$='_no']:checked+label {
+    .pill-group input[id$="_no"]:checked+label {
       background: var(--high-bg);
       border: 1px solid var(--high-border);
       color: var(--high);
     }
 
-    .pill-group input[id$='_no']:not(:checked)+label {
-      border-right: 1px solid var(--border);
-      border-left: 1px solid var(--border);
-    }
-
-    .pill-group input[id$='_na']:checked+label {
+    .pill-group input[id$="_na"]:checked+label {
       background: var(--muted-bg);
       border: 1px solid var(--muted-border);
-      color: var(--text-muted);
+      color: var(--muted);
     }
 
-    .pill-group label:hover {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .pill-group input[type='radio']:checked+label:hover {
-      color: var(--color-secondary);
-    }
-
-    .pill-group--yes-no .pill-slot-empty {
-      width: 36px;
-      color: transparent;
-      white-space: nowrap;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    /* ── Notice Boxes ── */
+    /* Notices */
     .notice {
       display: flex;
       gap: var(--gap-md);
-      padding: var(--gap-sm) var(--space-inset-x);
-      border-radius: 0;
+      padding: var(--gap-md) var(--space-inset-x);
       font-size: 0.75rem;
-      line-height: 1.45;
       margin: var(--gap-md) var(--space-inset-x);
-    }
-
-    #main>#globalNotice.notice {
-      margin: 0 0 var(--gap-xs) 0;
     }
 
     .notice.warn {
@@ -912,13 +511,11 @@
     .notice.info {
       background: var(--surface);
       border: 1px solid var(--color-info);
-      color: var(--color-primary);
     }
 
     .notice.success {
       background: var(--surface);
       border: 1px solid var(--color-success);
-      color: var(--color-primary);
     }
 
     .notice.error {
@@ -927,74 +524,37 @@
       color: var(--error);
     }
 
-    .notice-actions {
-      margin-left: auto;
-      display: flex;
-      align-items: flex-start;
-    }
-
-    .notice-close {
-      appearance: none;
-      border: 0;
-      background: transparent;
-      color: currentColor;
-      cursor: pointer;
-      padding: 6px;
-      margin: -6px -6px -6px 10px;
-      border-radius: 0;
-      line-height: 1;
-      font-size: 18px;
-    }
-
-    .notice-close:hover {
-      background: var(--color-secondary);
-    }
-
-    .notice-icon {
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .notice strong {
-      font-weight: 600;
-    }
-
-    /* ── Sig Grid ── */
+    /* Signatures & Comments */
     .sig-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       border-top: 1px solid var(--border-soft);
-      width: 100%;
-      background-color: var(--header-bg);
+      background: var(--header-bg);
       padding-bottom: var(--gap-md);
-    }
-
-    @media (max-width: 580px) {
-      .sig-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
     }
 
     .sig-cell {
       padding: var(--space-row-y) var(--space-row-x);
-      min-width: 0;
     }
 
-    .sec-subtle {
-      font-weight: 400;
-      color: var(--text-muted);
-      font-size: 0.75rem;
+    .comments-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--border-soft);
     }
 
-    /* ── Textarea ── */
+    .comments-cell {
+      background: var(--surface);
+      padding: var(--space-cell-y) var(--space-cell-x);
+    }
+
     textarea.field-input {
       min-height: 64px;
       resize: none;
-      line-height: 1.6;
       overflow: hidden;
     }
 
-    /* ── Actions Row ── */
+    /* Buttons */
     .actions {
       display: flex;
       justify-content: flex-end;
@@ -1002,50 +562,26 @@
       padding: var(--space-inset-y) var(--space-inset-x);
       background: var(--surface);
       border: 2px solid var(--border);
-      border-radius: 0;
       margin-top: var(--gap-lg);
-      align-items: center;
     }
 
-    .btn {
-      font-family: 'Roboto', system-ui, sans-serif;
+    .btn,
+    .btn-clear {
+      font-family: 'Inter', sans-serif;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       padding: var(--gap-sm) var(--gap-md);
-      border-radius: 0;
       cursor: pointer;
       border: 1px solid transparent;
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
       min-height: var(--touch-min);
     }
 
-    .btn-ghost {
-      background: transparent;
+    .btn-clear {
+      background: var(--bg);
       border-color: var(--border);
       color: var(--text-muted);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--warn-border);
-      color: var(--warn);
-      background: var(--warn-bg);
-    }
-
-    .btn-clear {
-      font-family: 'Roboto', system-ui, sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: var(--gap-sm) var(--gap-md);
-      border-radius: 0;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text-muted);
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
     .btn-clear:hover {
@@ -1061,113 +597,20 @@
     }
 
     .btn-primary:hover {
-      background: var(--color-info);
-      border-color: var(--color-info);
-      color: var(--color-secondary);
+      background: #171717;
     }
 
-    /* ── Hidden ── */
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+
     .hidden {
       display: none !important;
     }
 
-    /* ── Comments ── */
-    .comments-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--border-soft);
-    }
-
-    .comments-grid.comments-grid--single {
-      grid-template-columns: 1fr;
-    }
-
-    .input-container {
-      position: relative;
-      margin: 50px auto;
-      width: 200px;
-    }
-
-    .input-container input[type="text"] {
-      font-size: 20px;
-      width: 100%;
-      border: none;
-      border-bottom: 2px solid #ccc;
-      padding: 5px 0;
-      background-color: transparent;
-      outline: none;
-    }
-
-    .input-container .label {
-      position: absolute;
-      top: 0;
-      left: 0;
-      color: #ccc;
-      transition: all 0.3s ease;
-      pointer-events: none;
-    }
-
-    .input-container input[type="text"]:focus~.label,
-    .input-container input[type="text"]:valid~.label {
-      top: -20px;
-      font-size: 16px;
-      color: #333;
-    }
-
-    .input-container .underline {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 2px;
-      width: 100%;
-      background-color: #333;
-      transform: scaleX(0);
-      transition: all 0.3s ease;
-    }
-
-    .input-container input[type="text"]:focus~.underline,
-    .input-container input[type="text"]:valid~.underline {
-      transform: scaleX(1);
-    }
-
-    @media (max-width: 580px) {
-      .comments-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .comments-cell {
-      background: var(--surface);
-      padding: var(--space-cell-y) var(--space-cell-x);
-    }
-
-    #card-final .sig-grid {
-      border-top: none;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(16px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .shell {
-        animation: none;
-      }
-
-      .chevron,
-      .progress-fill {
-        transition: none;
-      }
-    }
-
+    /* Print */
     @media print {
       @page {
         size: letter portrait;
@@ -1177,13 +620,10 @@
       * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        background-clip: padding-box !important;
       }
 
       body {
         padding: 0;
-        margin: 0;
-        width: 100%;
         max-width: 100%;
       }
 
@@ -1192,99 +632,19 @@
         margin: 10px;
       }
 
-      .sec-head {
-        padding: 5px 15px;
-      }
-
-      .check-row {
-        padding: 2px 15px;
-      }
-
-      .card,
-      .header {
-        margin-bottom: 5px;
-      }
-
-      /* Expand accordion bodies so the full form appears in PDF */
       .sec-body {
         display: block !important;
       }
 
-      .sec-head .chevron {
-        display: none !important;
-      }
-
-      /* Hide non-printable elements */
-      .sec-badge,
+      .sec-head .chevron,
       .actions,
       .progress-strip,
-      .sec-num,
       .btn-clear {
         display: none !important;
       }
 
-      /* Improve card spacing and page breaks */
       .card {
         page-break-inside: avoid;
-      }
-
-      /* Remove shadows and transitions for print */
-      * {
-        box-shadow: none !important;
-        transition: none !important;
-      }
-
-      /* Optimize text for print */
-      a {
-        color: var(--text) !important;
-        text-decoration: underline;
-      }
-
-      input[type='radio']:not(:checked)+label,
-      input[type='checkbox']:not(:checked)+label,
-      .risk-btn:not(.active) {
-        display: none !important;
-      }
-
-      /* Fix input fields to show content */
-      input,
-      select,
-      textarea {
-        background: white !important;
-        color: var(--text);
-      }
-
-      .meta-grid {
-        padding-bottom: 5px !important;
-      }
-
-      .meta-cell,
-      .sig-grid {
-        padding-bottom: 0px !important;
-      }
-
-      /* Prevent orphaned/widowed text */
-      .card,
-      .notice {
-        page-break-inside: avoid;
-      }
-
-      /* Adjust spacing for printed page */
-      .gap-lg {
-        margin-bottom: 5px;
-      }
-
-      /* Remove animations from print */
-      @keyframes fadeUp {
-        from {
-          opacity: 1;
-          transform: none;
-        }
-
-        to {
-          opacity: 1;
-          transform: none;
-        }
       }
     }
   </style>
@@ -1292,7 +652,7 @@
 
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <div class="shell" id="check_form">
+  <div class="shell">
     <div class="header">
       <div><img class="header-logo"
           src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-reversed.jpg"
@@ -1304,15 +664,42 @@
     </div>
 
     <main id="main">
+      <!-- Global notice -->
+      <div class="notice info hidden" id="globalNotice" role="status" aria-live="polite">
+        <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" />
+        </svg>
+        <div id="globalNoticeText"></div>
+        <div class="notice-actions"><button class="notice-close" type="button" aria-label="Dismiss notice"
+            id="dismissNoticeBtn">×</button></div>
+      </div>
+
       <!-- Progress -->
-      <div class="progress-strip no-print" id="progressStrip">
+      <div class="progress-strip" id="progressStrip">
         <span class="progress-label" id="progressLabel">Completion</span>
-        <progress class="progress-track" id="progressBar" min="0" max="100" value="0"
-          aria-labelledby="progressLabel progressPct"></progress>
+        <progress class="progress-track" id="progressBar" min="0" max="100" value="0"></progress>
         <span class="progress-pct" id="progressPct">0%</span>
       </div>
 
-      <!-- Document Information -->
+      <!-- Role -->
+      <div class="card role">
+        <div class="sec-head open">
+          <div class="sec-left">
+            <div class="sec-num">R</div>
+            <span class="sec-title">Your Role</span>
+            <div class="role-selector" id="roleSelector">
+              <input type="radio" name="sc_role" id="sc_role_eng" value="Engineer" checked>
+              <label for="sc_role_eng">Engineer</label>
+              <input type="radio" name="sc_role" id="sc_role_eit" value="Engineer-in-Training">
+              <label for="sc_role_eit">Engineer-in-Training</label>
+            </div>
+          </div>
+          <div class="sec-right"></div>
+        </div>
+      </div>
+
+      <!-- Work Information -->
       <div class="card info">
         <div class="sec-head open" id="sec-info-head" role="button" tabindex="0" aria-expanded="true"
           aria-controls="sec-info-body">
@@ -1330,40 +717,10 @@
         </div>
         <div class="sec-body open" id="sec-info-body">
           <div class="meta-grid">
-            <div class="meta-cell work-title-cell">
-              <label class="field-label" for="workTitle">Work Title</label>
-              <input class="field-input" id="workTitle" name="workTitle" type="text" placeholder="Enter work title..."
-                autocomplete="off" required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-              <div class="field-error sr-only" id="workTitle_error" aria-live="polite"></div>
-            </div>
-            <div class="meta-cell revision-cell">
-              <label class="field-label" for="revision">Revision</label>
-              <input class="field-input" id="revision" name="revision" type="text" placeholder="Rev. NO..."
-                autocomplete="off" required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="meta-cell role-cell">
-              <div class="field-label" id="roleLabel">Your Role</div>
-              <div class="role-selector">
-                <input type="radio" name="sc_role" id="sc_role_eng" value="Engineer" checked>
-                <label for="sc_role_eng">Engineer</label>
-                <input type="radio" name="sc_role" id="sc_role_eit" value="Engineer-in-Training">
-                <label for="sc_role_eit">Engineer-in-Training</label>
-              </div>
-            </div>
-            <div class="meta-cell risk-level-cell">
-              <div class="field-label">Risk Level</div>
-              <div class="risk-row" id="riskButtons"><button class="risk-btn" type="button" data-risk="low"
-                  aria-describedby="riskLevelLabel" aria-pressed="false">Low</button><button class="risk-btn"
-                  type="button" data-risk="medium" aria-describedby="riskLevelLabel"
-                  aria-pressed="false">Medium</button><button class="risk-btn" type="button" data-risk="high"
-                  aria-describedby="riskLevelLabel" aria-pressed="false">High</button></div>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="meta-cell deliverable-cell">
-              <label class="field-label" for="deliverable">Check / Review Deliverable or Milestone</label>
-              <select class="field-input" id="deliverable" name="deliverable" required>
+            <div class="meta-cell work-title-cell"><label class="field-label" for="workTitle">Work Title</label><input
+                class="field-input" id="workTitle" type="text" placeholder="Enter work title..."></div>
+            <div class="meta-cell deliverable-cell"><label class="field-label" for="deliverable">Check / Review
+                Deliverable or Milestone</label><select class="field-input" id="deliverable">
                 <option value="" disabled selected>Choose an item…</option>
                 <option>Memo</option>
                 <option>Standard Form</option>
@@ -1373,32 +730,33 @@
                 <option>Final Design</option>
                 <option>In Construction</option>
                 <option>Report</option>
-              </select>
-              <div class="required-field-underline" aria-hidden="true"></div>
+              </select></div>
+            <div class="meta-cell review-date-cell"><label class="field-label" for="checkDate">Check / Review
+                Date</label><input class="field-input check-date" id="checkDate" type="date"></div>
+            <div class="meta-cell revision-cell"><label class="field-label" for="revision">Revision</label><input
+                class="field-input" id="revision" type="text" placeholder="Rev. NO..."></div>
+            <div class="meta-cell engineer-cell" id="engineer_eit"><label class="field-label"
+                for="engineer">Engineer</label><input class="field-input" id="engineer" type="text"
+                placeholder="Engineer name..."></div>
+            <div class="meta-cell checker-cell" id="checker_por"><label class="field-label"
+                for="checker">Checker</label><input class="field-input" id="checker" type="text"
+                placeholder="Checker name..."></div>
+            <div class="meta-cell risk-level-cell">
+              <div class="field-label">Risk Level</div>
+              <div class="risk-row" id="riskButtons"><button class="risk-btn" type="button" data-risk="low"
+                  aria-describedby="riskLevelLabel" aria-pressed="false">Low</button><button class="risk-btn"
+                  type="button" data-risk="medium" aria-describedby="riskLevelLabel"
+                  aria-pressed="false">Medium</button><button class="risk-btn" type="button" data-risk="high"
+                  aria-describedby="riskLevelLabel" aria-pressed="false">High</button></div>
             </div>
-            <div class="meta-cell review-level-cell">
-              <label class="field-label" for="minCheckLevel">Minimum Check / Review Level</label>
-              <select class="field-input" id="minCheckLevel" required>
+            <div class="meta-cell review-level-cell"><label class="field-label" for="minCheckLevel">Minimum Check /
+                Review Level</label><select class="field-input" id="minCheckLevel">
                 <option value="" disabled selected>Select level…</option>
                 <option>Self-Check</option>
                 <option>Check</option>
                 <option>Peer Review</option>
                 <option>Type 1 Independent Review Required</option>
-              </select>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="meta-cell engineer-cell" id="engineer_eit">
-              <label class="field-label" for="engineer">Engineer</label>
-              <input class="field-input" id="engineer" name="engineer" type="text" placeholder="Engineer name..."
-                autocomplete="name" required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="meta-cell checker-cell" id="checker_por">
-              <label class="field-label" for="checker">Checker</label>
-              <input class="field-input" id="checker" type="text" placeholder="Checker name..." autocomplete="name"
-                required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
+              </select></div>
           </div>
         </div>
       </div>
@@ -1418,36 +776,24 @@
         </div>
         <div class="sec-body open" id="s1">
           <div id="sc-rows"></div>
-          <div class="notice warn hidden" id="dsNotice">
-            <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <div class="notice warn hidden" id="dsNotice"><svg class="notice-icon" width="16" height="16"
+              viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd"
                 d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" />
-            </svg>
-            <span><b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b>
-              must complete the
-              <b>Direct Supervision</b> section below.</span>
-          </div>
+            </svg><span><strong>Action required:</strong> Since Q1.11 is "No", the <strong>Professional of
+                Record</strong> must complete the <strong>Direct Supervision</strong> section below.</span></div>
           <div class="sig-grid">
-            <div class="sig-cell">
-              <label class="field-label" for="sc_date">Date</label>
-              <input class="field-input" id="sc_date" type="date" autocomplete="off" required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="sc_name">Name (Engineer)</label>
-              <input class="field-input" id="sc_name" type="text" placeholder="Type full name" autocomplete="name"
-                required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="sc_sig">Signature (Engineer)</label>
-              <input class="field-input" id="sc_sig" type="text" placeholder="Sign" autocomplete="name">
-            </div>
+            <div class="sig-cell"><label class="field-label" for="sc_date">Date</label><input class="field-input"
+                id="sc_date" type="date"></div>
+            <div class="sig-cell"><label class="field-label" for="sc_name">Name (Engineer)</label><input
+                class="field-input" id="sc_name" type="text" placeholder="Type full name"></div>
+            <div class="sig-cell"><label class="field-label" for="sc_sig">Signature (Engineer)</label><input
+                class="field-input" id="sc_sig" type="text" placeholder="Sign"></div>
           </div>
         </div>
       </div>
 
-      <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
+      <!-- Section 2: Direct Supervision -->
       <div class="card hidden" id="card-ds">
         <div class="sec-head" id="sec2-head" role="button" tabindex="0" aria-expanded="false" aria-controls="s2">
           <div class="sec-left">
@@ -1480,32 +826,19 @@
         </div>
         <div class="sec-body" id="s3">
           <div id="ch-rows"></div>
-          <div class="notice warn hidden" id="chNotice">
-            <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <div class="notice warn hidden" id="chNotice"><svg class="notice-icon" width="16" height="16"
+              viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd"
                 d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" />
-            </svg>
-            <span><b>Attention:</b> A "No" answer requires your <b>Team Lead</b> to complete a Peer
-              Review for
-              acceptance.</span>
-          </div>
+            </svg><span><strong>Attention:</strong> A "No" answer requires your <strong>Team Lead</strong> to complete a
+              Peer Review for acceptance.</span></div>
           <div class="sig-grid">
-            <div class="sig-cell">
-              <label class="field-label" for="ch_date">Date</label>
-              <input class="field-input" id="ch_date" type="date" autocomplete="off" required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="ch_name">Name (Checker)</label>
-              <input class="field-input" id="ch_name" type="text" placeholder="Type full name" autocomplete="name"
-                required>
-              <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="ch_sig">Signature (Checker)</label>
-              <input class="field-input" id="ch_sig" type="text" placeholder="Sign" autocomplete="name">
-            </div>
+            <div class="sig-cell"><label class="field-label" for="ch_date">Date</label><input class="field-input"
+                id="ch_date" type="date"></div>
+            <div class="sig-cell"><label class="field-label" for="ch_name">Name (Checker)</label><input
+                class="field-input" id="ch_name" type="text" placeholder="Type full name"></div>
+            <div class="sig-cell"><label class="field-label" for="ch_sig">Signature (Checker)</label><input
+                class="field-input" id="ch_sig" type="text" placeholder="Sign"></div>
           </div>
         </div>
       </div>
@@ -1525,30 +858,21 @@
         </div>
         <div class="sec-body" id="s4">
           <div class="sec-banner">
-            <div class="notice warn" id="prType1Notice">
-              <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"
-                aria-hidden="true">
+            <div class="notice warn" id="prType1Notice"><svg class="notice-icon" width="16" height="16"
+                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd"
                   d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" />
-              </svg>
-              <span><b>Note:</b> This section is <b>not</b> a Type 1 High Risk Work Independent
-                Review.</span>
-            </div>
+              </svg><span><strong>Note:</strong> This section is <strong>not</strong> a Type 1 High Risk Work
+                Independent Review.</span></div>
           </div>
           <div id="pr-rows"></div>
           <div class="sig-grid">
-            <div class="sig-cell">
-              <label class="field-label" for="pr_date">Date</label>
-              <input class="field-input" id="pr_date" type="date" autocomplete="off">
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="pr_name">Name (Peer Reviewer)</label>
-              <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name">
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="pr_sig">Signature (Peer Reviewer)</label>
-              <input class="field-input" id="pr_sig" type="text" placeholder="Signature" autocomplete="name">
-            </div>
+            <div class="sig-cell"><label class="field-label" for="pr_date">Date</label><input class="field-input"
+                id="pr_date" type="date"></div>
+            <div class="sig-cell"><label class="field-label" for="pr_name">Name (Peer Reviewer)</label><input
+                class="field-input" id="pr_name" type="text" placeholder="Type full name"></div>
+            <div class="sig-cell"><label class="field-label" for="pr_sig">Signature (Peer Reviewer)</label><input
+                class="field-input" id="pr_sig" type="text" placeholder="Signature"></div>
           </div>
         </div>
       </div>
@@ -1596,41 +920,20 @@
         </div>
         <div class="sec-body" id="s6">
           <div class="sig-grid">
-            <div class="sig-cell">
-              <label class="field-label" for="fT1">Assigned Type 1 Reviewer</label><input class="field-input" id="fT1"
-                type="text" placeholder="Full name" autocomplete="name">
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="fT1Date">Date</label><input class="field-input" id="fT1Date" type="date"
-                autocomplete="off">
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="fT1Sig">DE TL Signature</label><input class="field-input" id="fT1Sig"
-                type="text" placeholder="TL Signature" autocomplete="name">
-            </div>
+            <div class="sig-cell"><label class="field-label" for="fT1">Assigned Type 1 Reviewer</label><input
+                class="field-input" id="fT1" type="text" placeholder="Full name"></div>
+            <div class="sig-cell"><label class="field-label" for="fT1Date">Date</label><input class="field-input"
+                id="fT1Date" type="date"></div>
+            <div class="sig-cell"><label class="field-label" for="fT1Sig">DE TL Signature</label><input
+                class="field-input" id="fT1Sig" type="text" placeholder="TL Signature"></div>
           </div>
         </div>
       </div>
 
-      <!-- Global notice -->
-      <div class="notice info hidden" id="globalNotice" role="status" aria-live="polite">
-        <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd"
-            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" />
-        </svg>
-        <div id="globalNoticeText"></div>
-        <div class="notice-actions"><button class="notice-close" type="button" aria-label="Dismiss notice"
-            id="dismissNoticeBtn">×</button></div>
-      </div>
-
       <div class="actions">
         <button class="btn-clear" type="button" id="resetFormBtn">Reset Form</button>
-        <button class="btn btn-ghost" type="button" id="saveAsPdfBtn"
-          title="Opens the print dialog. Choose &quot;Save as PDF&quot; (or Microsoft Print to PDF) to save a PDF.">Print
-          / PDF</button>
         <button class="btn btn-primary" type="button" id="saveSnapshotBtn">Save</button>
       </div>
-
     </main>
   </div>
 
@@ -1647,9 +950,9 @@
         "Meets BCH format and template standards?",
         "Includes standard BCH waivers/disclaimers?",
         "Completed with correct calculations / up-to-date software?",
-        `Engineering Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
-        `Work is a non-standard structural design. Complete DE Check Form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form </strong></a>.`,
-        `Work is defined as 'High-Risk'. Complete DE Check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>`,
+        `Engineering Work is deemed as "Low Risk" as per the latest <strong><a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank">DE Documents and Processes</a></strong> sheet, <br>or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
+        `Work is a non-standard structural design. Complete DE Check Form and <br>the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form </strong></a>.`,
+        `Work is defined as 'High-Risk'. Complete DE Check form and <br>the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>`,
         'I am the Professional of Record and have sufficient experience and knowledge in the discipline and type of work to self-check. If "No", POR to complete Direct Supervision and Check requirements.'
       ];
       const DS_ITEMS = [
@@ -1782,20 +1085,20 @@
 
         const blocks8 = [];
         if (exp && v8 && v8 !== 'na' && v8 !== exp.sc8) {
-          blocks8.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
+          blocks8.push({ message: `<strong>Correction required:</strong> Not consistent with Risk Level (<strong>${level.toUpperCase()}</strong>). Expected <strong>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</strong>.`, type: 'error' });
         }
         renderNoticesForQuestion('sc', 8, blocks8);
 
         const blocks9 = [];
         if (v9 === 'yes') {
-          blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete <b>Independent Structural Review</b>. DE Check Form only used for documentation of Type 1 Reviewer.`, type: 'warn' });
-          if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
+          blocks9.push({ message: `<strong>Action required:</strong> Question 1.9 is "Yes". Complete <strong>Independent Structural Review</strong>. DE Check Form only used for documentation of Type 1 Reviewer.`, type: 'warn' });
+          if (level === 'low') blocks9.push({ message: `<strong>Correction required:</strong> This is a non-standard application - the Risk Level should <strong>not</strong> be <strong>Low</strong>.`, type: 'error' });
         }
         renderNoticesForQuestion('sc', 9, blocks9);
 
         const blocks10 = [];
         if (exp && v10 && v10 !== 'na' && v10 !== exp.sc10) {
-          blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
+          blocks10.push({ message: `<strong>Correction required:</strong> Not consistent with Risk Level (<strong>${level.toUpperCase()}</strong>). Expected <strong>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</strong>.`, type: 'error' });
         }
         renderNoticesForQuestion('sc', 10, blocks10);
       }
@@ -1919,7 +1222,7 @@
         { rowsId: '#ch-rows', count: CH_ITEMS.length, badge: D.badge3, num: D.num3, label: '3', cardId: 'card-ch' },
         { rowsId: '#pr-rows', count: PR_ITEMS.length, badge: D.badge4, num: D.num4, label: '4', cardId: 'card-pr' },
       ];
-      const CHECK_ICON_SVG = `<svg width="16" height="16" viewBox="0 0 20 20" fill="white" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>`;
+      const CHECK_ICON_SVG = `<svg width="14" height="14" viewBox="0 0 20 20" fill="white" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>`;
 
       function updateProgress () {
         const counts = new Map();
@@ -1999,8 +1302,7 @@
             <div class="pill-group${binary ? ' pill-group--yes-no' : ''}">${binary
               ? `<input type="radio" name="${id}" id="${id}_yes" value="yes"><label for="${id}_yes">Yes</label>
                  <input type="radio" name="${id}" id="${id}_no"  value="no"><label for="${id}_no">No</label>
-                 <input type="radio" name="${id}" id="${id}_na" value="na" disabled>
-                 <label for="${id}_na" disabled aria-hidden="true">&nbsp;</label>`
+                 <span class="pill-slot-empty" aria-hidden="true">N/A</span>`
               : `<input type="radio" name="${id}" id="${id}_yes" value="yes"><label for="${id}_yes">Yes</label>
                  <input type="radio" name="${id}" id="${id}_no"  value="no"><label for="${id}_no">No</label>
                  <input type="radio" name="${id}" id="${id}_na"  value="na"><label for="${id}_na">N/A</label>`
@@ -2035,7 +1337,7 @@
         D.globalNotice.classList.remove('hidden', 'info', 'success', 'error', 'warn');
         D.globalNotice.classList.add(type);
         clearTimeout(noticeTimer);
-        if (type !== 'error') noticeTimer = setTimeout(hideGlobalNotice, 5000);
+        if (type !== 'error') noticeTimer = setTimeout(hideGlobalNotice, 4500);
       }
 
       // Reset form
@@ -2046,9 +1348,8 @@
         document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
         document.querySelectorAll('textarea').forEach(t => t.value = '');
         D.riskBtns.forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('input[type="date"]').forEach(i => i.value = '');
-        document.getElementById('sc_role_eng').checked = true;
-
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
         checkDS();
         syncSection3ForReviewLevel();
         checkChWarning();
@@ -2064,9 +1365,7 @@
         const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
         const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
         for (let i = 0; i < liveControls.length; i++) {
-
           const live = liveControls[i], el = cloneControls[i];
-
           if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
           if (el.tagName === 'SELECT') {
             Array.from(el.options).forEach(o => o.removeAttribute('selected'));
@@ -2075,14 +1374,12 @@
           }
           const type = el.getAttribute('type')?.toLowerCase();
           if (type === 'radio' || type === 'checkbox') {
-            // Must write to attributes so `outerHTML` persists state in snapshot.
-            if (live.checked) el.setAttribute('checked', '');
-            else el.removeAttribute('checked');
+            if (live.checked) el.setAttribute('checked', ''); else el.removeAttribute('checked');
             continue;
           }
           el.setAttribute('value', live.value);
         }
-        const progressClone = clone.getElementsByTagName('progressBar')[0];
+        const progressClone = clone.getElementById('progressBar');
         if (progressClone) progressClone.setAttribute('value', D.progressBar.value);
         const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
         const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -2095,27 +1392,6 @@
         document.body.appendChild(a); a.click(); a.remove();
         URL.revokeObjectURL(url);
         toast('Snapshot saved', 'success');
-      }
-
-      function allRequiredFieldUnderlinesClear () {
-        return Array.from(document.querySelectorAll('.required-field-underline')).every((el) => {
-          const w = parseFloat(getComputedStyle(el).borderBottomWidth);
-          return w === 0;
-        });
-      }
-
-      function isProgressComplete () {
-        return Number(D.progressBar.value) >= 100;
-      }
-
-      function printFormAsPdf (e) {
-        e.preventDefault();
-        updateProgress();
-        if (!allRequiredFieldUnderlinesClear() || !isProgressComplete()) {
-          toast(`Fill all required (Red Underlines) fields and complete all sections to 100% before saving as PDF.`, 'warn');
-          return;
-        }
-        window.print();
       }
 
       // ---------- Event Delegation ----------
@@ -2160,7 +1436,6 @@
         if (e.target.id === 'clearSec4Btn') { e.stopPropagation(); clearSection('s4'); }
         if (e.target.id === 'resetFormBtn') resetForm();
         if (e.target.id === 'saveSnapshotBtn') saveSnapshot();
-        if (e.target.id === 'saveAsPdfBtn') printFormAsPdf(e);
         if (e.target.id === 'dismissNoticeBtn') hideGlobalNotice();
       });
 
@@ -2191,10 +1466,6 @@
         if (e.target.id === 'sc_name') D.engineer.value = e.target.value;
         if (e.target.id === 'checker' && !D.cardCh.classList.contains('hidden')) D.chName.value = e.target.value;
         if (e.target.id === 'ch_name' && !D.cardCh.classList.contains('hidden')) D.checker.value = e.target.value;
-        if (e.target.matches('textarea')) {
-          autosizeTextarea(e.target);
-          syncCommentsHeights();
-        }
       });
 
       // Keyboard toggle
@@ -2204,23 +1475,19 @@
           e.preventDefault();
           head.click();
         }
-
       });
 
       // Role change handler
-      function onRoleChange (resetSc11 = true) {
+      function onRoleChange () {
         const isEit = getRadioValue('sc_role') === 'Engineer-in-Training';
         const sc11No = document.getElementById('sc11_no');
         const sc11Yes = document.getElementById('sc11_yes');
-        // Only reset sc11 if explicitly requested (i.e., when role is manually changed, not during init of saved snapshot)
-        if (resetSc11) {
-          if (isEit) {
-            if (sc11No) sc11No.checked = true;
-            if (sc11Yes) sc11Yes.checked = false;
-          } else {
-            if (sc11No) sc11No.checked = false;
-            if (sc11Yes) sc11Yes.checked = false;
-          }
+        if (isEit) {
+          if (sc11No) sc11No.checked = true;
+          if (sc11Yes) sc11Yes.checked = false;
+        } else {
+          if (sc11No) sc11No.checked = false;
+          if (sc11Yes) sc11Yes.checked = false;
         }
         D.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
         D.engineer.placeholder = 'Type full name';
@@ -2240,12 +1507,13 @@
       });
 
       // Initialize
-      // If this file was saved via "Save snapshot", the checklist rows already exist with saved
-      // `checked` states. Rebuilding rows would wipe those saved selections.
-      if (!D.scRows?.querySelector('input[type="radio"]')) buildRows(D.scRows, 'sc', SC_ITEMS, new Set([8, 9, 10, 11]));
-      if (!D.dsRows?.querySelector('input[type="radio"]')) buildRows(D.dsRows, 'ds', DS_ITEMS);
-      if (!D.chRows?.querySelector('input[type="radio"]')) buildRows(D.chRows, 'ch', CH_ITEMS, new Set([1]));
-      if (!D.prRows?.querySelector('input[type="radio"]')) buildRows(D.prRows, 'pr', PR_ITEMS);
+      buildRows(D.scRows, 'sc', SC_ITEMS, new Set([8, 9, 10, 11]));
+      buildRows(D.dsRows, 'ds', DS_ITEMS);
+      buildRows(D.chRows, 'ch', CH_ITEMS, new Set([1]));
+      buildRows(D.prRows, 'pr', PR_ITEMS);
+
+      const today = new Date().toISOString().split('T')[0];
+      document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
 
       updateProgress();
       checkDS();
@@ -2254,9 +1522,7 @@
       syncSections5And6Visibility();
       document.querySelectorAll('textarea').forEach(autosizeTextarea);
       syncCommentsHeights();
-      // Detect if this is a restored snapshot: if rows exist with saved state, preserve sc11 answer
-      const isRestoredSnapshot = !!D.scRows?.querySelector('input[type="radio"]:checked');
-      onRoleChange(!isRestoredSnapshot); // only reset sc11 if fresh form, not if restoring snapshot
+      onRoleChange(); // set initial labels
     })();
   </script>
 </body>

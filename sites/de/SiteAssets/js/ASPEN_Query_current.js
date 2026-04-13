@@ -480,7 +480,7 @@ javascript: (function () {
               AND UPPER(QE.S02) = '${status}'
           ),`;
 
-        const selTr = `
+        const selCtr = `
           sel_ctr AS (
           SELECT TO_NUMBER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen})) AS val
           FROM TSETTING1 S,
@@ -498,7 +498,7 @@ javascript: (function () {
             AND UPPER(Q.S02) = '${status}'
           ),`;
 
-        const selCtr = `
+        const selTr = `
           sel_tr AS (
           SELECT S.SETTING AS val
           FROM TSETTING1 S,
@@ -604,7 +604,7 @@ javascript: (function () {
                   SELECT val
                   FROM sel_tr
                 )
-                OR T.SETTINGNAME IN ('51P1TC', '51PTC')
+                OR T.SETTINGNAME IN ('51P1TC', '51PTC', 'TR')
               )
             )
           )`;
@@ -622,7 +622,7 @@ javascript: (function () {
           AND R.ID = Q.RELAYID
           AND UPPER(Q.S02) = '${status}'`;
 
-        const sql = `${baseSettings} ${enableSettings} ${selTr} ${selCtr} 
+        const sql = `${baseSettings} ${enableSettings} ${selCtr} ${selTr} 
         ${arevaMain} UNION ALL ${selMain} UNION ALL ${electroMain}`;
         return sql;
 
@@ -2225,7 +2225,7 @@ javascript: (function () {
           return this._decodeOverCurrent(settingName, overCurrentType, settingValue);
         }
         // Check special trip equation pattern
-        if (this.tripEquation.pattern.test(settingName)) return [this.tripEquation.desc, settingValue];
+        if (this.tripEquation.pattern.test(settingName) || settingValue.split('+').length > 1) return [this.tripEquation.desc, settingValue];
         if (this.autoReclose.pattern.test(settingName)) return [this.autoReclose.desc, settingValue];
       } catch (error) {
         ErrorHandler.log('SELDecoder.decode', error);
