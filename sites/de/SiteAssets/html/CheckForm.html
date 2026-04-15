@@ -21,8 +21,16 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
-    /* StudioBlank — https://designmd.ai/chef/studioblank (minimal, flat, Inter + IBM Plex Mono) */
+    /* ============================================================
+    DISTRIBUTION ENGINEERING CHECK FORM
+    StudioBlank design system — minimal, flat, accessible
+    ============================================================ */
+
+    /* --------------------------------
+    1. CSS Custom Properties (Variables)
+    -------------------------------- */
     :root {
+      /* Color palette */
       --color-primary: rgb(50, 50, 50);
       --color-secondary: rgb(250, 250, 250);
       --color-tertiary: #d4d4d8;
@@ -34,9 +42,12 @@
       --color-error: #fa4616;
       --color-info: rgb(113, 113, 122);
       --color-link: #0074a4;
-      --header-bg: color-mix(in srgb, var(--color-secondary) 90%, var(--color-tertiary));
+
+      /* Semantic color assignments */
+      --header-bg: color-mix(in srgb, var(--color-secondary) 80%, var(--color-tertiary));
+      --valid: color-mix(in srgb, var(--color-secondary) 95%, var(--surface));
       --surface: #ffffff;
-      --border: var(--color-tertiary);
+      --border: color-mix(in srgb, var(--color-info) 50%, var(--surface-base));
       --border-hard: var(--color-tertiary);
       --border-soft: var(--color-tertiary);
       --text: color-mix(in srgb, var(--color-primary) 80%, var(--surface-base));
@@ -65,11 +76,10 @@
       --medium-border: var(--color-medium);
       --danger: var(--color-error);
       --danger-bg: color-mix(in srgb, var(--color-error) 10%, var(--surface-base));
-      --radius: 0;
-      --radius-sm: 0;
-      --selector-bg: var(--color-info);
       --bg: var(--color-secondary);
+      --selector-bg: var(--color-info);
 
+      /* Spacing scale */
       --space-base: 16px;
       --space-page-y: var(--space-base);
       --space-page-x: var(--space-base);
@@ -85,9 +95,15 @@
       --gap-md: 10px;
       --gap-lg: 12px;
       --touch-min: 36px;
+
+      /* Borders */
+      --radius: 0;
+      --radius-sm: 0;
     }
 
-
+    /* --------------------------------
+    2. Accessibility Helpers
+    -------------------------------- */
     .sr-only {
       position: absolute !important;
       width: 1px;
@@ -120,11 +136,9 @@
       outline-offset: 2px;
     }
 
-    .pill-group label[disabled] {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
+    /* --------------------------------
+    3. Base & Reset
+    -------------------------------- */
     *,
     *::before,
     *::after {
@@ -135,11 +149,11 @@
 
     body {
       font-family: 'Roboto', system-ui, sans-serif;
-      font-weight: 300;
+      font-weight: 400;
       font-size: 16px;
       line-height: 1.5;
       color: var(--text);
-      min-height: 100vh;
+      min-height: 50vh;
       padding: var(--space-page-y) var(--space-page-x) var(--space-page-bottom);
       max-width: 816px;
       margin: 0 auto;
@@ -155,47 +169,57 @@
     kbd,
     pre,
     .text-mono {
-      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-family: 'Roboto Mono', ui-monospace, monospace;
       font-size: 13px;
       font-weight: 400;
     }
 
+    /* Focus styles */
     :where(a, button, input, select, textarea, [role='button'], [tabindex]):focus-visible {
       outline: 2px solid var(--color-primary);
       outline-offset: 2px;
     }
 
-    :where(*:required):focus-within {
-      outline: 2px solid var(--color-error);
-    }
-
-    .required-field-underline {
-      width: 100%;
-      border-bottom: 1px solid red;
-    }
-
-    input.field-input:valid+.required-field-underline,
-    input.field-input:focus+.required-field-underline,
-    select.field-input:valid+.required-field-underline,
-    select.field-input:focus+.required-field-underline,
-    .role-selector:has(input[type='radio']:checked)+.required-field-underline,
-    .risk-row:has(.risk-btn.active)+.required-field-underline {
-      border-bottom-width: 0;
-    }
-
-    /* ── Layout ── */
+    /* --------------------------------
+    4. Layout Containers
+    -------------------------------- */
     .shell {
       max-width: 860px;
       margin: 0 auto;
       animation: fadeUp 0.2s ease both;
     }
 
-    /* ── Header ── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shell {
+        animation: none;
+      }
+
+      .chevron,
+      .progress-fill {
+        transition: none;
+      }
+    }
+
+    /* --------------------------------
+    5. Header
+    -------------------------------- */
     .header {
       background: var(--surface-inverse);
       color: var(--color-secondary);
       border-radius: 0;
-      border: 2px inset var(--border);
+      border: 2px solid var(--border);
       margin-bottom: var(--gap-lg);
       display: flex;
       align-items: center;
@@ -214,13 +238,13 @@
       flex-shrink: 0;
     }
 
-    .header-group {
-      align-items: right;
-    }
-
     .header-logo svg {
       width: 28px;
       height: 28px;
+    }
+
+    .header-group {
+      align-items: right;
     }
 
     .header-title {
@@ -243,7 +267,9 @@
       color: var(--surface);
     }
 
-    /* ── Progress Bar ── */
+    /* --------------------------------
+    6. Progress Bar
+    -------------------------------- */
     .progress-strip {
       background: var(--surface);
       border: 2px solid var(--border);
@@ -265,28 +291,20 @@
       color: color-mix(in srgb, var(--low) 80%, #000);
     }
 
-    .progress-strip.completed .progress-track::-webkit-progress-value {
-      background: var(--low);
-    }
-
-    .progress-strip.completed .progress-track::-moz-progress-bar {
-      background: var(--low);
-    }
-
     .progress-label {
       font-size: 0.75rem;
       font-weight: 600;
       font-family: 'Roboto', system-ui, sans-serif;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--text-muted);
+      color: var(--text);
       white-space: nowrap;
     }
 
     .progress-pct {
       font-size: 0.75rem;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--text);
       font-family: 'Roboto', system-ui, sans-serif;
       min-width: 36px;
       text-align: right;
@@ -296,12 +314,11 @@
       flex: 1;
       height: 8px;
       background: var(--border);
-      border-radius: 0;
+      border-radius: 999px;
       overflow: hidden;
       appearance: none;
       -webkit-appearance: none;
       border: none;
-      border-radius: 999px;
     }
 
     .progress-track::-webkit-progress-bar {
@@ -322,7 +339,17 @@
       transition: width 0.2s ease;
     }
 
-    /* ── Card ── */
+    .progress-strip.completed .progress-track::-webkit-progress-value {
+      background: var(--low);
+    }
+
+    .progress-strip.completed .progress-track::-moz-progress-bar {
+      background: var(--low);
+    }
+
+    /* --------------------------------
+    7. Cards & Sections
+    -------------------------------- */
     .card {
       border: 2px solid var(--border);
       border-radius: 0;
@@ -331,76 +358,16 @@
       background: var(--surface);
     }
 
-    .card.role {
-      padding-bottom: 0;
+    #card-ds {
+      margin-bottom: 0px;
+      border-bottom: 0px;
     }
 
     .card.role .sec-head {
       border-bottom: none;
     }
 
-    /* ── Role Selector ── */
-    .role-selector {
-      display: inline-grid;
-      border-radius: 0;
-      overflow: hidden;
-      min-height: var(--touch-min);
-      grid-auto-columns: minmax(35%, 1fr) minmax(65%, 1fr);
-      grid-auto-flow: column;
-      box-sizing: border-box;
-    }
-
-    .role-selector input[type='radio'] {
-      display: none;
-    }
-
-    .role-selector label:first-of-type:not(:checked) {
-      border-right: 1px solid var(--border-soft);
-    }
-
-    .role-selector label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      font-family: 'Roboto', system-ui, sans-serif;
-      letter-spacing: 0.06em;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: color 0.15s ease, background 0.15s ease;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--header-bg);
-      text-transform: uppercase;
-
-    }
-
-    .role-selector input[type='radio']:not(:checked)+label {
-      border: 1px solid var(--border-soft);
-    }
-
-    .role-selector input[type='radio']:not(:checked)+label:hover {
-      background: var(--color-info);
-      color: var(--color-secondary);
-      border: 1px solid var(--color-info);
-    }
-
-    .role-selector input[type='radio']:checked+label {
-      background: var(--color-tertiary);
-      border: 1px solid var(--color-info);
-      color: var(--color-info);
-    }
-
-    .role-selector label:hover {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .role-selector input[type='radio']:checked+label:hover {
-      color: var(--color-secondary);
-    }
-
-    /* ── Section Header ── */
+    /* Section Headers */
     .sec-head {
       display: flex;
       align-items: center;
@@ -425,6 +392,10 @@
       background: var(--bg);
     }
 
+    .sec-head.open .chevron {
+      transform: rotate(180deg);
+    }
+
     .sec-left {
       display: flex;
       align-items: center;
@@ -438,7 +409,7 @@
       border-radius: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-family: 'Roboto Mono', ui-monospace, monospace;
       font-size: 0.75rem;
       font-weight: 700;
       display: flex;
@@ -487,18 +458,6 @@
       justify-content: flex-start;
     }
 
-    /* .sec-right .btn-clear {
-      background: var(--bg);
-      border-color: var(--high-bg);
-      color: var(--high-bg);
-    } */
-
-    /* .sec-right .btn-clear:hover {
-      background: var(--high-bg);
-      border: 1px solid var(--high-border);
-      color: var(--color-secondary);
-    } */
-
     .chevron {
       width: 18px;
       height: 18px;
@@ -506,11 +465,7 @@
       transition: transform 0.2s ease;
     }
 
-    .sec-head.open .chevron {
-      transform: rotate(180deg);
-    }
-
-    /* ── Section Body ── */
+    /* Section Body */
     .sec-body {
       display: none;
       padding: 0;
@@ -534,7 +489,9 @@
       padding-top: var(--gap-xs);
     }
 
-    /* ── Meta Grid ── */
+    /* --------------------------------
+    8. Meta Grid (Work Information)
+    -------------------------------- */
     .meta-grid {
       display: grid;
       padding-bottom: var(--gap-md);
@@ -582,12 +539,6 @@
       grid-area: date;
     }
 
-    @media (max-width: 600px) {
-      .meta-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
     .meta-cell {
       display: flex;
       flex-direction: column;
@@ -603,21 +554,85 @@
     }
 
     @media (max-width: 600px) {
+      .meta-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
       .meta-cell.span2 {
         grid-column: span 1;
       }
     }
 
-    /* ── Field ── */
+    /* --------------------------------
+    9. Form Fields
+    -------------------------------- */
     .meta-grid .field-label,
     .sig-cell .field-label,
     .comments-cell .field-label {
       display: block;
       font-size: 0.75rem;
       font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       color: var(--text-muted);
       font-family: 'Roboto', system-ui, sans-serif;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: var(--gap-xs) var(--gap-md);
+      border: 1px solid var(--border-soft);
+      border-radius: 0;
+      font-family: 'Roboto', system-ui, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.15s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      min-height: var(--touch-min);
+      box-sizing: border-box;
+    }
+
+    .field-input:valid {
+      background-color: var(--valid);
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+
+    .field-input::placeholder {
+      color: var(--border-soft);
+      font-weight: 400;
+    }
+
+    .field-input[type='date'] {
+      padding: 7px 7px;
+      min-height: var(--touch-min);
+    }
+
+    select.field-input {
+      cursor: pointer;
+      min-height: var(--touch-min);
+    }
+
+    select.field-input:invalid {
+      color: var(--color-tertiary);
+    }
+
+    select.field-input option {
+      color: var(--text);
+    }
+
+    textarea.field-input {
+      min-height: 64px;
+      resize: none;
+      line-height: 1.6;
+      overflow: hidden;
     }
 
     .field-error {
@@ -630,56 +645,96 @@
       border-color: var(--color-error);
     }
 
-    .field-input[type='date'] {
-      padding: 7px 7px;
-      min-height: var(--touch-min);
-    }
-
-    .field-input::placeholder {
-      color: var(--border-soft);
-      font-weight: 400;
-    }
-
-    .field-input {
+    .required-field-underline {
       width: 100%;
-      padding: var(--gap-xs) var(--gap-md);
-      border: 1px solid var(--border);
+      border-bottom: 1px solid var(--color-error);
+    }
+
+    input.field-input:valid+.required-field-underline,
+    input.field-input:focus+.required-field-underline,
+    select.field-input:valid+.required-field-underline,
+    select.field-input:focus+.required-field-underline,
+    .role-selector:has(input[type='radio']:checked)+.required-field-underline,
+    .risk-row:has(.risk-btn.active)+.required-field-underline,
+    input:not(:required)+.required-field-underline {
+      border-bottom-width: 0;
+    }
+
+    input:disabled {
+      opacity: 0.5;
+      background-color: var(--muted-bg);
+      border: 1px solid color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
+    }
+
+    .meta-cell:has(input:disabled) {
+      opacity: 0.5;
+    }
+
+    input:not(:required)+.required-field-underline {
+      border-bottom: 1px solid color-mix(in srgb, var(--muted-border) 60%, var(--surface-base));
+      opacity: 0.5;
+    }
+
+    /* --------------------------------
+    10. Role Selector
+    -------------------------------- */
+    .role-selector {
+      display: inline-grid;
       border-radius: 0;
-      font-family: 'Roboto', system-ui, sans-serif;
-      font-size: 0.875rem;
-      font-weight: 400;
-      letter-spacing: 0.01em;
-      color: var(--text);
-      background: var(--surface);
-      transition: border-color 0.15s ease;
-      appearance: none;
-      -webkit-appearance: none;
+      overflow: hidden;
       min-height: var(--touch-min);
+      grid-auto-columns: minmax(35%, 1fr) minmax(65%, 1fr);
+      grid-auto-flow: column;
       box-sizing: border-box;
     }
 
-    .field-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      background: var(--surface);
+    .role-selector input[type='radio'] {
+      display: none;
     }
 
-    select.field-input {
+    .role-selector label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'Roboto', system-ui, sans-serif;
+      letter-spacing: 0.06em;
       cursor: pointer;
-      min-height: var(--touch-min);
-
+      color: var(--text-muted);
+      transition: color 0.15s ease, background 0.15s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--header-bg);
+      text-transform: uppercase;
     }
 
-    select.field-input:invalid {
-      color: var(--color-tertiary);
+    .role-selector input[type='radio']:not(:checked)+label {
+      border: 1px solid var(--border-soft);
     }
 
-    select.field-input option {
-      color: var(--text);
-      /* normal options in dropdown */
+    .role-selector input[id='sc_role_eng']:not(:checked)+label {
+      border-right: 0px !important;
     }
 
-    /* ── Risk Toggle ── */
+    .role-selector input[id='sc_role_eit']:not(:checked)+label {
+      border-left: 0px !important;
+    }
+
+    .role-selector input[type='radio']:not(:checked)+label:hover {
+      background: var(--color-info);
+      color: var(--color-secondary);
+      border: 1px solid var(--color-info);
+    }
+
+    .role-selector input[type='radio']:checked+label {
+      background: var(--color-tertiary);
+      border: 1px solid var(--color-info);
+      color: var(--color-info);
+    }
+
+    /* --------------------------------
+    11. Risk Toggle Buttons
+    -------------------------------- */
     .risk-row {
       display: flex;
     }
@@ -701,7 +756,6 @@
       border-bottom: 1px solid var(--border-soft);
       text-transform: uppercase;
       box-sizing: border-box;
-
     }
 
     .risk-btn:hover {
@@ -715,10 +769,22 @@
       color: var(--low);
     }
 
-    .risk-btn[data-risk='low']:hover {
+    .risk-btn[data-risk='high'].active {
+      background: var(--high-bg);
+      border: 1px solid var(--high-border);
+      color: var(--high);
+    }
+
+    .risk-btn[data-risk='low']:not(.active):hover {
       color: var(--low-bg);
       border-color: var(--low-border);
       background: var(--low);
+    }
+
+    .risk-btn[data-risk='high']:not(.active):hover {
+      color: var(--high-bg);
+      border-color: var(--high-border);
+      background: var(--high);
     }
 
     .risk-btn[data-risk='medium'].active {
@@ -727,40 +793,46 @@
       color: var(--medium);
     }
 
-    .risk-btn[data-risk='medium']:hover {
+    .risk-btn[data-risk='medium']:not(.active):hover {
       color: var(--medium-bg);
       border-color: var(--medium-border);
       background: var(--medium);
     }
 
     .risk-btn[data-risk='medium']:not(.active) {
-      border-left: 1px solid var(--border-soft);
-      border-right: 1px solid var(--border-soft);
+      border-left: 0px solid var(--border-soft);
+      border-right: 0px solid var(--border-soft);
     }
 
-    .risk-btn[data-risk='high']:not(.active) {
-      border-right: 1px solid var(--border-soft);
+
+    .risk-btn[data-risk='medium']:not(.active):has(~ .risk-btn[data-risk='high'].active) {
+      border-right: 0px !important;
       border-left: 0px solid var(--border-soft);
     }
 
     .risk-btn[data-risk='low']:not(.active) {
       border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
+    }
+
+    .risk-btn[data-risk='low']:not(.active):has(~ .risk-btn[data-risk='medium'].active) {
+      border-left: 1px solid var(--border-soft);
       border-right: 0px solid var(--border-soft);
     }
 
-    .risk-btn[data-risk='high'].active {
-      background: var(--high-bg);
-      border: 1px solid var(--high-border);
-      color: var(--high);
+    .risk-btn[data-risk='high']:not(.active) {
+      border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
-    .risk-btn[data-risk='high']:hover {
-      color: var(--high-bg);
-      border-color: var(--high-border);
-      background: var(--high);
+    .risk-btn[data-risk='medium'].active~.risk-btn[data-risk='high']:not(.active) {
+      border-left: 0px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
-    /* ── Check Row ── */
+    /* --------------------------------
+    12. Checklist Rows & Pill Groups
+    -------------------------------- */
     .check-row {
       display: flex;
       align-items: center;
@@ -787,8 +859,7 @@
     .check-text {
       flex: 1;
       min-width: 0;
-      font-size: 0.8rem;
-      line-height: 1.45;
+      font-size: 0.75rem;
       align-self: center;
       color: var(--text-muted);
     }
@@ -816,10 +887,9 @@
       margin: 0;
     }
 
-    /* ── Pill Group ── */
+    /* Pill group (Yes/No/NA) */
     .pill-group {
       display: flex;
-      border: 1px solid var(--border);
       border-radius: 0;
       overflow: hidden;
       flex-shrink: 0;
@@ -831,9 +901,9 @@
 
     .pill-group label {
       padding: 4px 5px;
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       font-weight: 600;
-      font-family: 'Roboto Mono', ui-monospace, monospace;
+      font-family: 'Roboto', ui-monospace, monospace;
       cursor: pointer;
       color: var(--text-muted);
       transition: color 0.15s ease, background 0.15s ease;
@@ -842,10 +912,20 @@
       width: 36px;
       text-align: center;
       background: var(--bg);
+      max-height: 24px;
+      text-transform: uppercase;
     }
 
-    .pill-group label:last-of-type {
-      border-right: none;
+    .pill-group input[type='radio']:not(:checked)+label {
+      border-top: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
+
+    }
+
+    .pill-group input[id$='_yes']:hover+label {
+      background: var(--low);
+      border-color: var(--low-border);
+      color: var(--low-bg);
     }
 
     .pill-group input[id$='_yes']:checked+label {
@@ -854,15 +934,16 @@
       color: var(--low);
     }
 
+    .pill-group input[id$='_no']:hover+label {
+      background: var(--high);
+      border-color: var(--high-border);
+      color: var(--high-bg);
+    }
+
     .pill-group input[id$='_no']:checked+label {
       background: var(--high-bg);
       border: 1px solid var(--high-border);
       color: var(--high);
-    }
-
-    .pill-group input[id$='_no']:not(:checked)+label {
-      border-right: 1px solid var(--border);
-      border-left: 1px solid var(--border);
     }
 
     .pill-group input[id$='_na']:checked+label {
@@ -871,15 +952,18 @@
       color: var(--text-muted);
     }
 
+    .pill-group input[id$='_na']:hover+label {
+      background: var(--text-muted);
+      border: 1px solid var(--muted-border);
+      color: var(--muted-bg);
+    }
+
     .pill-group label:hover {
       background: var(--bg);
       color: var(--text);
     }
 
-    .pill-group input[type='radio']:checked+label:hover {
-      color: var(--color-secondary);
-    }
-
+    /* Yes/No only variant (no N/A column) */
     .pill-group--yes-no .pill-slot-empty {
       width: 36px;
       color: transparent;
@@ -888,7 +972,34 @@
       user-select: none;
     }
 
-    /* ── Notice Boxes ── */
+    label:has(+ input[id$='_na']:not(:checked)) {
+      border-left: 0px solid var(--border-soft);
+    }
+
+    label:has(+ input[id$='_no']:not(:checked)) {
+      border-right: 1px solid var(--border-soft);
+      border-left: 1px solid var(--border-soft);
+    }
+
+
+    .pill-group input[id$='_na']:not(:checked)+label {
+      border-right: 1px solid var(--border-soft);
+      border-left: 1px solid var(--border-soft);
+    }
+
+    .pill-group input[id$='_yes']:not(:checked)+label:has(+ input[id$='_no']:checked) {
+      border-left: 1px solid var(--border-soft);
+
+    }
+
+    .pill-group input[id$='_no']:checked~input[id$='_na']:not(:checked)+label {
+      border-left: 0px solid var(--border-soft);
+    }
+
+
+    /* --------------------------------
+    13. Notice Boxes (Alerts)
+    -------------------------------- */
     .notice {
       display: flex;
       gap: var(--gap-md);
@@ -959,25 +1070,38 @@
       font-weight: 600;
     }
 
-    /* ── Sig Grid ── */
+    /* --------------------------------
+    14. Signature Grid
+    -------------------------------- */
     .sig-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       border-top: 1px solid var(--border-soft);
       width: 100%;
       background-color: var(--header-bg);
       padding-bottom: var(--gap-md);
     }
 
-    @media (max-width: 580px) {
-      .sig-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
+    .sig-cell {
+      padding: var(--space-cell-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
     }
 
-    .sig-cell {
-      padding: var(--space-row-y) var(--space-row-x);
-      min-width: 0;
+    .sig-cell:first-child,
+    .sig-cell:last-child {
+      padding: var(--space-cell-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
+    }
+
+    .sig-cell:nth-child(2) {
+      grid-row: span 2;
+      height: 100%;
+    }
+
+    .sig-cell:nth-child(2) .field-input {
+      box-sizing: border-box;
+      margin-top: auto;
     }
 
     .sec-subtle {
@@ -986,21 +1110,58 @@
       font-size: 0.75rem;
     }
 
-    /* ── Textarea ── */
-    textarea.field-input {
-      min-height: 64px;
-      resize: none;
-      line-height: 1.6;
-      overflow: hidden;
+    #card-final .sig-grid {
+      border-top: none;
     }
 
-    /* ── Actions Row ── */
+    @media (max-width: 580px) {
+
+      .sig-grid,
+      .meta-grid,
+      .comments-grid {
+        display: flex !important;
+        flex-direction: column;
+      }
+
+      .meta-cell,
+      .sig-cell,
+      .comments-cell {
+        grid-area: none;
+        padding: 5px 10px !important;
+      }
+    }
+
+    /* --------------------------------
+    15. Comments Section
+    -------------------------------- */
+    .comments-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--border-soft);
+    }
+
+    .comments-grid.comments-grid--single {
+      grid-template-columns: 1fr;
+    }
+
+    .comments-cell {
+      background: var(--surface);
+      padding: var(--space-cell-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
+    }
+
+    .comments-cell:first-child {
+      padding: var(--space-cell-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
+    }
+
+    /* --------------------------------
+    16. Action Buttons
+    -------------------------------- */
     .actions {
       display: flex;
       justify-content: flex-end;
       gap: var(--gap-md);
       padding: var(--space-inset-y) var(--space-inset-x);
-      background: var(--surface);
+      background: var(--header-bg);
       border: 2px solid var(--border);
       border-radius: 0;
       margin-top: var(--gap-lg);
@@ -1022,7 +1183,7 @@
     }
 
     .btn-ghost {
-      background: transparent;
+      background: var(--bg);
       border-color: var(--border);
       color: var(--text-muted);
     }
@@ -1066,109 +1227,27 @@
       color: var(--color-secondary);
     }
 
-    /* ── Hidden ── */
+    /* --------------------------------
+    17. Utility Classes
+    -------------------------------- */
     .hidden {
       display: none !important;
     }
 
-    /* ── Comments ── */
-    .comments-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--border-soft);
-    }
-
-    .comments-grid.comments-grid--single {
-      grid-template-columns: 1fr;
-    }
-
-    .input-container {
-      position: relative;
-      margin: 50px auto;
-      width: 200px;
-    }
-
-    .input-container input[type="text"] {
-      font-size: 20px;
-      width: 100%;
-      border: none;
-      border-bottom: 2px solid #ccc;
-      padding: 5px 0;
-      background-color: transparent;
-      outline: none;
-    }
-
-    .input-container .label {
-      position: absolute;
-      top: 0;
-      left: 0;
-      color: #ccc;
-      transition: all 0.3s ease;
+    .pill-group label[disabled] {
+      opacity: 0.5;
       pointer-events: none;
     }
 
-    .input-container input[type="text"]:focus~.label,
-    .input-container input[type="text"]:valid~.label {
-      top: -20px;
-      font-size: 16px;
-      color: #333;
-    }
-
-    .input-container .underline {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 2px;
-      width: 100%;
-      background-color: #333;
-      transform: scaleX(0);
-      transition: all 0.3s ease;
-    }
-
-    .input-container input[type="text"]:focus~.underline,
-    .input-container input[type="text"]:valid~.underline {
-      transform: scaleX(1);
-    }
-
-    @media (max-width: 580px) {
-      .comments-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .comments-cell {
-      background: var(--surface);
-      padding: var(--space-cell-y) var(--space-cell-x);
-    }
-
-    #card-final .sig-grid {
-      border-top: none;
-    }
-
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(16px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .shell {
-        animation: none;
-      }
-
-      .chevron,
-      .progress-fill {
-        transition: none;
-      }
-    }
-
+    /* --------------------------------
+    18. Print Styles
+    -------------------------------- */
     @media print {
+      :root {
+        --gap-lg: 5px;
+        --gap-sm: 2px;
+      }
+
       @page {
         size: letter portrait;
         margin: 0.15in;
@@ -1205,7 +1284,7 @@
         margin-bottom: 5px;
       }
 
-      /* Expand accordion bodies so the full form appears in PDF */
+      /* Expand all accordion bodies for print */
       .sec-body {
         display: block !important;
       }
@@ -1223,35 +1302,31 @@
         display: none !important;
       }
 
-      /* Improve card spacing and page breaks */
+      /* Improve page breaks */
       .card {
         page-break-inside: avoid;
       }
 
-      /* Remove shadows and transitions for print */
+      .notice {
+        page-break-inside: avoid;
+      }
+
+      /* Remove shadows and transitions */
       * {
         box-shadow: none !important;
         transition: none !important;
       }
 
-      /* Optimize text for print */
       a {
         color: var(--text) !important;
         text-decoration: underline;
       }
 
+      /* Hide unchecked radio labels */
       input[type='radio']:not(:checked)+label,
       input[type='checkbox']:not(:checked)+label,
       .risk-btn:not(.active) {
         display: none !important;
-      }
-
-      /* Fix input fields to show content */
-      input,
-      select,
-      textarea {
-        background: white !important;
-        color: var(--text);
       }
 
       .meta-grid {
@@ -1263,18 +1338,19 @@
         padding-bottom: 0px !important;
       }
 
-      /* Prevent orphaned/widowed text */
-      .card,
-      .notice {
-        page-break-inside: avoid;
+      .field-input::placeholder {
+        color: transparent;
       }
 
-      /* Adjust spacing for printed page */
-      .gap-lg {
-        margin-bottom: 5px;
+      .field-input:valid {
+        background-color: var(--valid) !important;
       }
 
-      /* Remove animations from print */
+      .meta-cell:has(input:disabled) {
+        display: none;
+      }
+
+      /* Disable animations */
       @keyframes fadeUp {
         from {
           opacity: 1;
@@ -1314,8 +1390,7 @@
 
       <!-- Document Information -->
       <div class="card info">
-        <div class="sec-head open" id="sec-info-head" role="button" tabindex="0" aria-expanded="true"
-          aria-controls="sec-info-body">
+        <div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
           <div class="sec-left">
             <div class="sec-num" id="snum-info">i</div>
             <span class="sec-title">Work Information</span>
@@ -1351,6 +1426,7 @@
                 <input type="radio" name="sc_role" id="sc_role_eit" value="Engineer-in-Training">
                 <label for="sc_role_eit">Engineer-in-Training</label>
               </div>
+              <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell risk-level-cell">
               <div class="field-label">Risk Level</div>
@@ -1396,7 +1472,7 @@
             <div class="meta-cell checker-cell" id="checker_por">
               <label class="field-label" for="checker">Checker</label>
               <input class="field-input" id="checker" type="text" placeholder="Checker name..." autocomplete="name"
-                required>
+                disabled>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
           </div>
@@ -1405,10 +1481,10 @@
 
       <!-- Section 1: Self-Check -->
       <div class="card sc">
-        <div class="sec-head open" id="sec1-head" role="button" tabindex="0" aria-expanded="true" aria-controls="s1">
+        <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
           <div class="sec-left">
             <div class="sec-num" id="snum-1">1</div><span class="sec-title">Self-Check</span><span class="sec-badge"
-              id="badge-1">0 / 11</span>
+              id="badge-1">0 / {sc_number}</span>
           </div>
           <div class="sec-right"><button class="btn-clear no-print" type="button" id="clearSec1Btn">Clear</button><svg
               class="chevron" viewBox="0 0 20 20" fill="currentColor">
@@ -1425,7 +1501,7 @@
             </svg>
             <span><b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b>
               must complete the
-              <b>Direct Supervision</b> section below.</span>
+              <b>Direct Supervision</b> and <b>Check</b> sections below.</span>
           </div>
           <div class="sig-grid">
             <div class="sig-cell">
@@ -1434,14 +1510,15 @@
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="sig-cell">
+              <label class="field-label" for="sc_sig">Signature (Engineer)</label>
+              <textarea class="field-input" id="sc_sig" type="text" placeholder="Sign" autocomplete="name"
+                rows="4"></textarea>
+            </div>
+            <div class="sig-cell">
               <label class="field-label" for="sc_name">Name (Engineer)</label>
               <input class="field-input" id="sc_name" type="text" placeholder="Type full name" autocomplete="name"
                 required>
               <div class="required-field-underline" aria-hidden="true"></div>
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="sc_sig">Signature (Engineer)</label>
-              <input class="field-input" id="sc_sig" type="text" placeholder="Sign" autocomplete="name">
             </div>
           </div>
         </div>
@@ -1449,10 +1526,10 @@
 
       <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
       <div class="card hidden" id="card-ds">
-        <div class="sec-head" id="sec2-head" role="button" tabindex="0" aria-expanded="false" aria-controls="s2">
+        <div class="sec-head" id="sec2-head" tabindex="2" aria-expanded="false" aria-controls="s2">
           <div class="sec-left">
             <div class="sec-num" id="snum-2">2</div><span class="sec-title">Direct Supervision</span><span
-              class="sec-badge" id="badge-2">0 / 5</span>
+              class="sec-badge" id="badge-2">0 / {ds_number}</span>
           </div>
           <div class="sec-right"><button class="btn-clear no-print" type="button" id="clearSec2Btn">Clear</button><svg
               class="chevron" viewBox="0 0 20 20" fill="currentColor">
@@ -1467,10 +1544,10 @@
 
       <!-- Section 3: Check -->
       <div class="card hidden" id="card-ch">
-        <div class="sec-head" id="sec3-head" role="button" tabindex="0" aria-expanded="false" aria-controls="s3">
+        <div class="sec-head" id="sec3-head" tabindex="3" aria-expanded="false" aria-controls="s3">
           <div class="sec-left">
             <div class="sec-num" id="snum-3">3</div><span class="sec-title">Check</span><span class="sec-badge"
-              id="badge-3">0 / 10</span>
+              id="badge-3">0 / {ch_number}</span>
           </div>
           <div class="sec-right"><button class="btn-clear no-print" type="button" id="clearSec3Btn">Clear</button><svg
               class="chevron" viewBox="0 0 20 20" fill="currentColor">
@@ -1494,7 +1571,11 @@
               <label class="field-label" for="ch_date">Date</label>
               <input class="field-input" id="ch_date" type="date" autocomplete="off" required>
               <div class="required-field-underline" aria-hidden="true"></div>
-
+            </div>
+            <div class="sig-cell">
+              <label class="field-label" for="ch_sig">Signature (Checker)</label>
+              <textarea class="field-input" id="ch_sig" type="text" placeholder="Sign" autocomplete="name"
+                rows="4"></textarea>
             </div>
             <div class="sig-cell">
               <label class="field-label" for="ch_name">Name (Checker)</label>
@@ -1502,20 +1583,16 @@
                 required>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
-            <div class="sig-cell">
-              <label class="field-label" for="ch_sig">Signature (Checker)</label>
-              <input class="field-input" id="ch_sig" type="text" placeholder="Sign" autocomplete="name">
-            </div>
           </div>
         </div>
       </div>
 
       <!-- Section 4: Peer Review -->
       <div class="card hidden" id="card-pr">
-        <div class="sec-head" id="sec4-head" role="button" tabindex="0" aria-expanded="false" aria-controls="s4">
+        <div class="sec-head" id="sec4-head" tabindex="4" aria-expanded="false" aria-controls="s4">
           <div class="sec-left">
             <div class="sec-num" id="snum-4">4</div><span class="sec-title">Peer Review</span><span class="sec-badge"
-              id="badge-4">0 / 9</span>
+              id="badge-4">0 / {pr_number}</span>
           </div>
           <div class="sec-right"><button class="btn-clear no-print" type="button" id="clearSec4Btn">Clear</button><svg
               class="chevron" viewBox="0 0 20 20" fill="currentColor">
@@ -1542,12 +1619,13 @@
               <input class="field-input" id="pr_date" type="date" autocomplete="off">
             </div>
             <div class="sig-cell">
-              <label class="field-label" for="pr_name">Name (Peer Reviewer)</label>
-              <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name">
+              <label class="field-label" for="pr_sig">Signature (Peer Reviewer)</label>
+              <textarea class="field-input" id="pr_sig" type="text" placeholder="Signature" autocomplete="name"
+                rows="4"></textarea>
             </div>
             <div class="sig-cell">
-              <label class="field-label" for="pr_sig">Signature (Peer Reviewer)</label>
-              <input class="field-input" id="pr_sig" type="text" placeholder="Signature" autocomplete="name">
+              <label class="field-label" for="pr_name">Name (Peer Reviewer)</label>
+              <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name">
             </div>
           </div>
         </div>
@@ -1555,7 +1633,7 @@
 
       <!-- Section 5: Comments -->
       <div class="card hidden" id="card-comments">
-        <div class="sec-head" id="sec5-head" role="button" tabindex="0" aria-expanded="false" aria-controls="s5">
+        <div class="sec-head" id="sec5-head" tabindex="5" aria-expanded="false" aria-controls="s5">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div><span class="sec-title">Comments &amp; Corrective Actions</span>
           </div>
@@ -1568,24 +1646,25 @@
           <div class="comments-grid" id="commentsGrid">
             <div class="comments-cell" id="commentsCell1"><label class="field-label" for="checkerComments">Checker
                 Comments &amp; Corrections</label><textarea class="field-input" id="checkerComments"
-                placeholder="Enter comments, corrections, or corrective actions…"></textarea></div>
+                placeholder="Enter comments, corrections, or corrective actions…" rows="4"></textarea></div>
             <div class="comments-cell" id="commentsCell2"><label class="field-label" for="engineerResponse">Engineer
                 Response</label><textarea class="field-input" id="engineerResponse"
-                placeholder="Accept / Reject / Address comments…"></textarea></div>
+                placeholder="Accept / Reject / Address comments…" rows="4"></textarea></div>
             <div class="comments-cell hidden" id="commentsCell3"><label class="field-label"
                 for="reviewerComments">Reviewer Comments &amp; Corrections</label><textarea class="field-input"
-                id="reviewerComments" placeholder="Enter comments, corrections, or corrective actions…"></textarea>
+                id="reviewerComments" placeholder="Enter comments, corrections, or corrective actions…"
+                rows="4"></textarea>
             </div>
             <div class="comments-cell hidden" id="commentsCell4"><label class="field-label"
                 for="engineerResponse_2">Engineer Response</label><textarea class="field-input" id="engineerResponse_2"
-                placeholder="Accept / Reject / Address comments…"></textarea></div>
+                placeholder="Accept / Reject / Address comments…" rows="4"></textarea></div>
           </div>
         </div>
       </div>
 
       <!-- Section 6: Final Signatures -->
       <div class="card hidden" id="card-final">
-        <div class="sec-head" id="sec6-head" role="button" tabindex="0" aria-expanded="false" aria-controls="s6">
+        <div class="sec-head" id="sec6-head" tabindex="6" aria-expanded="false" aria-controls="s6">
           <div class="sec-left">
             <div class="sec-num" id="snum-6">6</div><span class="sec-title">Final Signatures</span>
           </div>
@@ -1597,16 +1676,19 @@
         <div class="sec-body" id="s6">
           <div class="sig-grid">
             <div class="sig-cell">
-              <label class="field-label" for="fT1">Assigned Type 1 Reviewer</label><input class="field-input" id="fT1"
-                type="text" placeholder="Full name" autocomplete="name">
+              <label class="field-label" for="fT1Date">Date</label>
+              <input class="field-input" id="fT1Date" type="date" autocomplete="off" required>
+              <div class="required-field-underline" aria-hidden="true"></div>
+            </div>
+
+            <div class="sig-cell">
+              <label class="field-label" for="fT1Sig">DE TL Signature</label><textarea class="field-input" id="fT1Sig"
+                type="text" placeholder="TL Signature" autocomplete="name" rows="4"></textarea>
             </div>
             <div class="sig-cell">
-              <label class="field-label" for="fT1Date">Date</label><input class="field-input" id="fT1Date" type="date"
-                autocomplete="off">
-            </div>
-            <div class="sig-cell">
-              <label class="field-label" for="fT1Sig">DE TL Signature</label><input class="field-input" id="fT1Sig"
-                type="text" placeholder="TL Signature" autocomplete="name">
+              <label class="field-label" for="fT1">Assigned Type 1 Reviewer</label>
+              <input class="field-input" id="fT1" type="text" placeholder="Full name" autocomplete="name" required>
+              <div class="required-field-underline" aria-hidden="true"></div>
             </div>
           </div>
         </div>
@@ -1624,10 +1706,8 @@
       </div>
 
       <div class="actions">
-        <button class="btn-clear" type="button" id="resetFormBtn">Reset Form</button>
-        <button class="btn btn-ghost" type="button" id="saveAsPdfBtn"
-          title="Opens the print dialog. Choose &quot;Save as PDF&quot; (or Microsoft Print to PDF) to save a PDF.">Print
-          / PDF</button>
+        <button class="btn btn-clear" type="button" id="resetFormBtn">Reset Form</button>
+        <button class="btn btn-ghost" type="button" id="saveAsPdfBtn">Print / PDF</button>
         <button class="btn btn-primary" type="button" id="saveSnapshotBtn">Save</button>
       </div>
 
@@ -1638,625 +1718,709 @@
     (function () {
       "use strict";
 
-      // ---------- Data ----------
-      const SC_ITEMS = [
-        "Meets client/user objectives and requirements?",
-        "Meets construction/operation requirements?",
-        "Relevant field observations and data used?",
-        "Have appropriate text and grammar been used?",
-        "Meets BCH format and template standards?",
-        "Includes standard BCH waivers/disclaimers?",
-        "Completed with correct calculations / up-to-date software?",
-        `Engineering Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
-        `Work is a non-standard structural design. Complete DE Check Form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form </strong></a>.`,
-        `Work is defined as 'High-Risk'. Complete DE Check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>`,
-        'I am the Professional of Record and have sufficient experience and knowledge in the discipline and type of work to self-check. If "No", POR to complete Direct Supervision and Check requirements.'
-      ];
-      const DS_ITEMS = [
-        "I have active involvement, control, and interaction in delegated work.",
-        "I have adequate supervision of field reviews.",
-        "I am involved in all engineering and geoscience decisions.",
-        "I have provided supervision appropriate to the experience of the professional registrant and subordinate.",
-        "Supporting documentation such as meeting minutes, markups, discussion notes and dates are recorded in writing and kept."
-      ];
-      const CH_ITEMS = [
-        "I have sufficient experience and knowledge in the discipline and type of work to complete a check.",
-        "Meets client/user objectives and requirements?",
-        "Meets construction/operation requirements?",
-        "Relevant field observations and data used?",
-        "Have appropriate text and grammar been used?",
-        "Meets BCH format and drawing standards?",
-        "Includes standard BCH waivers/disclaimers?",
-        "Completed with correct calculations / up-to-date software?",
-        "Meets applicable codes, standards, regulations and bylaws?",
-        "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?"
-      ];
-      const PR_ITEMS = [
-        "Meets client/user objectives and requirements?",
-        "Meets construction/operation requirements?",
-        "Meets applicable codes, standards, regulations and bylaws?",
-        "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?",
-        "Meets health, safety and environmental requirements?",
-        "Meets other stakeholders (e.g. Local Government, First Nations) requirements?",
-        "Have all major risks been identified?",
-        "Considered safety by design?",
-        "Have opportunities for innovation or cost savings been identified?"
-      ];
-      const RISK_SELF_CHECK_MAP = {
-        low: { sc8: 'yes', sc10: 'no' },
-        medium: { sc8: 'no', sc10: 'no' },
-        high: { sc8: 'no', sc10: 'yes' }
-      };
+      class CheckForm {
+        // ---------- Static configuration ----------
+        static SC_ITEMS = [
+          "Meets client/user objectives and requirements?",
+          "Meets construction/operation requirements?",
+          "Relevant field observations and data used?",
+          "Have appropriate text and grammar been used?",
+          "Meets BCH format and template standards?",
+          "Includes standard BCH waivers/disclaimers?",
+          "Completed with correct calculations / up-to-date software?",
+          `Engineering Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
+          `Work is a non-standard structural design.`,
+          `Work is defined as 'High-Risk'.`,
+          'I am the Professional of Record and have sufficient experience and knowledge in the discipline and type of work to self-check.'
+        ];
 
-      // ---------- DOM Elements Cache ----------
-      const D = {
-        // Progress
-        progressStrip: document.getElementById('progressStrip'),
-        progressBar: document.getElementById('progressBar'),
-        progressPct: document.getElementById('progressPct'),
-        // Role
-        roleRadios: document.getElementsByName('sc_role'),
-        // Work info
-        workTitle: document.getElementById('workTitle'),
-        engineer: document.getElementById('engineer'),
-        checker: document.getElementById('checker'),
-        minCheckLevel: document.getElementById('minCheckLevel'),
-        riskBtns: document.querySelectorAll('.risk-btn'),
-        // Sections
-        cardDs: document.getElementById('card-ds'),
-        cardCh: document.getElementById('card-ch'),
-        cardPr: document.getElementById('card-pr'),
-        cardComments: document.getElementById('card-comments'),
-        cardFinal: document.getElementById('card-final'),
-        dsNotice: document.getElementById('dsNotice'),
-        chNotice: document.getElementById('chNotice'),
-        // Comments cells
-        commentsCell3: document.getElementById('commentsCell3'),
-        commentsCell4: document.getElementById('commentsCell4'),
-        // Badges & nums
-        badge1: document.getElementById('badge-1'), num1: document.getElementById('snum-1'),
-        badge2: document.getElementById('badge-2'), num2: document.getElementById('snum-2'),
-        badge3: document.getElementById('badge-3'), num3: document.getElementById('snum-3'),
-        badge4: document.getElementById('badge-4'), num4: document.getElementById('snum-4'),
-        // Row containers
-        scRows: document.getElementById('sc-rows'),
-        dsRows: document.getElementById('ds-rows'),
-        chRows: document.getElementById('ch-rows'),
-        prRows: document.getElementById('pr-rows'),
-        // Signatures
-        scName: document.getElementById('sc_name'),
-        chName: document.getElementById('ch_name'),
-        // Labels that change dynamically
-        engLabel: document.querySelector('#engineer_eit .field-label'),
-        scNameLabel: document.querySelector('label[for="sc_name"]'),
-        scSigLabel: document.querySelector('label[for="sc_sig"]'),
-        wiLabel: document.querySelector('#checker_por .field-label'),
-        wiInput: document.querySelector('#checker_por input'),
-        chNameLabel: document.querySelector('label[for="ch_name"]'),
-        chSigLabel: document.querySelector('label[for="ch_sig"]'),
-        checkerCommentsLabel: document.querySelector('label[for="checkerComments"]'),
-        engineerResponseLabel: document.querySelector('label[for="engineerResponse"]'),
-        // Global notice
-        globalNotice: document.getElementById('globalNotice'),
-        globalNoticeText: document.getElementById('globalNoticeText'),
-      };
+        static DS_ITEMS = [
+          "I have active involvement, control, and interaction in delegated work.",
+          "I have adequate supervision of field reviews.",
+          "I am involved in all engineering and geoscience decisions.",
+          "I have provided supervision appropriate to the experience of the professional registrant and subordinate.",
+          "Supporting documentation such as meeting minutes, markups, discussion notes and dates are recorded in writing and kept."
+        ];
 
-      // ---------- Helper Functions ----------
-      function getRadioValue (name) {
-        return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
-      }
+        static CH_ITEMS = [
+          "I have sufficient experience and knowledge in the discipline and type of work to complete a check.",
+          "Meets client/user objectives and requirements?",
+          "Meets construction/operation requirements?",
+          "Relevant field observations and data used?",
+          "Have appropriate text and grammar been used?",
+          "Meets BCH format and drawing standards?",
+          "Includes standard BCH waivers/disclaimers?",
+          "Completed with correct calculations / up-to-date software?",
+          "Meets applicable codes, standards, regulations and bylaws?",
+          "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?"
+        ];
 
-      function setActiveRiskButton (level) {
-        D.riskBtns.forEach(b => b.classList.remove('active'));
-        if (level) document.querySelector(`.risk-btn[data-risk="${level}"]`)?.classList.add('active');
-      }
+        static PR_ITEMS = [
+          "Meets client/user objectives and requirements?",
+          "Meets construction/operation requirements?",
+          "Meets applicable codes, standards, regulations and bylaws?",
+          "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?",
+          "Meets health, safety and environmental requirements?",
+          "Meets other stakeholders (e.g. Local Government, First Nations) requirements?",
+          "Have all major risks been identified?",
+          "Considered safety by design?",
+          "Have opportunities for innovation or cost savings been identified?"
+        ];
 
-      function getActiveRiskLevel () {
-        return document.querySelector('.risk-btn.active')?.dataset?.risk ?? null;
-      }
+        static RISK_MAP = {
+          low: { sc8: 'yes', sc10: 'no' },
+          medium: { sc8: 'no', sc10: 'no' },
+          high: { sc8: 'no', sc10: 'yes' }
+        };
 
-      // Notice stack rendering
-      function renderNoticesForQuestion (prefix, n, blocks) {
-        const stack = document.getElementById(`${prefix}${n}_notice_stack`);
-        if (!stack) return;
-        if (!blocks?.length) {
-          stack.innerHTML = '';
-          stack.classList.add('hidden');
-          return;
-        }
-        stack.classList.remove('hidden');
-        const svgPath = 'M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z';
-        stack.innerHTML = blocks.map(({ message, type = 'warn' }) => `
-          <div class="notice row-notice ${type}">
-            <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="${svgPath}"/></svg>
-            <span>${message}</span>
-          </div>`).join('');
-      }
+        static BINARY_QUESTIONS = {
+          sc: new Set([8, 9, 10, 11]),
+          ch: new Set([1])
+        };
 
-      function showRiskConsistencyNotices () {
-        const level = getActiveRiskLevel();
-        const exp = level ? RISK_SELF_CHECK_MAP[level] : null;
-        const v8 = getRadioValue('sc8');
-        const v9 = getRadioValue('sc9');
-        const v10 = getRadioValue('sc10');
-
-        const blocks8 = [];
-        if (exp && v8 && v8 !== 'na' && v8 !== exp.sc8) {
-          blocks8.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
-        }
-        renderNoticesForQuestion('sc', 8, blocks8);
-
-        const blocks9 = [];
-        if (v9 === 'yes') {
-          blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete <b>Independent Structural Review</b>. DE Check Form only used for documentation of Type 1 Reviewer.`, type: 'warn' });
-          if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
-        }
-        renderNoticesForQuestion('sc', 9, blocks9);
-
-        const blocks10 = [];
-        if (exp && v10 && v10 !== 'na' && v10 !== exp.sc10) {
-          blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
-        }
-        renderNoticesForQuestion('sc', 10, blocks10);
-      }
-
-      function updatePorLabels () {
-        const isEit = getRadioValue('sc_role') === 'Engineer-in-Training';
-        const q111No = document.getElementById('sc11_no')?.checked ?? false;
-        const usePor = q111No || isEit;
-        const secondRoleLabel = usePor ? 'Professional of Record' : 'Checker';
-        const secondRoleShort = usePor ? 'POR' : 'Checker';
-        if (D.wiLabel) D.wiLabel.textContent = secondRoleLabel;
-        if (D.wiInput) D.wiInput.placeholder = usePor ? 'POR name...' : 'Checker name...';
-        if (D.chNameLabel) D.chNameLabel.textContent = `Name (${secondRoleShort})`;
-        if (D.chSigLabel) D.chSigLabel.textContent = usePor ? 'Signature (POR)' : 'Signature (Checker)';
-        if (D.checkerCommentsLabel) D.checkerCommentsLabel.textContent = usePor ? 'POR Comments & Corrections' : 'Checker Comments & Corrections';
-      }
-
-      function checkDS () {
-        const noChecked = document.getElementById('sc11_no')?.checked ?? false;
-        D.dsNotice.classList.toggle('hidden', !noChecked);
-        D.cardDs.classList.toggle('hidden', !noChecked);
-        const body = document.getElementById('s2');
-        const head = document.getElementById('sec2-head');
-        if (body && head) {
-          head.classList.toggle('open', noChecked);
-          body.classList.toggle('open', noChecked);
-          head.setAttribute('aria-expanded', noChecked ? 'true' : 'false');
-        }
-        updatePorLabels();
-        updateProgress();
-      }
-
-      function checkChWarning () {
-        const hasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
-        D.chNotice.classList.toggle('hidden', !hasNo);
-        syncSection4ForPeerReview(hasNo);
-      }
-
-      function syncSection3ForReviewLevel () {
-        const q111No = document.getElementById('sc11_no')?.checked ?? false;
-        const isHighRisk = getActiveRiskLevel() === 'high';
-        const open = D.minCheckLevel.value === 'Check' || q111No || isHighRisk;
-        D.cardCh.classList.toggle('hidden', !open);
-        const body = document.getElementById('s3');
-        const head = document.getElementById('sec3-head');
-        if (body && head) {
-          head.classList.toggle('open', open);
-          body.classList.toggle('open', open);
-          head.setAttribute('aria-expanded', open ? 'true' : 'false');
-        }
-        if (open) syncCheckerNames();
-        syncSections5And6Visibility();
-      }
-
-      function syncSection4ForPeerReview (hasNo = null) {
-        const needsByAnswer = hasNo ?? !!document.querySelector('#ch-rows input[value="no"]:checked');
-        const needsByLevel = D.minCheckLevel.value === 'Peer Review' || D.minCheckLevel.value === 'Type 1 Independent Review Required';
-        const isHighRisk = getActiveRiskLevel() === 'high';
-        const show = needsByAnswer || needsByLevel || isHighRisk;
-        D.cardPr.classList.toggle('hidden', !show);
-        const body = document.getElementById('s4');
-        const head = document.getElementById('sec4-head');
-        if (body && head) {
-          const open = show && needsByAnswer;
-          head.classList.toggle('open', open);
-          body.classList.toggle('open', open);
-          head.setAttribute('aria-expanded', open ? 'true' : 'false');
-        }
-        syncSections5And6Visibility(show);
-      }
-
-      function syncSections5And6Visibility (show = null) {
-        const isHighRisk = getActiveRiskLevel() === 'high';
-        const prShown = !D.cardPr.classList.contains('hidden');
-        const dsShown = !D.cardDs.classList.contains('hidden');
-        const chShown = !D.cardCh.classList.contains('hidden');
-        const commentsShown = dsShown || chShown || prShown;
-        D.cardComments.classList.toggle('hidden', !commentsShown);
-        D.cardFinal.classList.toggle('hidden', !show && !isHighRisk);
-
-        const body = document.getElementById('s5');
-        const head = document.getElementById('sec5-head');
-        if (body && head) {
-          head.classList.toggle('open', commentsShown);
-          body.classList.toggle('open', commentsShown);
-          head.setAttribute('aria-expanded', commentsShown ? 'true' : 'false');
+        // ---------- Constructor ----------
+        constructor() {
+          this.elements = this.cacheElements();
+          this.sectionConfig = this.buildSectionConfig();
+          this.toastTimer = null;
+          this.syncingNames = false;
+          this.init();
         }
 
-        D.commentsCell3.classList.toggle('hidden', !prShown);
-        D.commentsCell4.classList.toggle('hidden', !prShown);
-        syncCommentsHeights();
-
-        const finalBody = document.getElementById('s6');
-        const finalHead = document.getElementById('sec6-head');
-        const finalShown = !D.cardFinal.classList.contains('hidden');
-        const finalOpen = isHighRisk && finalShown;
-        if (finalBody && finalHead) {
-          finalHead.classList.toggle('open', finalOpen);
-          finalBody.classList.toggle('open', finalOpen);
-          finalHead.setAttribute('aria-expanded', finalOpen ? 'true' : 'false');
+        // Cache all frequently used DOM elements
+        cacheElements () {
+          const get = (id) => document.getElementById(id);
+          return {
+            // Progress
+            progressStrip: get('progressStrip'),
+            progressBar: get('progressBar'),
+            progressPct: get('progressPct'),
+            // Work info
+            workTitle: get('workTitle'),
+            engineer: get('engineer'),
+            checker: get('checker'),
+            minCheckLevel: get('minCheckLevel'),
+            riskBtns: document.querySelectorAll('.risk-btn'),
+            // Role radios
+            roleRadios: document.getElementsByName('sc_role'),
+            // Cards
+            cardDs: get('card-ds'),
+            cardCh: get('card-ch'),
+            cardPr: get('card-pr'),
+            cardComments: get('card-comments'),
+            cardFinal: get('card-final'),
+            // Notices
+            dsNotice: get('dsNotice'),
+            chNotice: get('chNotice'),
+            globalNotice: get('globalNotice'),
+            globalNoticeText: get('globalNoticeText'),
+            // Comments cells
+            commentsCell3: get('commentsCell3'),
+            commentsCell4: get('commentsCell4'),
+            // Section badges and nums
+            badge1: get('badge-1'), num1: get('snum-1'),
+            badge2: get('badge-2'), num2: get('snum-2'),
+            badge3: get('badge-3'), num3: get('snum-3'),
+            badge4: get('badge-4'), num4: get('snum-4'),
+            // Row containers
+            scRows: get('sc-rows'),
+            dsRows: get('ds-rows'),
+            chRows: get('ch-rows'),
+            prRows: get('pr-rows'),
+            // Signature fields
+            scName: get('sc_name'),
+            chName: get('ch_name'),
+            // Dynamic labels
+            engLabel: document.querySelector('#engineer_eit .field-label'),
+            scNameLabel: document.querySelector('label[for="sc_name"]'),
+            scSigLabel: document.querySelector('label[for="sc_sig"]'),
+            wiLabel: document.querySelector('#checker_por .field-label'),
+            wiInput: document.querySelector('#checker_por input'),
+            chNameLabel: document.querySelector('label[for="ch_name"]'),
+            chSigLabel: document.querySelector('label[for="ch_sig"]'),
+            checkerCommentsLabel: document.querySelector('label[for="checkerComments"]'),
+            engineerResponseLabel: document.querySelector('label[for="engineerResponse"]'),
+            // Section bodies
+            s2Body: get('s2'), s2Head: get('sec2-head'),
+            s3Body: get('s3'), s3Head: get('sec3-head'),
+            s4Body: get('s4'), s4Head: get('sec4-head'),
+            s5Body: get('s5'), s5Head: get('sec5-head'),
+            s6Body: get('s6'), s6Head: get('sec6-head')
+          };
         }
-      }
 
-      // Sync checker name with Check section name
-      let syncingNames = false;
-      function syncCheckerNames () {
-        if (syncingNames) return;
-        syncingNames = true;
-        const shown = !D.cardCh.classList.contains('hidden');
-        if (shown) {
-          if (D.checker.value && !D.chName.value) D.chName.value = D.checker.value;
-          else if (D.chName.value && !D.checker.value) D.checker.value = D.chName.value;
+        buildSectionConfig () {
+          return [
+            { rowsId: '#sc-rows', count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc' },
+            { rowsId: '#ds-rows', count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds' },
+            { rowsId: '#ch-rows', count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch' },
+            { rowsId: '#pr-rows', count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr' }
+          ];
         }
-        syncingNames = false;
-      }
 
-      // Progress update
-      const SECTIONS = [
-        { rowsId: '#sc-rows', count: SC_ITEMS.length, badge: D.badge1, num: D.num1, label: '1', cardId: null },
-        { rowsId: '#ds-rows', count: DS_ITEMS.length, badge: D.badge2, num: D.num2, label: '2', cardId: 'card-ds' },
-        { rowsId: '#ch-rows', count: CH_ITEMS.length, badge: D.badge3, num: D.num3, label: '3', cardId: 'card-ch' },
-        { rowsId: '#pr-rows', count: PR_ITEMS.length, badge: D.badge4, num: D.num4, label: '4', cardId: 'card-pr' },
-      ];
-      const CHECK_ICON_SVG = `<svg width="16" height="16" viewBox="0 0 20 20" fill="white" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>`;
+        // ---------- Initialization ----------
+        init () {
+          const isRestored = !!this.elements.scRows.querySelector('input[type="radio"]:checked');
 
-      function updateProgress () {
-        const counts = new Map();
-        SECTIONS.forEach(s => {
-          const cnt = document.querySelectorAll(`${s.rowsId} input[type="radio"]:checked`).length;
-          counts.set(s.rowsId, cnt);
-          if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
-          if (s.num) {
-            if (cnt === s.count) {
-              s.num.classList.add('complete');
-              s.num.innerHTML = CHECK_ICON_SVG;
+          if (!isRestored) this.buildAllRows();
+          this.attachEventListeners();
+          this.updateProgress();
+          this.syncAllSectionVisibility();
+          this.autosizeAllTextareas();
+          this.syncCommentsHeights();
+          // Detect if restored from snapshot (rows already have checked radios)
+          // Fresh form: set default role to Engineer
+          this.updateRoleLabels(!isRestored);
+
+        }
+
+        buildAllRows () {
+          this.buildRows(this.elements.scRows, 'sc', CheckForm.SC_ITEMS, CheckForm.BINARY_QUESTIONS.sc);
+          this.buildRows(this.elements.dsRows, 'ds', CheckForm.DS_ITEMS);
+          this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
+          this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
+        }
+
+        /**
+         * Build radio button rows using DOM APIs (no innerHTML for better security/performance)
+         */
+        buildRows (container, prefix, items, binarySet = new Set()) {
+          if (!container) return;
+          container.innerHTML = '';
+          const sectionNum = { sc: '1', ds: '2', ch: '3', pr: '4' }[prefix];
+
+          items.forEach((text, idx) => {
+            const n = idx + 1;
+            const isBinary = binarySet.has(n);
+            const row = document.createElement('div');
+            row.className = 'check-row';
+
+            const numSpan = document.createElement('span');
+            numSpan.className = 'check-num';
+            numSpan.textContent = `${sectionNum}.${n}`;
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'check-text';
+            textSpan.innerHTML = text; // items contain safe HTML links
+
+            const pillGroup = document.createElement('div');
+            pillGroup.className = `pill-group${isBinary ? ' pill-group--yes-no' : ''}`;
+
+            const name = `${prefix}${n}`;
+            const createRadio = (value, labelText, disabled = false) => {
+              const id = `${name}_${value}`;
+              const radio = document.createElement('input');
+              radio.type = 'radio';
+              radio.name = name;
+              radio.id = id;
+              radio.value = value;
+              if (disabled) radio.disabled = true;
+              const label = document.createElement('label');
+              label.htmlFor = id;
+              label.textContent = labelText;
+              if (disabled) label.setAttribute('disabled', '');
+              return { radio, label };
+            };
+
+            if (isBinary) {
+              const yes = createRadio('yes', 'Yes');
+              const no = createRadio('no', 'No');
+              const na = createRadio('na', ' ', true); // disabled placeholder
+              pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
             } else {
-              s.num.classList.remove('complete');
-              s.num.textContent = s.label;
+              const yes = createRadio('yes', 'Yes');
+              const no = createRadio('no', 'No');
+              const na = createRadio('na', 'N/A');
+              pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
+            }
+
+            const noticeStack = document.createElement('div');
+            noticeStack.className = 'row-notice-stack hidden';
+            noticeStack.id = `${name}_notice_stack`;
+            noticeStack.setAttribute('aria-live', 'polite');
+
+            row.append(numSpan, textSpan, pillGroup, noticeStack);
+            container.appendChild(row);
+          });
+        }
+
+        attachEventListeners () {
+          document.addEventListener('click', this.handleGlobalClick.bind(this));
+          document.addEventListener('change', this.handleGlobalChange.bind(this));
+          document.addEventListener('input', this.handleGlobalInput.bind(this));
+          document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
+
+          // MutationObserver for radio changes (progress updates)
+          const observer = new MutationObserver(() => this.updateProgress());
+          [this.elements.scRows, this.elements.dsRows, this.elements.chRows, this.elements.prRows].forEach(container => {
+            if (container) observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
+          });
+        }
+
+        // ---------- Event Handlers ----------
+        handleGlobalClick (e) {
+          // Section toggle
+          const head = e.target.closest('.sec-head');
+          if (head && head.hasAttribute('aria-controls')) {
+            const interactive = e.target.closest('button, a, input, select, textarea, label, [role="button"]');
+            if (!interactive || interactive === head) {
+              e.preventDefault();
+              this.toggleSection(head);
             }
           }
-        });
 
-        const prAnyAnswered = (counts.get('#pr-rows') ?? 0) > 0;
-        let total = 0, answered = 0;
-        SECTIONS.forEach(s => {
-          const cnt = counts.get(s.rowsId) ?? 0;
-          const hidden = s.cardId && document.getElementById(s.cardId)?.classList.contains('hidden');
-          if (hidden) return;
-          const isSection1 = s.rowsId === '#sc-rows';
-          const isSection4 = s.rowsId === '#pr-rows';
-          if (isSection1 || !isSection4 || prAnyAnswered) {
-            total += s.count;
-            answered += cnt;
+          // Risk buttons
+          if (e.target.classList.contains('risk-btn')) {
+            this.setRiskLevel(e.target.dataset.risk);
           }
-        });
-        const pct = total ? Math.round((answered / total) * 100) : 0;
-        D.progressStrip.classList.toggle('completed', pct === 100);
-        D.progressBar.value = pct;
-        D.progressPct.textContent = `${pct}%`;
-      }
 
-      // Autosize textareas
-      function autosizeTextarea (el) {
-        if (!el) return;
-        el.style.height = 'auto';
-        el.style.height = el.scrollHeight + 'px';
-      }
-      function syncCommentsHeights () {
-        const pair = (aId, bId) => {
-          const a = document.getElementById(aId), b = document.getElementById(bId);
-          const aHidden = a?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
-          const bHidden = b?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
-          if (!a || !b || aHidden || bHidden) {
-            if (a && !aHidden) autosizeTextarea(a);
-            if (b && !bHidden) autosizeTextarea(b);
-            return;
+          // Clear buttons
+          const clearActions = {
+            clearWorkInfoBtn: () => this.clearSection('sec-info-body'),
+            clearSec1Btn: () => this.clearSection('s1'),
+            clearSec2Btn: () => this.clearSection('s2'),
+            clearSec3Btn: () => this.clearSection('s3'),
+            clearSec4Btn: () => this.clearSection('s4'),
+            resetFormBtn: () => this.resetForm(),
+            saveSnapshotBtn: () => this.saveSnapshot(),
+            saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
+            dismissNoticeBtn: () => this.hideGlobalNotice()
+          };
+
+          const id = e.target.id;
+          if (id in clearActions) {
+            e.stopPropagation();
+            clearActions[id](e);
           }
-          a.style.height = 'auto'; b.style.height = 'auto';
-          const h = Math.max(a.scrollHeight, b.scrollHeight);
-          a.style.height = h + 'px'; b.style.height = h + 'px';
-        };
-        pair('checkerComments', 'engineerResponse');
-        pair('reviewerComments', 'engineerResponse_2');
-      }
-
-      // Build rows
-      const SECTION_NUM_BY_PREFIX = { sc: '1', ds: '2', ch: '3', pr: '4' };
-      function buildRows (container, prefix, items, binarySet = new Set()) {
-        if (!container) return;
-        const sectionNum = SECTION_NUM_BY_PREFIX[prefix];
-        container.innerHTML = '';
-        items.forEach((text, i) => {
-          const n = i + 1;
-          const id = `${prefix}${n}`;
-          const binary = binarySet.has(n);
-          const row = document.createElement('div');
-          row.className = 'check-row';
-          row.innerHTML = `
-            <span class="check-num">${sectionNum}.${n}</span>
-            <span class="check-text">${text}</span>
-            <div class="pill-group${binary ? ' pill-group--yes-no' : ''}">${binary
-              ? `<input type="radio" name="${id}" id="${id}_yes" value="yes"><label for="${id}_yes">Yes</label>
-                 <input type="radio" name="${id}" id="${id}_no"  value="no"><label for="${id}_no">No</label>
-                 <input type="radio" name="${id}" id="${id}_na" value="na" disabled>
-                 <label for="${id}_na" disabled aria-hidden="true">&nbsp;</label>`
-              : `<input type="radio" name="${id}" id="${id}_yes" value="yes"><label for="${id}_yes">Yes</label>
-                 <input type="radio" name="${id}" id="${id}_no"  value="no"><label for="${id}_no">No</label>
-                 <input type="radio" name="${id}" id="${id}_na"  value="na"><label for="${id}_na">N/A</label>`
-            }</div>
-            <div class="row-notice-stack hidden" id="${id}_notice_stack" aria-live="polite"></div>`;
-          container.appendChild(row);
-        });
-      }
-
-      // Clear section
-      function clearSection (sectionId) {
-        const sec = document.getElementById(sectionId);
-        if (!sec) return;
-        sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-        sec.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
-        sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-        sec.querySelectorAll('textarea').forEach(t => t.value = '');
-        sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
-        updateProgress();
-        if (sectionId === 's1') checkDS();
-        if (sectionId === 's3') checkChWarning();
-        sec.querySelectorAll('textarea').forEach(autosizeTextarea);
-        syncCommentsHeights();
-        toast('Section cleared', 'info');
-      }
-
-      // Toast
-      let noticeTimer;
-      function hideGlobalNotice () { D.globalNotice.classList.add('hidden'); clearTimeout(noticeTimer); }
-      function toast (msg, type = 'info') {
-        D.globalNoticeText.textContent = msg;
-        D.globalNotice.classList.remove('hidden', 'info', 'success', 'error', 'warn');
-        D.globalNotice.classList.add(type);
-        clearTimeout(noticeTimer);
-        if (type !== 'error') noticeTimer = setTimeout(hideGlobalNotice, 5000);
-      }
-
-      // Reset form
-      function resetForm () {
-        if (!confirm('Reset entire form? All data will be lost.')) return;
-        document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-        document.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
-        document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-        document.querySelectorAll('textarea').forEach(t => t.value = '');
-        D.riskBtns.forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('input[type="date"]').forEach(i => i.value = '');
-        document.getElementById('sc_role_eng').checked = true;
-
-        checkDS();
-        syncSection3ForReviewLevel();
-        checkChWarning();
-        updateProgress();
-        document.querySelectorAll('textarea').forEach(autosizeTextarea);
-        syncCommentsHeights();
-        toast('Form reset', 'info');
-      }
-
-      // Save snapshot
-      function saveSnapshot () {
-        const clone = document.documentElement.cloneNode(true);
-        const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
-        const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
-        for (let i = 0; i < liveControls.length; i++) {
-
-          const live = liveControls[i], el = cloneControls[i];
-
-          if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
-          if (el.tagName === 'SELECT') {
-            Array.from(el.options).forEach(o => o.removeAttribute('selected'));
-            if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
-            continue;
-          }
-          const type = el.getAttribute('type')?.toLowerCase();
-          if (type === 'radio' || type === 'checkbox') {
-            // Must write to attributes so `outerHTML` persists state in snapshot.
-            if (live.checked) el.setAttribute('checked', '');
-            else el.removeAttribute('checked');
-            continue;
-          }
-          el.setAttribute('value', live.value);
         }
-        const progressClone = clone.getElementsByTagName('progressBar')[0];
-        if (progressClone) progressClone.setAttribute('value', D.progressBar.value);
-        const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
-        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const title = D.workTitle.value.trim() || 'DE_CheckForm';
-        const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 80);
-        const ts = new Date().toISOString().replace(/[:.]/g, '-');
-        const a = document.createElement('a');
-        a.href = url; a.download = `${safe}__snapshot__${ts}.html`;
-        document.body.appendChild(a); a.click(); a.remove();
-        URL.revokeObjectURL(url);
-        toast('Snapshot saved', 'success');
-      }
 
-      function allRequiredFieldUnderlinesClear () {
-        return Array.from(document.querySelectorAll('.required-field-underline')).every((el) => {
-          const w = parseFloat(getComputedStyle(el).borderBottomWidth);
-          return w === 0;
-        });
-      }
+        handleGlobalChange (e) {
+          if (e.target.matches('input[type="radio"]')) {
+            this.updateProgress();
+            const name = e.target.name;
+            if (name.startsWith('sc')) {
+              if (name === 'sc11') this.updateRoleLabels(false);
+              this.showRiskConsistencyNotices();
+              this.syncSectionVisibility();
+            }
+            if (name.startsWith('ch')) this.syncCheckWarning();
+            if (name === 'sc_role') this.updateRoleLabels(true);
+          }
 
-      function isProgressComplete () {
-        return Number(D.progressBar.value) >= 100;
-      }
+          if (e.target.id === 'minCheckLevel') {
 
-      function printFormAsPdf (e) {
-        e.preventDefault();
-        updateProgress();
-        if (!allRequiredFieldUnderlinesClear() || !isProgressComplete()) {
-          toast(`Fill all required (Red Underlines) fields and complete all sections to 100% before saving as PDF.`, 'warn');
-          return;
+            this.syncDirectSupervision();
+            this.syncSectionVisibility();
+          }
+
+          if (e.target.matches('textarea')) {
+            this.autosizeTextarea(e.target);
+            this.syncCommentsHeights();
+          }
         }
-        window.print();
-      }
 
-      // ---------- Event Delegation ----------
-      document.addEventListener('click', (e) => {
-        // Section toggle (sec-head)
-        const head = e.target.closest('.sec-head');
-        if (head && head.hasAttribute('aria-controls')) {
-          const interactive = e.target.closest('button, a, input, select, textarea, label, [role="button"]');
-          if (!interactive || interactive === head) {
+        handleGlobalInput (e) {
+          // Name sync
+          if (e.target.id === 'engineer') this.elements.scName.value = e.target.value;
+          if (e.target.id === 'sc_name') this.elements.engineer.value = e.target.value;
+          if (e.target.id === 'checker' && !this.elements.cardCh.classList.contains('hidden')) {
+            this.elements.chName.value = e.target.value;
+          }
+          if (e.target.id === 'ch_name' && !this.elements.cardCh.classList.contains('hidden')) {
+            this.elements.checker.value = e.target.value;
+          }
+
+          if (e.target.matches('textarea')) {
+            this.autosizeTextarea(e.target);
+            this.syncCommentsHeights();
+          }
+        }
+
+        handleGlobalKeydown (e) {
+          const head = e.target.closest('.sec-head');
+          if (head && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();
-            head.classList.toggle('open');
-            const body = document.getElementById(head.getAttribute('aria-controls'));
-            if (body) body.classList.toggle('open');
-            head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
+            head.click();
           }
         }
 
-        // Risk buttons
-        if (e.target.classList.contains('risk-btn')) {
-          const level = e.target.dataset.risk;
-          setActiveRiskButton(level);
+        // ---------- UI State Updates ----------
+        toggleSection (head) {
+          head.classList.toggle('open');
+          const body = document.getElementById(head.getAttribute('aria-controls'));
+          if (body) body.classList.toggle('open');
+          head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
+          this.autosizeAllTextareas();
+        }
+
+        setRiskLevel (level) {
+          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
+          document.querySelector(`.risk-btn[data-risk="${level}"]`)?.classList.add('active');
           const levelMap = { low: 'Self-Check', medium: 'Check', high: 'Type 1 Independent Review Required' };
           if (levelMap[level]) {
-            D.minCheckLevel.value = levelMap[level];
-            D.minCheckLevel.dispatchEvent(new Event('change', { bubbles: true }));
+            this.elements.minCheckLevel.value = levelMap[level];
+            this.elements.minCheckLevel.dispatchEvent(new Event('change', { bubbles: true }));
           }
-          showRiskConsistencyNotices();
-          updateProgress();
+          this.showRiskConsistencyNotices();
+          this.updateProgress();
         }
 
-        // Clear buttons
-        if (e.target.id === 'clearWorkInfoBtn') {
-          e.stopPropagation();
-          clearSection('sec-info-body');
-          D.roleRadios.forEach(r => r.checked = false);
-          document.getElementById('sc_role_eng').checked = true;
-          onRoleChange();
+        getActiveRiskLevel () {
+          return document.querySelector('.risk-btn.active')?.dataset?.risk ?? null;
         }
-        if (e.target.id === 'clearSec1Btn') { e.stopPropagation(); clearSection('s1'); }
-        if (e.target.id === 'clearSec2Btn') { e.stopPropagation(); clearSection('s2'); }
-        if (e.target.id === 'clearSec3Btn') { e.stopPropagation(); clearSection('s3'); }
-        if (e.target.id === 'clearSec4Btn') { e.stopPropagation(); clearSection('s4'); }
-        if (e.target.id === 'resetFormBtn') resetForm();
-        if (e.target.id === 'saveSnapshotBtn') saveSnapshot();
-        if (e.target.id === 'saveAsPdfBtn') printFormAsPdf(e);
-        if (e.target.id === 'dismissNoticeBtn') hideGlobalNotice();
-      });
 
-      document.addEventListener('change', (e) => {
-        if (e.target.matches('input[type="radio"]')) {
-          updateProgress();
-          if (e.target.name.startsWith('sc')) {
-            if (e.target.name === 'sc11') checkDS();
-            showRiskConsistencyNotices();
-            syncSection3ForReviewLevel();
+        showRiskConsistencyNotices () {
+          const level = this.getActiveRiskLevel();
+          const exp = level ? CheckForm.RISK_MAP[level] : null;
+          const getVal = (n) => document.querySelector(`input[name="sc${n}"]:checked`)?.value;
+
+          const blocks8 = [];
+          if (exp && getVal(8) && getVal(8) !== 'na' && getVal(8) !== exp.sc8) {
+            blocks8.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
           }
-          if (e.target.name.startsWith('ch')) checkChWarning();
-          if (e.target.name === 'sc_role') onRoleChange();
-        }
-        if (e.target.id === 'minCheckLevel') {
-          checkDS();
-          syncSection3ForReviewLevel();
-          syncSection4ForPeerReview();
-        }
-        if (e.target.matches('textarea')) {
-          autosizeTextarea(e.target);
-          syncCommentsHeights();
-        }
-      });
+          this.renderNoticeStack('sc', 8, blocks8);
 
-      document.addEventListener('input', (e) => {
-        if (e.target.id === 'engineer') D.scName.value = e.target.value;
-        if (e.target.id === 'sc_name') D.engineer.value = e.target.value;
-        if (e.target.id === 'checker' && !D.cardCh.classList.contains('hidden')) D.chName.value = e.target.value;
-        if (e.target.id === 'ch_name' && !D.cardCh.classList.contains('hidden')) D.checker.value = e.target.value;
-        if (e.target.matches('textarea')) {
-          autosizeTextarea(e.target);
-          syncCommentsHeights();
-        }
-      });
+          const blocks9 = [];
+          if (getVal(9) === 'yes') {
+            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete this check form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form</strong></a>.`, type: 'warn' });
+            if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
+          }
+          this.renderNoticeStack('sc', 9, blocks9);
 
-      // Keyboard toggle
-      document.addEventListener('keydown', (e) => {
-        const head = e.target.closest('.sec-head');
-        if (head && (e.key === 'Enter' || e.key === ' ')) {
-          e.preventDefault();
-          head.click();
+          const blocks10 = [];
+          if (exp && getVal(10) && getVal(10) !== 'na' && getVal(10) !== exp.sc10) {
+            blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
+          }
+          if (getVal(10) === 'yes') {
+            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
+          }
+          this.renderNoticeStack('sc', 10, blocks10);
         }
 
-      });
+        renderNoticeStack (prefix, n, blocks) {
+          const stack = document.getElementById(`${prefix}${n}_notice_stack`);
+          if (!stack) return;
+          if (!blocks?.length) {
+            stack.innerHTML = '';
+            stack.classList.add('hidden');
+            return;
+          }
+          stack.classList.remove('hidden');
+          const svgPath = 'M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z';
+          stack.innerHTML = blocks.map(({ message, type = 'warn' }) => `
+      <div class="notice row-notice ${type}">
+        <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="${svgPath}" /></svg>
+        <span>${message}</span>
+      </div>`).join('');
+        }
 
-      // Role change handler
-      function onRoleChange (resetSc11 = true) {
-        const isEit = getRadioValue('sc_role') === 'Engineer-in-Training';
-        const sc11No = document.getElementById('sc11_no');
-        const sc11Yes = document.getElementById('sc11_yes');
-        // Only reset sc11 if explicitly requested (i.e., when role is manually changed, not during init of saved snapshot)
-        if (resetSc11) {
-          if (isEit) {
-            if (sc11No) sc11No.checked = true;
-            if (sc11Yes) sc11Yes.checked = false;
+        syncDirectSupervision () {
+          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
+          const noChecked = document.getElementById('sc11_no')?.checked ?? false;
+          this.elements.dsNotice.classList.toggle('hidden', !noChecked);
+          this.elements.cardDs.classList.toggle('hidden', !noChecked);
+          const body = this.elements.s2Body, head = this.elements.s2Head;
+          if (body && head) {
+            head.classList.toggle('open', noChecked);
+            body.classList.toggle('open', noChecked);
+            head.setAttribute('aria-expanded', noChecked ? 'true' : 'false');
+          }
+          this.updateProgress();
+        }
+
+        syncCheckWarning () {
+          const hasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
+          this.elements.chNotice.classList.toggle('hidden', !hasNo);
+          this.syncSectionVisibility(); // Peer Review may become visible
+        }
+
+        syncSectionVisibility () {
+          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
+          const q111No = document.getElementById('sc11_no')?.checked ?? false;
+          const isHighRisk = this.getActiveRiskLevel() === 'high';
+          const minLevel = this.elements.minCheckLevel.value;
+
+          // Check section
+          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
+          this.elements.cardCh.classList.toggle('hidden', !showCheck);
+          this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, showCheck);
+          this.setCheckerRequired(showCheck);
+          if (showCheck) this.syncCheckerNames();
+
+          // Peer Review section
+          const chHasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
+          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk;
+          this.elements.cardPr.classList.toggle('hidden', !showPeer);
+          this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, showPeer && chHasNo);
+
+          // Comments & Final sections
+          const dsShown = !this.elements.cardDs.classList.contains('hidden');
+          const chShown = !this.elements.cardCh.classList.contains('hidden');
+          const prShown = !this.elements.cardPr.classList.contains('hidden');
+          const commentsShown = dsShown || chShown || prShown;
+          this.elements.cardComments.classList.toggle('hidden', !commentsShown);
+          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, commentsShown);
+
+          this.elements.commentsCell3.classList.toggle('hidden', !prShown);
+          this.elements.commentsCell4.classList.toggle('hidden', !prShown);
+          this.syncCommentsHeights();
+
+          const finalShown = showPeer || isHighRisk;
+          this.elements.cardFinal.classList.toggle('hidden', !finalShown);
+          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, isHighRisk && finalShown);
+          this.autosizeAllTextareas();
+        }
+
+        syncAllSectionVisibility () {
+          this.syncDirectSupervision();
+          this.syncSectionVisibility();
+          this.syncCheckWarning();
+        }
+
+        setSectionOpen (head, body, open) {
+          if (!head || !body) return;
+          head.classList.toggle('open', open);
+          body.classList.toggle('open', open);
+          head.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        setCheckerRequired (required) {
+          const checker = this.elements.checker;
+          if (required) {
+            checker.setAttribute('required', '');
+            checker.removeAttribute('disabled');
           } else {
-            if (sc11No) sc11No.checked = false;
-            if (sc11Yes) sc11Yes.checked = false;
+            checker.removeAttribute('required');
+            checker.setAttribute('disabled', '');
           }
         }
-        D.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
-        D.engineer.placeholder = 'Type full name';
-        D.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
-        D.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
-        D.engineerResponseLabel.textContent = isEit ? 'EIT Response' : 'Engineer Response';
-        updatePorLabels();
-        updateProgress();
-        checkDS();
-        syncSection3ForReviewLevel();
+
+        syncCheckerNames () {
+          if (this.syncingNames) return;
+          this.syncingNames = true;
+          const shown = !this.elements.cardCh.classList.contains('hidden');
+          if (shown) {
+            if (this.elements.checker.value && !this.elements.chName.value) this.elements.chName.value = this.elements.checker.value;
+            else if (this.elements.chName.value && !this.elements.checker.value) this.elements.checker.value = this.elements.chName.value;
+          }
+          this.syncingNames = false;
+        }
+
+        updateRoleLabels (resetSc11 = true) {
+          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
+          const sc11No = document.getElementById('sc11_no');
+          const sc11Yes = document.getElementById('sc11_yes');
+          if (resetSc11) {
+            if (isEit) {
+              if (sc11No) sc11No.checked = true;
+              if (sc11Yes) sc11Yes.checked = false;
+            } else {
+              if (sc11No) sc11No.checked = false;
+              if (sc11Yes) sc11Yes.checked = false;
+            }
+          }
+
+          this.elements.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
+          this.elements.engineer.placeholder = 'Type full name';
+          this.elements.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
+          this.elements.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
+          this.elements.engineerResponseLabel.textContent = isEit ? 'EIT Response' : 'Engineer Response';
+
+          const q111No = document.getElementById('sc11_no')?.checked ?? false;
+          const usePor = q111No || isEit;
+          console.log(usePor);
+          const secondRole = usePor ? 'Professional of Record' : 'Checker';
+          const secondShort = usePor ? 'POR' : 'Checker';
+          if (this.elements.wiLabel) this.elements.wiLabel.textContent = secondRole;
+          if (this.elements.wiInput) this.elements.wiInput.placeholder = usePor ? 'POR name...' : 'Checker name...';
+          if (this.elements.chNameLabel) this.elements.chNameLabel.textContent = `Name (${secondShort})`;
+          if (this.elements.chSigLabel) this.elements.chSigLabel.textContent = usePor ? 'Signature (POR)' : 'Signature (Checker)';
+          if (this.elements.checkerCommentsLabel) this.elements.checkerCommentsLabel.textContent = usePor ? 'POR Comments & Corrections' : 'Checker Comments & Corrections';
+
+          this.updateProgress();
+          this.syncDirectSupervision();
+          this.syncSectionVisibility();
+        }
+
+        getRadioValue (name) {
+          return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
+        }
+
+        // ---------- Progress & Validation ----------
+        updateProgress () {
+          const counts = new Map();
+          this.sectionConfig.forEach(s => {
+            const cnt = document.querySelectorAll(`${s.rowsId} input[type="radio"]:checked`).length;
+            counts.set(s.rowsId, cnt);
+            if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
+            if (s.num) {
+              if (cnt === s.count) {
+                s.num.classList.add('complete');
+                s.num.innerHTML = `<svg width="16" height="16" viewBox="0 0 20 20" fill="white" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg>`;
+              } else {
+                s.num.classList.remove('complete');
+                s.num.textContent = s.label;
+              }
+            }
+          });
+
+          const prAnswered = (counts.get('#pr-rows') ?? 0) > 0;
+          let total = 0, answered = 0;
+          this.sectionConfig.forEach(s => {
+            const hidden = s.cardId && document.getElementById(s.cardId)?.classList.contains('hidden');
+            if (hidden) return;
+            const isSection1 = s.rowsId === '#sc-rows';
+            const isSection4 = s.rowsId === '#pr-rows';
+            if (isSection1 || !isSection4 || prAnswered) {
+              total += s.count;
+              answered += counts.get(s.rowsId) ?? 0;
+            }
+          });
+          const pct = total ? Math.round((answered / total) * 100) : 0;
+          this.elements.progressStrip.classList.toggle('completed', pct === 100);
+          this.elements.progressBar.value = pct;
+          this.elements.progressPct.textContent = `${pct}%`;
+        }
+
+        allRequiredFieldsValid () {
+          return Array.from(document.querySelectorAll('.required-field-underline')).every(el => {
+            if (el.closest('.hidden') || el.previousElementSibling.disabled) return true;
+            return parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+          });
+        }
+
+        // ---------- Textarea Utilities ----------
+        autosizeTextarea (el) {
+          if (!el) return;
+          el.style.height = 'auto';
+          el.style.height = el.offsetHeight + 'px';
+        }
+
+        autosizeAllTextareas () {
+          document.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
+        }
+
+        syncCommentsHeights () {
+          const pair = (aId, bId) => {
+            const a = document.getElementById(aId), b = document.getElementById(bId);
+            const aHidden = a?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
+            const bHidden = b?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
+            if (!a || !b || aHidden || bHidden) {
+              if (a && !aHidden) this.autosizeTextarea(a);
+              if (b && !bHidden) this.autosizeTextarea(b);
+              return;
+            }
+            a.style.height = 'auto'; b.style.height = 'auto';
+            const h = Math.max(a.scrollHeight, b.scrollHeight);
+            a.style.height = h + 'px'; b.style.height = h + 'px';
+          };
+          pair('checkerComments', 'engineerResponse');
+          pair('reviewerComments', 'engineerResponse_2');
+        }
+
+        // ---------- Section Clearing ----------
+        clearSection (sectionId) {
+          const sec = document.getElementById(sectionId);
+          if (!sec) return;
+          sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+          sec.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
+          sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+          sec.querySelectorAll('textarea').forEach(t => t.value = '');
+          sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
+
+          this.updateProgress();
+          if (sectionId === 's1') {
+            this.syncDirectSupervision();
+            this.showRiskConsistencyNotices();
+          }
+          if (sectionId === 's3') this.syncCheckWarning();
+          sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
+          this.syncCommentsHeights();
+          this.toast('Section cleared', 'info');
+        }
+
+        // ---------- Global Notice (Toast) ----------
+        hideGlobalNotice () {
+          this.elements.globalNotice.classList.add('hidden');
+          clearTimeout(this.toastTimer);
+        }
+
+        toast (msg, type = 'info') {
+          this.elements.globalNoticeText.innerHTML = msg;
+          this.elements.globalNotice.classList.remove('hidden', 'info', 'success', 'error', 'warn');
+          this.elements.globalNotice.classList.add(type);
+          clearTimeout(this.toastTimer);
+          if (type !== 'error') this.toastTimer = setTimeout(() => this.hideGlobalNotice(), 5000);
+        }
+
+        // ---------- Form Actions ----------
+        resetForm () {
+          if (!confirm('Reset entire form? All data will be lost.')) return;
+          document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+          document.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
+          document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+          document.querySelectorAll('textarea').forEach(t => t.value = '');
+          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
+          document.getElementById('sc_role_eng').checked = true;
+
+          this.updateRoleLabels(true);
+          this.syncAllSectionVisibility();
+          this.showRiskConsistencyNotices();
+          this.updateProgress();
+          this.autosizeAllTextareas();
+          this.syncCommentsHeights();
+          this.toast('Form reset', 'info');
+        }
+
+        saveSnapshot () {
+          const clone = document.documentElement.cloneNode(true);
+          const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
+          const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
+          for (let i = 0; i < liveControls.length; i++) {
+            const live = liveControls[i], el = cloneControls[i];
+            if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
+            if (el.tagName === 'SELECT') {
+              Array.from(el.options).forEach(o => o.removeAttribute('selected'));
+              if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
+              continue;
+            }
+            const type = el.getAttribute('type')?.toLowerCase();
+            if (type === 'radio' || type === 'checkbox') {
+              if (live.checked) el.setAttribute('checked', '');
+              else el.removeAttribute('checked');
+              continue;
+            }
+            el.setAttribute('value', live.value);
+          }
+          const progressClone = clone.querySelector('#progressBar');
+          if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
+
+          const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
+          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
+          const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 80);
+          const ts = new Date().toISOString().replace(/[:.]/g, '-');
+          const a = document.createElement('a');
+          a.href = url; a.download = `${safe}__snapshot__${ts}.html`;
+          document.body.appendChild(a); a.click(); a.remove();
+          URL.revokeObjectURL(url);
+          this.toast('Snapshot saved', 'success');
+        }
+
+        printFormAsPdf (e) {
+          e.preventDefault();
+          this.updateProgress();
+          if (!this.allRequiredFieldsValid() || this.elements.progressBar.value < 100) {
+            this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'warn');
+            return;
+          }
+          window.print();
+        }
       }
 
-      // MutationObserver for radio changes to update progress efficiently
-      const observer = new MutationObserver(() => updateProgress());
-      document.querySelectorAll('#sc-rows, #ds-rows, #ch-rows, #pr-rows').forEach(container => {
-        observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
-      });
-
-      // Initialize
-      // If this file was saved via "Save snapshot", the checklist rows already exist with saved
-      // `checked` states. Rebuilding rows would wipe those saved selections.
-      if (!D.scRows?.querySelector('input[type="radio"]')) buildRows(D.scRows, 'sc', SC_ITEMS, new Set([8, 9, 10, 11]));
-      if (!D.dsRows?.querySelector('input[type="radio"]')) buildRows(D.dsRows, 'ds', DS_ITEMS);
-      if (!D.chRows?.querySelector('input[type="radio"]')) buildRows(D.chRows, 'ch', CH_ITEMS, new Set([1]));
-      if (!D.prRows?.querySelector('input[type="radio"]')) buildRows(D.prRows, 'pr', PR_ITEMS);
-
-      updateProgress();
-      checkDS();
-      syncSection3ForReviewLevel();
-      syncSection4ForPeerReview();
-      syncSections5And6Visibility();
-      document.querySelectorAll('textarea').forEach(autosizeTextarea);
-      syncCommentsHeights();
-      // Detect if this is a restored snapshot: if rows exist with saved state, preserve sc11 answer
-      const isRestoredSnapshot = !!D.scRows?.querySelector('input[type="radio"]:checked');
-      onRoleChange(!isRestoredSnapshot); // only reset sc11 if fresh form, not if restoring snapshot
+      // Initialize the application when DOM is ready
+      window.addEventListener('DOMContentLoaded', () => new CheckForm());
     })();
   </script>
 </body>
