@@ -16,10 +16,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
     rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+  <script src="/sites/de/SiteAssets/js/signature-pdf-generator-clientside.js"></script>
   <style>
     /* ============================================================
     DISTRIBUTION ENGINEERING CHECK FORM
@@ -670,11 +668,6 @@
       opacity: 0.5;
     }
 
-    input:not(:required)+.required-field-underline {
-      border-bottom: 1px solid color-mix(in srgb, var(--muted-border) 60%, var(--surface-base));
-      opacity: 0.5;
-    }
-
     /* --------------------------------
     10. Role Selector
     -------------------------------- */
@@ -756,6 +749,7 @@
       border-bottom: 1px solid var(--border-soft);
       text-transform: uppercase;
       box-sizing: border-box;
+      transition: color 0.2s ease, background 0.2s ease, border 0.1s ease;
     }
 
     .risk-btn:hover {
@@ -906,7 +900,7 @@
       font-family: 'Roboto', ui-monospace, monospace;
       cursor: pointer;
       color: var(--text-muted);
-      transition: color 0.15s ease, background 0.15s ease;
+      transition: color 0.2s ease, background 0.2s ease;
       white-space: nowrap;
       letter-spacing: 0.03em;
       width: 36px;
@@ -924,7 +918,6 @@
 
     .pill-group input[id$='_yes']:hover+label {
       background: var(--low);
-      border-color: var(--low-border);
       color: var(--low-bg);
     }
 
@@ -936,7 +929,6 @@
 
     .pill-group input[id$='_no']:hover+label {
       background: var(--high);
-      border-color: var(--high-border);
       color: var(--high-bg);
     }
 
@@ -946,22 +938,17 @@
       color: var(--high);
     }
 
-    .pill-group input[id$='_na']:checked+label {
-      background: var(--muted-bg);
-      border: 1px solid var(--muted-border);
-      color: var(--text-muted);
-    }
-
     .pill-group input[id$='_na']:hover+label {
-      background: var(--text-muted);
-      border: 1px solid var(--muted-border);
+      background: var(--muted-border);
       color: var(--muted-bg);
     }
 
-    .pill-group label:hover {
-      background: var(--bg);
-      color: var(--text);
+    .pill-group input[id$='_na']:checked+label {
+      background: var(--muted-bg);
+      border: 1px solid var(--muted-border);
+      color: var(--muted-border);
     }
+
 
     /* Yes/No only variant (no N/A column) */
     .pill-group--yes-no .pill-slot-empty {
@@ -972,23 +959,30 @@
       user-select: none;
     }
 
-    label:has(+ input[id$='_na']:not(:checked)) {
-      border-left: 0px solid var(--border-soft);
-    }
-
-    label:has(+ input[id$='_no']:not(:checked)) {
-      border-right: 1px solid var(--border-soft);
-      border-left: 1px solid var(--border-soft);
-    }
-
 
     .pill-group input[id$='_na']:not(:checked)+label {
       border-right: 1px solid var(--border-soft);
+    }
+
+    .pill-group input[id$='_no']:not(:checked)+label {
+      border-right: 1px solid var(--border-soft);
+      border-left: 0px;
+    }
+
+    .pill-group input[id$='_yes']:not(:checked)+label {
       border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
     .pill-group input[id$='_yes']:not(:checked)+label:has(+ input[id$='_no']:checked) {
       border-left: 1px solid var(--border-soft);
+      border-right: 0px;
+
+    }
+
+    .pill-group input[id$='_no']:not(:checked)+label:has(+ input[id$='_na']:checked) {
+      border-left: 0px;
+      border-right: 0px;
 
     }
 
@@ -1153,6 +1147,12 @@
       padding: var(--space-cell-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
     }
 
+    textarea.comments-textarea {
+      border-top: 0px;
+      border-left: 0px;
+      border-right: 0px;
+    }
+
     /* --------------------------------
     16. Action Buttons
     -------------------------------- */
@@ -1192,6 +1192,28 @@
       border-color: var(--warn-border);
       color: var(--warn);
       background: var(--warn-bg);
+    }
+
+    .btn-action {
+      padding: 8px 14px;
+      background: #0074a4;
+      color: white;
+      border: 1px solid #0074a4;
+      border-radius: 2px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      margin: 0 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:hover:not(:disabled) {
+      background: #005a82;
+    }
+
+    .btn-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .btn-clear {
@@ -1363,6 +1385,74 @@
         }
       }
     }
+
+    /* --------------------------------
+    19. Comments Image Gallery
+    -------------------------------- */
+    .comments-image-gallery {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap-md);
+    }
+
+    .image-thumbnail {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--muted-bg);
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .image-thumbnail:hover {
+      transform: scale(1.05);
+      border-color: var(--accent);
+    }
+
+    .image-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-thumbnail-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      background: var(--color-error);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s ease;
+      opacity: 0;
+    }
+
+    .image-thumbnail:hover .image-thumbnail-remove {
+      opacity: 1;
+    }
+
+    .image-thumbnail-remove:hover {
+      background: color-mix(in srgb, var(--color-error) 80%, black);
+    }
+
+    .comments-paste-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    .comments-area {
+      border: 1px solid var(--border);
+    }
   </style>
 </head>
 
@@ -1494,15 +1584,7 @@
         </div>
         <div class="sec-body open" id="s1">
           <div id="sc-rows"></div>
-          <div class="notice warn hidden" id="dsNotice">
-            <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" />
-            </svg>
-            <span><b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b>
-              must complete the
-              <b>Direct Supervision</b> and <b>Check</b> sections below.</span>
-          </div>
+
           <div class="sig-grid">
             <div class="sig-cell">
               <label class="field-label" for="sc_date">Date</label>
@@ -1644,20 +1726,47 @@
         </div>
         <div class="sec-body" id="s5">
           <div class="comments-grid" id="commentsGrid">
-            <div class="comments-cell" id="commentsCell1"><label class="field-label" for="checkerComments">Checker
-                Comments &amp; Corrections</label><textarea class="field-input" id="checkerComments"
-                placeholder="Enter comments, corrections, or corrective actions…" rows="4"></textarea></div>
+            <div class="comments-cell" id="commentsCell1">
+              <label class="field-label" for="checkerComments">Checker Comments &amp; Corrections</label>
+              <div class="comments-area">
+                <textarea class="field-input comments-textarea" id="checkerComments"
+                  placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)"
+                  rows="4"></textarea>
+                <div class="comments-image-gallery" id="checkerComments-gallery"></div>
+                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
+                </div>
+              </div>
+            </div>
             <div class="comments-cell" id="commentsCell2"><label class="field-label" for="engineerResponse">Engineer
-                Response</label><textarea class="field-input" id="engineerResponse"
-                placeholder="Accept / Reject / Address comments…" rows="4"></textarea></div>
+                Response</label>
+              <div class="comments-area"><textarea class="field-input comments-textarea" id="engineerResponse"
+                  placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"></textarea>
+                <div class="comments-image-gallery" id="engineerResponse-gallery"></div>
+                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
+                </div>
+              </div>
+            </div>
             <div class="comments-cell hidden" id="commentsCell3"><label class="field-label"
-                for="reviewerComments">Reviewer Comments &amp; Corrections</label><textarea class="field-input"
-                id="reviewerComments" placeholder="Enter comments, corrections, or corrective actions…"
-                rows="4"></textarea>
+                for="reviewerComments">Reviewer Comments &amp; Corrections</label>
+              <div class="comments-area">
+                <textarea class="field-input comments-textarea" id="reviewerComments"
+                  placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)"
+                  rows="4"></textarea>
+                <div class="comments-image-gallery" id="reviewerComments-gallery"></div>
+                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
+                </div>
+              </div>
             </div>
             <div class="comments-cell hidden" id="commentsCell4"><label class="field-label"
-                for="engineerResponse_2">Engineer Response</label><textarea class="field-input" id="engineerResponse_2"
-                placeholder="Accept / Reject / Address comments…" rows="4"></textarea></div>
+                for="engineerResponse_2">Engineer Response</label>
+              <div class="comments-area">
+                <textarea class="field-input comments-textarea" id="engineerResponse_2"
+                  placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"></textarea>
+                <div class="comments-image-gallery" id="engineerResponse_2-gallery"></div>
+                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1810,7 +1919,6 @@
             cardComments: get('card-comments'),
             cardFinal: get('card-final'),
             // Notices
-            dsNotice: get('dsNotice'),
             chNotice: get('chNotice'),
             globalNotice: get('globalNotice'),
             globalNoticeText: get('globalNoticeText'),
@@ -1949,6 +2057,7 @@
           document.addEventListener('change', this.handleGlobalChange.bind(this));
           document.addEventListener('input', this.handleGlobalInput.bind(this));
           document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
+          document.addEventListener('paste', this.handlePaste.bind(this));
 
           // MutationObserver for radio changes (progress updates)
           const observer = new MutationObserver(() => this.updateProgress());
@@ -1999,12 +2108,18 @@
             this.updateProgress();
             const name = e.target.name;
             if (name.startsWith('sc')) {
-              if (name === 'sc11') this.updateRoleLabels(false);
+              if (name === 'sc11') {
+                this.updateRoleLabels(false);
+                this.showRiskConsistencyNotices();
+              };
               this.showRiskConsistencyNotices();
               this.syncSectionVisibility();
             }
             if (name.startsWith('ch')) this.syncCheckWarning();
-            if (name === 'sc_role') this.updateRoleLabels(true);
+            if (name === 'sc_role') {
+              this.updateRoleLabels(true);
+              this.showRiskConsistencyNotices();
+            };
           }
 
           if (e.target.id === 'minCheckLevel') {
@@ -2044,6 +2159,138 @@
           }
         }
 
+        handlePaste (e) {
+          const textarea = e.target.closest('.comments-textarea');
+          if (!textarea) return;
+
+          const items = e.clipboardData?.items;
+          if (!items) return;
+
+          let hasImage = false;
+          for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+              hasImage = true;
+              const file = item.getAsFile();
+              if (file) {
+                e.preventDefault();
+                this.processImageFile(file, textarea.id);
+              }
+            }
+          }
+        }
+
+        processImageFile (file, textareaId) {
+          const reader = new FileReader();
+
+          reader.onload = (e) => {
+            const imgDataUrl = e.target.result;
+            const galleryId = `${textareaId}-gallery`;
+            const gallery = document.getElementById(galleryId);
+
+            if (gallery) {
+              this.addImageToGallery(gallery, imgDataUrl);
+            }
+          };
+
+          reader.readAsDataURL(file);
+        }
+
+        addImageToGallery (gallery, imgDataUrl) {
+          const container = document.createElement('div');
+          container.className = 'image-thumbnail';
+
+          const img = document.createElement('img');
+          img.src = imgDataUrl;
+          img.alt = 'Pasted screenshot';
+
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'image-thumbnail-remove';
+          removeBtn.innerHTML = '&times;';
+          removeBtn.setAttribute('aria-label', 'Remove this image');
+
+          removeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            container.remove();
+          });
+
+          // Add click handler to expand image in modal view
+          img.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.showImageModal(imgDataUrl);
+          });
+
+          container.appendChild(img);
+          container.appendChild(removeBtn);
+          gallery.appendChild(container);
+        }
+
+        showImageModal (imgDataUrl) {
+          const modal = document.createElement('div');
+          modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            cursor: pointer;
+          `;
+
+          const img = document.createElement('img');
+          img.src = imgDataUrl;
+          img.style.cssText = `
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+          `;
+
+          const closeBtn = document.createElement('button');
+          closeBtn.innerHTML = '&times;';
+          closeBtn.style.cssText = `
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+          `;
+
+          closeBtn.addEventListener('mouseover', () => {
+            closeBtn.style.background = 'rgba(255, 255, 255, 0.4)';
+          });
+
+          closeBtn.addEventListener('mouseout', () => {
+            closeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+          });
+
+          const close = () => modal.remove();
+          closeBtn.addEventListener('click', close);
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) close();
+          });
+
+          modal.appendChild(img);
+          modal.appendChild(closeBtn);
+          document.body.appendChild(modal);
+        }
+
         // ---------- UI State Updates ----------
         toggleSection (head) {
           head.classList.toggle('open');
@@ -2070,6 +2317,7 @@
         }
 
         showRiskConsistencyNotices () {
+          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
           const level = this.getActiveRiskLevel();
           const exp = level ? CheckForm.RISK_MAP[level] : null;
           const getVal = (n) => document.querySelector(`input[name="sc${n}"]:checked`)?.value;
@@ -2095,6 +2343,19 @@
             blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 10, blocks10);
+
+          const blocks11 = [];
+          if (isEit && getVal(11) === 'yes') {
+            blocks11.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
+          }
+          if (getVal(11) === 'no') {
+            blocks11.push({
+              message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b>
+            must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn'
+            });
+          }
+          this.renderNoticeStack('sc', 11, blocks11);
+
         }
 
         renderNoticeStack (prefix, n, blocks) {
@@ -2117,7 +2378,6 @@
         syncDirectSupervision () {
           const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
           const noChecked = document.getElementById('sc11_no')?.checked ?? false;
-          this.elements.dsNotice.classList.toggle('hidden', !noChecked);
           this.elements.cardDs.classList.toggle('hidden', !noChecked);
           const body = this.elements.s2Body, head = this.elements.s2Head;
           if (body && head) {
@@ -2228,7 +2488,6 @@
 
           const q111No = document.getElementById('sc11_no')?.checked ?? false;
           const usePor = q111No || isEit;
-          console.log(usePor);
           const secondRole = usePor ? 'Professional of Record' : 'Checker';
           const secondShort = usePor ? 'POR' : 'Checker';
           if (this.elements.wiLabel) this.elements.wiLabel.textContent = secondRole;
@@ -2400,7 +2659,7 @@
           const url = URL.createObjectURL(blob);
           const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
           const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 80);
-          const ts = new Date().toISOString().replace(/[:.]/g, '-');
+          const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
           const a = document.createElement('a');
           a.href = url; a.download = `${safe}__snapshot__${ts}.html`;
           document.body.appendChild(a); a.click(); a.remove();

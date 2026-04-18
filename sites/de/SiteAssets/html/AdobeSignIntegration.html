@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adobe Sign Document Signing</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .row.full {
+      grid-template-columns: 1fr;
+    }
+
+    /* Adobe Sign Embedded Signing Container */
+    .adobe-sign-container {
+      background: #f5f5f5;
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      min-height: 600px;
+    }
+
+    #adobe-dc-view {
+      height: 600px;
+      border-radius: 6px;
+    }
+
+    .status-indicator {
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    .status-indicator.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .status-indicator.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .status-indicator.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      display: block;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 14px 24px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .signing-info {
+      background: #f9f9f9;
+      padding: 20px;
+      border-left: 4px solid #667eea;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    .signing-info h4 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .signing-info p {
+      color: #666;
+      margin: 5px 0;
+      font-size: 0.95em;
+    }
+
+    .document-preview {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .agreement-text {
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      margin: 15px 0;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .tab-button {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s;
+    }
+
+    .tab-button.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 1.8em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📝 Adobe Sign Integration</h1>
+      <p>Send Documents for Digital Signature - Professional & Cloud-Based</p>
+    </div>
+
+    <div class="content">
+      <!-- Status Messages -->
+      <div id="statusMessage" class="status-indicator"></div>
+
+      <!-- Tab Navigation -->
+      <div class="tabs">
+        <button class="tab-button active" onclick="switchTab('send-agreement')">
+          📤 Send for Signature
+        </button>
+        <button class="tab-button" onclick="switchTab('view-agreement')">
+          👁️ View Agreement
+        </button>
+        <button class="tab-button" onclick="switchTab('status')">
+          📊 Status & History
+        </button>
+      </div>
+
+      <!-- TAB 1: Send for Signature -->
+      <div id="send-agreement" class="tab-content active">
+        <form id="adobeSignForm">
+          <!-- Document Information -->
+          <div class="form-section">
+            <h2 class="section-title">📋 Document Information</h2>
+
+            <div class="row">
+              <div class="form-group">
+                <label for="agreementTitle">Agreement Title *</label>
+                <input type="text" id="agreementTitle" placeholder="e.g., Service Agreement" required>
+              </div>
+              <div class="form-group">
+                <label for="agreementType">Agreement Type</label>
+                <select id="agreementType">
+                  <option value="service">Service Agreement</option>
+                  <option value="nda">Non-Disclosure Agreement</option>
+                  <option value="contract">Contract</option>
+                  <option value="form">Form</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="agreementContent">Agreement Content</label>
+              <textarea id="agreementContent" placeholder="Enter the agreement text...">TERMS AND CONDITIONS
+
+This Service Agreement ("Agreement") is entered into as of today's date between the parties.
+
+1. SERVICES
+The Provider agrees to deliver the services as described in this Agreement.
+
+2. PAYMENT TERMS
+Payment shall be made within 30 days of invoice.
+
+3. CONFIDENTIALITY
+All information shared under this Agreement is confidential.
+
+4. TERM
+This Agreement is effective for one (1) year from the date of execution.
+
+5. TERMINATION
+Either party may terminate with 30 days written notice.
+
+By signing below, you agree to all terms outlined above.</textarea>
+            </div>
+          </div>
+
+          <!-- Signers Information -->
+          <div class="form-section">
+            <h2 class="section-title">👥 Signer Information</h2>
+            <p style="color: #666; margin-bottom: 15px;">Add recipients who will sign this document.</p>
+
+            <div id="signersContainer">
+              <div class="signer-block" id="signer-0">
+                <div class="row">
+                  <div class="form-group">
+                    <label>Signer Name *</label>
+                    <input type="text" class="signer-name" placeholder="Full name" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" class="signer-email" placeholder="email@example.com" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group">
+                    <label>Role</label>
+                    <select class="signer-role">
+                      <option value="Signer">Signer</option>
+                      <option value="Approver">Approver</option>
+                      <option value="Viewer">Viewer</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Signing Order</label>
+                    <input type="number" class="signer-order" value="1" min="1">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="btn-secondary" onclick="addSigner()" style="margin-top: 15px;">
+              ➕ Add Another Signer
+            </button>
+          </div>
+
+          <!-- Adobe Sign Options -->
+          <div class="form-section">
+            <h2 class="section-title">⚙️ Signature Options</h2>
+
+            <div class="row">
+              <div class="form-group">
+                <label for="signMethod">Signature Method</label>
+                <select id="signMethod">
+                  <option value="SIGN">Signature</option>
+                  <option value="INITIALS">Initials</option>
+                  <option value="APPROVE">Approve</option>
+                  <option value="DECLINE">Decline</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="daystoExpire">Days to Expire</label>
+                <input type="number" id="daystoExpire" value="7" min="1" max="365">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group">
+                <label for="reminderFrequency">Reminder Frequency (days)</label>
+                <input type="number" id="reminderFrequency" value="3" min="1">
+              </div>
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="requireAuth" checked> Require Authentication
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message to Signers</label>
+              <textarea id="message" placeholder="Include a personal message...">Hello,
+
+Please review and sign the attached agreement at your earliest convenience.
+
+Thank you!</textarea>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="previewAgreement()">
+              👁️ Preview
+            </button>
+            <button type="reset" class="btn-secondary">
+              🔄 Reset
+            </button>
+            <button type="submit" class="btn-primary">
+              📤 Send for Signature
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- TAB 2: View Agreement -->
+      <div id="view-agreement" class="tab-content">
+        <div class="form-section">
+          <h2 class="section-title">📄 View Document</h2>
+          <p style="color: #666; margin-bottom: 15px;">
+            Paste an agreement ID or document URL to view and track signatures.
+          </p>
+
+          <div class="row full">
+            <div class="form-group">
+              <label for="agreementId">Agreement ID or URL</label>
+              <input type="text" id="agreementId" placeholder="e.g., CBJCHBCAABAAkRaRpHBnBDVQZP7wz4YcJXhXDBzf8GAd" style="font-family: monospace;">
+            </div>
+          </div>
+
+          <div class="row full">
+            <button type="button" class="btn-primary" onclick="loadAgreement()">
+              🔍 Load Agreement
+            </button>
+          </div>
+        </div>
+
+        <!-- Adobe Sign Embedded Signing View -->
+        <div class="form-section">
+          <div id="adobe-dc-view"></div>
+        </div>
+
+        <!-- Agreement Details -->
+        <div id="agreementDetails" style="display: none;">
+          <div class="form-section">
+            <h2 class="section-title">📋 Agreement Details</h2>
+            <div class="signing-info">
+              <h4>Agreement Information</h4>
+              <p><strong>Name:</strong> <span id="detailName">-</span></p>
+              <p><strong>Status:</strong> <span id="detailStatus">-</span></p>
+              <p><strong>Created:</strong> <span id="detailCreated">-</span></p>
+              <p><strong>Last Modified:</strong> <span id="detailModified">-</span></p>
+            </div>
+
+            <h3 style="margin-top: 20px; color: #333;">Signing Progress</h3>
+            <div id="signingProgress"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Status & History -->
+      <div id="status" class="tab-content">
+        <div class="form-section">
+          <h2 class="section-title">📊 Recent Agreements</h2>
+
+          <div id="agreementsList" style="display: none;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                  <th style="padding: 12px; text-align: left;">Title</th>
+                  <th style="padding: 12px; text-align: left;">Status</th>
+                  <th style="padding: 12px; text-align: left;">Created</th>
+                  <th style="padding: 12px; text-align: left;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="agreementsTableBody">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="noAgreements" style="text-align: center; padding: 40px; color: #999;">
+            <p>No agreements found. Send one to get started!</p>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="section-title">📈 Activity Log</h2>
+          <div id="activityLog" style="max-height: 400px; overflow-y: auto;">
+            <p style="color: #999; text-align: center; padding: 20px;">No activity yet</p>
+          </div>
+        </div>
+
+        <div class="button-group" style="margin-top: 20px;">
+          <button type="button" class="btn-secondary" onclick="refreshAgreements()">
+            🔄 Refresh
+          </button>
+          <button type="button" class="btn-secondary" onclick="exportData()">
+            📥 Export
+          </button>
+          <button type="button" class="btn-success" style="grid-column: span 1;" onclick="clearAllData()">
+            🗑️ Clear Local Data
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adobe Sign Embed CSS -->
+  <link rel="stylesheet" href="https://secure.adobesign.com/public/i18n/en_US/viewer/style.css">
+
+  <!-- Adobe Sign Embed JavaScript -->
+  <script src="https://documentservices.adobe.com/view-sdk/viewer.js"></script>
+  <script src="https://secure.adobesign.com/api/agreement/embed.js"></script>
+
+  <script>
+    // Configuration
+    const CONFIG = {
+      apiBaseUrl: 'http://localhost:5000/api',
+      clientId: 'your_adobe_client_id',
+      redirectUri: window.location.href
+    };
+
+    // Tab switching
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Show selected tab
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Show status message
+    function showStatus(message, type = 'info') {
+      const el = document.getElementById('statusMessage');
+      el.textContent = message;
+      el.className = `status-indicator ${type}`;
+      setTimeout(() => {
+        el.className = 'status-indicator';
+      }, 5000);
+    }
+
+    // Add signer
+    function addSigner() {
+      const container = document.getElementById('signersContainer');
+      const count = container.children.length;
+
+      const newSigner = document.createElement('div');
+      newSigner.className = 'signer-block';
+      newSigner.id = `signer-${count}`;
+      newSigner.innerHTML = `
+        <div class="row">
+          <div class="form-group">
+            <label>Signer Name *</label>
+            <input type="text" class="signer-name" placeholder="Full name" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" class="signer-email" placeholder="email@example.com" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>Role</label>
+            <select class="signer-role">
+              <option value="Signer">Signer</option>
+              <option value="Approver">Approver</option>
+              <option value="Viewer">Viewer</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Signing Order</label>
+            <input type="number" class="signer-order" value="${count + 1}" min="1">
+          </div>
+        </div>
+        <button type="button" class="btn-secondary" onclick="removeSigner(${count})" style="margin-top: 10px;">
+          ✕ Remove
+        </button>
+      `;
+
+      container.appendChild(newSigner);
+    }
+
+    // Remove signer
+    function removeSigner(index) {
+      const el = document.getElementById(`signer-${index}`);
+      if (el) el.remove();
+    }
+
+    // Preview agreement
+    function previewAgreement() {
+      const title = document.getElementById('agreementTitle').value || 'Agreement';
+      const content = document.getElementById('agreementContent').value || '';
+      const message = document.getElementById('message').value || '';
+
+      const preview = `
+        <div class="signing-info">
+          <h4>Agreement Preview</h4>
+          <p><strong>Title:</strong> ${title}</p>
+          <p><strong>Message to Signers:</strong></p>
+          <p style="white-space: pre-wrap; margin-top: 10px;">${message}</p>
+        </div>
+        <div class="agreement-text">
+          ${content.replace(/\n/g, '<br>')}
+        </div>
+      `;
+
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      `;
+      modal.innerHTML = `
+        <div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; max-height: 80vh; overflow-y: auto;">
+          <button onclick="this.parentElement.parentElement.remove()" style="float: right; background: #f0f0f0; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">✕</button>
+          ${preview}
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    // Send for signature
+    document.getElementById('adobeSignForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const signers = [];
+      document.querySelectorAll('.signer-block').forEach(block => {
+        signers.push({
+          name: block.querySelector('.signer-name').value,
+          email: block.querySelector('.signer-email').value,
+          role: block.querySelector('.signer-role').value,
+          order: block.querySelector('.signer-order').value
+        });
+      });
+
+      const data = {
+        title: document.getElementById('agreementTitle').value,
+        type: document.getElementById('agreementType').value,
+        content: document.getElementById('agreementContent').value,
+        signers: signers,
+        signMethod: document.getElementById('signMethod').value,
+        daystoExpire: document.getElementById('daystoExpire').value,
+        reminderFrequency: document.getElementById('reminderFrequency').value,
+        requireAuth: document.getElementById('requireAuth').checked,
+        message: document.getElementById('message').value
+      };
+
+      try {
+        showStatus('⏳ Sending agreement for signature...', 'info');
+
+        const response = await fetch(`${CONFIG.apiBaseUrl}/adobe-sign/send`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showStatus(`✓ Agreement sent successfully! ID: ${result.agreementId}`, 'success');
+          saveAgreement(result);
+          document.getElementById('adobeSignForm').reset();
+        } else {
+          showStatus(`✗ Error: ${result.message}`, 'error');
+        }
+      } catch (error) {
+        showStatus(`✗ Error sending agreement: ${error.message}`, 'error');
+        console.error('Error:', error);
+      }
+    });
+
+    // Save agreement locally
+    function saveAgreement(agreement) {
+      let agreements = JSON.parse(localStorage.getItem('adobeAgreements') || '[]');
+      agreements.unshift({
+        agreementId: agreement.agreementId,
+        title: agreement.title,
+        status: 'SENT',
+        created: new Date().toISOString(),
+        signers: agreement.signers || []
+      });
+      localStorage.setItem('adobeAgreements', JSON.stringify(agreements.slice(0, 50)));
+      refreshAgreements();
+    }
+
+    // Load agreement details
+    async function loadAgreement() {
+      const agreementId = document.getElementById('agreementId').value;
+
+      if (!agreementId) {
+        showStatus('Please enter an agreement ID or URL', 'error');
+        return;
+      }
+
+      try {
+        showStatus('⏳ Loading agreement...', 'info');
+
+        const response = await fetch(`${CONFIG.apiBaseUrl}/adobe-sign/agreement/${agreementId}`, {
+          headers: {
+            'Authorization': `Bearer your_access_token`
+          }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          displayAgreementDetails(result.agreement);
+          showStatus('✓ Agreement loaded', 'success');
+        } else {
+          showStatus(`✗ Error: ${result.message}`, 'error');
+        }
+      } catch (error) {
+        showStatus(`✗ Error loading agreement: ${error.message}`, 'error');
+      }
+    }
+
+    // Display agreement details
+    function displayAgreementDetails(agreement) {
+      document.getElementById('agreementDetails').style.display = 'block';
+      document.getElementById('detailName').textContent = agreement.name;
+      document.getElementById('detailStatus').textContent = agreement.status;
+      document.getElementById('detailCreated').textContent = new Date(agreement.createdDate).toLocaleString();
+      document.getElementById('detailModified').textContent = new Date(agreement.lastEventDate).toLocaleString();
+
+      // Display signing progress
+      let signingProgress = '';
+      if (agreement.participantSets && agreement.participantSets[0].signingProgress) {
+        agreement.participantSets[0].signingProgress.forEach(progress => {
+          const statusColor = progress.status === 'SIGNED' ? '#28a745' : progress.status === 'WAITING' ? '#ffc107' : '#ddd';
+          signingProgress += `
+            <div style="background: white; padding: 15px; border-left: 4px solid ${statusColor}; margin-bottom: 10px; border-radius: 4px;">
+              <p><strong>${progress.name}</strong></p>
+              <p style="color: #666;">Status: ${progress.status}</p>
+              ${progress.signedDate ? `<p style="color: #666; font-size: 0.9em;">Signed: ${new Date(progress.signedDate).toLocaleString()}</p>` : ''}
+            </div>
+          `;
+        });
+      }
+      document.getElementById('signingProgress').innerHTML = signingProgress || '<p style="color: #999;">No signing progress available</p>';
+    }
+
+    // Refresh agreements list
+    function refreshAgreements() {
+      const agreements = JSON.parse(localStorage.getItem('adobeAgreements') || '[]');
+
+      if (agreements.length === 0) {
+        document.getElementById('agreementsList').style.display = 'none';
+        document.getElementById('noAgreements').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('agreementsList').style.display = 'block';
+      document.getElementById('noAgreements').style.display = 'none';
+
+      const tbody = document.getElementById('agreementsTableBody');
+      tbody.innerHTML = agreements.map((agreement, index) => `
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td style="padding: 12px;">${agreement.title}</td>
+          <td style="padding: 12px;">
+            <span style="background: ${agreement.status === 'SIGNED' ? '#d4edda' : '#d1ecf1'}; 
+                         color: ${agreement.status === 'SIGNED' ? '#155724' : '#0c5460'};
+                         padding: 4px 8px; border-radius: 4px;">
+              ${agreement.status}
+            </span>
+          </td>
+          <td style="padding: 12px; font-size: 0.9em;">${new Date(agreement.created).toLocaleString()}</td>
+          <td style="padding: 12px;">
+            <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.9em;" 
+                    onclick="document.getElementById('agreementId').value = '${agreement.agreementId}'; loadAgreement();">
+              View
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Export data
+    function exportData() {
+      const agreements = JSON.parse(localStorage.getItem('adobeAgreements') || '[]');
+      const csv = [
+        ['Title', 'Status', 'Created', 'Agreement ID'],
+        ...agreements.map(a => [a.title, a.status, a.created, a.agreementId])
+      ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `agreements_${new Date().getTime()}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    // Clear local data
+    function clearAllData() {
+      if (confirm('Are you sure you want to clear all local data?')) {
+        localStorage.removeItem('adobeAgreements');
+        document.getElementById('agreementsList').style.display = 'none';
+        document.getElementById('noAgreements').style.display = 'block';
+        showStatus('✓ Data cleared', 'success');
+      }
+    }
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+      refreshAgreements();
+      showStatus('✓ Ready to send documents for signature', 'success');
+    });
+  </script>
+</body>
+
+</html>

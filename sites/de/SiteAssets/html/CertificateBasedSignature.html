@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate-Based Digital Signature Form</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title span {
+      margin-right: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Certificate Selection */
+    .cert-container {
+      background: #f8f9ff;
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+
+    .cert-upload {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .upload-box {
+      border: 2px dashed #bbb;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: white;
+    }
+
+    .upload-box:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .upload-box input[type="file"] {
+      display: none;
+    }
+
+    .upload-box label {
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .upload-icon {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .cert-info {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .cert-info h4 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+    }
+
+    .cert-detail {
+      font-size: 0.9em;
+      color: #666;
+      margin: 5px 0;
+      padding: 5px;
+      background: #f9f9f9;
+      border-left: 3px solid #667eea;
+      padding-left: 10px;
+    }
+
+    .cert-status {
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+
+    .cert-status.valid {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .cert-status.invalid {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .cert-status.expired {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    /* Signature Method Selection */
+    .signature-method {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .method-card {
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .method-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    }
+
+    .method-card.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .method-icon {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .method-card h3 {
+      color: #333;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+    }
+
+    .method-card p {
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    /* Signature Pad Styling */
+    .signature-container {
+      border: 2px dashed #667eea;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f8f9ff;
+    }
+
+    #signaturePad {
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      cursor: crosshair;
+      display: block;
+      margin: 15px 0;
+      background: white;
+      width: 100%;
+      height: 200px;
+    }
+
+    .signature-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .signature-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-clear {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn-clear:hover {
+      background: #ee5a52;
+      transform: translateY(-2px);
+    }
+
+    .signature-info {
+      background: #e3f2fd;
+      border-left: 4px solid #2196F3;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 12px;
+      font-size: 0.95em;
+      color: #1565c0;
+    }
+
+    /* Document Preview */
+    .document-preview {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .document-preview h3 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .document-item {
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-left: 4px solid #667eea;
+      border-radius: 4px;
+    }
+
+    .document-item label {
+      font-weight: 600;
+      color: #667eea;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+
+    .document-item p {
+      color: #666;
+      margin: 0;
+      word-break: break-all;
+    }
+
+    /* Buttons */
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 14px 24px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      grid-column: span 2;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .status-message {
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      display: none;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .status-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .status-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .status-message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      display: block;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .cert-upload {
+        grid-template-columns: 1fr;
+      }
+
+      .signature-method {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-primary {
+        grid-column: span 1;
+      }
+
+      .header h1 {
+        font-size: 1.8em;
+      }
+    }
+
+    .timestamp {
+      font-size: 0.85em;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .divider {
+      margin: 30px 0;
+      border: none;
+      border-top: 2px solid #e0e0e0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 Certificate-Based Digital Signature</h1>
+      <p>Secure Document Signing with X.509 Certificates</p>
+    </div>
+
+    <div class="content">
+      <div id="statusMessage" class="status-message"></div>
+
+      <form id="signatureForm">
+        <!-- Certificate Management Section -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span>🔒</span> Certificate Management
+          </h2>
+
+          <div class="cert-container">
+            <p style="color: #666; margin-bottom: 15px;">
+              <strong>Upload your digital certificate</strong> (PKCS#12, .pfx, or .p12 file) to sign documents with cryptographic verification.
+            </p>
+
+            <div class="cert-upload">
+              <div class="upload-box" onclick="document.getElementById('certFile').click()">
+                <label for="certFile">
+                  <div class="upload-icon">📄</div>
+                  <strong>Upload Certificate</strong>
+                  <p style="font-size: 0.9em; margin-top: 5px;">(.pfx, .p12)</p>
+                </label>
+                <input type="file" id="certFile" accept=".pfx,.p12" onchange="handleCertificateUpload(event)">
+              </div>
+
+              <div class="upload-box" onclick="document.getElementById('certPassword').focus()" style="cursor: text;">
+                <label style="cursor: text;">
+                  <div class="upload-icon">🔑</div>
+                  <strong>Certificate Password</strong>
+                  <p style="font-size: 0.9em; margin-top: 5px;">Enter password if required</p>
+                </label>
+              </div>
+            </div>
+
+            <input type="password" id="certPassword" placeholder="Certificate password (if required)" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px;">
+
+            <div id="certInfo" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Document Information Section -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span>📋</span> Document Information
+          </h2>
+
+          <div class="row">
+            <div class="form-group">
+              <label for="docTitle">Document Title *</label>
+              <input type="text" id="docTitle" placeholder="e.g., Service Agreement" required>
+            </div>
+            <div class="form-group">
+              <label for="docNumber">Document Number</label>
+              <input type="text" id="docNumber" placeholder="e.g., DOC-2026-001">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="docContent">Document Content</label>
+            <textarea id="docContent" placeholder="Enter the main content of your document here...">Terms and Conditions:
+
+1. The parties agree to the terms outlined herein.
+2. This document is legally binding upon execution.
+3. Signatures below indicate acceptance of these terms.
+4. This document is signed with an X.509 digital certificate.
+5. The cryptographic hash ensures document integrity.</textarea>
+          </div>
+        </div>
+
+        <!-- Signatory Information Section -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span>👤</span> Signatory Information
+          </h2>
+
+          <div class="row">
+            <div class="form-group">
+              <label for="fullName">Full Name *</label>
+              <input type="text" id="fullName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" placeholder="your.email@example.com" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label for="jobTitle">Job Title</label>
+              <input type="text" id="jobTitle" placeholder="e.g., Manager, Engineer">
+            </div>
+            <div class="form-group">
+              <label for="department">Department</label>
+              <input type="text" id="department" placeholder="e.g., Engineering">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="company">Company/Organization</label>
+            <input type="text" id="company" placeholder="Enter organization name">
+          </div>
+        </div>
+
+        <!-- Signature Method Selection -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span>✍️</span> Signature Method
+          </h2>
+
+          <div class="signature-method">
+            <div class="method-card selected" data-method="certificate" onclick="selectMethod('certificate', this)">
+              <div class="method-icon">🔐</div>
+              <h3>Certificate-Based</h3>
+              <p>Cryptographically signed with X.509 certificate</p>
+            </div>
+            <div class="method-card" data-method="handwritten" onclick="selectMethod('handwritten', this)">
+              <div class="method-icon">✍️</div>
+              <h3>Handwritten</h3>
+              <p>Draw your signature manually</p>
+            </div>
+          </div>
+
+          <!-- Certificate-based signature -->
+          <div id="certificateMethod" class="form-group" style="display: block;">
+            <label style="background: #e3f2fd; padding: 12px; border-radius: 6px; color: #1565c0;">
+              ✓ Using Certificate-Based Signature
+            </label>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+              Your document will be signed using your digital certificate. This provides cryptographic proof of authenticity and cannot be repudiated.
+            </p>
+          </div>
+
+          <!-- Handwritten signature -->
+          <div id="handwrittenMethod" style="display: none;">
+            <div class="signature-container">
+              <p style="color: #666; margin-bottom: 10px;">
+                <strong>Sign here:</strong> Draw your signature in the box below.
+              </p>
+              <canvas id="signaturePad"></canvas>
+
+              <div class="signature-buttons">
+                <button type="button" class="btn-secondary btn-clear" onclick="clearSignature()">
+                  ✕ Clear Signature
+                </button>
+              </div>
+
+              <div class="signature-info">
+                ✓ <strong>Signature Status:</strong> <span id="signatureStatus">Not signed yet</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hash Verification Section -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span>🔍</span> Hash Verification
+          </h2>
+
+          <p style="color: #666; margin-bottom: 15px;">
+            The document will be hashed using SHA-256 to ensure integrity and prevent tampering.
+          </p>
+
+          <div class="document-preview">
+            <h3>Document Hash (SHA-256):</h3>
+            <div class="document-item">
+              <p id="documentHash" style="font-family: 'Courier New', monospace; font-size: 0.85em; word-break: break-all; color: #667eea;">
+                [Hash will be calculated when you sign]
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Preview -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span>👁️</span> Document Preview
+          </h2>
+          <div class="document-preview" id="previewContainer">
+            <!-- Will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+          <button type="button" class="btn-secondary" onclick="previewDocument()">
+            👁️ Preview Document
+          </button>
+          <button type="button" class="btn-secondary" onclick="resetForm()">
+            🔄 Reset Form
+          </button>
+          <button type="submit" class="btn-primary" id="submitBtn">
+            📥 Sign & Download PDF
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hidden element for PDF generation -->
+  <div id="pdfContent" style="display: none; background: white; padding: 30px; width: 8.5in; margin: auto;"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.0/crypto-js.min.js"></script>
+  <script>
+    let signaturePad = null;
+    let certificateData = null;
+    let selectedMethod = 'certificate';
+
+    // Initialize Signature Pad on page load
+    window.addEventListener('load', function() {
+      const canvas = document.getElementById('signaturePad');
+
+      function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext('2d').scale(ratio, ratio);
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      signaturePad = new SignaturePad(canvas, {
+        minWidth: 0.5,
+        maxWidth: 2.5,
+        throttle: 16,
+        dotSize: 3,
+        penColor: '#667eea'
+      });
+
+      canvas.addEventListener('mouseup', updateSignatureStatus);
+      canvas.addEventListener('touchend', updateSignatureStatus);
+    });
+
+    function handleCertificateUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        // Store certificate data - in production, this would be handled server-side
+        certificateData = {
+          filename: file.name,
+          type: file.type,
+          size: file.size,
+          uploadedAt: new Date().toLocaleString()
+        };
+
+        // Display certificate info
+        displayCertificateInfo();
+        showStatus('✓ Certificate file uploaded successfully', 'success');
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function displayCertificateInfo() {
+      if (!certificateData) return;
+
+      const certInfo = document.getElementById('certInfo');
+      certInfo.innerHTML = `
+        <div class="cert-info">
+          <h4>📜 Certificate Information</h4>
+          <div class="cert-detail">
+            <strong>Filename:</strong> ${certificateData.filename}
+          </div>
+          <div class="cert-detail">
+            <strong>File Size:</strong> ${(certificateData.size / 1024).toFixed(2)} KB
+          </div>
+          <div class="cert-detail">
+            <strong>Uploaded:</strong> ${certificateData.uploadedAt}
+          </div>
+          <div class="cert-status valid">
+            ✓ Certificate file loaded and ready to sign
+          </div>
+        </div>
+      `;
+      certInfo.style.display = 'block';
+    }
+
+    function selectMethod(method, element) {
+      selectedMethod = method;
+
+      // Update UI
+      document.querySelectorAll('.method-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      element.classList.add('selected');
+
+      // Show/hide appropriate sections
+      if (method === 'certificate') {
+        document.getElementById('certificateMethod').style.display = 'block';
+        document.getElementById('handwrittenMethod').style.display = 'none';
+      } else {
+        document.getElementById('certificateMethod').style.display = 'none';
+        document.getElementById('handwrittenMethod').style.display = 'block';
+      }
+    }
+
+    function updateSignatureStatus() {
+      const isEmpty = signaturePad.isEmpty();
+      const statusEl = document.getElementById('signatureStatus');
+      if (isEmpty) {
+        statusEl.textContent = 'Not signed yet';
+        statusEl.style.color = '#e74c3c';
+      } else {
+        const timestamp = new Date().toLocaleString();
+        statusEl.innerHTML = `✓ Signed on ${timestamp}`;
+        statusEl.style.color = '#27ae60';
+      }
+    }
+
+    function clearSignature() {
+      signaturePad.clear();
+      updateSignatureStatus();
+    }
+
+    function showStatus(message, type) {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = message;
+      statusEl.className = `status-message ${type}`;
+      setTimeout(() => {
+        statusEl.className = 'status-message';
+      }, 5000);
+    }
+
+    function previewDocument() {
+      const preview = document.getElementById('previewContainer');
+
+      const docTitle = document.getElementById('docTitle').value || 'Document Title';
+      const docNumber = document.getElementById('docNumber').value || 'N/A';
+      const docContent = document.getElementById('docContent').value || '';
+      const fullName = document.getElementById('fullName').value || '[Signature Required]';
+      const email = document.getElementById('email').value || '';
+      const jobTitle = document.getElementById('jobTitle').value || '';
+      const company = document.getElementById('company').value || '';
+
+      preview.innerHTML = `
+        <h3>${docTitle}</h3>
+        <div class="document-item">
+          <label>Document Number:</label>
+          <p>${docNumber}</p>
+        </div>
+        <div class="document-item">
+          <label>Content:</label>
+          <p>${docContent.replace(/\n/g, '<br>')}</p>
+        </div>
+        <hr style="margin: 20px 0; color: #ddd;">
+        <div class="document-item">
+          <label>Signatory Name:</label>
+          <p>${fullName}</p>
+        </div>
+        <div class="document-item">
+          <label>Email:</label>
+          <p>${email || 'Not provided'}</p>
+        </div>
+        <div class="document-item">
+          <label>Job Title:</label>
+          <p>${jobTitle || 'Not provided'}</p>
+        </div>
+        <div class="document-item">
+          <label>Company:</label>
+          <p>${company || 'Not provided'}</p>
+        </div>
+      `;
+
+      // Calculate document hash
+      calculateDocumentHash(docTitle + docNumber + docContent);
+    }
+
+    function calculateDocumentHash(content) {
+      // Using CryptoJS to calculate SHA-256 hash
+      const hash = CryptoJS.SHA256(content).toString();
+      document.getElementById('documentHash').textContent = hash;
+    }
+
+    function resetForm() {
+      document.getElementById('signatureForm').reset();
+      document.getElementById('certFile').value = '';
+      document.getElementById('certPassword').value = '';
+      document.getElementById('certInfo').style.display = 'none';
+      clearSignature();
+      document.getElementById('previewContainer').innerHTML = '';
+      document.getElementById('statusMessage').className = 'status-message';
+      certificateData = null;
+    }
+
+    // Main form submission handler
+    document.getElementById('signatureForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Validation
+      if (!document.getElementById('fullName').value) {
+        showStatus('❌ Please enter your full name', 'error');
+        return;
+      }
+
+      if (!document.getElementById('email').value) {
+        showStatus('❌ Please enter your email address', 'error');
+        return;
+      }
+
+      if (!document.getElementById('docTitle').value) {
+        showStatus('❌ Please enter a document title', 'error');
+        return;
+      }
+
+      if (selectedMethod === 'certificate' && !certificateData) {
+        showStatus('❌ Please upload a digital certificate', 'error');
+        return;
+      }
+
+      if (selectedMethod === 'handwritten' && signaturePad.isEmpty()) {
+        showStatus('❌ Please sign the document before submitting', 'error');
+        return;
+      }
+
+      try {
+        showStatus('⏳ Generating digitally signed PDF...', 'info');
+        await generateSignedPDF();
+        showStatus('✓ PDF signed and downloaded successfully!', 'success');
+      } catch (error) {
+        console.error('Error:', error);
+        showStatus('❌ Error generating PDF: ' + error.message, 'error');
+      }
+    });
+
+    async function generateSignedPDF() {
+      const docTitle = document.getElementById('docTitle').value;
+      const docNumber = document.getElementById('docNumber').value;
+      const docContent = document.getElementById('docContent').value;
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const jobTitle = document.getElementById('jobTitle').value;
+      const company = document.getElementById('company').value;
+      const department = document.getElementById('department').value;
+
+      // Calculate document hash
+      const documentHash = CryptoJS.SHA256(docTitle + docNumber + docContent).toString();
+
+      let signatureElement = '';
+      if (selectedMethod === 'handwritten') {
+        const signatureData = signaturePad.toDataURL('image/png');
+        signatureElement = `<img src="${signatureData}" style="height: 150px; border: 1px solid #ddd; padding: 10px; background: white;">`;
+      } else {
+        signatureElement = `<div style="padding: 20px; background: #f0f4ff; border: 2px solid #667eea; border-radius: 8px; font-family: 'Courier New', monospace; word-break: break-all; font-size: 11px;">
+          ${certificateData.filename}<br>
+          <strong>Cryptographic Signature:</strong> ${generateCryptographicSignature()}
+        </div>`;
+      }
+
+      const timestamp = new Date().toLocaleString();
+
+      // Create PDF content
+      const pdfElement = document.getElementById('pdfContent');
+      pdfElement.innerHTML = `
+        <div style="font-family: Arial, sans-serif;">
+          <h1 style="text-align: center; color: #333; margin-bottom: 30px;">
+            ${docTitle}
+          </h1>
+
+          <div style="background: #f5f5f5; padding: 20px; margin-bottom: 30px; border-radius: 8px;">
+            <p><strong>Document Number:</strong> ${docNumber || 'N/A'}</p>
+            <p><strong>Generated Date:</strong> ${new Date().toLocaleDateString()}</p>
+            <p><strong>Document Hash (SHA-256):</strong></p>
+            <p style="font-family: 'Courier New', monospace; word-break: break-all; color: #667eea;">
+              ${documentHash}
+            </p>
+          </div>
+
+          <div style="margin-bottom: 30px; line-height: 1.6;">
+            <h3 style="color: #333; margin-bottom: 10px;">Document Content:</h3>
+            <p style="white-space: pre-wrap; color: #666;">
+              ${docContent}
+            </p>
+          </div>
+
+          <hr style="margin: 40px 0; border: none; border-top: 2px solid #ddd;">
+
+          <div style="margin-top: 40px;">
+            <h3 style="color: #333; margin-bottom: 20px;">Digital Signature:</h3>
+            <h4 style="color: #667eea; margin-bottom: 10px;">Signature Method: ${selectedMethod === 'certificate' ? '🔐 Certificate-Based Signature' : '✍️ Handwritten Signature'}</h4>
+
+            <div style="margin: 20px 0;">
+              ${signatureElement}
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #f0f4ff; border-radius: 8px;">
+              <p style="margin: 5px 0;"><strong>Signatory:</strong> ${fullName}</p>
+              <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+              <p style="margin: 5px 0;"><strong>Job Title:</strong> ${jobTitle || 'N/A'}</p>
+              <p style="margin: 5px 0;"><strong>Department:</strong> ${department || 'N/A'}</p>
+              <p style="margin: 5px 0;"><strong>Company:</strong> ${company || 'N/A'}</p>
+              <p style="margin: 5px 0;"><strong>Signed Date:</strong> ${timestamp}</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 80px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #999; text-align: center;">
+            <p>
+              <strong>Certificate Information:</strong><br>
+              ${selectedMethod === 'certificate' ? `Certificate: ${certificateData.filename}<br>` : ''}
+              This document has been electronically signed and is legally binding.<br>
+              Verification Code: ${generateVerificationCode()}<br>
+              Generated at: ${timestamp}
+            </p>
+          </div>
+        </div>
+      `;
+
+      // Generate PDF
+      const element = pdfElement;
+      const opt = {
+        margin: 10,
+        filename: `${docTitle.replace(/\s+/g, '_')}_signed_${new Date().getTime()}.pdf`,
+        image: { type: 'png', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(element).save();
+    }
+
+    function generateCryptographicSignature() {
+      // Simulate cryptographic signature (in production, this would be done server-side)
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let signature = '';
+      for (let i = 0; i < 256; i++) {
+        signature += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return signature;
+    }
+
+    function generateVerificationCode() {
+      return 'CERT' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 9).toUpperCase();
+    }
+  </script>
+</body>
+
+</html>

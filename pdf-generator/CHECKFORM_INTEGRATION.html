@@ -1,0 +1,87 @@
+<!-- 
+  CHECKFORM.HTML INTEGRATION EXAMPLE
+  
+  Add these changes to your CheckForm.html
+  See INTEGRATION_GUIDE.md for full setup instructions
+-->
+
+<!-- 1. ADD THIS TO <head> SECTION (after other scripts) -->
+<script src="/SiteAssets/js/signature-pdf-generator.js"></script>
+
+<!-- 2. ADD THIS BUTTON in the Work Information section header (around line 1395) -->
+<!-- FIND THIS: -->
+<div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
+  <div class="sec-left">
+    <div class="sec-num" id="snum-info">i</div>
+    <span class="sec-title">Work Information</span>
+  </div>
+  <div class="sec-right">
+    <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn">Clear</button>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd"
+        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+    </svg>
+  </div>
+</div>
+
+<!-- REPLACE WITH THIS (added button): -->
+<div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
+  <div class="sec-left">
+    <div class="sec-num" id="snum-info">i</div>
+    <span class="sec-title">Work Information</span>
+  </div>
+  <div class="sec-right">
+    <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn">Clear</button>
+    <button class="btn-action no-print" type="button" id="generateSignaturePdfBtn" 
+      onclick="window.signaturePDFGenerator.generateSignaturePDF()"
+      title="Generate interactive PDF with signature fields">
+      📄 Gen PDF
+    </button>
+    <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd"
+        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+    </svg>
+  </div>
+</div>
+
+<!-- 3. ADD THIS CSS to your stylesheet (e.g., default.css) -->
+<style>
+/* PDF Generator Button Styles */
+.btn-action {
+  padding: 8px 14px;
+  background: #0074a4;
+  color: white;
+  border: 1px solid #0074a4;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  font-family: 'Roboto', sans-serif;
+  transition: all 0.2s ease;
+  margin: 0 4px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn-action:hover:not(:disabled) {
+  background: #005a82;
+  border-color: #005a82;
+  box-shadow: 0 2px 6px rgba(0, 74, 164, 0.3);
+}
+
+.btn-action:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #999;
+  border-color: #999;
+}
+
+.btn-action:focus-visible {
+  outline: 2px solid #005a82;
+  outline-offset: 2px;
+}
+</style>
