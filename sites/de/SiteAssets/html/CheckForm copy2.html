@@ -1425,7 +1425,7 @@
     }
 
     .image-thumbnail:hover,
-    .signature-canvas:hover {
+    .sigature-canvas:hover {
       transform: scale(1.05);
       border-color: var(--accent);
     }
@@ -1462,7 +1462,7 @@
     }
 
     .image-thumbnail:hover .image-thumbnail-remove,
-    .signature-canvas:hover .image-thumbnail-remove,
+    .sigature-canvas:hover .image-thumbnail-remove,
     .sig-tab-content.active:hover .image-thumbnail-remove {
       opacity: 1;
     }
@@ -1737,24 +1737,21 @@
             <div class="sig-cell">
               <div class="field-label" id="sc_sig">Signature (Engineer)</div>
               <div class="signature-pad-container" id="scSigContainer">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="scSigDrawTab" tabindex="0"><span
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn"><span
                       class="material-symbols-outlined">signature</span></button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="scSigUploadTab"
-                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn"><span
+                      class="material-symbols-outlined">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content active" id="scSigDrawTab">
                   <canvas id="sc_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
                 </div>
-                <div class="sig-tab-content" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
-                  tabindex="0">
+                <div class="sig-tab-content" id="scSigUploadTab">
                   <div class="sig-upload-area">
                     <input type="file" id="scSigUpload" accept="image/*" hidden>
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="sc">
+                    <button class="btn btn-sig-upload" type="button"
+                      onclick="document.getElementById('scSigUpload').click()">
                       Choose Signature Image
                     </button>
                     <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
@@ -1825,24 +1822,21 @@
             <div class="sig-cell">
               <label class="field-label" for="ch_sig">Signature (Checker)</label>
               <div class="signature-pad-container" id="chSigContainer">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="chSigDrawTab" tabindex="0"><span
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn"><span
                       class="material-symbols-outlined">signature</span></button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="chSigUploadTab"
-                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn"><span
+                      class="material-symbols-outlined">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content active" id="chSigDrawTab">
                   <canvas id="ch_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
                 </div>
-                <div class="sig-tab-content" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
-                  tabindex="0">
+                <div class="sig-tab-content" id="chSigUploadTab">
                   <div class="sig-upload-area">
                     <input type="file" id="chSigUpload" accept="image/*" hidden>
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch">
+                    <button class="btn-sig-upload" type="button"
+                      onclick="document.getElementById('chSigUpload').click()">
                       Choose Signature Image
                     </button>
                     <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
@@ -1898,26 +1892,23 @@
             <div class="sig-cell">
               <div class="field-label" id="pr_sig">Signature (Peer Reviewer)</div>
               <div class="signature-pad-container" id="prSigContainer">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="prSigDrawTab" tabindex="0"><span
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn"><span
                       class="material-symbols-outlined">signature</span></button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="prSigUploadTab"
-                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn"><span
+                      class="material-symbols-outlined">upload</span>
                   </button>
                 </div>
 
-                <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content active" id="prSigDrawTab">
                   <canvas id="pr_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
                 </div>
 
-                <div class="sig-tab-content" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
-                  tabindex="0">
+                <div class="sig-tab-content" id="prSigUploadTab">
                   <div class="sig-upload-area">
                     <input type="file" id="prSigUpload" accept="image/*" hidden>
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr">
+                    <button class="btn btn-sig-upload" type="button"
+                      onclick="document.getElementById('prSigUpload').click()">
                       Choose Signature Image
                     </button>
                     <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
@@ -2012,26 +2003,23 @@
             <div class="sig-cell">
               <div class="field-label" id="fT1Sig">DE TL Signature</div>
               <div class="signature-pad-container" id="fT1SigContainer">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="fT1SigDrawTab" tabindex="0"><span
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn"><span
                       class="material-symbols-outlined">signature</span></button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="fT1SigUploadTab"
-                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn"><span
+                      class="material-symbols-outlined">upload</span>
                   </button>
                 </div>
 
-                <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content active" id="fT1SigDrawTab">
                   <canvas id="fT1_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
                 </div>
 
-                <div class="sig-tab-content" id="fT1SigUploadTab" role="tabpanel" aria-labelledby="fT1SigUploadBtn"
-                  tabindex="0">
+                <div class="sig-tab-content" id="fT1SigUploadTab">
                   <div class="sig-upload-area">
                     <input type="file" id="fT1SigUpload" accept="image/*" hidden>
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="fT1">
+                    <button class="btn btn-sig-upload" type="button"
+                      onclick="document.getElementById('fT1SigUpload').click()">
                       Choose Signature Image
                     </button>
                     <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
@@ -2259,11 +2247,8 @@
               const img = new Image();
               img.onload = () => {
                 const ctx = canvas.getContext('2d');
-                // resizeCanvas() applies a DPR transform, so draw in CSS pixels (not bitmap dims).
-                const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-                const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-                ctx.clearRect(0, 0, cssW, cssH);
-                ctx.drawImage(img, 0, 0, cssW, cssH);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 // Update the data input field
                 const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
                 if (dataInput) dataInput.value = dataUrl;
@@ -2287,10 +2272,11 @@
           // FIX: Math.max needs two args to clamp; single-arg call is a no-op.
           // FIX: Save/restore existing drawing so resizing doesn't wipe signatures.
           const resizeCanvas = () => {
-            const dpr = 1;//const dpr = Math.max(window.devicePixelRatio || 1, 1);
+            const dpr = Math.max(window.devicePixelRatio || 1, 1);
             const cssW = canvas.offsetWidth;
             const cssH = canvas.offsetHeight;
             if (!cssW || !cssH) return;
+            console.log(canvas.width, canvas.height, cssW, cssH);
             // Snapshot before clearing (assigning width/height resets the bitmap)
             let snapshot = null;
             try {
@@ -2299,11 +2285,10 @@
               }
             } catch (_) { /* cross-origin or empty – skip */ }
 
+            canvas.width = cssW;
+            canvas.height = cssH;
             const ctx = canvas.getContext('2d');
-            canvas.width = Math.round(cssW * dpr);
-            canvas.height = Math.round(cssH * dpr);
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.clearRect(0, 0, cssW, cssH);
+            ctx.scale(1, 1);
 
             // Restore drawing after resize
             if (snapshot) {
@@ -2329,9 +2314,7 @@
               e.preventDefault();
               e.stopPropagation();
               const ctx = canvas.getContext('2d');
-              const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-              const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-              ctx.clearRect(0, 0, cssW, cssH);
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
               const dataInput = document.getElementById(`${prefix}_sig_data`);
               if (dataInput) dataInput.value = '';
             });
@@ -2350,17 +2333,9 @@
               btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const tabName = btn.getAttribute('data-tab');
-                tabBtns.forEach((b) => {
-                  b.classList.remove('active');
-                  b.setAttribute('aria-selected', 'false');
-                  b.setAttribute('tabindex', '-1');
-                });
-                tabContents.forEach((c) => c.classList.remove('active'));
-
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
                 btn.classList.add('active');
-                btn.setAttribute('aria-selected', 'true');
-                btn.setAttribute('tabindex', '0');
-
                 const capTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
                 container.querySelector(`#${prefix}Sig${capTab}Tab`)?.classList.add('active');
               });
@@ -2373,9 +2348,7 @@
             clearBtn.addEventListener('click', (e) => {
               e.preventDefault();
               const ctx = canvas.getContext('2d');
-              const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-              const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-              ctx.clearRect(0, 0, cssW, cssH);
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
               const dataInput = document.getElementById(`${prefix}_sig_data`);
               if (dataInput) dataInput.value = '';
             });
@@ -2413,16 +2386,14 @@
         }
 
         removeCanvas (section) {
-          const canvases = section.querySelectorAll('canvas');
-          if (!canvases.length) return;
-          canvases.forEach((canvas) => {
-            const ctx = canvas.getContext('2d');
-            const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-            const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-            ctx.clearRect(0, 0, cssW, cssH);
-            const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
-            if (dataInput) dataInput.value = '';
-          });
+          const canvas = section.querySelector('canvas');
+          if (!canvas) return;
+
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          const dataInput = document.getElementById(`${prefix}_sig_data`);
+          if (dataInput) dataInput.value = '';
+
         }
 
         // ── Drawing engine ──────────────────────────────────────────────────────
@@ -2449,10 +2420,12 @@
             const touch = e.touches?.[0] ?? e.changedTouches?.[0];
             const clientX = touch ? touch.clientX : e.clientX;
             const clientY = touch ? touch.clientY : e.clientY;
+            // Scale from CSS pixels → canvas internal pixels
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
             return {
-              // resizeCanvas() applies a DPR transform, so coordinates should be CSS pixels.
-              x: (e.offsetX || (clientX - rect.left)),
-              y: (e.offsetY || (clientY - rect.top)),
+              x: (e.offsetX) * scaleX,
+              y: (e.offsetY) * scaleY,
             };
           };
           canvas.addEventListener('pointerdown', (e) => {
@@ -2517,11 +2490,11 @@
                 document.getElementById(`${prefix}_sig`);
               if (!canvas) return;
               const ctx = canvas.getContext('2d');
-              const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-              const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-              ctx.clearRect(0, 0, cssW, cssH);
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
 
               // Scale image to fit canvas, preserving aspect ratio
+              const cssW = canvas.width;
+              const cssH = canvas.height;
               const ratio = img.height / img.width;
               const maxRatio = cssH / cssW;
               let drawW, drawH;
@@ -2546,18 +2519,9 @@
           // FIX: Switch to the draw tab using the correct prefix, not hardcoded 'scSig'.
           const container = document.getElementById(`${prefix}SigContainer`);
           if (container) {
-            container.querySelectorAll('.btn-sig-tab').forEach((b) => {
-              b.classList.remove('active');
-              b.setAttribute('aria-selected', 'false');
-              b.setAttribute('tabindex', '-1');
-            });
+            container.querySelectorAll('.btn-sig-tab').forEach(b => b.classList.remove('active'));
             container.querySelectorAll('.sig-tab-content').forEach(c => c.classList.remove('active'));
-            const drawTab = container.querySelector('[data-tab="draw"]');
-            drawTab?.classList.add('active');
-            if (drawTab) {
-              drawTab.setAttribute('aria-selected', 'true');
-              drawTab.setAttribute('tabindex', '0');
-            }
+            container.querySelector('[data-tab="draw"]')?.classList.add('active');
             container.querySelector(`#${prefix}SigDrawTab`)?.classList.add('active');
           }
         }
@@ -2631,22 +2595,12 @@
           document.addEventListener('input', this.handleGlobalInput.bind(this));
           document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
           document.addEventListener('paste', this.handlePaste.bind(this));
-          document.addEventListener('click', this.handleSignatureUploadTriggerClick.bind(this));
 
           // MutationObserver for radio changes (progress updates)
           const observer = new MutationObserver(() => this.updateProgress());
           [this.elements.scRows, this.elements.dsRows, this.elements.chRows, this.elements.prRows].forEach(container => {
             if (container) observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
           });
-        }
-
-        handleSignatureUploadTriggerClick (e) {
-          const trigger = e.target.closest('.sig-upload-trigger');
-          if (!trigger) return;
-          e.preventDefault();
-          const prefix = trigger.getAttribute('data-prefix');
-          if (!prefix) return;
-          document.getElementById(`${prefix}SigUpload`)?.click();
         }
 
         // ---------- Event Handlers ----------
@@ -2663,6 +2617,10 @@
           // Risk buttons
           if (e.target.classList.contains('risk-btn')) {
             this.setRiskLevel(e.target.dataset.risk);
+          }
+
+          if (e.target.closest('.signature-pad-container')) {
+            this.autosizeTextarea(e.target.closest('.signature-pad-container'));
           }
 
           // Clear buttons
@@ -2720,6 +2678,10 @@
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
             this.syncCommentsHeights();
+          }
+
+          if (e.target.closest('.signature-pad-container')) {
+            this.autosizeTextarea(e.target.closest('.signature-pad-container'));
           }
         }
 
@@ -3080,30 +3042,15 @@
         }
 
         allRequiredFieldsValid () {
-          const required = Array.from(document.querySelectorAll('.required-field-underline'));
-          let firstInvalid = null;
-
-          required.forEach((el) => {
-            if (el.closest('.hidden')) return;
-            const control =
-              el.previousElementSibling?.matches?.('input, select, textarea') ? el.previousElementSibling :
-                el.parentElement?.querySelector?.('input, select, textarea');
-            if (control?.disabled) return;
-
+          return Array.from(document.querySelectorAll('.required-field-underline')).every(el => {
+            el.parentElement.focus();
+            el.parentElement.scrollIntoView({ behavior: 'smooth' });
+            if (el.closest('.hidden') || el.previousElementSibling.disabled) return true;
             const isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
             const label = el.parentElement?.querySelector('.field-label');
             if (label) label.style.color = isValid ? '' : '#d32f2f';
-            if (!isValid && !firstInvalid) firstInvalid = { el, control };
+            return isValid;
           });
-
-          if (firstInvalid) {
-            const { el, control } = firstInvalid;
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (control?.focus) control.focus({ preventScroll: true });
-            return false;
-          }
-
-          return true;
         }
 
         // ---------- Textarea Utilities ----------
@@ -3115,6 +3062,8 @@
 
         autosizeAllTextareas () {
           document.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
+          document.querySelectorAll('.sig-tab-content').forEach(t => this.autosizeTextarea(t));
+          document.querySelectorAll('.signature-pad-container').forEach(t => this.autosizeTextarea(t));
         }
 
         syncCommentsHeights () {
@@ -3140,9 +3089,7 @@
           const sec = document.getElementById(sectionId);
           if (!sec) return;
           sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          // Only clear mutable input types. Never clear `value` on radio/checkbox inputs,
-          // otherwise their semantic values ('yes'/'no'/'na', roles, etc.) get overwritten.
-          sec.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach(i => i.value = '');
+          sec.querySelectorAll('input[type="text"], input[type="date"], input').forEach(i => i.value = '');
           sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           sec.querySelectorAll('textarea').forEach(t => t.value = '');
           sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
@@ -3178,15 +3125,10 @@
           if (!confirm('Reset entire form? All data will be lost.')) return;
           document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
           document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="hidden"][id$="_sig_data"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
           document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           document.querySelectorAll('textarea').forEach(t => t.value = '');
           this.elements.riskBtns.forEach(b => b.classList.remove('active'));
           document.getElementById('sc_role_eng').checked = true;
-
-          this.removeCanvas(document);
-          document.querySelectorAll('.sig-preview').forEach(p => { p.innerHTML = ''; });
 
           this.updateRoleLabels(true);
           this.syncAllSectionVisibility();
