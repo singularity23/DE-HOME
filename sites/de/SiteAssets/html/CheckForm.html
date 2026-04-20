@@ -16,8 +16,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
     rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@600" rel="stylesheet">
 
-  <script src="/sites/de/SiteAssets/js/signature-pdf-generator-clientside.js"></script>
   <style>
     /* ============================================================
     DISTRIBUTION ENGINEERING CHECK FORM
@@ -97,6 +97,21 @@
       /* Borders */
       --radius: 0;
       --radius-sm: 0;
+    }
+
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 16px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* --------------------------------
@@ -575,6 +590,11 @@
       font-family: 'Roboto', system-ui, sans-serif;
     }
 
+    input.field-input:valid+label,
+    input.field-input:focus+label {
+      color: var(--text);
+    }
+
     .field-input {
       width: 100%;
       padding: var(--gap-xs) var(--gap-md);
@@ -648,13 +668,17 @@
       border-bottom: 1px solid var(--color-error);
     }
 
+
+
     input.field-input:valid+.required-field-underline,
     input.field-input:focus+.required-field-underline,
     select.field-input:valid+.required-field-underline,
     select.field-input:focus+.required-field-underline,
     .role-selector:has(input[type='radio']:checked)+.required-field-underline,
     .risk-row:has(.risk-btn.active)+.required-field-underline,
-    input:not(:required)+.required-field-underline {
+    input:not(:required)+.required-field-underline,
+    .card.hidden .required-field-underline,
+    .sec-body:not(.open) .required-field-underline {
       border-bottom-width: 0;
     }
 
@@ -894,14 +918,13 @@
     }
 
     .pill-group label {
-      padding: 4px 5px;
+      padding: 5px 5px;
       font-size: 0.6rem;
       font-weight: 600;
       font-family: 'Roboto', ui-monospace, monospace;
       cursor: pointer;
       color: var(--text-muted);
       transition: color 0.2s ease, background 0.2s ease;
-      white-space: nowrap;
       letter-spacing: 0.03em;
       width: 36px;
       text-align: center;
@@ -1090,7 +1113,6 @@
 
     .sig-cell:nth-child(2) {
       grid-row: span 2;
-      height: 100%;
     }
 
     .sig-cell:nth-child(2) .field-input {
@@ -1182,13 +1204,15 @@
       min-height: var(--touch-min);
     }
 
-    .btn-ghost {
+    .btn-ghost,
+    .btn-sig-upload {
       background: var(--bg);
       border-color: var(--border);
       color: var(--text-muted);
     }
 
-    .btn-ghost:hover {
+    .btn-ghost:hover,
+    .btn-sig-upload:hover {
       border-color: var(--warn-border);
       color: var(--warn);
       background: var(--warn-bg);
@@ -1196,19 +1220,15 @@
 
     .btn-action {
       padding: 8px 14px;
-      background: #0074a4;
-      color: white;
-      border: 1px solid #0074a4;
-      border-radius: 2px;
+      background: var(--warn);
+      color: var(--warn-bg);
+      border: 1px solid var(--warn);
       cursor: pointer;
       font-weight: 600;
-      font-size: 0.8125rem;
-      margin: 0 4px;
-      transition: all 0.2s ease;
     }
 
     .btn-action:hover:not(:disabled) {
-      background: #005a82;
+      background: var(--warn-bg);
     }
 
     .btn-action:disabled {
@@ -1404,8 +1424,14 @@
       transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
-    .image-thumbnail:hover {
+    .image-thumbnail:hover,
+    .signature-canvas:hover {
       transform: scale(1.05);
+      border-color: var(--accent);
+    }
+
+    .sig-tab-content.active:hover {
+      transform: scale(1);
       border-color: var(--accent);
     }
 
@@ -1435,7 +1461,9 @@
       opacity: 0;
     }
 
-    .image-thumbnail:hover .image-thumbnail-remove {
+    .image-thumbnail:hover .image-thumbnail-remove,
+    .signature-canvas:hover .image-thumbnail-remove,
+    .sig-tab-content.active:hover .image-thumbnail-remove {
       opacity: 1;
     }
 
@@ -1443,15 +1471,130 @@
       background: color-mix(in srgb, var(--color-error) 80%, black);
     }
 
-    .comments-paste-hint {
-      font-size: 0.7rem;
+    .comments-paste-hint,
+    .sec-subtitle {
+      font-size: 0.65rem;
       color: var(--text-muted);
       margin-top: 4px;
       font-style: italic;
     }
 
     .comments-area {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
+    }
+
+    /* Signature Pad Styles */
+    .signature-pad-container {
+      display: flex;
+      flex-direction: row;
+      border: 1px solid var(--border-soft);
+      background: var(--surface);
+      overflow: hidden;
+      min-height: 100px;
+    }
+
+    .signature-pad-tabs {
+      display: flex;
+      border-right: 1px solid var(--border-soft);
+      flex-direction: column;
+    }
+
+    .btn-sig-tab {
+      flex: 1;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'Roboto', system-ui, sans-serif;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.15s ease, background 0.15s ease;
+      white-space: nowrap;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--header-bg);
+      text-transform: uppercase;
+      min-height: var(--touch-min);
+      border: 0px;
+      padding: var(--gap-xs) var(--gap-xs);
+    }
+
+    .btn-sig-tab:hover {
+      background: var(--color-tertiary);
+    }
+
+    .btn-sig-tab.active {
+      background: var(--color-tertiary);
+      border: 1px solid var(--border-soft);
+      color: var(--color-info);
+    }
+
+    .sig-tab-content.active {
+      display: block;
+      width: 100%;
+      align-content: center;
+      text-align: center;
+    }
+
+    .sig-tab-content {
+      display: none;
+    }
+
+    .signature-canvas {
+      cursor: crosshair;
+      display: block;
+      touch-action: none;
+      width: 100%;
+      height: clamp(100px, 101px, 102px);
+    }
+
+    .sig-controls {
+      display: none;
+      gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .sig-btn {
+      padding: 6px 12px;
+      background: var(--surface-base);
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sig-btn:hover {
+      background: var(--surface-base);
+    }
+
+    .sig-color-input {
+      width: 40px;
+      height: 36px;
+      border: 1px solid var(--surface-base);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .sig-upload-area {
+      text-align: center;
+      margin: 20px 10px;
+    }
+
+    .sig-upload-hint {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .sig-preview {
+      max-width: 100%;
+      max-height: 150px;
+      margin-top: 10px;
+    }
+
+    .sig-preview img {
+      max-width: 100%;
+      max-height: 150px;
+      border: 1px solid var(--border-soft);
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -1504,8 +1647,8 @@
             </div>
             <div class="meta-cell revision-cell">
               <label class="field-label" for="revision">Revision</label>
-              <input class="field-input" id="revision" name="revision" type="text" placeholder="Rev. NO..."
-                autocomplete="off" required>
+              <input class="field-input" id="revision" name="revision" type="number" min="0" max="9" value="0"
+                placeholder="Rev. NO..." autocomplete="off" required>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell role-cell">
@@ -1592,9 +1735,34 @@
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="sig-cell">
-              <label class="field-label" for="sc_sig">Signature (Engineer)</label>
-              <textarea class="field-input" id="sc_sig" type="text" placeholder="Sign" autocomplete="name"
-                rows="4"></textarea>
+              <div class="field-label" id="sc_sig">Signature (Engineer)</div>
+              <div class="signature-pad-container" id="scSigContainer">
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="scSigDrawTab" tabindex="0"><span
+                      class="material-symbols-outlined">signature</span></button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="scSigUploadTab"
+                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  </button>
+                </div>
+                <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
+                  tabindex="0">
+                  <canvas id="sc_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
+                </div>
+                <div class="sig-tab-content" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="scSigUpload" accept="image/*" hidden>
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="sc">
+                      Choose Signature Image
+                    </button>
+                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
+                    <div id="scSigPreview" class="sig-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="sc_sig_data" name="sc_sig_data">
             </div>
             <div class="sig-cell">
               <label class="field-label" for="sc_name">Name (Engineer)</label>
@@ -1656,8 +1824,33 @@
             </div>
             <div class="sig-cell">
               <label class="field-label" for="ch_sig">Signature (Checker)</label>
-              <textarea class="field-input" id="ch_sig" type="text" placeholder="Sign" autocomplete="name"
-                rows="4"></textarea>
+              <div class="signature-pad-container" id="chSigContainer">
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="chSigDrawTab" tabindex="0"><span
+                      class="material-symbols-outlined">signature</span></button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="chSigUploadTab"
+                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  </button>
+                </div>
+                <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
+                  tabindex="0">
+                  <canvas id="ch_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
+                </div>
+                <div class="sig-tab-content" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="chSigUpload" accept="image/*" hidden>
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch">
+                      Choose Signature Image
+                    </button>
+                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
+                    <div id="chSigPreview" class="sig-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="ch_sig_data" name="ch_sig_data">
             </div>
             <div class="sig-cell">
               <label class="field-label" for="ch_name">Name (Checker)</label>
@@ -1698,16 +1891,47 @@
           <div class="sig-grid">
             <div class="sig-cell">
               <label class="field-label" for="pr_date">Date</label>
-              <input class="field-input" id="pr_date" type="date" autocomplete="off">
+              <input class="field-input" id="pr_date" type="date" autocomplete="off" required>
+              <div class="required-field-underline" aria-hidden="true"></div>
+
             </div>
             <div class="sig-cell">
-              <label class="field-label" for="pr_sig">Signature (Peer Reviewer)</label>
-              <textarea class="field-input" id="pr_sig" type="text" placeholder="Signature" autocomplete="name"
-                rows="4"></textarea>
+              <div class="field-label" id="pr_sig">Signature (Peer Reviewer)</div>
+              <div class="signature-pad-container" id="prSigContainer">
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="prSigDrawTab" tabindex="0"><span
+                      class="material-symbols-outlined">signature</span></button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="prSigUploadTab"
+                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  </button>
+                </div>
+
+                <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
+                  tabindex="0">
+                  <canvas id="pr_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
+                </div>
+
+                <div class="sig-tab-content" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="prSigUpload" accept="image/*" hidden>
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr">
+                      Choose Signature Image
+                    </button>
+                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
+                    <div id="prSigPreview" class="sig-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="pr_sig_data" name="pr_sig_data">
             </div>
             <div class="sig-cell">
               <label class="field-label" for="pr_name">Name (Peer Reviewer)</label>
-              <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name">
+              <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name"
+                required>
+              <div class="required-field-underline" aria-hidden="true"></div>
             </div>
           </div>
         </div>
@@ -1717,9 +1941,11 @@
       <div class="card hidden" id="card-comments">
         <div class="sec-head" id="sec5-head" tabindex="5" aria-expanded="false" aria-controls="s5">
           <div class="sec-left">
-            <div class="sec-num" id="snum-5">5</div><span class="sec-title">Comments &amp; Corrective Actions</span>
+            <div class="sec-num" id="snum-5">5</div><span class="sec-title">Comments &amp; Corrective
+              Actions</span>
           </div>
-          <div class="sec-right"><svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+          <div class="sec-right"><button class="btn-clear no-print" type="button" id="clearSec5Btn">Clear</button><svg
+              class="chevron" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg></div>
@@ -1733,8 +1959,6 @@
                   placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)"
                   rows="4"></textarea>
                 <div class="comments-image-gallery" id="checkerComments-gallery"></div>
-                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
-                </div>
               </div>
             </div>
             <div class="comments-cell" id="commentsCell2"><label class="field-label" for="engineerResponse">Engineer
@@ -1742,8 +1966,6 @@
               <div class="comments-area"><textarea class="field-input comments-textarea" id="engineerResponse"
                   placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"></textarea>
                 <div class="comments-image-gallery" id="engineerResponse-gallery"></div>
-                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
-                </div>
               </div>
             </div>
             <div class="comments-cell hidden" id="commentsCell3"><label class="field-label"
@@ -1753,8 +1975,6 @@
                   placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)"
                   rows="4"></textarea>
                 <div class="comments-image-gallery" id="reviewerComments-gallery"></div>
-                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
-                </div>
               </div>
             </div>
             <div class="comments-cell hidden" id="commentsCell4"><label class="field-label"
@@ -1763,8 +1983,6 @@
                 <textarea class="field-input comments-textarea" id="engineerResponse_2"
                   placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"></textarea>
                 <div class="comments-image-gallery" id="engineerResponse_2-gallery"></div>
-                <div class="comments-paste-hint">💡 Tip: Paste screenshots using Ctrl+V
-                </div>
               </div>
             </div>
           </div>
@@ -1777,7 +1995,8 @@
           <div class="sec-left">
             <div class="sec-num" id="snum-6">6</div><span class="sec-title">Final Signatures</span>
           </div>
-          <div class="sec-right"><svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+          <div class="sec-right"><button class="btn-clear no-print" type="button" id="clearSec6Btn">Clear</button><svg
+              class="chevron" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg></div>
@@ -1791,8 +2010,36 @@
             </div>
 
             <div class="sig-cell">
-              <label class="field-label" for="fT1Sig">DE TL Signature</label><textarea class="field-input" id="fT1Sig"
-                type="text" placeholder="TL Signature" autocomplete="name" rows="4"></textarea>
+              <div class="field-label" id="fT1Sig">DE TL Signature</div>
+              <div class="signature-pad-container" id="fT1SigContainer">
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="fT1SigDrawTab" tabindex="0"><span
+                      class="material-symbols-outlined">signature</span></button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="fT1SigUploadTab"
+                    tabindex="-1"><span class="material-symbols-outlined">upload</span>
+                  </button>
+                </div>
+
+                <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
+                  tabindex="0">
+                  <canvas id="fT1_sig_canvas" class="signature-canvas" data-mode="draw"></canvas>
+                </div>
+
+                <div class="sig-tab-content" id="fT1SigUploadTab" role="tabpanel" aria-labelledby="fT1SigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="fT1SigUpload" accept="image/*" hidden>
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="fT1">
+                      Choose Signature Image
+                    </button>
+                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
+                    <div id="fT1SigPreview" class="sig-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="fT1_sig_data" name="fT1_sig_data">
             </div>
             <div class="sig-cell">
               <label class="field-label" for="fT1">Assigned Type 1 Reviewer</label>
@@ -1816,7 +2063,7 @@
 
       <div class="actions">
         <button class="btn btn-clear" type="button" id="resetFormBtn">Reset Form</button>
-        <button class="btn btn-ghost" type="button" id="saveAsPdfBtn">Print / PDF</button>
+        <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn">Print / PDF</button>
         <button class="btn btn-primary" type="button" id="saveSnapshotBtn">Save</button>
       </div>
 
@@ -1893,6 +2140,8 @@
           this.sectionConfig = this.buildSectionConfig();
           this.toastTimer = null;
           this.syncingNames = false;
+          this.penColor = '#000000';
+          this.signaturePads = {};
           this.init();
         }
 
@@ -1938,10 +2187,14 @@
             // Signature fields
             scName: get('sc_name'),
             chName: get('ch_name'),
+            scSigDrawBtn: get('scSigDrawBtn'),
+            scSigUploadBtn: get('scSigUploadBtn'),
+            scSigDrawTab: get('scSigDrawTab'),
+            scSigUploadTab: get('scSigUploadTab'),
             // Dynamic labels
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
-            scSigLabel: document.querySelector('label[for="sc_sig"]'),
+            scSigLabel: document.querySelector('#sc_sig'),
             wiLabel: document.querySelector('#checker_por .field-label'),
             wiInput: document.querySelector('#checker_por input'),
             chNameLabel: document.querySelector('label[for="ch_name"]'),
@@ -1976,10 +2229,9 @@
           this.syncAllSectionVisibility();
           this.autosizeAllTextareas();
           this.syncCommentsHeights();
-          // Detect if restored from snapshot (rows already have checked radios)
-          // Fresh form: set default role to Engineer
           this.updateRoleLabels(!isRestored);
-
+          this.initSignaturePads();
+          this.restoreCanvasesFromSnapshot();
         }
 
         buildAllRows () {
@@ -1987,6 +2239,320 @@
           this.buildRows(this.elements.dsRows, 'ds', CheckForm.DS_ITEMS);
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
+        }
+
+        // ---------- Signature Pad Methods ----------
+        initSignaturePads () {
+          this.signaturePads = {};
+          this.initSignaturePad('sc');
+          this.initSignaturePad('ch');
+          this.initSignaturePad('pr');
+          this.initSignaturePad('fT1');
+        }
+
+        restoreCanvasesFromSnapshot () {
+          // Restore canvas drawings from saved snapshots
+          const canvases = document.querySelectorAll('canvas[data-url]');
+          canvases.forEach(canvas => {
+            const dataUrl = canvas.getAttribute('data-url');
+            if (dataUrl) {
+              const img = new Image();
+              img.onload = () => {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                // Update the data input field
+                const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
+                if (dataInput) dataInput.value = dataUrl;
+              };
+              img.src = dataUrl;
+            }
+          });
+        }
+
+        initSignaturePad (prefix) {
+          // FIX: Fall back to ${prefix}_sig if ${prefix}_sig_canvas doesn't exist.
+          // All canvas IDs are now normalised to use the _canvas suffix in the HTML,
+          // but this guard keeps things resilient.
+          const canvas =
+            document.getElementById(`${prefix}_sig_canvas`) ??
+            document.getElementById(`${prefix}_sig`);
+
+          if (!canvas || canvas.tagName !== 'CANVAS') return;
+
+          // ── resize helper ───────────────────────────────────────────────────
+          // FIX: Math.max needs two args to clamp; single-arg call is a no-op.
+          // FIX: Save/restore existing drawing so resizing doesn't wipe signatures.
+          const resizeCanvas = () => {
+            const dpr = Math.max(window.devicePixelRatio || 1, 1);
+            const cssW = canvas.offsetWidth;
+            const cssH = canvas.offsetHeight;
+            if (!cssW || !cssH) return;
+            // Snapshot before clearing (assigning width/height resets the bitmap)
+            let snapshot = null;
+            try {
+              if (canvas.width > 0 && canvas.height > 0) {
+                snapshot = canvas.toDataURL();
+              }
+            } catch (_) { /* cross-origin or empty – skip */ }
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = Math.round(cssW * dpr);
+            canvas.height = Math.round(cssH * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, cssW, cssH);
+
+            // Restore drawing after resize
+            if (snapshot) {
+              const img = new Image();
+              img.onload = () => ctx.drawImage(img, 0, 0, cssW, cssH);
+              img.src = snapshot;
+            }
+          };
+
+          resizeCanvas();
+          window.addEventListener('resize', resizeCanvas, { passive: true });
+
+          // Add clear / remove button over the canvas
+          const canvasWrapper = canvas.parentElement;
+          if (canvasWrapper) {
+            canvasWrapper.style.position = 'relative';
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'image-thumbnail-remove';
+            removeBtn.innerHTML = '&times;';
+            removeBtn.setAttribute('aria-label', 'Clear signature canvas');
+            removeBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const ctx = canvas.getContext('2d');
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              const dataInput = document.getElementById(`${prefix}_sig_data`);
+              if (dataInput) dataInput.value = '';
+            });
+            canvasWrapper.appendChild(removeBtn);
+          }
+
+          // Wire up custom drawing (handles DPR-aware coordinate mapping)
+          this.setupCanvasDrawing(canvas, prefix);
+
+          // ── tab switching ────────────────────────────────────────────────────
+          const container = canvas.closest('.signature-pad-container');
+          if (container) {
+            const tabBtns = container.querySelectorAll('.btn-sig-tab');
+            const tabContents = container.querySelectorAll('.sig-tab-content');
+            tabBtns.forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabName = btn.getAttribute('data-tab');
+                tabBtns.forEach((b) => {
+                  b.classList.remove('active');
+                  b.setAttribute('aria-selected', 'false');
+                  b.setAttribute('tabindex', '-1');
+                });
+                tabContents.forEach((c) => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+                btn.setAttribute('tabindex', '0');
+
+                const capTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
+                container.querySelector(`#${prefix}Sig${capTab}Tab`)?.classList.add('active');
+              });
+            });
+          }
+
+          // ── clear button ─────────────────────────────────────────────────────
+          const clearBtn = document.getElementById(`${prefix}SigClear`);
+          if (clearBtn) {
+            clearBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              const ctx = canvas.getContext('2d');
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              const dataInput = document.getElementById(`${prefix}_sig_data`);
+              if (dataInput) dataInput.value = '';
+            });
+          }
+
+          // ── colour picker ────────────────────────────────────────────────────
+          const colorInput = document.getElementById(`${prefix}SigColor`);
+          if (colorInput) {
+            colorInput.addEventListener('change', (e) => {
+              this.penColor = e.target.value;
+            });
+          }
+
+          // ── file upload ──────────────────────────────────────────────────────
+          const uploadInput = document.getElementById(`${prefix}SigUpload`);
+          if (uploadInput) {
+            uploadInput.addEventListener('change', (e) => this.handleSignatureUpload(e, prefix));
+
+            const uploadArea = canvas.closest('.signature-pad-container')?.querySelector('.sig-upload-area');
+            if (uploadArea) {
+              ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+                uploadArea.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
+              });
+              uploadArea.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                  uploadInput.files = files;
+                  uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              });
+            }
+          }
+
+          this.signaturePads[prefix] = { canvas, penColor: '#000000' };
+        }
+
+        removeCanvas (section) {
+          const canvases = section.querySelectorAll('canvas');
+          if (!canvases.length) return;
+          canvases.forEach((canvas) => {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
+            if (dataInput) dataInput.value = '';
+          });
+        }
+
+        // ── Drawing engine ──────────────────────────────────────────────────────
+        // FIX (main bug): Removed the canvas dimension override that was clobbering
+        // the DPR scaling set by resizeCanvas(). Coordinate mapping now accounts for
+        // the ratio between canvas internal pixels and CSS display pixels.
+        setupCanvasDrawing (canvas, prefix) {
+          const ctx = canvas.getContext('2d');
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'flat';
+          ctx.lineWidth = 2;
+          let drawing = false;
+          let lastX = 0;
+          let lastY = 0;
+          let lastMidX = 0;
+          let lastMidY = 0;
+          let hasLastMid = false;
+          /**
+           * Convert a pointer/touch event to canvas-space coordinates,
+           * correctly accounting for any DPR scaling.
+           */
+          const getPos = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches?.[0] ?? e.changedTouches?.[0];
+            const clientX = touch ? touch.clientX : e.clientX;
+            const clientY = touch ? touch.clientY : e.clientY;
+            // Scale from CSS pixels → canvas internal pixels
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return {
+              x: (clientX - rect.left) * scaleX,
+              y: (clientY - rect.top) * scaleY,
+            };
+          };
+          canvas.addEventListener('pointerdown', (e) => {
+            canvas.setPointerCapture(e.pointerId);
+            drawing = true;
+            hasLastMid = false;
+            const { x, y } = getPos(e);
+            lastX = x;
+            lastY = y;
+          });
+          canvas.addEventListener('pointermove', (e) => {
+            if (!drawing) return;
+            const { x, y } = getPos(e);
+            const midX = (lastX + x) / 2;
+            const midY = (lastY + y) / 2;
+            ctx.beginPath();
+            if (!hasLastMid) {
+              // First segment: no previous midpoint yet — start at last sample.
+              ctx.moveTo(lastX, lastY);
+              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
+              hasLastMid = true;
+            } else {
+              // Continue chain: from previous midpoint, control at last sample, end at new midpoint.
+              ctx.moveTo(lastMidX, lastMidY);
+              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
+            }
+            ctx.stroke();
+            lastMidX = midX;
+            lastMidY = midY;
+            lastX = x;
+            lastY = y;
+          });
+          function endStroke () {
+            if (!drawing) return;
+            drawing = false;
+            // Optional: draw a short tail to the final raw point so the stroke reaches the cursor.
+            if (hasLastMid) {
+              ctx.beginPath();
+              ctx.moveTo(lastMidX, lastMidY);
+              ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
+              ctx.stroke();
+            }
+            const dataInput = document.getElementById(`${prefix}_sig_data`);
+            if (dataInput) dataInput.value = canvas.toDataURL();
+            hasLastMid = false;
+          }
+          canvas.addEventListener('pointerup', endStroke);
+          canvas.addEventListener('pointercancel', endStroke);
+          canvas.addEventListener('lostpointercapture', endStroke);
+
+        }
+
+        handleSignatureUpload (e, prefix) {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.getElementById(`${prefix}_sig_canvas`) ??
+                document.getElementById(`${prefix}_sig`);
+              if (!canvas) return;
+              const ctx = canvas.getContext('2d');
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+              // Scale image to fit canvas, preserving aspect ratio
+              const cssW = canvas.width;
+              const cssH = canvas.height;
+              const ratio = img.height / img.width;
+              const maxRatio = cssH / cssW;
+              let drawW, drawH;
+              if (ratio > maxRatio) {
+                drawH = cssH;
+                drawW = drawH / ratio;
+              } else {
+                drawW = cssW;
+                drawH = drawW * ratio;
+              }
+              const x = (cssW - drawW) / 2;
+              const y = (cssH - drawH) / 2;
+              ctx.drawImage(img, x, y, drawW, drawH);
+
+              const dataInput = document.getElementById(`${prefix}_sig_data`);
+              if (dataInput) dataInput.value = canvas.toDataURL();
+            };
+            img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+
+          // FIX: Switch to the draw tab using the correct prefix, not hardcoded 'scSig'.
+          const container = document.getElementById(`${prefix}SigContainer`);
+          if (container) {
+            container.querySelectorAll('.btn-sig-tab').forEach((b) => {
+              b.classList.remove('active');
+              b.setAttribute('aria-selected', 'false');
+              b.setAttribute('tabindex', '-1');
+            });
+            container.querySelectorAll('.sig-tab-content').forEach(c => c.classList.remove('active'));
+            const drawTab = container.querySelector('[data-tab="draw"]');
+            drawTab?.classList.add('active');
+            if (drawTab) {
+              drawTab.setAttribute('aria-selected', 'true');
+              drawTab.setAttribute('tabindex', '0');
+            }
+            container.querySelector(`#${prefix}SigDrawTab`)?.classList.add('active');
+          }
         }
 
         /**
@@ -2033,7 +2599,7 @@
             if (isBinary) {
               const yes = createRadio('yes', 'Yes');
               const no = createRadio('no', 'No');
-              const na = createRadio('na', ' ', true); // disabled placeholder
+              const na = createRadio('na', ' ', true); // disabled placeholder
               pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
             } else {
               const yes = createRadio('yes', 'Yes');
@@ -2058,12 +2624,22 @@
           document.addEventListener('input', this.handleGlobalInput.bind(this));
           document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
           document.addEventListener('paste', this.handlePaste.bind(this));
+          document.addEventListener('click', this.handleSignatureUploadTriggerClick.bind(this));
 
           // MutationObserver for radio changes (progress updates)
           const observer = new MutationObserver(() => this.updateProgress());
           [this.elements.scRows, this.elements.dsRows, this.elements.chRows, this.elements.prRows].forEach(container => {
             if (container) observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
           });
+        }
+
+        handleSignatureUploadTriggerClick (e) {
+          const trigger = e.target.closest('.sig-upload-trigger');
+          if (!trigger) return;
+          e.preventDefault();
+          const prefix = trigger.getAttribute('data-prefix');
+          if (!prefix) return;
+          document.getElementById(`${prefix}SigUpload`)?.click();
         }
 
         // ---------- Event Handlers ----------
@@ -2077,7 +2653,6 @@
               this.toggleSection(head);
             }
           }
-
           // Risk buttons
           if (e.target.classList.contains('risk-btn')) {
             this.setRiskLevel(e.target.dataset.risk);
@@ -2090,6 +2665,8 @@
             clearSec2Btn: () => this.clearSection('s2'),
             clearSec3Btn: () => this.clearSection('s3'),
             clearSec4Btn: () => this.clearSection('s4'),
+            clearSec5Btn: () => this.clearSection('s5'),
+            clearSec6Btn: () => this.clearSection('s6'),
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
@@ -2111,7 +2688,7 @@
               if (name === 'sc11') {
                 this.updateRoleLabels(false);
                 this.showRiskConsistencyNotices();
-              };
+              }
               this.showRiskConsistencyNotices();
               this.syncSectionVisibility();
             }
@@ -2119,11 +2696,16 @@
             if (name === 'sc_role') {
               this.updateRoleLabels(true);
               this.showRiskConsistencyNotices();
-            };
+            }
+          }
+
+          if (e.target.matches('input') || e.target.matches('select')) {
+            if (e.target.validity.valid || e.target.focus()) {
+              e.target.previousElementSibling?.removeAttribute('style');
+            }
           }
 
           if (e.target.id === 'minCheckLevel') {
-
             this.syncDirectSupervision();
             this.syncSectionVisibility();
           }
@@ -2144,7 +2726,6 @@
           if (e.target.id === 'ch_name' && !this.elements.cardCh.classList.contains('hidden')) {
             this.elements.checker.value = e.target.value;
           }
-
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
             this.syncCommentsHeights();
@@ -2166,10 +2747,8 @@
           const items = e.clipboardData?.items;
           if (!items) return;
 
-          let hasImage = false;
           for (let item of items) {
             if (item.type.indexOf('image') !== -1) {
-              hasImage = true;
               const file = item.getAsFile();
               if (file) {
                 e.preventDefault();
@@ -2181,17 +2760,10 @@
 
         processImageFile (file, textareaId) {
           const reader = new FileReader();
-
           reader.onload = (e) => {
-            const imgDataUrl = e.target.result;
-            const galleryId = `${textareaId}-gallery`;
-            const gallery = document.getElementById(galleryId);
-
-            if (gallery) {
-              this.addImageToGallery(gallery, imgDataUrl);
-            }
+            const gallery = document.getElementById(`${textareaId}-gallery`);
+            if (gallery) this.addImageToGallery(gallery, e.target.result);
           };
-
           reader.readAsDataURL(file);
         }
 
@@ -2208,14 +2780,12 @@
           removeBtn.className = 'image-thumbnail-remove';
           removeBtn.innerHTML = '&times;';
           removeBtn.setAttribute('aria-label', 'Remove this image');
-
           removeBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             container.remove();
           });
 
-          // Add click handler to expand image in modal view
           img.addEventListener('click', (e) => {
             e.preventDefault();
             this.showImageModal(imgDataUrl);
@@ -2229,63 +2799,29 @@
         showImageModal (imgDataUrl) {
           const modal = document.createElement('div');
           modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            cursor: pointer;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: flex; align-items: center;
+            justify-content: center; z-index: 10000; cursor: pointer;
           `;
-
           const img = document.createElement('img');
           img.src = imgDataUrl;
           img.style.cssText = `
-            max-width: 90vw;
-            max-height: 90vh;
-            object-fit: contain;
-            border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            max-width: 90vw; max-height: 90vh; object-fit: contain;
+            border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
           `;
-
           const closeBtn = document.createElement('button');
           closeBtn.innerHTML = '&times;';
           closeBtn.style.cssText = `
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s ease;
+            position: absolute; top: 20px; right: 20px; width: 40px; height: 40px;
+            border: none; background: rgba(255,255,255,0.2); color: white;
+            font-size: 28px; cursor: pointer; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; transition: background 0.2s ease;
           `;
-
-          closeBtn.addEventListener('mouseover', () => {
-            closeBtn.style.background = 'rgba(255, 255, 255, 0.4)';
-          });
-
-          closeBtn.addEventListener('mouseout', () => {
-            closeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
-          });
-
+          closeBtn.addEventListener('mouseover', () => { closeBtn.style.background = 'rgba(255,255,255,0.4)'; });
+          closeBtn.addEventListener('mouseout', () => { closeBtn.style.background = 'rgba(255,255,255,0.2)'; });
           const close = () => modal.remove();
           closeBtn.addEventListener('click', close);
-          modal.addEventListener('click', (e) => {
-            if (e.target === modal) close();
-          });
-
+          modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
           modal.appendChild(img);
           modal.appendChild(closeBtn);
           document.body.appendChild(modal);
@@ -2349,13 +2885,9 @@
             blocks11.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
           }
           if (getVal(11) === 'no') {
-            blocks11.push({
-              message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b>
-            must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn'
-            });
+            blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 11, blocks11);
-
         }
 
         renderNoticeStack (prefix, n, blocks) {
@@ -2376,7 +2908,6 @@
         }
 
         syncDirectSupervision () {
-          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
           const noChecked = document.getElementById('sc11_no')?.checked ?? false;
           this.elements.cardDs.classList.toggle('hidden', !noChecked);
           const body = this.elements.s2Body, head = this.elements.s2Head;
@@ -2391,7 +2922,7 @@
         syncCheckWarning () {
           const hasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
           this.elements.chNotice.classList.toggle('hidden', !hasNo);
-          this.syncSectionVisibility(); // Peer Review may become visible
+          this.syncSectionVisibility();
         }
 
         syncSectionVisibility () {
@@ -2542,17 +3073,37 @@
         }
 
         allRequiredFieldsValid () {
-          return Array.from(document.querySelectorAll('.required-field-underline')).every(el => {
-            if (el.closest('.hidden') || el.previousElementSibling.disabled) return true;
-            return parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+          const required = Array.from(document.querySelectorAll('.required-field-underline'));
+          let firstInvalid = null;
+
+          required.forEach((el) => {
+            if (el.closest('.hidden')) return;
+            const control =
+              el.previousElementSibling?.matches?.('input, select, textarea') ? el.previousElementSibling :
+                el.parentElement?.querySelector?.('input, select, textarea');
+            if (control?.disabled) return;
+
+            const isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+            const label = el.parentElement?.querySelector('.field-label');
+            if (label) label.style.color = isValid ? '' : '#d32f2f';
+            if (!isValid && !firstInvalid) firstInvalid = { el, control };
           });
+
+          if (firstInvalid) {
+            const { el, control } = firstInvalid;
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (control?.focus) control.focus({ preventScroll: true });
+            return false;
+          }
+
+          return true;
         }
 
         // ---------- Textarea Utilities ----------
         autosizeTextarea (el) {
           if (!el) return;
           el.style.height = 'auto';
-          el.style.height = el.offsetHeight + 'px';
+          el.style.height = el.scrollHeight + 'px';
         }
 
         autosizeAllTextareas () {
@@ -2582,11 +3133,12 @@
           const sec = document.getElementById(sectionId);
           if (!sec) return;
           sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          sec.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
+          sec.querySelectorAll('input[type="text"], input[type="date"], input').forEach(i => i.value = '');
           sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           sec.querySelectorAll('textarea').forEach(t => t.value = '');
           sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
 
+          this.removeCanvas(sec);
           this.updateProgress();
           if (sectionId === 's1') {
             this.syncDirectSupervision();
@@ -2616,7 +3168,7 @@
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
           document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          document.querySelectorAll('input[type="text"], input[type="date"]').forEach(i => i.value = '');
+          document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(i => i.value = '');
           document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           document.querySelectorAll('textarea').forEach(t => t.value = '');
           this.elements.riskBtns.forEach(b => b.classList.remove('active'));
@@ -2651,6 +3203,20 @@
             }
             el.setAttribute('value', live.value);
           }
+
+          // Save canvas data from hidden input fields
+          const canvases = Array.from(document.querySelectorAll('canvas'));
+          const cloneCanvases = Array.from(clone.querySelectorAll('canvas'));
+          canvases.forEach((canvas, idx) => {
+            const cloneCanvas = cloneCanvases[idx];
+            if (!cloneCanvas) return;
+            const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
+            if (dataInput?.value) {
+              // Store the canvas drawing data in a data attribute for restoration
+              cloneCanvas.setAttribute('data-url', dataInput.value);
+            }
+          });
+
           const progressClone = clone.querySelector('#progressBar');
           if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
 
