@@ -250,8 +250,8 @@ const App = {
    */
   setupEventListeners () {
     // Debounced resize listener
-    window.addEventListener('resize', resize);
-    window.addEventListener('scroll', resize);
+    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('scroll', resize, { passive: true });
 
     // DOM content loaded listener
     document.addEventListener('DOMContentLoaded', () => {
@@ -374,10 +374,10 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
   const dd = createElement('dd', { className: 'item' });
   const linkEl = link.url
     ? createElement('a', {
-        href: link.url,
-        target: '_blank',
-        className: link.class || '',
-      })
+      href: link.url,
+      target: '_blank',
+      className: link.class || '',
+    })
     : createElement('a', { className: 'nogo' });
   // Add link content
   linkEl.innerHTML = `
@@ -438,13 +438,13 @@ const getSearchTerms = inputValue => {
   // First try splitting by commas (for comma-separated search terms)
   const separated = inputValue.includes(',')
     ? inputValue
-        .split(',')
-        .map(term => term.trim())
-        .filter(term => term.length > 0)
+      .split(',')
+      .map(term => term.trim())
+      .filter(term => term.length > 0)
     : inputValue
-        .split(/\s+/)
-        .map(term => term.trim())
-        .filter(term => term.length > 0);
+      .split(/\s+/)
+      .map(term => term.trim())
+      .filter(term => term.length > 0);
 
   if (separated.length > 1) {
     return separated;

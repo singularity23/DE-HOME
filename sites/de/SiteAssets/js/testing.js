@@ -1,32 +1,17 @@
-function objectKeys (obj) {
-  if (typeof Object.keys === 'function') {
-    return Object.keys(obj);
-  }
-  if (typeof Object.getOwnPropertyNames !== 'function') {
-    return [];
-  }
-  var names = Object.getOwnPropertyNames(obj);
-  var keys = [];
-  var i;
-  for (i = 0; i < names.length; i++) {
-    var n = names[i];
-    if (Object.prototype.propertyIsEnumerable.call(obj, n)) {
-      keys.push(n);
-    }
-  }
-  return keys;
-}
-
-var FIELD_MAP = {
-  Cblocker: 'Checker_Blocker',
-  DSblocker: 'DS_Blocker',
-  PRblocker: 'PR_Blocker',
-  TLblocker: 'TL_Blocker',
-  low: 'Risk - Low',
-  medium: 'Risk - Medium',
-  high: 'Risk - High',
-  riskwarning: 'High Risk Warning',
-  structwarning: 'Structural Warning',
-};
-
-console.log(objectKeys(FIELD_MAP));
+fetch('https://api.pdf.co/v1/pdf/edit/add', {
+  method: 'POST',
+  headers: { 'x-api-key': 'YOUR_API_KEY', 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    "url": "sites/de/SiteAssets/Document1.pdf", // Your base PDF
+    "annotations": [{
+      "annotationType": 13, // Signature field type
+      "x": 50, "y": 100,
+      "width": 150, "height": 50,
+      "pages": "0-",
+      "required": true
+    }],
+    "name": "signed-document.pdf"
+  })
+})
+  .then(response => response.json())
+  .then(data => console.log(data.url));

@@ -503,7 +503,8 @@
 
           <div class="cert-container">
             <p style="color: #666; margin-bottom: 15px;">
-              <strong>Upload your digital certificate</strong> (PKCS#12, .pfx, or .p12 file) to sign documents with cryptographic verification.
+              <strong>Upload your digital certificate</strong> (PKCS#12, .pfx, or .p12 file) to sign documents with
+              cryptographic verification.
             </p>
 
             <div class="cert-upload">
@@ -525,7 +526,8 @@
               </div>
             </div>
 
-            <input type="password" id="certPassword" placeholder="Certificate password (if required)" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px;">
+            <input type="password" id="certPassword" placeholder="Certificate password (if required)"
+              style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px;">
 
             <div id="certInfo" style="display: none;"></div>
           </div>
@@ -619,7 +621,8 @@
               ✓ Using Certificate-Based Signature
             </label>
             <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
-              Your document will be signed using your digital certificate. This provides cryptographic proof of authenticity and cannot be repudiated.
+              Your document will be signed using your digital certificate. This provides cryptographic proof of
+              authenticity and cannot be repudiated.
             </p>
           </div>
 
@@ -657,7 +660,8 @@
           <div class="document-preview">
             <h3>Document Hash (SHA-256):</h3>
             <div class="document-item">
-              <p id="documentHash" style="font-family: 'Courier New', monospace; font-size: 0.85em; word-break: break-all; color: #667eea;">
+              <p id="documentHash"
+                style="font-family: 'Courier New', monospace; font-size: 0.85em; word-break: break-all; color: #667eea;">
                 [Hash will be calculated when you sign]
               </p>
             </div>
@@ -700,10 +704,10 @@
     let selectedMethod = 'certificate';
 
     // Initialize Signature Pad on page load
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
       const canvas = document.getElementById('signaturePad');
 
-      function resizeCanvas() {
+      function resizeCanvas () {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
@@ -711,7 +715,7 @@
       }
 
       resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('resize', resizeCanvas, { passive: true });
 
       signaturePad = new SignaturePad(canvas, {
         minWidth: 0.5,
@@ -721,16 +725,16 @@
         penColor: '#667eea'
       });
 
-      canvas.addEventListener('mouseup', updateSignatureStatus);
-      canvas.addEventListener('touchend', updateSignatureStatus);
+      canvas.addEventListener('mouseup', updateSignatureStatus, { passive: true });
+      canvas.addEventListener('touchend', updateSignatureStatus, { passive: true });
     });
 
-    function handleCertificateUpload(event) {
+    function handleCertificateUpload (event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         const fileContent = e.target.result;
         // Store certificate data - in production, this would be handled server-side
         certificateData = {
@@ -747,7 +751,7 @@
       reader.readAsArrayBuffer(file);
     }
 
-    function displayCertificateInfo() {
+    function displayCertificateInfo () {
       if (!certificateData) return;
 
       const certInfo = document.getElementById('certInfo');
@@ -771,7 +775,7 @@
       certInfo.style.display = 'block';
     }
 
-    function selectMethod(method, element) {
+    function selectMethod (method, element) {
       selectedMethod = method;
 
       // Update UI
@@ -790,7 +794,7 @@
       }
     }
 
-    function updateSignatureStatus() {
+    function updateSignatureStatus () {
       const isEmpty = signaturePad.isEmpty();
       const statusEl = document.getElementById('signatureStatus');
       if (isEmpty) {
@@ -803,12 +807,12 @@
       }
     }
 
-    function clearSignature() {
+    function clearSignature () {
       signaturePad.clear();
       updateSignatureStatus();
     }
 
-    function showStatus(message, type) {
+    function showStatus (message, type) {
       const statusEl = document.getElementById('statusMessage');
       statusEl.textContent = message;
       statusEl.className = `status-message ${type}`;
@@ -817,7 +821,7 @@
       }, 5000);
     }
 
-    function previewDocument() {
+    function previewDocument () {
       const preview = document.getElementById('previewContainer');
 
       const docTitle = document.getElementById('docTitle').value || 'Document Title';
@@ -861,13 +865,13 @@
       calculateDocumentHash(docTitle + docNumber + docContent);
     }
 
-    function calculateDocumentHash(content) {
+    function calculateDocumentHash (content) {
       // Using CryptoJS to calculate SHA-256 hash
       const hash = CryptoJS.SHA256(content).toString();
       document.getElementById('documentHash').textContent = hash;
     }
 
-    function resetForm() {
+    function resetForm () {
       document.getElementById('signatureForm').reset();
       document.getElementById('certFile').value = '';
       document.getElementById('certPassword').value = '';
@@ -879,7 +883,7 @@
     }
 
     // Main form submission handler
-    document.getElementById('signatureForm').addEventListener('submit', async function(e) {
+    document.getElementById('signatureForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
       // Validation
@@ -918,7 +922,7 @@
       }
     });
 
-    async function generateSignedPDF() {
+    async function generateSignedPDF () {
       const docTitle = document.getElementById('docTitle').value;
       const docNumber = document.getElementById('docNumber').value;
       const docContent = document.getElementById('docContent').value;
@@ -1013,7 +1017,7 @@
       await html2pdf().set(opt).from(element).save();
     }
 
-    function generateCryptographicSignature() {
+    function generateCryptographicSignature () {
       // Simulate cryptographic signature (in production, this would be done server-side)
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       let signature = '';
@@ -1023,7 +1027,7 @@
       return signature;
     }
 
-    function generateVerificationCode() {
+    function generateVerificationCode () {
       return 'CERT' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substr(2, 9).toUpperCase();
     }
   </script>

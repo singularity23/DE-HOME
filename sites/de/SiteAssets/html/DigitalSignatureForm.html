@@ -63,20 +63,20 @@
       border-bottom: 3px solid #667eea;
     }
 
-    .form-group {
+    .form {
       margin-bottom: 20px;
     }
 
-    .form-group label {
+    .form label {
       display: block;
       font-weight: 600;
       color: #555;
       margin-bottom: 8px;
     }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
+    .form input,
+    .form textarea,
+    .form select {
       width: 100%;
       padding: 12px;
       border: 2px solid #ddd;
@@ -85,15 +85,15 @@
       transition: border-color 0.3s;
     }
 
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
+    .form input:focus,
+    .form textarea:focus,
+    .form select:focus {
       outline: none;
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-    .form-group textarea {
+    .form textarea {
       resize: vertical;
       min-height: 100px;
     }
@@ -302,17 +302,17 @@
           <h2 class="section-title">Document Information</h2>
 
           <div class="row">
-            <div class="form-group">
+            <div class="form">
               <label for="docTitle">Document Title *</label>
               <input type="text" id="docTitle" placeholder="e.g., Service Agreement" required>
             </div>
-            <div class="form-group">
+            <div class="form">
               <label for="docNumber">Document Number</label>
               <input type="text" id="docNumber" placeholder="e.g., DOC-2026-001">
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form">
             <label for="docContent">Document Content</label>
             <textarea id="docContent" placeholder="Enter the main content of your document here...">Terms and Conditions:
 
@@ -327,28 +327,28 @@
           <h2 class="section-title">Signatory Information</h2>
 
           <div class="row">
-            <div class="form-group">
+            <div class="form">
               <label for="fullName">Full Name *</label>
               <input type="text" id="fullName" placeholder="Enter your full name" required>
             </div>
-            <div class="form-group">
+            <div class="form">
               <label for="email">Email Address *</label>
               <input type="email" id="email" placeholder="your.email@example.com" required>
             </div>
           </div>
 
           <div class="row">
-            <div class="form-group">
+            <div class="form">
               <label for="jobTitle">Job Title</label>
               <input type="text" id="jobTitle" placeholder="e.g., Manager, Engineer">
             </div>
-            <div class="form-group">
+            <div class="form">
               <label for="department">Department</label>
               <input type="text" id="department" placeholder="e.g., Engineering">
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form">
             <label for="company">Company/Organization</label>
             <input type="text" id="company" placeholder="Enter organization name">
           </div>
@@ -418,10 +418,13 @@
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext('2d').scale(ratio, ratio);
+        console.log(window.devicePixelRatio);
+        console.log(canvas.offsetWidth, canvas.offsetHeight);
+        console.log(canvas.width, canvas.height);
       }
 
       resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('resize', resizeCanvas, { passive: true });
 
       signaturePad = new SignaturePad(canvas, {
         minWidth: 0.5,
@@ -432,8 +435,8 @@
       });
 
       // Update signature status
-      canvas.addEventListener('mouseup', updateSignatureStatus);
-      canvas.addEventListener('touchend', updateSignatureStatus);
+      canvas.addEventListener('mouseup', updateSignatureStatus, { passive: true });
+      canvas.addEventListener('touchend', updateSignatureStatus, { passive: true });
     });
 
     function updateSignatureStatus () {
@@ -517,6 +520,7 @@
 
       // Validation
       if (!document.getElementById('fullName').value) {
+        console.log('Please enter your full name');
         showStatus('❌ Please enter your full name', 'error');
         return;
       }
