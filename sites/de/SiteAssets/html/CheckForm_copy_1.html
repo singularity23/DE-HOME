@@ -20,8 +20,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
     rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@600" rel="stylesheet">
-
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
   <style>
     /* ============================================================
        CSS LAYER ORGANIZATION
@@ -106,8 +106,8 @@
       }
     }
 
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined';
+    .material-symbols-sharp {
+      font-family: 'Material Symbols Sharp';
       font-weight: normal;
       font-style: normal;
       font-size: 16px;
@@ -120,6 +120,7 @@
       direction: ltr;
       -webkit-font-smoothing: antialiased;
       pointer-events: none;
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
 
     }
 
@@ -1325,6 +1326,14 @@
         background: var(--color-tertiary);
       }
 
+      .btn-sig-tab[data-tab="draw"].active {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .btn-sig-tab[data-tab="upload"].active {
+        border-top: 1px solid var(--border);
+      }
+
       .btn-sig-tab.active {
         background: var(--color-tertiary);
         border: 1px solid var(--border-soft);
@@ -1631,7 +1640,7 @@
       <div class="card sc">
         <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
           <div class="sec-left">
-            <div class="sec-num" id="snum-1">1</div>
+            <div class="sec-num" id="snum-1"></div>
             <span class="sec-title">Self-Check</span>
             <span class="sec-badge" id="badge-1">0 / {sc_number}</span>
           </div>
@@ -1668,12 +1677,12 @@
                   <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="true" aria-controls="scSigDrawTab" tabindex="0"
                     data-testid="sc-sig-draw">
-                    <span class="material-symbols-outlined">signature</span>
+                    <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="false" aria-controls="scSigUploadTab"
                     tabindex="-1" data-testid="sc-sig-upload">
-                    <span class="material-symbols-outlined">upload</span>
+                    <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
                 <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
@@ -1764,19 +1773,18 @@
               </div>
             </div>
             <div class="sig-cell">
-              <label class="field-label" for="ch_sig">Signature (Checker) <span
-                  class="sr-only">(required)</span></label>
+              <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="true" aria-controls="chSigDrawTab" tabindex="0"
                     data-testid="ch-sig-draw">
-                    <span class="material-symbols-outlined">signature</span>
+                    <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="false" aria-controls="chSigUploadTab"
                     tabindex="-1" data-testid="ch-sig-upload">
-                    <span class="material-symbols-outlined">upload</span>
+                    <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
                 <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
@@ -1856,12 +1864,12 @@
                   <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="true" aria-controls="prSigDrawTab" tabindex="0"
                     data-testid="pr-sig-draw">
-                    <span class="material-symbols-outlined">signature</span>
+                    <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="false" aria-controls="prSigUploadTab"
                     tabindex="-1" data-testid="pr-sig-upload">
-                    <span class="material-symbols-outlined">upload</span>
+                    <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
                 <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
@@ -1993,12 +2001,12 @@
                   <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="true" aria-controls="fT1SigDrawTab" tabindex="0"
                     data-testid="ft1-sig-draw">
-                    <span class="material-symbols-outlined">signature</span>
+                    <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="false" aria-controls="fT1SigUploadTab"
                     tabindex="-1" data-testid="ft1-sig-upload">
-                    <span class="material-symbols-outlined">upload</span>
+                    <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
                 <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
@@ -2340,9 +2348,7 @@
              */
             const getPos = (e) => {
               const rect = this.canvas.getBoundingClientRect();
-              const touch = e.touches?.[0] ?? e.changedTouches?.[0];
-              const clientX = touch ? touch.clientX : e.clientX;
-              const clientY = touch ? touch.clientY : e.clientY;
+
               // Scale from CSS pixels → canvas internal pixels
               const scaleX = this.canvas.width / rect.width;
               const scaleY = this.canvas.height / rect.height;
@@ -2381,9 +2387,10 @@
               lastX = x;
               lastY = y;
             });
-            function endStroke () {
+            const endStroke = () => {
               if (!drawing) return;
               drawing = false;
+
               // Optional: draw a short tail to the final raw point so the stroke reaches the cursor.
               if (hasLastMid) {
                 //this.ctx.beginPath();
@@ -2391,10 +2398,11 @@
                 this.ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
                 this.ctx.stroke();
               }
-              const dataInput = document.getElementById(`${prefix}_sig_data`);
-              if (dataInput) dataInput.value = canvas.toDataURL();
+
+              const dataInput = document.getElementById(`${this.prefix}_sig_data`);
+              if (dataInput) dataInput.value = this.canvas.toDataURL();
               hasLastMid = false;
-            }
+            };
             this.canvas.addEventListener('pointerup', endStroke);
             this.canvas.addEventListener('pointercancel', endStroke);
             this.canvas.addEventListener('lostpointercapture', endStroke);
@@ -2638,55 +2646,41 @@
 
         _setupEventDelegation () {
           // Handler registry: array of {selector, handler} ordered by specificity
-          const clickHandlers = [
-            // ── HIGH SPECIFICITY (IDs, exact matches) ──
-            {
-              selector: '[id^="clear"]',
-              handler: (target) => {
-                const sectionId = this._parseSectionIdFromClearBtn(target.id);
-                this._clearSection(sectionId);
-              }
-            },
-            {
-              selector: '.sig-upload-trigger',
-              handler: (target) => this._triggerFileUpload(target)
-            },
-            {
-              selector: '.notice-close',
-              handler: () => this._hideGlobalNotice()
-            },
-
-            // ── MEDIUM SPECIFICITY (classes with data attributes) ──
-            {
-              selector: '.btn-sig-tab',
-              handler: (target) => this._handleSignatureTabSwitch(target)
-            },
-            {
-              selector: '.image-thumbnail img',
-              handler: (target) => this._showImageModal(target.src)
-            },
-            {
-              selector: CONFIG.selectors.riskBtn,
-              handler: (target) => this._setRiskLevel(target.dataset.risk)
-            },
-
-            // ── LOW SPECIFICITY (container elements) ──
-            {
-              selector: CONFIG.selectors.sectionHead,
-              handler: (target) => this._toggleSection(target)
-            }
-          ];
 
           document.addEventListener('click', (e) => {
-            for (const { selector, handler } of clickHandlers) {
-              console.log(`selector: ${selector}, handler: ${handler}`);
-              const target = e.target.closest(selector);
-              if (target) {
+            const head = e.target.closest('.sec-head');
+            if (head && head.hasAttribute('aria-controls')) {
+              const interactive = e.target.closest('button, a, input, select, textarea, label, [role="button"]');
+              if (!interactive || interactive === head) {
                 e.preventDefault();
-                e.stopPropagation();
-                handler(target);
-                return; // Exit after first match
+                this._toggleSection(head);
               }
+            }
+            // Risk buttons
+            if (e.target.classList.contains('risk-btn')) {
+              this._setRiskLevel(e.target.dataset.risk);
+            }
+
+            // Clear buttons
+            const clearActions = {
+              clearWorkInfoBtn: () => this._clearSection('sec-info-body'),
+              clearSec1Btn: () => this._clearSection('s1'),
+              clearSec2Btn: () => this._clearSection('s2'),
+              clearSec3Btn: () => this._clearSection('s3'),
+              clearSec4Btn: () => this._clearSection('s4'),
+              clearSec5Btn: () => this._clearSection('s5'),
+              clearSec6Btn: () => this._clearSection('s6'),
+              resetFormBtn: () => this._resetForm(),
+              saveSnapshotBtn: () => this._saveSnapshot(),
+              saveAsPdfBtn: (ev) => this._printFormAsPdf(ev),
+              dismissNoticeBtn: () => this._hideGlobalNotice()
+            };
+
+            const id = e.target.id;
+            console.log(id);
+            if (id in clearActions) {
+              e.stopPropagation();
+              clearActions[id](e);
             }
           });
 
@@ -3168,7 +3162,7 @@
         }
 
         // ── Section Clearing ──────────────────────────────
-        _clearSection (sectionId) {
+        __clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           if (!sec) return;
 
@@ -3304,6 +3298,7 @@
         }
 
         _printFormAsPdf (e) {
+          console.log(e);
           e.preventDefault();
           this._updateProgress();
 
@@ -3535,3 +3530,5 @@
 </body>
 
 </html>
+CheckForm copy1.html
+Displaying CheckForm copy1.html.

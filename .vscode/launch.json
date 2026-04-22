@@ -10,9 +10,9 @@
     },
     {
       "type": "chrome",
-      "name": "http://127.0.0.1:3000/sites/de/SiteAssets/html/Markdown2HTML.html",
+      "name": "CheckForm",
       "request": "launch",
-      "url": "http://127.0.0.1:3000/sites/de/SiteAssets/html/Markdown2HTML.html"
+      "url": "http://127.0.0.1:5594/sites/de/SiteAssets/html/CheckForm.html"
     }
   ]
 }
