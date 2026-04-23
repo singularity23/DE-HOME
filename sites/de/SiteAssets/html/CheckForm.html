@@ -454,7 +454,8 @@
       border-color: var(--success);
     }
 
-    .sec-title {
+    .sec-title,
+    .sig-modal-title {
       font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.875rem;
       font-weight: 700;
@@ -1218,20 +1219,23 @@
     }
 
     .btn-ghost,
-    .btn-sig-upload {
+    .btn-sig-upload,
+    .btn-open-modal {
       background: var(--bg);
       border-color: var(--border);
       color: var(--text-muted);
     }
 
     .btn-ghost:hover,
-    .btn-sig-upload:hover {
+    .btn-sig-upload:hover,
+    .btn-open-modal:hover {
       border-color: var(--warn-border);
       color: var(--warn);
       background: var(--warn-bg);
     }
 
-    .btn-sig-upload {
+    .btn-sig-upload,
+    .btn-open-modal {
       border-radius: 50px;
       border-style: dashed;
     }
@@ -1481,7 +1485,8 @@
 
     .image-thumbnail:hover .image-thumbnail-remove,
     .signature-canvas:hover .image-thumbnail-remove,
-    .sig-tab-content.active:hover .image-thumbnail-remove {
+    .sig-tab-content.active:hover .image-thumbnail-remove,
+    .sig-draw-surface:hover .image-thumbnail-remove {
       opacity: 1;
     }
 
@@ -1570,7 +1575,115 @@
       display: block;
       touch-action: none;
       width: 100%;
-      max-height: 103px;
+      height: 100%;
+      max-height: none;
+    }
+
+    .sig-draw-surface {
+      position: relative;
+      width: 100%;
+      min-height: 103px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+    }
+
+    .sig-inline-preview {
+      position: absolute;
+      inset: 10px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .sig-inline-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .sig-draw-surface.has-signature .sig-inline-preview {
+      display: flex;
+    }
+
+    .sig-draw-surface.has-signature .btn-open-modal {
+      display: none;
+    }
+
+    .sig-draw-surface .image-thumbnail-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      opacity: 0;
+      pointer-events: auto;
+    }
+
+    .sig-draw-surface.has-signature .image-thumbnail-remove {
+      opacity: 1;
+    }
+
+    /* Signature modal */
+    .sig-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sig-modal.open {
+      display: flex;
+    }
+
+    .sig-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .sig-modal-panel {
+      position: relative;
+      width: min(720px, calc(100vw - 24px));
+      background: var(--bg);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .sig-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--header-bg);
+    }
+
+    .sig-modal-body {
+      padding: 12px 14px;
+      background: var(--surface);
+    }
+
+    .sig-modal-canvas-wrap {
+      width: 100%;
+      height: 240px;
+      border: 1px dashed var(--border-soft);
+      background: var(--surface-base);
+      overflow: hidden;
+    }
+
+    .sig-modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--header-bg);
     }
 
     .sig-controls {
@@ -1769,8 +1882,17 @@
                 </div>
                 <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
                   tabindex="0">
-                  <canvas id="sc_sig_canvas" class="signature-canvas" data-mode="draw"
-                    data-testid="sc-sig-canvas"></canvas>
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="sc" data-testid="sc-sig-surface">
+                    <button class="btn btn-open-modal" type="button" data-prefix="sc" data-testid="sc-sig-open">
+                      Open signature pad
+                    </button>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="sc" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
                 </div>
                 <div class="sig-tab-content" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
                   tabindex="0">
@@ -1855,7 +1977,7 @@
               </div>
             </div>
             <div class="sig-cell">
-              <div class="field-label" for="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
+              <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
@@ -1871,8 +1993,17 @@
                 </div>
                 <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
                   tabindex="0">
-                  <canvas id="ch_sig_canvas" class="signature-canvas" data-mode="draw"
-                    data-testid="ch-sig-canvas"></canvas>
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
+                    <button class="btn btn-open-modal" type="button" data-prefix="ch" data-testid="ch-sig-open">
+                      Open signature pad
+                    </button>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">close</span>
+                    </button>
+                  </div>
                 </div>
                 <div class="sig-tab-content" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
                   tabindex="0">
@@ -1956,8 +2087,17 @@
                 </div>
                 <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
                   tabindex="0">
-                  <canvas id="pr_sig_canvas" class="signature-canvas" data-mode="draw"
-                    data-testid="pr-sig-canvas"></canvas>
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
+                    <button class="btn btn-open-modal" type="button" data-prefix="pr" data-testid="pr-sig-open">
+                      Open signature pad
+                    </button>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">close</span>
+                    </button>
+                  </div>
                 </div>
                 <div class="sig-tab-content" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
                   tabindex="0">
@@ -2093,8 +2233,17 @@
                 </div>
                 <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
                   tabindex="0">
-                  <canvas id="fT1_sig_canvas" class="signature-canvas" data-mode="draw"
-                    data-testid="ft1-sig-canvas"></canvas>
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="fT1" data-testid="ft1-sig-surface">
+                    <button class="btn btn-open-modal" type="button" data-prefix="fT1" data-testid="ft1-sig-open">
+                      Open signature pad
+                    </button>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="fT1" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">close</span>
+                    </button>
+                  </div>
                 </div>
                 <div class="sig-tab-content" id="fT1SigUploadTab" role="tabpanel" aria-labelledby="fT1SigUploadBtn"
                   tabindex="0">
@@ -2125,6 +2274,26 @@
         <div class="notice-actions">
           <button class="notice-close" type="button" aria-label="Dismiss notice" id="dismissNoticeBtn"
             data-testid="dismiss-notice"><span class="material-symbols-sharp">cancel</span></button>
+        </div>
+      </div>
+
+      <!-- Signature Modal -->
+      <div class="sig-modal" id="sigModal" role="dialog" aria-modal="true" aria-labelledby="sigModalTitle">
+        <div class="sig-modal-backdrop" data-action="close-sig-modal" aria-hidden="true"></div>
+        <div class="sig-modal-panel" role="document">
+          <div class="sig-modal-head">
+            <div class="sig-modal-title" id="sigModalTitle">Draw Signature</div>
+            <button class="btn btn-ghost" type="button" data-action="close-sig-modal">Close</button>
+          </div>
+          <div class="sig-modal-body">
+            <div class="sig-modal-canvas-wrap">
+              <canvas id="sigModalCanvas" class="signature-canvas"></canvas>
+            </div>
+          </div>
+          <div class="sig-modal-actions">
+            <button class="btn btn-clear" type="button" data-action="clear-sig-modal">Clear</button>
+            <button class="btn btn-primary" type="button" data-action="save-sig-modal">Save</button>
+          </div>
         </div>
       </div>
 
@@ -2264,7 +2433,7 @@
             wiLabel: document.querySelector('#checker_por .field-label'),
             wiInput: document.querySelector('#checker_por input'),
             chNameLabel: document.querySelector('label[for="ch_name"]'),
-            chSigLabel: document.querySelector('label[for="ch_sig"]'),
+            chSigLabel: document.querySelector('#ch_sig'),
             checkerCommentsLabel: document.querySelector('label[for="checkerComments"]'),
             engineerResponseLabel: document.querySelector('label[for="engineerResponse"]'),
             // Section bodies
@@ -2297,7 +2466,7 @@
           this.syncCommentsHeights();
           this.updateRoleLabels(!isRestored);
           this.initSignaturePads();
-          this.restoreCanvasesFromSnapshot();
+          this.refreshAllSignaturePreviews();
         }
 
         buildAllRows () {
@@ -2309,172 +2478,122 @@
 
         // ---------- Signature Pad Methods ----------
         initSignaturePads () {
-          this.signaturePads = {};
-          this.initSignaturePad('sc');
-          this.initSignaturePad('ch');
-          this.initSignaturePad('pr');
-          this.initSignaturePad('fT1');
+          this.signatureModal = document.getElementById('sigModal');
+          this.signatureModalCanvas = document.getElementById('sigModalCanvas');
+          this.signatureModalTitle = document.getElementById('sigModalTitle');
+          this.activeSignaturePrefix = null;
+
+          if (this.signatureModalCanvas) {
+            this.setupModalCanvasDrawing(this.signatureModalCanvas);
+          }
         }
 
-        restoreCanvasesFromSnapshot () {
-          // Restore canvas drawings from saved snapshots
-          const canvases = document.querySelectorAll('canvas[data-url]');
-          canvases.forEach(canvas => {
-            const dataUrl = canvas.getAttribute('data-url');
-            if (dataUrl) {
-              const img = new Image();
-              img.onload = () => {
-                const ctx = canvas.getContext('2d');
-                // resizeCanvas() applies a DPR transform, so draw in CSS pixels (not bitmap dims).
-                const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-                const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-                ctx.clearRect(0, 0, cssW, cssH);
-                ctx.drawImage(img, 0, 0, cssW, cssH);
-                // Update the data input field
-                const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
-                if (dataInput) dataInput.value = dataUrl;
-              };
-              img.src = dataUrl;
-            }
+        changeSignatureTab (tabBtn) {
+          const container = tabBtn.closest('.signature-pad-container');
+          const tabContent = tabBtn.getAttribute('aria-controls');
+          const prefix = container.getAttribute('data-prefix');
+          // Update tab buttons
+          container.querySelectorAll('.btn-sig-tab').forEach((b) => {
+            const isActive = b === tabBtn;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            b.setAttribute('tabindex', isActive ? '0' : '-1');
+          });
+
+          // Update tab content
+          container.querySelectorAll('.sig-tab-content').forEach(c => {
+            c.getAttribute('id') === tabContent ? c.classList.add('active') : c.classList.remove('active');
+          });
+
+        }
+
+        refreshAllSignaturePreviews () {
+          ['sc', 'ch', 'pr', 'fT1'].forEach((prefix) => {
+            const dataInput = document.getElementById(`${prefix}_sig_data`);
+            this.setSignaturePreview(prefix, dataInput?.value || '');
           });
         }
 
-        initSignaturePad (prefix) {
-          // FIX: Fall back to ${prefix}_sig if ${prefix}_sig_canvas doesn't exist.
-          // All canvas IDs are now normalised to use the _canvas suffix in the HTML,
-          // but this guard keeps things resilient.
-          const canvas =
-            document.getElementById(`${prefix}_sig_canvas`)
+        setSignaturePreview (prefix, dataUrl) {
+          const surface = document.querySelector(`.sig-draw-surface[data-prefix="${prefix}"]`);
+          const img = surface?.querySelector('.sig-inline-preview img');
+          if (!surface || !img) return;
 
-          if (!canvas || canvas.tagName !== 'CANVAS') return;
+          if (dataUrl) {
+            img.src = dataUrl;
+            surface.classList.add('has-signature');
+          } else {
+            img.removeAttribute('src');
+            surface.classList.remove('has-signature');
+          }
 
-          // ── resize helper ───────────────────────────────────────────────────
-          // FIX: Math.max needs two args to clamp; single-arg call is a no-op.
-          // FIX: Save/restore existing drawing so resizing doesn't wipe signatures.
-          const resizeCanvas = () => {
-            const rect = canvas.getBoundingClientRect();
-            const cssW = canvas.offsetWidth > rect.width ? canvas.offsetWidth : rect.width;
-            console.log(canvas.offsetWidth, rect.width);
-            const cssH = canvas.offsetHeight > rect.height ? canvas.offsetHeight : rect.height;
-            if (!cssW || !cssH) return;
-            // Snapshot before clearing (assigning width/height resets the bitmap)
-            let snapshot = null;
-            try {
-              if (canvas.width > 0 && canvas.height > 0) {
-                snapshot = canvas.toDataURL();
-              }
-            } catch (_) { /* cross-origin or empty – skip */ }
+          const tabBtn = surface.closest('.signature-pad-container')?.querySelector('.btn-sig-tab[data-tab="draw"]');
+          this.changeSignatureTab(tabBtn);
+        }
 
-            const ctx = canvas.getContext('2d');
-            canvas.width = cssW;
-            canvas.height = cssH;
-            ctx.clearRect(0, 0, cssW, cssH);
 
-            // Restore drawing after resize
-            if (snapshot) {
-              const img = new Image();
-              img.onload = () => ctx.drawImage(img, 0, 0, cssW, cssH);
-              img.src = snapshot;
-            }
+        openSignatureModal (prefix) {
+          if (!this.signatureModal || !this.signatureModalCanvas) return;
+          this.activeSignaturePrefix = prefix;
+          if (this.signatureModalTitle) this.signatureModalTitle.textContent = 'Draw signature';
+          this.signatureModal.classList.add('open');
+
+          this.resizeModalCanvas();
+          const dataInput = document.getElementById(`${prefix}_sig_data`);
+          const existing = dataInput?.value || '';
+          this.loadDataUrlIntoModalCanvas(existing);
+
+          // Focus modal for keyboard escape
+          this.signatureModal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
+        }
+
+        closeSignatureModal (save) {
+          if (!this.signatureModal || !this.signatureModalCanvas) return;
+          const prefix = this.activeSignaturePrefix;
+          if (save && prefix) {
+            const dataUrl = this.signatureModalCanvas.toDataURL();
+            const dataInput = document.getElementById(`${prefix}_sig_data`);
+            if (dataInput) dataInput.value = dataUrl;
+            this.setSignaturePreview(prefix, dataUrl);
+          }
+          this.signatureModal.classList.remove('open');
+          this.activeSignaturePrefix = null;
+        }
+
+        clearModalSignature () {
+          if (!this.signatureModalCanvas) return;
+          const ctx = this.signatureModalCanvas.getContext('2d');
+          const cssW = this.signatureModalCanvas.offsetWidth || this.signatureModalCanvas.getBoundingClientRect().width;
+          const cssH = this.signatureModalCanvas.offsetHeight || this.signatureModalCanvas.getBoundingClientRect().height;
+          ctx.clearRect(0, 0, cssW, cssH);
+        }
+
+        resizeModalCanvas () {
+          const canvas = this.signatureModalCanvas;
+          if (!canvas) return;
+          const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
+          const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
+          if (!cssW || !cssH) return;
+          canvas.width = cssW;
+          canvas.height = cssH;
+          const ctx = canvas.getContext('2d');
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.lineWidth = 2;
+        }
+
+        loadDataUrlIntoModalCanvas (dataUrl) {
+          this.clearModalSignature();
+          if (!dataUrl) return;
+          const canvas = this.signatureModalCanvas;
+          const ctx = canvas.getContext('2d');
+          const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
+          const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, cssW, cssH);
           };
-
-          resizeCanvas();
-          window.addEventListener('resize', resizeCanvas, { passive: true });
-
-          // Add clear / remove button over the canvas
-          const canvasWrapper = canvas.parentElement;
-          if (canvasWrapper) {
-            canvasWrapper.style.position = 'relative';
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'image-thumbnail-remove';
-            removeBtn.innerHTML = `<span class="material-symbols-sharp">cancel</span>`;
-            removeBtn.setAttribute('aria-label', 'Clear signature canvas');
-            removeBtn.addEventListener('click', (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const ctx = canvas.getContext('2d');
-              const cssW = canvas.getBoundingClientRect().width;
-              const cssH = canvas.getBoundingClientRect().height;
-              ctx.clearRect(0, 0, cssW, cssH);
-              const dataInput = document.getElementById(`${prefix}_sig_data`);
-              if (dataInput) dataInput.value = '';
-            });
-            canvasWrapper.appendChild(removeBtn);
-          }
-
-          // Wire up custom drawing (handles DPR-aware coordinate mapping)
-          this.setupCanvasDrawing(canvas, prefix);
-
-          // ── tab switching ────────────────────────────────────────────────────
-          const container = canvas.closest('.signature-pad-container');
-          if (container) {
-            const tabBtns = container.querySelectorAll('.btn-sig-tab');
-            const tabContents = container.querySelectorAll('.sig-tab-content');
-            tabBtns.forEach(btn => {
-              btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabName = btn.getAttribute('data-tab');
-                tabBtns.forEach((b) => {
-                  b.classList.remove('active');
-                  b.setAttribute('aria-selected', 'false');
-                  b.setAttribute('tabindex', '-1');
-                });
-                tabContents.forEach((c) => c.classList.remove('active'));
-
-                btn.classList.add('active');
-                btn.setAttribute('aria-selected', 'true');
-                btn.setAttribute('tabindex', '0');
-
-                const capTab = tabName.charAt(0).toUpperCase() + tabName.slice(1);
-                container.querySelector(`#${prefix}Sig${capTab}Tab`)?.classList.add('active');
-              });
-            });
-          }
-
-          // ── clear button ─────────────────────────────────────────────────────
-          const clearBtn = document.getElementById(`${prefix}SigClear`);
-          if (clearBtn) {
-            clearBtn.addEventListener('click', (e) => {
-              e.preventDefault();
-              const ctx = canvas.getContext('2d');
-              const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-              const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-              ctx.clearRect(0, 0, cssW, cssH);
-              const dataInput = document.getElementById(`${prefix}_sig_data`);
-              if (dataInput) dataInput.value = '';
-            });
-          }
-
-          // ── colour picker ────────────────────────────────────────────────────
-          const colorInput = document.getElementById(`${prefix}SigColor`);
-          if (colorInput) {
-            colorInput.addEventListener('change', (e) => {
-              this.penColor = e.target.value;
-            });
-          }
-
-          // ── file upload ──────────────────────────────────────────────────────
-          const uploadInput = document.getElementById(`${prefix}SigUpload`);
-          if (uploadInput) {
-            uploadInput.addEventListener('change', (e) => this.handleSignatureUpload(e, prefix));
-
-            const uploadArea = canvas.closest('.signature-pad-container')?.querySelector('.sig-upload-area');
-            if (uploadArea) {
-              ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-                uploadArea.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
-              });
-              uploadArea.addEventListener('drop', (e) => {
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                  uploadInput.files = files;
-                  uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-              });
-            }
-          }
-
-          this.signaturePads[prefix] = { canvas, penColor: '#000000' };
+          img.src = dataUrl;
         }
 
         removeCanvas (section) {
@@ -2490,34 +2609,38 @@
           });
         }
 
-        // ── Drawing engine ──────────────────────────────────────────────────────
-        // FIX (main bug): Removed the canvas dimension override that was clobbering
-        // the DPR scaling set by resizeCanvas(). Coordinate mapping now accounts for
-        // the ratio between canvas internal pixels and CSS display pixels.
-        setupCanvasDrawing (canvas, prefix) {
+        setupModalCanvasDrawing (canvas) {
           const ctx = canvas.getContext('2d');
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'flat';
+          ctx.lineCap = 'flat';
+          ctx.lineJoin = 'miter';
           ctx.lineWidth = 2;
+          ctx.strokeStyle = '#000';
           let drawing = false;
           let lastX = 0;
           let lastY = 0;
           let lastMidX = 0;
           let lastMidY = 0;
           let hasLastMid = false;
+          let lastT = 0;
+          let lastW = 2;
+          const minW = 2.0;
+          const maxW = 6.0;
+          const smoothing = 0.45; // lower = smoother width changes
           /**
            * Convert a pointer/touch event to canvas-space coordinates,
            * correctly accounting for any DPR scaling.
            */
           const getPos = (e) => {
             const rect = canvas.getBoundingClientRect();
-
+            // Map from CSS pixels → canvas internal pixels (canvas is sized in CSS pixels here).
+            // Using clientX/clientY avoids offsetX quirks when pointer capture is active.
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
+            const clientX = e.clientX ?? 0;
+            const clientY = e.clientY ?? 0;
             return {
-              // resizeCanvas() applies a DPR transform, so coordinates should be CSS pixels.
-              x: (e.offsetX) * scaleX,
-              y: (e.offsetY) * scaleY,
+              x: (clientX - rect.left) * scaleX,
+              y: (clientY - rect.top) * scaleY,
             };
           };
           canvas.addEventListener('pointerdown', (e) => {
@@ -2527,12 +2650,27 @@
             const { x, y } = getPos(e);
             lastX = x;
             lastY = y;
+            lastMidX = x;
+            lastMidY = y;
+            lastT = performance.now();
+            lastW = 2;
           });
           canvas.addEventListener('pointermove', (e) => {
             if (!drawing) return;
             const { x, y } = getPos(e);
+            const now = performance.now();
+            const dt = Math.max(now - lastT, 1);
             const midX = (lastX + x) / 2;
             const midY = (lastY + y) / 2;
+            const dx = x - lastX;
+            const dy = y - lastY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const speed = dist / dt; // px/ms
+            // Pen feel: slow => thicker, fast => thinner
+            const targetW = Math.max(minW, Math.min(maxW, maxW - speed * 3.0));
+            const w = lastW + (targetW - lastW) * smoothing;
+            ctx.lineWidth = w;
+
             ctx.beginPath();
             if (!hasLastMid) {
               // First segment: no previous midpoint yet — start at last sample.
@@ -2549,6 +2687,8 @@
             lastMidY = midY;
             lastX = x;
             lastY = y;
+            lastT = now;
+            lastW = w;
           });
           function endStroke () {
             if (!drawing) return;
@@ -2560,72 +2700,14 @@
               ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
               ctx.stroke();
             }
-            const dataInput = document.getElementById(`${prefix}_sig_data`);
-            if (dataInput) dataInput.value = canvas.toDataURL();
             hasLastMid = false;
           }
           canvas.addEventListener('pointerup', endStroke);
           canvas.addEventListener('pointercancel', endStroke);
           canvas.addEventListener('lostpointercapture', endStroke);
-
         }
 
-        handleSignatureUpload (e, prefix) {
-          const file = e.target.files?.[0];
-          if (!file) return;
 
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const img = new Image();
-            img.onload = () => {
-              const canvas = document.getElementById(`${prefix}_sig_canvas`) ??
-                document.getElementById(`${prefix}_sig`);
-              if (!canvas) return;
-              const ctx = canvas.getContext('2d');
-              const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-              const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-              ctx.clearRect(0, 0, cssW, cssH);
-
-              // Scale image to fit canvas, preserving aspect ratio
-              const ratio = img.height / img.width;
-              const maxRatio = cssH / cssW;
-              let drawW, drawH;
-              if (ratio > maxRatio) {
-                drawH = cssH;
-                drawW = drawH / ratio;
-              } else {
-                drawW = cssW;
-                drawH = drawW * ratio;
-              }
-              const x = (cssW - drawW) / 2;
-              const y = (cssH - drawH) / 2;
-              ctx.drawImage(img, x, y, drawW, drawH);
-
-              const dataInput = document.getElementById(`${prefix}_sig_data`);
-              if (dataInput) dataInput.value = canvas.toDataURL();
-            };
-            img.src = event.target.result;
-          };
-          reader.readAsDataURL(file);
-
-          // FIX: Switch to the draw tab using the correct prefix, not hardcoded 'scSig'.
-          const container = document.getElementById(`${prefix}SigContainer`);
-          if (container) {
-            container.querySelectorAll('.btn-sig-tab').forEach((b) => {
-              b.classList.remove('active');
-              b.setAttribute('aria-selected', 'false');
-              b.setAttribute('tabindex', '-1');
-            });
-            container.querySelectorAll('.sig-tab-content').forEach(c => c.classList.remove('active'));
-            const drawTab = container.querySelector('[data-tab="draw"]');
-            drawTab?.classList.add('active');
-            if (drawTab) {
-              drawTab.setAttribute('aria-selected', 'true');
-              drawTab.setAttribute('tabindex', '0');
-            }
-            container.querySelector(`#${prefix}SigDrawTab`)?.classList.add('active');
-          }
-        }
 
         /**
          * Build radio button rows using DOM APIs (no innerHTML for better security/performance)
@@ -2711,11 +2793,94 @@
           e.preventDefault();
           const prefix = trigger.getAttribute('data-prefix');
           if (!prefix) return;
-          document.getElementById(`${prefix}SigUpload`)?.click();
+
+          const uploadInput = document.getElementById(`${prefix}SigUpload`);
+          if (uploadInput) uploadInput.click();
+          uploadInput.addEventListener('change', (e) => this.handleSignatureUpload(e, prefix));
+
+          const container = document.getElementById(`${prefix}SigContainer`);
+          const uploadArea = container?.querySelector('.sig-upload-area');
+          if (uploadArea && uploadInput) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+              uploadArea.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
+            });
+            uploadArea.addEventListener('drop', (e) => {
+              const files = e.dataTransfer.files;
+              if (files.length > 0) {
+                uploadInput.files = files;
+                uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            });
+          }
+
         }
+        handleSignatureUpload (e, prefix) {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const dataUrl = String(event.target.result || '');
+            const dataInput = document.getElementById(`${prefix}_sig_data`);
+            if (dataInput) dataInput.value = dataUrl;
+            this.setSignaturePreview(prefix, dataUrl);
+          };
+          reader.readAsDataURL(file);
+        }
+
 
         // ---------- Event Handlers ----------
         handleGlobalClick (e) {
+
+          const tabBtn = e.target.closest('.btn-sig-tab');
+          if (tabBtn) {
+            e.preventDefault();
+            this.changeSignatureTab(tabBtn);
+            return;
+          }
+          // Signature: open modal for drawing
+          const openSigBtn = e.target.closest('.btn-open-modal');
+          if (openSigBtn) {
+            e.preventDefault();
+            const prefix = openSigBtn.getAttribute('data-prefix');
+            if (prefix) this.openSignatureModal(prefix);
+            return;
+          }
+
+          // Signature: clear inline
+          const clearInline = e.target.closest('.sig-draw-surface .image-thumbnail-remove');
+          if (clearInline) {
+            e.preventDefault();
+            const prefix = clearInline.getAttribute('data-prefix');
+            if (prefix) {
+              const dataInput = document.getElementById(`${prefix}_sig_data`);
+              if (dataInput) dataInput.value = '';
+              this.setSignaturePreview(prefix, '');
+            }
+            return;
+          }
+
+          // Signature modal actions
+          const modalAction = e.target.closest('[data-action]');
+          if (modalAction) {
+            const action = modalAction.getAttribute('data-action');
+            if (action === 'close-sig-modal') {
+              e.preventDefault();
+              this.closeSignatureModal(false);
+              return;
+            }
+            if (action === 'save-sig-modal') {
+              e.preventDefault();
+              this.closeSignatureModal(true);
+              return;
+            }
+            if (action === 'clear-sig-modal') {
+              e.preventDefault();
+              this.clearModalSignature();
+              return;
+            }
+          }
+
           // Section toggle
           const head = e.target.closest('.sec-head');
           if (head && head.hasAttribute('aria-controls')) {
@@ -2746,7 +2911,6 @@
           };
 
           const id = e.target.id;
-          console.log(id);
           if (id in clearActions) {
             e.stopPropagation();
             clearActions[id](e);
@@ -2806,6 +2970,11 @@
         }
 
         handleGlobalKeydown (e) {
+          if (e.key === 'Escape' && this.signatureModal?.classList.contains('open')) {
+            e.preventDefault();
+            this.closeSignatureModal(false);
+            return;
+          }
           const head = e.target.closest('.sec-head');
           if (head && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();
@@ -2830,6 +2999,8 @@
             }
           }
         }
+
+
 
         processImageFile (file, textareaId) {
           const reader = new FileReader();
