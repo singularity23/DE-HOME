@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unconfirmed Load Requirements Form – DDCC Work Smart</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #1a3152;
+      --navy-lt: #234470;
+      --teal:    #00788a;
+      --orange:  #d95f00;
+      --mid:     #4a6180;
+      --bg:      #f4f6f9;
+      --white:   #ffffff;
+      --border:  #c8d3df;
+      --text:    #1e2d3d;
+      --muted:   #5a6e82;
+      --row-alt: #edf1f7;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--white);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    }
+
+    /* ── Header bar ── */
+    .header {
+      background: var(--navy);
+      padding: 1.6rem 2rem 1.4rem;
+      border-bottom: 4px solid var(--teal);
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -.3px;
+    }
+    .header p {
+      margin-top: .35rem;
+      font-size: .85rem;
+      color: rgba(255,255,255,.65);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* ── Body layout ── */
+    .body {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 0;
+    }
+    .main  { padding: 1.8rem 2rem; border-right: 1px solid var(--border); }
+    .aside { padding: 1.6rem 1.4rem; background: #f0f4f8; }
+
+    /* ── Section headings ── */
+    .section-title {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--teal);
+      border-bottom: 2px solid var(--teal);
+      padding-bottom: .4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Reference info ── */
+    .ref-note {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: .9rem;
+      line-height: 1.55;
+    }
+    .attach-zone {
+      border: 2px dashed var(--border);
+      border-radius: 4px;
+      padding: 1.1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      margin-bottom: 1.6rem;
+    }
+    .attach-zone:hover { border-color: var(--teal); background: #f0fafa; }
+    .attach-zone input[type="file"] { display: none; }
+    .attach-icon {
+      width: 36px; height: 36px;
+      background: var(--navy);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .attach-icon svg { fill: var(--white); width: 18px; height: 18px; }
+    .attach-label { font-size: .82rem; color: var(--muted); line-height: 1.45; }
+    .attach-label strong { color: var(--teal); font-weight: 600; }
+    #file-name { font-size: .78rem; color: var(--teal); margin-top: .25rem; font-style: italic; }
+
+    /* ── Project details table ── */
+    .proj-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.8rem;
+      font-size: .85rem;
+    }
+    .proj-table thead tr {
+      background: var(--navy);
+      color: var(--white);
+    }
+    .proj-table thead th {
+      padding: .55rem .85rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: .78rem;
+      letter-spacing: .04em;
+    }
+    .proj-table tbody td {
+      border: 1px solid var(--border);
+      padding: .5rem .85rem;
+      vertical-align: top;
+    }
+    .proj-table tbody td:first-child { width: 170px; background: var(--row-alt); font-weight: 600; }
+    .proj-table input[type="text"],
+    .proj-table textarea {
+      width: 100%; border: none; background: transparent;
+      font-family: inherit; font-size: .85rem; color: var(--text);
+      resize: none; outline: none;
+    }
+
+    /* ── Requirements table ── */
+    .req-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      margin-bottom: 1rem;
+    }
+    .req-table thead tr { background: var(--navy-lt); color: var(--white); }
+    .req-table thead th {
+      padding: .6rem .75rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: .75rem;
+      letter-spacing: .04em;
+    }
+    .req-table tbody tr { border-bottom: 1px solid var(--border); }
+    .req-table tbody tr:nth-child(even) { background: var(--row-alt); }
+    .req-table tbody td { padding: .6rem .75rem; vertical-align: top; }
+    .req-table .req-name { font-weight: 700; display: block; }
+    .req-table .req-eg   { font-size: .74rem; color: var(--muted); font-style: italic; display: block; margin-top: .15rem; }
+    .req-table select,
+    .req-table input[type="text"],
+    .req-table textarea {
+      width: 100%; border: 1px solid var(--border); border-radius: 3px;
+      font-family: inherit; font-size: .8rem; color: var(--text);
+      padding: .3rem .5rem; background: var(--white); outline: none;
+      transition: border-color .2s;
+    }
+    .req-table select:focus,
+    .req-table input:focus,
+    .req-table textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(0,120,138,.15); }
+    .req-table textarea { resize: vertical; min-height: 52px; }
+    .req-table td:nth-child(2) { width: 140px; }
+
+    /* ── Additional requirements ── */
+    .add-req-hdr {
+      background: var(--navy-lt);
+      color: var(--white);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: .6rem .75rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .add-req-body {
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: .6rem .75rem;
+    }
+    .add-req-body textarea {
+      width: 100%; border: 1px solid var(--border); border-radius: 3px;
+      font-family: inherit; font-size: .82rem; color: var(--text);
+      padding: .4rem .55rem; min-height: 70px; resize: vertical; outline: none;
+      transition: border-color .2s;
+    }
+    .add-req-body textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(0,120,138,.15); }
+
+    /* ── Footer row (date / by / stamp) ── */
+    .footer-row {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-end;
+      margin-top: 1.6rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .footer-field { flex: 1; min-width: 160px; }
+    .footer-field label { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); display: block; margin-bottom: .3rem; }
+    .footer-field input {
+      width: 100%; border: 1px solid var(--border); border-radius: 3px;
+      font-family: inherit; font-size: .85rem; padding: .38rem .55rem;
+      outline: none; transition: border-color .2s;
+    }
+    .footer-field input:focus { border-color: var(--teal); }
+    .info-stamp {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--navy);
+      border: 2px solid var(--navy);
+      padding: .35rem .7rem;
+      letter-spacing: .08em;
+      align-self: flex-end;
+    }
+
+    /* ── Action buttons ── */
+    .actions {
+      display: flex;
+      gap: .75rem;
+      margin-top: 1.4rem;
+      justify-content: flex-end;
+    }
+    .btn {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: .55rem 1.3rem;
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      transition: background .18s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-reset  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .btn-reset:hover  { background: #e2e8f0; }
+    .btn-print  { background: var(--mid); color: var(--white); }
+    .btn-print:hover  { background: var(--navy); }
+    .btn-submit { background: var(--teal); color: var(--white); }
+    .btn-submit:hover { background: #005f6e; }
+
+    /* ── Aside / Use & Limitations ── */
+    .aside .section-title { color: var(--orange); border-color: var(--orange); }
+    .limitations-list { list-style: none; padding: 0; }
+    .limitations-list li {
+      position: relative;
+      padding-left: 1.1rem;
+      margin-bottom: .75rem;
+      font-size: .82rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .limitations-list li::before {
+      content: '';
+      position: absolute; left: 0; top: .55em;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+    .limitations-list li strong { color: var(--navy); }
+
+    /* ── Legend ── */
+    .legend { margin-top: 1.6rem; }
+    .legend .section-title { color: var(--mid); border-color: var(--mid); font-size: .65rem; }
+    .legend-item { font-size: .75rem; line-height: 1.5; margin-bottom: .45rem; color: var(--muted); }
+    .legend-item strong { color: var(--text); }
+
+    /* ── Published bar ── */
+    .pub-bar {
+      background: var(--navy);
+      padding: .45rem 2rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .7rem;
+      color: rgba(255,255,255,.5);
+      letter-spacing: .04em;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .page { box-shadow: none; border: none; max-width: 100%; }
+      .actions { display: none; }
+    }
+
+    @media (max-width: 680px) {
+      .body { grid-template-columns: 1fr; }
+      .main  { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Unconfirmed Load Requirements Form</h1>
+    <p>DDCC Work Smart &mdash; Complete the following form to document the preliminary system requirements.</p>
+  </div>
+
+  <div class="pub-bar">Published: 2025-01-06 &nbsp;|&nbsp; Revised: 2026-02-09</div>
+
+  <!-- Two-column body -->
+  <div class="body">
+
+    <!-- ── MAIN COLUMN ── -->
+    <div class="main">
+
+      <!-- Reference Information -->
+      <div class="section-title">Reference Information</div>
+      <p class="ref-note">Please attach applicable reference/supplemental documents (pictures, graphs, drawings, summaries, etc.)</p>
+
+      <label class="attach-zone" for="attachInput">
+        <input type="file" id="attachInput" multiple onchange="showFileName(this)"/>
+        <div class="attach-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 16.41a2 2 0 01-2.83-2.83l8.49-8.49"/>
+          </svg>
+        </div>
+        <div class="attach-label">
+          <strong>Click to attach documents</strong><br/>
+          Open in application (not browser) and attach or review documents.
+          <div id="file-name"></div>
+        </div>
+      </label>
+
+      <!-- Project Details and Assumptions -->
+      <div class="section-title">High-Level Requirements Assessment</div>
+      <p class="ref-note" style="margin-bottom:.9rem;">Please outline high-level system requirements in the table below.</p>
+
+      <table class="proj-table">
+        <thead>
+          <tr>
+            <th>DESRT ID#</th>
+            <th>Other Details / Assumptions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" name="desrt_id" placeholder="e.g. 2026-00123" aria-label="DESRT ID Number"/></td>
+            <td><textarea name="details_assumptions" rows="2" placeholder="Enter any other details or assumptions…" aria-label="Other Details and Assumptions"></textarea></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Requirements Table -->
+      <table class="req-table" id="reqTable">
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Likelihood of Requirement *</th>
+            <th>Potential Scope</th>
+            <th>Notes or Dependencies</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td>
+              <span class="req-name">Local Protection Device</span>
+              <span class="req-eg">e.g. fuse, recloser, vista switch, etc.</span>
+            </td>
+            <td>
+              <select name="likelihood_lpd" aria-label="Likelihood – Local Protection Device">
+                <option value="">— Select —</option>
+                <option>High Likelihood</option>
+                <option>Medium Likelihood</option>
+                <option>Low Likelihood</option>
+                <option>N/A</option>
+              </select>
+            </td>
+            <td><textarea name="scope_lpd" placeholder="Describe potential scope…" aria-label="Scope – Local Protection Device"></textarea></td>
+            <td><textarea name="notes_lpd" placeholder="Notes or dependencies…" aria-label="Notes – Local Protection Device"></textarea></td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="req-name">High-level Feeder Topology Modifications</span>
+              <span class="req-eg">e.g. new feeders, load transfers, etc.</span>
+            </td>
+            <td>
+              <select name="likelihood_ftm" aria-label="Likelihood – Feeder Topology Modifications">
+                <option value="">— Select —</option>
+                <option>High Likelihood</option>
+                <option>Medium Likelihood</option>
+                <option>Low Likelihood</option>
+                <option>N/A</option>
+              </select>
+            </td>
+            <td><textarea name="scope_ftm" placeholder="Describe potential scope…" aria-label="Scope – Feeder Topology Modifications"></textarea></td>
+            <td><textarea name="notes_ftm" placeholder="Notes or dependencies…" aria-label="Notes – Feeder Topology Modifications"></textarea></td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="req-name">System Civil Works</span>
+              <span class="req-eg">e.g. feeder ducts, maintenance holes</span>
+            </td>
+            <td>
+              <select name="likelihood_scw" aria-label="Likelihood – System Civil Works">
+                <option value="">— Select —</option>
+                <option>High Likelihood</option>
+                <option>Medium Likelihood</option>
+                <option>Low Likelihood</option>
+                <option>N/A</option>
+              </select>
+            </td>
+            <td><textarea name="scope_scw" placeholder="Describe potential scope…" aria-label="Scope – System Civil Works"></textarea></td>
+            <td><textarea name="notes_scw" placeholder="Notes or dependencies…" aria-label="Notes – System Civil Works"></textarea></td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="req-name">Primary Line Modifications</span>
+              <span class="req-eg">e.g. voltage regulators, phase-balancing, 3-phasing, reconductoring, cable upgrades, etc.</span>
+            </td>
+            <td>
+              <select name="likelihood_plm" aria-label="Likelihood – Primary Line Modifications">
+                <option value="">— Select —</option>
+                <option>High Likelihood</option>
+                <option>Medium Likelihood</option>
+                <option>Low Likelihood</option>
+                <option>N/A</option>
+              </select>
+            </td>
+            <td><textarea name="scope_plm" placeholder="Describe potential scope…" aria-label="Scope – Primary Line Modifications"></textarea></td>
+            <td><textarea name="notes_plm" placeholder="Notes or dependencies…" aria-label="Notes – Primary Line Modifications"></textarea></td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <!-- Additional Requirements -->
+      <div class="add-req-hdr">Additional Requirements Not Noted Above</div>
+      <div class="add-req-body">
+        <textarea name="additional_requirements" placeholder="Describe any additional requirements not captured in the table above…" aria-label="Additional Requirements"></textarea>
+      </div>
+
+      <!-- Footer row -->
+      <div class="footer-row">
+        <div class="footer-field">
+          <label for="completedDate">Completed Date</label>
+          <input type="date" id="completedDate" name="completed_date"/>
+        </div>
+        <div class="footer-field">
+          <label for="completedBy">Completed By</label>
+          <input type="text" id="completedBy" name="completed_by" placeholder="Full name"/>
+        </div>
+        <div class="info-stamp">INFORMATION ONLY</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button type="button" class="btn btn-reset" onclick="resetForm()">Reset Form</button>
+        <button type="button" class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+        <button type="button" class="btn btn-submit" onclick="submitForm()">Submit</button>
+      </div>
+
+    </div><!-- /main -->
+
+    <!-- ── ASIDE ── -->
+    <div class="aside">
+
+      <div class="section-title">Use &amp; Limitations</div>
+      <ul class="limitations-list">
+        <li>This review and preliminary scope assessment <strong>does not reserve</strong> circuit capacity.</li>
+        <li>Once the customer confirms their detailed load information, a <strong>Confirmed Load</strong> DESRT Request is required to determine detailed system requirements.</li>
+        <li>For <strong>Internal Use Only</strong></li>
+      </ul>
+
+      <!-- Likelihood Legend -->
+      <div class="legend">
+        <div class="section-title">Likelihood Key *</div>
+        <div class="legend-item"><strong>High Likelihood:</strong> These items will be or are very likely to be required for the project.</div>
+        <div class="legend-item"><strong>Medium Likelihood:</strong> These items have a moderate chance of being required for the project.</div>
+        <div class="legend-item"><strong>Low Likelihood:</strong> These items are less likely to be required, but shouldn't be completely ruled out.</div>
+        <div class="legend-item"><strong>N/A:</strong> Not Applicable</div>
+      </div>
+
+    </div><!-- /aside -->
+
+  </div><!-- /body -->
+
+</div><!-- /page -->
+
+<script>
+  function showFileName(input) {
+    const label = document.getElementById('file-name');
+    if (input.files.length === 0) { label.textContent = ''; return; }
+    const names = Array.from(input.files).map(f => f.name).join(', ');
+    label.textContent = names;
+  }
+
+  function resetForm() {
+    if (!confirm('Reset all form fields?')) return;
+    document.querySelectorAll('input[type="text"], input[type="date"], textarea, select').forEach(el => {
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
+    });
+    document.getElementById('file-name').textContent = '';
+    document.getElementById('attachInput').value = '';
+  }
+
+  function submitForm() {
+    // Collect values for demonstration
+    const data = {};
+    document.querySelectorAll('[name]').forEach(el => {
+      data[el.name] = el.value;
+    });
+    console.log('Form data:', data);
+    alert('Form submitted successfully!\n\nIn a live environment this would POST to your backend.');
+  }
+</script>
+
+</body>
+</html>
