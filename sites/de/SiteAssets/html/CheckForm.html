@@ -299,6 +299,17 @@
     /* --------------------------------
     6. Progress Bar
     -------------------------------- */
+    .completion {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+    }
+
+    .completion .material-symbols-sharp {
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+      font-size: 14px;
+    }
+
     .progress-strip {
       background: var(--surface);
       border: 2px solid var(--border);
@@ -315,6 +326,7 @@
       border: 2px solid color-mix(in srgb, var(--low-border) 60%, #fff);
     }
 
+    .progress-strip.completed .material-symbols-sharp,
     .progress-strip.completed .progress-label,
     .progress-strip.completed .progress-pct {
       color: color-mix(in srgb, var(--low) 80%, #000);
@@ -331,12 +343,12 @@
     }
 
     .progress-pct {
-      font-size: 0.75rem;
       font-weight: 600;
       color: var(--text);
       font-family: 'Roboto', system-ui, sans-serif;
       min-width: 36px;
       text-align: right;
+      font-size: 14px;
     }
 
     .progress-track {
@@ -479,7 +491,7 @@
     .sec-right {
       display: flex;
       align-items: center;
-      gap: var(--gap-md);
+      gap: 28px;
       width: 50%;
       justify-content: flex-end;
     }
@@ -1049,22 +1061,17 @@
       margin: 0 0 var(--gap-xs) 0;
     }
 
-    .notice.warn {
+    .notice.warn,
+    .notice.info {
       background: var(--warn-bg);
       border: 1px solid var(--warn-border);
       color: var(--warn);
     }
 
-    .notice.info {
-      background: var(--surface);
-      border: 1px solid var(--color-info);
-      color: var(--color-primary);
-    }
-
     .notice.success {
-      background: var(--surface);
+      background: var(--low-bg);
       border: 1px solid var(--color-success);
-      color: var(--color-primary);
+      color: var(--color-success);
     }
 
     .notice.error {
@@ -1084,7 +1091,7 @@
       appearance: none;
       border: 0;
       background: transparent;
-      color: var(--error);
+      color: currentColor;
       cursor: pointer;
       padding: 6px;
       margin: -6px -6px -6px 10px;
@@ -1238,6 +1245,7 @@
     .btn-open-modal {
       border-radius: 50px;
       border-style: dashed;
+      text-decoration: none;
     }
 
     .btn-action {
@@ -1483,17 +1491,14 @@
       opacity: 0;
     }
 
-    .image-thumbnail:hover .image-thumbnail-remove,
-    .signature-canvas:hover .image-thumbnail-remove,
-    .sig-tab-content.active:hover .image-thumbnail-remove,
-    .sig-draw-surface:hover .image-thumbnail-remove {
-      opacity: 1;
+    .sig-draw-surface.has-signature .image-thumbnail-remove:hover .material-symbols-sharp,
+    .image-thumbnail:hover .image-thumbnail-remove:hover .material-symbols-sharp {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
-    .image-thumbnail:hover .image-thumbnail-remove:hover .material-symbols-sharp,
-    .signature-canvas:hover .image-thumbnail-remove:hover .material-symbols-sharp,
-    .sig-tab-content.active:hover .image-thumbnail-remove:hover .material-symbols-sharp {
-      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    .sig-draw-surface.has-signature .image-thumbnail-remove,
+    .image-thumbnail:hover .image-thumbnail-remove {
+      opacity: 1;
     }
 
     .comments-paste-hint,
@@ -1506,6 +1511,7 @@
 
     .comments-area {
       border: 1px solid var(--border-soft);
+      margin-bottom: var(--gap-md);
     }
 
     /* Signature Pad Styles */
@@ -1549,6 +1555,11 @@
       border-bottom: 1px solid var(--border);
     }
 
+    .btn-sig-tab[data-tab="draw"].active .material-symbols-sharp,
+    .btn-sig-tab[data-tab="upload"].active .material-symbols-sharp {
+      text-shadow: 0.5px 0.5px var(--surface-base);
+    }
+
     .btn-sig-tab[data-tab="upload"].active {
       border-top: 1px solid var(--border);
     }
@@ -1565,6 +1576,11 @@
       text-align: center;
     }
 
+    .sig-tab-content.active:hover {
+      border-left: 1px solid var(--border-soft);
+
+    }
+
     .sig-tab-content {
       display: none;
       border-left: 1px solid var(--border-soft);
@@ -1579,10 +1595,11 @@
       max-height: none;
     }
 
-    .sig-draw-surface {
+    .sig-draw-surface,
+    .sig-upload-area {
       position: relative;
       width: 100%;
-      min-height: 103px;
+      min-height: 98px;
       padding: 10px;
       display: flex;
       align-items: center;
@@ -1621,8 +1638,8 @@
       pointer-events: auto;
     }
 
-    .sig-draw-surface.has-signature .image-thumbnail-remove {
-      opacity: 1;
+    .anchor-element {
+      anchor-name: --sig-anchor;
     }
 
     /* Signature modal */
@@ -1646,12 +1663,18 @@
     }
 
     .sig-modal-panel {
-      position: relative;
+      position: absolute;
       width: min(720px, calc(100vw - 24px));
       background: var(--bg);
       border: 1px solid var(--border-soft);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       overflow: hidden;
+    }
+
+    .sig-modal-panel {
+      position: fixed;
+      position-anchor: --sig-anchor;
+      bottom: anchor(top);
     }
 
     .sig-modal-head {
@@ -1693,11 +1716,6 @@
       align-items: center;
     }
 
-    .sig-upload-area {
-      text-align: center;
-      margin: 20px 10px;
-    }
-
     .sig-upload-hint {
       color: var(--text-muted);
       font-size: 0.75rem;
@@ -1720,7 +1738,7 @@
 
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <div class="shell" id="check_form">
+  <form class="shell" id="check_form">
     <div class="header">
       <div><img class="header-logo"
           src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-reversed.jpg"
@@ -1737,14 +1755,19 @@
         <span class="progress-label" id="progressLabel">Completion</span>
         <progress class="progress-track" id="progressBar" min="0" max="100" value="0"
           aria-labelledby="progressLabel progressPct"></progress>
-        <span class="progress-pct" id="progressPct">0%</span>
+        <div class="completion"><span class="progress-pct" id="progressPct">0</span><span
+            class="material-symbols-sharp">
+            percent
+          </span></div>
       </div>
 
       <!-- Document Information -->
       <div class="card info">
         <div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
           <div class="sec-left">
-            <div class="sec-num" id="snum-info">i</div>
+            <div class="sec-num" id="snum-info"><span class="material-symbols-sharp">
+                info_i
+              </span></div>
             <span class="sec-title">Work Information</span>
           </div>
           <div class="sec-right">
@@ -1835,7 +1858,7 @@
       <div class="card sc">
         <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
           <div class="sec-left">
-            <div class="sec-num" id="snum-1"></div>
+            <div class="sec-num" id="snum-1">1</div>
             <span class="sec-title">Self-Check</span>
             <span class="sec-badge" id="badge-1">0 / {sc_number}</span>
           </div>
@@ -1883,9 +1906,10 @@
                 <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
                   tabindex="0">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="sc" data-testid="sc-sig-surface">
-                    <button class="btn btn-open-modal" type="button" data-prefix="sc" data-testid="sc-sig-open">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="sc" data-testid="sc-sig-open">
                       Open signature pad
-                    </button>
+                    </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
@@ -1902,7 +1926,6 @@
                       data-testid="sc-sig-choose">
                       Choose Signature Image
                     </button>
-                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
                     <div id="scSigPreview" class="sig-preview"></div>
                   </div>
                 </div>
@@ -1954,10 +1977,9 @@
         <div class="sec-body" id="s3">
           <div id="ch-rows" data-section="ch"></div>
           <div class="notice warn hidden" id="chNotice" role="alert" aria-live="polite">
-            <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" />
-            </svg>
+            <span class="material-symbols-sharp">
+              warning
+            </span>
             <span><b>Attention:</b> A "No" answer requires your <b>Team Lead</b> to complete a Peer Review for
               acceptance.</span>
           </div>
@@ -1994,14 +2016,15 @@
                 <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
                   tabindex="0">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
-                    <button class="btn btn-open-modal" type="button" data-prefix="ch" data-testid="ch-sig-open">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="ch" data-testid="ch-sig-open">
                       Open signature pad
-                    </button>
+                    </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">close</span>
+                      <span class="material-symbols-sharp">cancel</span>
                     </button>
                   </div>
                 </div>
@@ -2044,11 +2067,9 @@
         <div class="sec-body" id="s4">
           <div class="sec-banner">
             <div class="notice warn" id="prType1Notice" role="note">
-              <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor"
-                aria-hidden="true">
-                <path fill-rule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" />
-              </svg>
+              <span class="material-symbols-sharp">
+                warning
+              </span>
               <span><b>Note:</b> This section is <b>not</b> a Type 1 High Risk Work Independent Review.</span>
             </div>
           </div>
@@ -2088,14 +2109,15 @@
                 <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
                   tabindex="0">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
-                    <button class="btn btn-open-modal" type="button" data-prefix="pr" data-testid="pr-sig-open">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="pr" data-testid="pr-sig-open">
                       Open signature pad
-                    </button>
+                    </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">close</span>
+                      <span class="material-symbols-sharp">cancel</span>
                     </button>
                   </div>
                 </div>
@@ -2142,8 +2164,7 @@
                 <textarea class="field-input comments-textarea" id="checkerComments"
                   placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)" rows="4"
                   aria-describedby="checkerCommentsHint" data-testid="checker-comments"></textarea>
-                <p id="checkerCommentsHint" class="comments-paste-hint sr-only">You can paste images directly using
-                  Ctrl+V or Cmd+V</p>
+
                 <div class="comments-image-gallery" id="checkerComments-gallery" aria-live="polite"></div>
               </div>
             </div>
@@ -2153,8 +2174,7 @@
                 <textarea class="field-input comments-textarea" id="engineerResponse"
                   placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"
                   aria-describedby="engineerResponseHint" data-testid="engineer-response"></textarea>
-                <p id="engineerResponseHint" class="comments-paste-hint sr-only">You can paste images directly using
-                  Ctrl+V or Cmd+V</p>
+
                 <div class="comments-image-gallery" id="engineerResponse-gallery" aria-live="polite"></div>
               </div>
             </div>
@@ -2164,8 +2184,7 @@
                 <textarea class="field-input comments-textarea" id="reviewerComments"
                   placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)" rows="4"
                   aria-describedby="reviewerCommentsHint" data-testid="reviewer-comments"></textarea>
-                <p id="reviewerCommentsHint" class="comments-paste-hint sr-only">You can paste images directly using
-                  Ctrl+V or Cmd+V</p>
+
                 <div class="comments-image-gallery" id="reviewerComments-gallery" aria-live="polite"></div>
               </div>
             </div>
@@ -2175,8 +2194,7 @@
                 <textarea class="field-input comments-textarea" id="engineerResponse_2"
                   placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"
                   aria-describedby="engineerResponse2Hint" data-testid="engineer-response-2"></textarea>
-                <p id="engineerResponse2Hint" class="comments-paste-hint sr-only">You can paste images directly using
-                  Ctrl+V or Cmd+V</p>
+
                 <div class="comments-image-gallery" id="engineerResponse_2-gallery" aria-live="polite"></div>
               </div>
             </div>
@@ -2234,14 +2252,15 @@
                 <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
                   tabindex="0">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="fT1" data-testid="ft1-sig-surface">
-                    <button class="btn btn-open-modal" type="button" data-prefix="fT1" data-testid="ft1-sig-open">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="fT1" data-testid="ft1-sig-open">
                       Open signature pad
-                    </button>
+                    </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="fT1" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">close</span>
+                      <span class="material-symbols-sharp">cancel</span>
                     </button>
                   </div>
                 </div>
@@ -2268,7 +2287,7 @@
       <!-- Global notice -->
       <div class="notice info hidden" id="globalNotice" role="status" aria-live="polite" aria-atomic="true">
         <span class="material-symbols-sharp">
-          brightness_alert
+          info
         </span>
         <div id="globalNoticeText"></div>
         <div class="notice-actions">
@@ -2300,10 +2319,10 @@
       <div class="actions">
         <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
         <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
-        <button class="btn btn-primary" type="button" id="saveSnapshotBtn" data-testid="save-snapshot">Save</button>
+        <button class="btn btn-primary" type="submit" id="saveSnapshotBtn" data-testid="save-snapshot">Save</button>
       </div>
     </main>
-  </div>
+  </form>
 
   <script>
     (function () {
@@ -2377,6 +2396,7 @@
           this.syncingNames = false;
           this.penColor = '#000000';
           this.signaturePads = {};
+          this.isRestored = false;
           this.init();
         }
 
@@ -2456,15 +2476,15 @@
 
         // ---------- Initialization ----------
         init () {
-          const isRestored = !!this.elements.scRows.querySelector('input[type="radio"]:checked');
+          this.isRestored = !!this.elements.scRows.querySelector('input[type="radio"]:checked');
 
-          if (!isRestored) this.buildAllRows();
+          if (!this.isRestored) this.buildAllRows();
           this.attachEventListeners();
           this.updateProgress();
           this.syncAllSectionVisibility();
           this.autosizeAllTextareas();
           this.syncCommentsHeights();
-          this.updateRoleLabels(!isRestored);
+          this.updateRoleLabels(!this.isRestored);
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
         }
@@ -2475,6 +2495,8 @@
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
         }
+
+
 
         // ---------- Signature Pad Methods ----------
         initSignaturePads () {
@@ -2537,6 +2559,7 @@
           this.activeSignaturePrefix = prefix;
           if (this.signatureModalTitle) this.signatureModalTitle.textContent = 'Draw signature';
           this.signatureModal.classList.add('open');
+          this.signatureModal.setAttribute("data-prefix", prefix);
 
           this.resizeModalCanvas();
           const dataInput = document.getElementById(`${prefix}_sig_data`);
@@ -2556,6 +2579,8 @@
             if (dataInput) dataInput.value = dataUrl;
             this.setSignaturePreview(prefix, dataUrl);
           }
+          const modalBtn = document.querySelector("a.btn-open-modal[data-prefix='" + prefix + "']");
+          modalBtn.classList.remove('anchor-element');
           this.signatureModal.classList.remove('open');
           this.activeSignaturePrefix = null;
         }
@@ -2611,10 +2636,9 @@
 
         setupModalCanvasDrawing (canvas) {
           const ctx = canvas.getContext('2d');
-          ctx.lineCap = 'flat';
-          ctx.lineJoin = 'miter';
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = '#000';
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.lineWidth = 3;
           let drawing = false;
           let lastX = 0;
           let lastY = 0;
@@ -2622,10 +2646,10 @@
           let lastMidY = 0;
           let hasLastMid = false;
           let lastT = 0;
-          let lastW = 2;
-          const minW = 2.0;
-          const maxW = 6.0;
-          const smoothing = 0.45; // lower = smoother width changes
+          let lastW = 3;
+          const minW = 3.0;
+          const maxW = 9.0;
+          const smoothing = 0.32; // lower = smoother width changes
           /**
            * Convert a pointer/touch event to canvas-space coordinates,
            * correctly accounting for any DPR scaling.
@@ -2653,7 +2677,7 @@
             lastMidX = x;
             lastMidY = y;
             lastT = performance.now();
-            lastW = 2;
+            lastW = 3;
           });
           canvas.addEventListener('pointermove', (e) => {
             if (!drawing) return;
@@ -2670,8 +2694,8 @@
             const targetW = Math.max(minW, Math.min(maxW, maxW - speed * 3.0));
             const w = lastW + (targetW - lastW) * smoothing;
             ctx.lineWidth = w;
-
             ctx.beginPath();
+
             if (!hasLastMid) {
               // First segment: no previous midpoint yet — start at last sample.
               ctx.moveTo(lastX, lastY);
@@ -2682,6 +2706,12 @@
               ctx.moveTo(lastMidX, lastMidY);
               ctx.quadraticCurveTo(lastX, lastY, midX, midY);
             }
+            var grd = ctx.createLinearGradient(lastX, lastY, midX, midY);
+            grd.addColorStop("0", "white");
+            grd.addColorStop("0.5", "black");
+            grd.addColorStop("1.0", "white");
+            ctx.fillStyle = grd;
+            ctx.strokeRect(lastX, lastY, 0.2, 0.2);
             ctx.stroke();
             lastMidX = midX;
             lastMidY = midY;
@@ -2689,6 +2719,7 @@
             lastY = y;
             lastT = now;
             lastW = w;
+
           });
           function endStroke () {
             if (!drawing) return;
@@ -2844,6 +2875,7 @@
             e.preventDefault();
             const prefix = openSigBtn.getAttribute('data-prefix');
             if (prefix) this.openSignatureModal(prefix);
+            openSigBtn.classList.add("anchor-element");
             return;
           }
 
@@ -2924,16 +2956,15 @@
             if (name.startsWith('sc')) {
               if (name === 'sc11') {
                 this.updateRoleLabels(false);
-                this.showRiskConsistencyNotices();
               }
-              this.showRiskConsistencyNotices();
-              this.syncSectionVisibility();
             }
             if (name.startsWith('ch')) this.syncCheckWarning();
             if (name === 'sc_role') {
               this.updateRoleLabels(true);
-              this.showRiskConsistencyNotices();
             }
+            this.showRiskConsistencyNotices();
+            this.syncSectionVisibility();
+
           }
 
           if (e.target.matches('input') || e.target.matches('select')) {
@@ -3143,10 +3174,11 @@
             return;
           }
           stack.classList.remove('hidden');
-          const svgPath = 'M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z';
           stack.innerHTML = blocks.map(({ message, type = 'warn' }) => `
       <div class="notice row-notice ${type}">
-        <svg class="notice-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="${svgPath}" /></svg>
+        <span class="material-symbols-sharp">
+          ${type === 'error' ? 'error' : 'warning'}
+        </span>
         <span>${message}</span>
       </div>`).join('');
         }
@@ -3290,7 +3322,9 @@
             if (s.num) {
               if (cnt === s.count) {
                 s.num.classList.add('complete');
-                s.num.innerHTML = `<svg width="16" height="16" viewBox="0 0 20 20" fill="white" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg>`;
+                s.num.innerHTML = `<span class="material-symbols-sharp">
+                  check
+                  </span>`;
               } else {
                 s.num.classList.remove('complete');
                 s.num.textContent = s.label;
@@ -3313,7 +3347,7 @@
           const pct = total ? Math.round((answered / total) * 100) : 0;
           this.elements.progressStrip.classList.toggle('completed', pct === 100);
           this.elements.progressBar.value = pct;
-          this.elements.progressPct.textContent = `${pct}%`;
+          this.elements.progressPct.textContent = `${pct}`;
         }
 
         allRequiredFieldsValid () {
@@ -3376,6 +3410,7 @@
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           if (!sec) return;
+          console.log(sec);
           sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
           // Only clear mutable input types. Never clear `value` on radio/checkbox inputs,
           // otherwise their semantic values ('yes'/'no'/'na', roles, etc.) get overwritten.
@@ -3383,6 +3418,8 @@
           sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           sec.querySelectorAll('textarea').forEach(t => t.value = '');
           sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
+          sec.querySelectorAll('input[type="hidden"]').forEach(c => c.value = '');
+          sec.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature')); // FIX = '');
 
           this.removeCanvas(sec);
           this.updateProgress();
@@ -3421,6 +3458,8 @@
           document.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
           document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           document.querySelectorAll('textarea').forEach(t => t.value = '');
+          document.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'));
+
           this.elements.riskBtns.forEach(b => b.classList.remove('active'));
           document.getElementById('sc_role_eng').checked = true;
 
@@ -3437,6 +3476,7 @@
         }
 
         saveSnapshot () {
+
           const clone = document.documentElement.cloneNode(true);
           const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
           const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
@@ -3458,15 +3498,17 @@
           }
 
           // Save canvas data from hidden input fields
-          const canvases = Array.from(document.querySelectorAll('canvas'));
-          const cloneCanvases = Array.from(clone.querySelectorAll('canvas'));
-          canvases.forEach((canvas, idx) => {
-            const cloneCanvas = cloneCanvases[idx];
-            if (!cloneCanvas) return;
-            const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
+          const signatures = Array.from(document.querySelectorAll('sig-draw-surface has-signature'));
+          const cloneSignatures = Array.from(clone.querySelectorAll('sig-draw-surface has-signature'));
+
+          signatures.forEach((canvas, idx) => {
+            const cloneSig = cloneCanvases[idx];
+            if (!cloneSig) return;
+            const prefix = clone.getAttribute('data-prefix');
+            const dataInput = document.getElementById(`${prefix}_sig_data`);
             if (dataInput?.value) {
               // Store the canvas drawing data in a data attribute for restoration
-              cloneCanvas.setAttribute('data-url', dataInput.value);
+              cloneSig.setAttribute('data-url', dataInput.value);
             }
           });
 
@@ -3477,13 +3519,45 @@
           const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
           const url = URL.createObjectURL(blob);
           const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
-          const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim().slice(0, 80);
+          const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
           const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
           const a = document.createElement('a');
-          a.href = url; a.download = `${safe}__snapshot__${ts}.html`;
-          document.body.appendChild(a); a.click(); a.remove();
+          // Detect if this is an already-saved snapshot file (opened locally)
+          if (window.location.protocol === 'file:') {
+            // If so, trigger a download with the same name to overwrite it
+            const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
+            const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
+            a.download = cleanFilename;
+          }
+          a.href = url;
+          a.download = `${safe}_snapshot_${ts}.html`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
           URL.revokeObjectURL(url);
+          this.saveJasonFile();
           this.toast('Snapshot saved', 'success');
+
+        }
+
+        saveJasonFile () {
+          const form = document.getElementById('check_form');
+          const formData = new FormData(form);
+          let jsonData = {};
+
+          formData.forEach((value, key) => {
+            jsonData[key] = value;
+          });
+          const jsonStr = JSON.stringify(jsonData);
+          const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
+          const jsonUrl = URL.createObjectURL(jsonBlob);
+          const jsonA = document.createElement('a');
+          jsonA.href = jsonUrl;
+          jsonA.download = `DE_CheckForm.json`;
+          document.body.appendChild(jsonA);
+          jsonA.click();
+          jsonA.remove();
+          URL.revokeObjectURL(jsonUrl);
         }
 
         printFormAsPdf (e) {

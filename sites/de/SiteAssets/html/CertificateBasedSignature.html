@@ -715,7 +715,7 @@
       }
 
       resizeCanvas();
-      window.addEventListener('resize', resizeCanvas, { passive: true });
+      window.addEventListener('resize', resizeCanvas);
 
       signaturePad = new SignaturePad(canvas, {
         minWidth: 0.5,
@@ -725,8 +725,8 @@
         penColor: '#667eea'
       });
 
-      canvas.addEventListener('mouseup', updateSignatureStatus, { passive: true });
-      canvas.addEventListener('touchend', updateSignatureStatus, { passive: true });
+      canvas.addEventListener('mouseup', updateSignatureStatus);
+      canvas.addEventListener('touchend', updateSignatureStatus);
     });
 
     function handleCertificateUpload (event) {
