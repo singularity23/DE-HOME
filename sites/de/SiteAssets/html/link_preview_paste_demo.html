@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link preview (paste) demo</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #fafafa;
+      --fg: #0a0a0a;
+      --muted: #71717a;
+      --border: #d4d4d8;
+      --chip-bg: #fff;
+      --link: #0969da;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 68ch;
+      margin-bottom: 16px;
+    }
+
+    .editor {
+      display: block;
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      outline: none;
+      font: inherit;
+      resize: vertical;
+    }
+
+    .editor:focus {
+      border-color: var(--fg);
+      box-shadow: inset 0 0 0 1px var(--fg);
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .chips {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-self: flex-start;
+      max-width: 100%;
+      border: 1px solid var(--border);
+      background: var(--chip-bg);
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .chip a {
+      color: var(--link);
+      text-decoration: underline;
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+
+    .chip--loading a {
+      text-decoration: none;
+      color: var(--muted);
+    }
+
+    .chip--error {
+      border-color: #fca5a5;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Paste a URL — rich link preview</h1>
+  <p>
+    Copilot-style chips come from <strong>link metadata</strong> (page title, site name, etc.).
+    Browsers cannot read arbitrary cross-origin HTML from your page (CORS), so this demo uses the
+    public <a href="https://microlink.io/docs/api/getting-started/overview" rel="noopener noreferrer">Microlink</a>
+    JSON API (<code>access-control-allow-origin: *</code>). For production, prefer your own backend proxy
+    (cache, quotas, SSRF allowlist, auth cookies for internal tools).
+  </p>
+
+  <label class="sr-only" for="editor">Paste a URL here</label>
+  <textarea id="editor" class="editor" spellcheck="false" placeholder="Paste text containing a URL…"></textarea>
+  <div class="hint">Tip: paste plain text that contains one <code>https://</code> URL.</div>
+  <div id="chips" class="chips" aria-live="polite"></div>
+
+  <script>
+    const URL_RE = /https?:\/\/[^\s<>"')]+/i;
+
+    function extractFirstUrl (text) {
+      const m = text.match(URL_RE);
+      return m ? m[0].replace(/[.,);]+$/, '') : '';
+    }
+
+    function chipLabel (data) {
+      const publisher = (data.publisher || '').trim();
+      const title = (data.title || '').trim();
+      if (publisher && title) return `${publisher} | ${title}`;
+      if (title) return title;
+      if (publisher) return publisher;
+      try {
+        return new URL(data.url || '').hostname;
+      } catch {
+        return 'Link';
+      }
+    }
+
+    async function unfurl (url) {
+      const endpoint = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
+      const res = await fetch(endpoint, { method: 'GET', headers: { Accept: 'application/json' } });
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json || json.status !== 'success' || !json.data) {
+        const msg = json && json.message ? json.message : `Request failed (${res.status})`;
+        throw new Error(msg);
+      }
+      return json.data;
+    }
+
+    function renderChip (container, url, state, label) {
+      const wrap = document.createElement('div');
+      wrap.className = 'chip' + (state === 'error' ? ' chip--error' : '') + (state === 'loading' ? ' chip--loading' : '');
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = label;
+      wrap.appendChild(a);
+      container.appendChild(wrap);
+    }
+
+    const editor = document.getElementById('editor');
+    const chips = document.getElementById('chips');
+
+    editor.addEventListener('paste', () => {
+      setTimeout(async () => {
+        const text = editor.value;
+        const url = extractFirstUrl(text);
+        if (!url) return;
+
+        const loading = document.createElement('div');
+        loading.className = 'chip chip--loading';
+        loading.innerHTML = '<span class="sr-only">Loading preview</span><a href="' + url.replace(/"/g, '') + '" target="_blank" rel="noopener noreferrer">Resolving preview…</a>';
+        chips.appendChild(loading);
+
+        try {
+          const data = await unfurl(url);
+          const label = chipLabel(data);
+          loading.remove();
+          renderChip(chips, data.url || url, 'ready', label);
+        } catch (err) {
+          loading.classList.add('chip--error');
+          const a = loading.querySelector('a');
+          if (a) a.textContent = url + ' — ' + (err && err.message ? err.message : 'Preview failed');
+        }
+      }, 0);
+    });
+  </script>
+</body>
+
+</html>

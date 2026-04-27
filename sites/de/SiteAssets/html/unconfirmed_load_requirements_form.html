@@ -1,230 +1,642 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unconfirmed Load Requirements Form – DDCC Work Smart</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+
+  <!-- Quill Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --navy:    #1a3152;
-      --navy-lt: #234470;
-      --teal:    #00788a;
-      --orange:  #d95f00;
-      --mid:     #4a6180;
-      --bg:      #f4f6f9;
-      --white:   #ffffff;
-      --border:  #c8d3df;
-      --text:    #1e2d3d;
-      --muted:   #5a6e82;
-      --row-alt: #edf1f7;
+      /* StudioBlank tokens */
+      --color-primary: #0a0a0a;
+      --color-secondary: #fafafa;
+      --color-tertiary: #d4d4d8;
+      --surface-base: #fafafa;
+      --surface-raised: #ffffff;
+      --surface-inverse: #0a0a0a;
+      --color-success: #046a38;
+      --color-warning: #9adbe8;
+      --color-medium: #ffb656;
+      --color-error: #fa4616;
+      --color-info: rgb(113, 113, 122);
+      --color-link: #0074a4;
+      --header-bg: color-mix(in srgb, var(--color-secondary) 80%, var(--color-tertiary));
+
+      /* Component-ish tokens (derived from kit) */
+      --border-default: #d4d4d8;
+      --border-hover: #a1a1aa;
+      --border-subtle: #f4f4f5;
+      --focus-ring: var(--color-primary);
+
+      --radius: 0px;
+      --shadow: none;
+
+      /* Spacing scale */
+      --space-1: 5px;
+      --space-2: 10px;
+      --space-3: 16px;
+      --space-4: 32px;
+      --space-5: 48px;
+      --space-6: 64px;
+
+      /* Type */
+      --font-sans: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+    }
+
+    .material-symbols-sharp {
+      font-family: 'Material Symbols Sharp';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 16px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      pointer-events: none;
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+
     }
 
     body {
-      font-family: 'IBM Plex Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: var(--font-sans);
+      background: var(--surface-base);
+      color: var(--color-primary);
       min-height: 100vh;
-      padding: 2rem 1rem 4rem;
+      padding: var(--space-6) var(--space-3);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    input,
+    select,
+    textarea {
+      background: var(--surface-base);
+    }
+
+    legend {
+      padding-inline: var(--space-2);
+      font-size: 14px;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    ul li {
+      position: relative;
+    }
+
+    ul li::before {
+      content: "◯";
+      color: var(--color-error);
+      position: absolute;
+      left: 0;
+      top: 1px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .header {
+      display: flex;
+    }
+
+    .header-logo {
+      width: 120px;
+      height: auto;
+      margin-left: var(--space-4);
     }
 
     /* ── Page wrapper ── */
     .page {
-      max-width: 960px;
+      max-width: 816px;
       margin: 0 auto;
-      background: var(--white);
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+      background: var(--surface-raised);
+      border: 1pt solid var(--border-default);
+      box-shadow: var(--shadow);
     }
 
     /* ── Header bar ── */
     .header {
-      background: var(--navy);
-      padding: 1.6rem 2rem 1.4rem;
-      border-bottom: 4px solid var(--teal);
+      background: var(--surface-raised);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--border-default);
     }
+
     .header h1 {
-      font-size: 1.75rem;
+      font-size: 30px;
+      line-height: 1.1;
       font-weight: 700;
-      color: var(--white);
-      letter-spacing: -.3px;
+      color: var(--color-primary);
+      letter-spacing: -0.02em;
     }
+
     .header p {
-      margin-top: .35rem;
-      font-size: .85rem;
-      color: rgba(255,255,255,.65);
-      font-family: 'IBM Plex Mono', monospace;
+      margin-top: var(--space-2);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--color-info);
+      font-family: var(--font-mono);
     }
 
     /* ── Body layout ── */
     .body {
       display: grid;
-      grid-template-columns: 1fr 260px;
+      grid-template-areas:
+        "aside"
+        "main";
       gap: 0;
     }
-    .main  { padding: 1.8rem 2rem; border-right: 1px solid var(--border); }
-    .aside { padding: 1.6rem 1.4rem; background: #f0f4f8; }
+
+    .main {
+      grid-area: main;
+      padding: var(--space-3);
+    }
+
+    .aside {
+      grid-area: aside;
+      padding: var(--space-4) var(--space-4);
+      background: var(--surface-base);
+      grid-template-columns: 60% 40%;
+      display: grid;
+      border-bottom: 1px solid var(--border-default);
+    }
 
     /* ── Section headings ── */
     .section-title {
-      font-size: .7rem;
-      font-weight: 700;
-      letter-spacing: .12em;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: .14em;
       text-transform: uppercase;
-      color: var(--teal);
-      border-bottom: 2px solid var(--teal);
-      padding-bottom: .4rem;
-      margin-bottom: 1rem;
+      color: var(--color-primary);
+      border-bottom: 1px solid var(--border-default);
+      padding-bottom: var(--space-2);
+      margin-bottom: var(--space-3);
     }
 
     /* ── Reference info ── */
     .ref-note {
-      font-size: .85rem;
-      color: var(--muted);
-      margin-bottom: .9rem;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--color-info);
+      margin-bottom: var(--space-3);
       line-height: 1.55;
     }
+
+    .ref-note.ref-note--tight {
+      margin-bottom: var(--space-3);
+    }
+
     .attach-zone {
-      border: 2px dashed var(--border);
-      border-radius: 4px;
-      padding: 1.1rem 1.2rem;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius);
+      padding: var(--space-4);
       display: flex;
       align-items: center;
-      gap: .85rem;
+      gap: var(--space-3);
       cursor: pointer;
-      transition: border-color .2s, background .2s;
-      margin-bottom: 1.6rem;
+      transition: background .18s, border-color .18s;
+      margin-bottom: var(--space-5);
+      min-height: 48px;
     }
-    .attach-zone:hover { border-color: var(--teal); background: #f0fafa; }
-    .attach-zone input[type="file"] { display: none; }
+
+    .attach-zone:hover {
+      border-color: var(--border-hover);
+      background: var(--border-subtle);
+    }
+
+    .attach-zone:focus-within {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .attach-zone input[type="file"] {
+      display: none;
+    }
+
     .attach-icon {
-      width: 36px; height: 36px;
-      background: var(--navy);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--surface-inverse);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
-    .attach-icon svg { fill: var(--white); width: 18px; height: 18px; }
-    .attach-label { font-size: .82rem; color: var(--muted); line-height: 1.45; }
-    .attach-label strong { color: var(--teal); font-weight: 600; }
-    #file-name { font-size: .78rem; color: var(--teal); margin-top: .25rem; font-style: italic; }
+
+    .attach-icon svg {
+      fill: var(--color-secondary);
+      width: 18px;
+      height: 18px;
+    }
+
+    .attach-label {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--color-info);
+      line-height: 1.6;
+    }
+
+    .attach-label strong {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    #file-name {
+      font-size: 12px;
+      color: var(--color-primary);
+      margin-top: var(--space-1);
+      font-family: var(--font-mono);
+    }
 
     /* ── Project details table ── */
     .proj-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 1.8rem;
-      font-size: .85rem;
-    }
-    .proj-table thead tr {
-      background: var(--navy);
-      color: var(--white);
-    }
-    .proj-table thead th {
-      padding: .55rem .85rem;
-      text-align: left;
-      font-weight: 600;
-      font-size: .78rem;
-      letter-spacing: .04em;
-    }
-    .proj-table tbody td {
-      border: 1px solid var(--border);
-      padding: .5rem .85rem;
-      vertical-align: top;
-    }
-    .proj-table tbody td:first-child { width: 170px; background: var(--row-alt); font-weight: 600; }
-    .proj-table input[type="text"],
-    .proj-table textarea {
-      width: 100%; border: none; background: transparent;
-      font-family: inherit; font-size: .85rem; color: var(--text);
-      resize: none; outline: none;
+      margin-bottom: var(--space-5);
+      font-size: 14px;
+      border: 1px solid var(--border-default);
     }
 
-    /* ── Requirements table ── */
-    .req-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .82rem;
-      margin-bottom: 1rem;
+    .proj-table thead tr {
+      background: var(--header-bg);
+      color: var(--color-primary);
+      border: 1px solid var(--border-default);
     }
-    .req-table thead tr { background: var(--navy-lt); color: var(--white); }
-    .req-table thead th {
-      padding: .6rem .75rem;
+
+    .proj-table thead th {
+      padding: var(--space-3);
       text-align: left;
       font-weight: 600;
-      font-size: .75rem;
-      letter-spacing: .04em;
+      font-size: 14px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-default);
+
     }
-    .req-table tbody tr { border-bottom: 1px solid var(--border); }
-    .req-table tbody tr:nth-child(even) { background: var(--row-alt); }
-    .req-table tbody td { padding: .6rem .75rem; vertical-align: top; }
-    .req-table .req-name { font-weight: 700; display: block; }
-    .req-table .req-eg   { font-size: .74rem; color: var(--muted); font-style: italic; display: block; margin-top: .15rem; }
-    .req-table select,
-    .req-table input[type="text"],
-    .req-table textarea {
-      width: 100%; border: 1px solid var(--border); border-radius: 3px;
-      font-family: inherit; font-size: .8rem; color: var(--text);
-      padding: .3rem .5rem; background: var(--white); outline: none;
-      transition: border-color .2s;
+
+    .proj-table thead th:first-child {
+      width: 25%;
     }
-    .req-table select:focus,
-    .req-table input:focus,
-    .req-table textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(0,120,138,.15); }
-    .req-table textarea { resize: vertical; min-height: 52px; }
-    .req-table td:nth-child(2) { width: 140px; }
+
+    .proj-table tbody td {
+      border: 1px solid var(--border-default);
+      padding: var(--space-3);
+      vertical-align: top;
+      background: var(--surface-base);
+    }
+
+    .proj-table tbody td:first-child {
+      width: 200px;
+      background: var(--surface-base);
+      font-weight: 600;
+    }
+
+    .proj-table input[type="text"],
+    .proj-table textarea {
+      width: 100%;
+      border: none;
+      background: var(--surface-base);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--color-primary);
+      resize: none;
+      outline: none;
+    }
+
+    /* ── Requirements grid (replaces table layout) ── */
+    .req-grid {
+      border: 1px solid var(--border-default);
+      background: var(--surface-raised);
+      margin-bottom: var(--space-5);
+    }
+
+    .req-grid__header {
+      display: grid;
+      grid-template-columns: 25% 1fr 1fr;
+      gap: 0;
+      background: var(--header-bg);
+      color: var(--color-primary);
+    }
+
+    .req-grid__header>div {
+      padding: var(--space-3);
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-right: 1px solid var(--border-default);
+    }
+
+    .req-grid__header>div:last-child {
+      border-right: none;
+    }
+
+    .req-grid__row {
+      display: grid;
+      grid-template-columns: 25% 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid var(--border-default);
+    }
+
+    .req-grid__row:nth-child(even) {
+      background: var(--surface-base);
+    }
+
+    .req-grid__cell {
+      padding: var(--space-3);
+      min-width: 0;
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .req-grid__cell:last-child {
+      border-right: none;
+    }
+
+    .req-grid__cell--span2 {
+      grid-column: 1 / span 2;
+    }
+
+    .req-name {
+      font-weight: 700;
+      font-size: 14px;
+      display: block;
+    }
+
+    .req-eg {
+      font-size: 12px;
+      color: var(--color-info);
+      font-style: normal;
+      display: block;
+      margin: var(--space-1) 0 var(--space-2) 0;
+    }
+
+    .req-grid fieldset {
+      border: 1px solid var(--border-default);
+      padding: var(--space-2);
+      margin: 0;
+      min-width: 0;
+    }
+
+    .radio-group {
+      display: flex;
+      border-radius: 0;
+      overflow: hidden;
+      flex-shrink: 0;
+      padding: var(--space-2)
+    }
+
+    .radio-group input[type='radio'] {
+      display: none;
+    }
+
+    .radio-group label {
+      padding: 5px 5px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      font-family: 'Roboto', ui-monospace, monospace;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s ease, background 0.2s ease;
+      letter-spacing: 0.03em;
+      text-align: center;
+      background: var(--bg);
+      max-height: 24px;
+      text-transform: uppercase;
+      border-top: 1px solid var(--border-default);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .radio-group label:first-child {
+      border-left: 1px solid var(--border-default);
+      border-right: 1px solid var(--border-default);
+
+    }
+
+    .radio-group label:last-child {
+      border-left: 1px solid var(--border-default);
+      border-right: 1px solid var(--border-default);
+
+    }
+
+    .radio-group label:hover {
+      background: var(--border-hover);
+      color: var(--color-secondary);
+    }
+
+    .radio-group input[value^='High']:checked+label {
+      background: var(--low-bg);
+      border: 1px solid var(--low-border);
+      color: var(--low);
+    }
+
+    .radio-group input[value^='Low']:hover+label {
+      background: var(--high);
+      color: var(--high-bg);
+    }
+
+    .radio-group input[value^='Low']:checked+label {
+      background: var(--high-bg);
+      border: 1px solid var(--high-border);
+      color: var(--high);
+    }
+
+    .radio-group input[value^='Medium']:hover+label {
+      background: var(--muted-border);
+      color: var(--muted-bg);
+    }
+
+    .radio-group input[value^='Medium']:checked+label {
+      background: var(--muted-bg);
+      border: 1px solid var(--muted-border);
+      color: var(--muted-border);
+    }
+
+
+    /* Yes/No only variant (no N/A column) */
+    .radio-group--yes-no .pill-slot-empty {
+      width: 36px;
+      color: transparent;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
+
+    .radio-group input[value^='Medium']:not(:checked)+label {
+      border-right: 1px solid var(--border-soft);
+    }
+
+    .radio-group input[value^='Low']:not(:checked)+label {
+      border-right: 1px solid var(--border-soft);
+      border-left: 0px;
+    }
+
+    .radio-group input[value^='High']:not(:checked)+label {
+      border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
+    }
+
+    .radio-group input[value^='High']:not(:checked)+label:has(+ input[value^='Low']:checked) {
+      border-left: 1px solid var(--border-soft);
+      border-right: 0px;
+
+    }
+
+    .radio-group input[value^='Low']:not(:checked)+label:has(+ input[value^='Medium']:checked) {
+      border-left: 0px;
+      border-right: 0px;
+
+    }
+
+    .radio-group input[value^='Low']:checked~input[value^='Medium']:not(:checked)+label {
+      border-left: 0px solid var(--border-soft);
+    }
+
+    .req-grid select:focus,
+    .req-grid input:focus,
+    .req-grid textarea:focus {
+      border-color: var(--focus-ring);
+      border-width: 2px;
+    }
+
+    .req-grid select:hover,
+    .req-grid input:hover,
+    .req-grid textarea:hover {
+      border-color: var(--border-hover);
+    }
+
+    .req-grid textarea {
+      resize: vertical;
+      height: 160px;
+    }
+
+
 
     /* ── Additional requirements ── */
     .add-req-hdr {
-      background: var(--navy-lt);
-      color: var(--white);
-      font-size: .75rem;
-      font-weight: 700;
-      letter-spacing: .04em;
-      padding: .6rem .75rem;
+      background: var(--header-bg);
+      color: var(--color-primary);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: var(--space-3);
       text-align: center;
-      border-bottom: 1px solid var(--border);
+      border: 1px solid var(--border-default);
     }
+
     .add-req-body {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-default);
       border-top: none;
-      padding: .6rem .75rem;
+      padding: var(--space-3);
     }
+
     .add-req-body textarea {
-      width: 100%; border: 1px solid var(--border); border-radius: 3px;
-      font-family: inherit; font-size: .82rem; color: var(--text);
-      padding: .4rem .55rem; min-height: 70px; resize: vertical; outline: none;
-      transition: border-color .2s;
+      width: 100%;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--color-primary);
+      padding: 10px 12px;
+      min-height: 96px;
+      resize: vertical;
+      outline: none;
+      transition: border-color .18s;
     }
-    .add-req-body textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(0,120,138,.15); }
+
+    .add-req-body textarea:hover {
+      border-color: var(--border-hover);
+    }
+
+    .add-req-body textarea:focus {
+      border-color: var(--focus-ring);
+      border-width: 2px;
+    }
 
     /* ── Footer row (date / by / stamp) ── */
     .footer-row {
       display: flex;
-      gap: 1.2rem;
+      gap: var(--space-4);
       align-items: flex-end;
-      margin-top: 1.6rem;
-      padding-top: 1.2rem;
-      border-top: 1px solid var(--border);
+      margin-top: var(--space-5);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--border-default);
       flex-wrap: wrap;
     }
-    .footer-field { flex: 1; min-width: 160px; }
-    .footer-field label { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); display: block; margin-bottom: .3rem; }
-    .footer-field input {
-      width: 100%; border: 1px solid var(--border); border-radius: 3px;
-      font-family: inherit; font-size: .85rem; padding: .38rem .55rem;
-      outline: none; transition: border-color .2s;
+
+    .footer-field {
+      flex: 1;
+      min-width: 160px;
     }
-    .footer-field input:focus { border-color: var(--teal); }
+
+    .footer-field label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      display: block;
+      margin-bottom: var(--space-2);
+    }
+
+    .footer-field input,
+    select,
+    input[type="text"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 14px;
+      padding: var(--space-2);
+      outline: none;
+      min-height: 40px;
+      transition: border-color .18s, background .18s;
+    }
+
+    .footer-field input:hover {
+      border-color: var(--border-hover);
+    }
+
+    .footer-field input:focus {
+      border-color: var(--focus-ring);
+      border-width: 2px;
+    }
+
     .info-stamp {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: .72rem;
+      font-family: var(--font-mono);
+      font-size: 12px;
       font-weight: 700;
-      color: var(--navy);
-      border: 2px solid var(--navy);
-      padding: .35rem .7rem;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+      padding: 10px 12px;
       letter-spacing: .08em;
       align-self: flex-end;
     }
@@ -232,151 +644,550 @@
     /* ── Action buttons ── */
     .actions {
       display: flex;
-      gap: .75rem;
-      margin-top: 1.4rem;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
+
     .btn {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: .82rem;
+      font-family: var(--font-sans);
+      font-size: 14px;
       font-weight: 600;
-      letter-spacing: .04em;
-      padding: .55rem 1.3rem;
-      border-radius: 3px;
-      border: none;
+      letter-spacing: .02em;
+      padding: 10px 24px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
       cursor: pointer;
-      transition: background .18s, transform .1s;
+      transition: background .18s, color .18s, border-color .18s;
+      min-height: 40px;
     }
-    .btn:active { transform: scale(.97); }
-    .btn-reset  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
-    .btn-reset:hover  { background: #e2e8f0; }
-    .btn-print  { background: var(--mid); color: var(--white); }
-    .btn-print:hover  { background: var(--navy); }
-    .btn-submit { background: var(--teal); color: var(--white); }
-    .btn-submit:hover { background: #005f6e; }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .btn-reset {
+      background: transparent;
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    .btn-reset:hover {
+      background: var(--color-primary);
+      color: var(--color-secondary);
+    }
+
+    .btn-print {
+      background: transparent;
+      color: var(--color-primary);
+      border-color: var(--border-default);
+    }
+
+    .btn-print:hover {
+      border-color: var(--color-primary);
+      background: var(--border-subtle);
+    }
+
+    .btn-submit {
+      background: var(--color-primary);
+      color: var(--color-secondary);
+      border-color: var(--color-primary);
+    }
+
+    .btn-submit:hover {
+      background: var(--surface-inverse);
+    }
 
     /* ── Aside / Use & Limitations ── */
-    .aside .section-title { color: var(--orange); border-color: var(--orange); }
-    .limitations-list { list-style: none; padding: 0; }
+    .aside .section-title {
+      color: var(--color-primary);
+      border-color: var(--border-default);
+    }
+
+    .limitations,
+    .section-title {
+      display: flex;
+    }
+
+    .legend .material-symbols-sharp,
+    .limitations .material-symbols-sharp {
+      font-size: 20px;
+      padding-right: 20px;
+      color: var(--color-error);
+    }
+
+    .limitations-list {
+      list-style: none;
+      padding: 0;
+    }
+
     .limitations-list li {
       position: relative;
-      padding-left: 1.1rem;
-      margin-bottom: .75rem;
-      font-size: .82rem;
+      padding-left: 2rem;
+      margin-bottom: var(--space-3);
+      font-size: 14px;
       line-height: 1.55;
-      color: var(--text);
+      color: var(--color-primary);
     }
-    .limitations-list li::before {
-      content: '';
-      position: absolute; left: 0; top: .55em;
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--orange);
+
+
+    .limitations-list li strong {
+      color: var(--color-primary);
+      font-weight: 700;
     }
-    .limitations-list li strong { color: var(--navy); }
 
     /* ── Legend ── */
-    .legend { margin-top: 1.6rem; }
-    .legend .section-title { color: var(--mid); border-color: var(--mid); font-size: .65rem; }
-    .legend-item { font-size: .75rem; line-height: 1.5; margin-bottom: .45rem; color: var(--muted); }
-    .legend-item strong { color: var(--text); }
+    .legend,
+    .limitations {
+      padding: var(--space-3);
+    }
+
+    .limitations {
+      border-right: 1px solid var(--border-default);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .limitations .section-title,
+    .legend .section-title {
+      font-size: 14px;
+    }
+
+    .legend-item {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: var(--space-2);
+      color: var(--color-info);
+    }
+
+    .legend-item strong {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* ── Quill Rich Text Editor Styles ── */
+    .ql-toolbar {
+      border: 1px solid var(--border-default);
+      border-bottom: none;
+      background: var(--surface-base);
+      border-radius: 0;
+      display: none;
+    }
+
+    .ql-container {
+      border: 1px solid var(--border-default);
+      border-radius: 0;
+      font-family: inherit;
+      font-size: 14px;
+      height: 100%;
+    }
+
+    .ql-editor {
+      min-height: 100px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .ql-editor.ql-blank::before {
+      color: var(--color-info);
+      font-style: italic;
+    }
+
+    .ql-toolbar.ql-snow {
+      padding: 8px;
+    }
+
+    .ql-toolbar.ql-snow .ql-formats {
+      margin-right: 12px;
+    }
+
+    .ql-toolbar.ql-snow .ql-stroke {
+      stroke: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow .ql-fill {
+      fill: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow .ql-picker-label {
+      color: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow button:hover,
+    .ql-toolbar.ql-snow button.ql-active,
+    .ql-toolbar.ql-snow button:focus,
+    .ql-toolbar.ql-snow button:active {
+      stroke: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow button:hover .ql-stroke,
+    .ql-toolbar.ql-snow button.ql-active .ql-stroke,
+    .ql-toolbar.ql-snow button:focus .ql-stroke,
+    .ql-toolbar.ql-snow button:active .ql-stroke {
+      stroke: var(--focus-ring);
+    }
+
+    .ql-toolbar.ql-snow button:hover .ql-fill,
+    .ql-toolbar.ql-snow button.ql-active .ql-fill,
+    .ql-toolbar.ql-snow button:focus .ql-fill,
+    .ql-toolbar.ql-snow button:active .ql-fill {
+      fill: var(--focus-ring);
+    }
+
+    .ql-container.ql-snow:focus-within {
+      border-color: var(--focus-ring);
+    }
+
+    .rich-text-wrapper {
+      margin-bottom: var(--space-3);
+    }
+
+    .proj-table .rich-text-wrapper {
+      margin-bottom: 0;
+    }
+
+    .req-grid .rich-text-wrapper {
+      height: 100%;
+    }
+
+    .req-grid .ql-editor {
+      min-height: 120px;
+    }
+
+    .add-req-body .rich-text-wrapper {
+      margin-bottom: 0;
+    }
+
+    .add-req-body .ql-editor {
+      min-height: 96px;
+    }
+
+    .ql-toolbar.ql-snow+.ql-container.ql-snow {
+      border-top: 1px solid transparent;
+    }
+
+    .ql-container.ql-snow {
+      border: 1px solid var(--border-default) !important;
+    }
+
+    .ql-container.ql-snow:focus-within {
+      border: 1px solid var(--color-primary) !important;
+
+    }
+
+    @media (max-width: 680px) {
+      :root {
+        --space-1: 5px;
+        --space-2: 5px;
+        --space-3: 5px;
+        --space-4: 5px;
+        --space-5: 5px;
+        --space-6: 5px;
+      }
+
+      .body {
+        grid-template-columns: 1fr;
+      }
+
+      .req-grid .rich-text-wrapper {
+        height: 0px !important;
+      }
+
+      .main {
+        border-right: none;
+        border-bottom: 1px solid var(--border-default);
+        padding: var(--space-4);
+      }
+
+      .aside {
+        padding: var(--space-4);
+      }
+
+      .header {
+        padding: var(--space-5) var(--space-4) var(--space-4);
+      }
+
+      .pub-bar {
+        padding: 12px var(--space-4);
+      }
+    }
+
+    .stage-selector label {
+      padding-right: var(--space-4);
+      display: flex;
+      margin: auto 10px;
+      font-size: 14px;
+      letter-spacing: .08em;
+      color: var(--color-primary);
+    }
+
+    .stage-selector input {
+      margin-right: var(--space-2);
+    }
+
+    .stage-selector {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      font-family: var(--font-sans);
+      display: flex;
+    }
 
     /* ── Published bar ── */
-    .pub-bar {
-      background: var(--navy);
-      padding: .45rem 2rem;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: .7rem;
-      color: rgba(255,255,255,.5);
-      letter-spacing: .04em;
+    .pub-bar,
+    .stage-selector {
+      background: var(--surface-base);
+      padding: 12px var(--space-4);
+      font-size: 12px;
+      color: var(--color-info);
+      letter-spacing: .02em;
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    @media (max-width: 860px) {
+      :root {
+        --space-1: 10px;
+        --space-2: 10px;
+        --space-3: 10px;
+        --space-4: 10px;
+        --space-5: 10px;
+        --space-6: 10px;
+      }
+
+      @page {
+        size: letter portrait;
+        margin: 0.15in;
+      }
+
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .req-grid__row,
+      .add-req {
+        page-break-inside: avoid;
+      }
+
+      .page {
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+      }
+
+      .req-grid__header {
+        display: none;
+      }
+
+      .req-grid .rich-text-wrapper,
+      .req-grid .ql-editor {
+        min-height: 100px;
+      }
+
+      .req-grid__row {
+        grid-template-columns: 1fr;
+        grid-auto-flow: row;
+        align-items: center;
+        border-top: 1px solid var(--border-default);
+        border-bottom: 1px solid var(--border-default);
+      }
+
+      .req-grid__cell {
+        border-right: none;
+        border-top: 1px solid var(--border-default);
+      }
+
+      .req-grid__cell:first-child {
+        border-top: none;
+      }
+
+      .req-grid__cell--span2 {
+        grid-column: auto;
+      }
+
+      .req-grid__cell[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--color-info);
+        margin-bottom: var(--space-2);
+      }
     }
 
     /* ── Print ── */
     @media print {
-      body { background: white; padding: 0; }
-      .page { box-shadow: none; border: none; max-width: 100%; }
-      .actions { display: none; }
-    }
 
-    @media (max-width: 680px) {
-      .body { grid-template-columns: 1fr; }
-      .main  { border-right: none; border-bottom: 1px solid var(--border); }
+      :root {
+        --space-1: 10px;
+        --space-2: 10px;
+        --space-3: 10px;
+        --space-4: 10px;
+        --space-5: 10px;
+        --space-6: 10px;
+      }
+
+      @page {
+        size: letter portrait;
+        margin: 0.15in;
+      }
+
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .req-grid__row,
+      .add-req,
+      .req-grid {
+        page-break-inside: avoid;
+      }
+
+      .req-grid {
+        border: 0px;
+      }
+
+      .page {
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+      }
+
+      .actions {
+        display: none;
+      }
+
+      .req-grid__header {
+        display: none;
+      }
+
+      .req-grid .rich-text-wrapper,
+      .req-grid .ql-editor {
+        min-height: 100px;
+      }
+
+      .req-grid__row {
+        grid-template-columns: 1fr;
+        grid-auto-flow: row;
+        align-items: center;
+        border: 1px solid var(--border-default);
+      }
+
+      .req-grid__cell {
+        border-right: none;
+        border-top: 1px solid var(--border-default);
+      }
+
+      .req-grid__cell:first-child {
+        border-top: none;
+      }
+
+      .req-grid__cell--span2 {
+        grid-column: auto;
+      }
+
+      .req-grid__cell[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--color-info);
+        margin-bottom: var(--space-2);
+      }
     }
   </style>
 </head>
+
 <body>
 
-<div class="page">
+  <div class="page">
+    <div>
+      <div class="stage-selector">
+        <input type="radio" name="review_stage" id="unconfirmed" value="Unconfirmed" checked>
+        <label for="unconfirmed">Unconfirmed</label>
+        <input type="radio" name="review_stage" id="confirmed" value="Confirmed">
+        <label for="confirmed">Confirmed</label>
+      </div>
+    </div>
+    <!-- Header -->
+    <div class="header">
 
-  <!-- Header -->
-  <div class="header">
-    <h1>Unconfirmed Load Requirements Form</h1>
-    <p>DDCC Work Smart &mdash; Complete the following form to document the preliminary system requirements.</p>
-  </div>
+      <div>
+        <h1>
+          Unconfirmed Load Requirements Form
+        </h1>
+        <p>DDCC Work Smart &mdash; Complete the following form to document the preliminary system requirements.</p>
+      </div>
+      <div><img class="header-logo"
+          src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-bw-rgb.svg"
+          alt="BC Hydro logo"></div>
+    </div>
 
-  <div class="pub-bar">Published: 2025-01-06 &nbsp;|&nbsp; Revised: 2026-02-09</div>
+    <div class="pub-bar"></div>
 
-  <!-- Two-column body -->
-  <div class="body">
+    <!-- Two-column body -->
+    <div class="body">
 
-    <!-- ── MAIN COLUMN ── -->
-    <div class="main">
+      <!-- ── MAIN COLUMN ── -->
+      <div class="main">
 
-      <!-- Reference Information -->
-      <div class="section-title">Reference Information</div>
-      <p class="ref-note">Please attach applicable reference/supplemental documents (pictures, graphs, drawings, summaries, etc.)</p>
+        <!-- Project Details and Assumptions -->
+        <div class="section-title" id="highLevelRequirements">High-Level Requirements Assessment</div>
+        <p class="ref-note ref-note--tight">Please outline high-level system requirements in the table below.</p>
 
-      <label class="attach-zone" for="attachInput">
-        <input type="file" id="attachInput" multiple onchange="showFileName(this)"/>
-        <div class="attach-icon">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66L9.41 16.41a2 2 0 01-2.83-2.83l8.49-8.49"/>
-          </svg>
-        </div>
-        <div class="attach-label">
-          <strong>Click to attach documents</strong><br/>
-          Open in application (not browser) and attach or review documents.
-          <div id="file-name"></div>
-        </div>
-      </label>
+        <table class="proj-table">
+          <thead>
+            <tr>
+              <th class="field-label" for="desrt_id">DESRT ID#</th>
+              <th class="field-label" for="details_assumptions">Other Details / Assumptions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="desrt_id_editor">
+                    <div class="ql-editor" data-placeholder="Paste DESRT ID link here"></div>
+                  </div>
+                  <input type="hidden" name="desrt_id" id="desrt_id">
+                </div>
+              </td>
+              <td>
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="details_assumptions_editor">
+                    <div class="ql-editor" data-placeholder="Enter any other details or assumptions…"></div>
+                  </div>
+                  <input type="hidden" name="details_assumptions" id="details_assumptions">
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <!-- Project Details and Assumptions -->
-      <div class="section-title">High-Level Requirements Assessment</div>
-      <p class="ref-note" style="margin-bottom:.9rem;">Please outline high-level system requirements in the table below.</p>
+        <!-- Requirements Grid (CSS grid, not table) -->
+        <section class="req-grid" id="reqTable" aria-labelledby="highLevelRequirements">
+          <div class="req-grid__header" aria-hidden="true">
+            <div>Requirement</div>
+            <div>Potential Scope</div>
+            <div>Notes or Dependencies</div>
+          </div>
 
-      <table class="proj-table">
-        <thead>
-          <tr>
-            <th>DESRT ID#</th>
-            <th>Other Details / Assumptions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="text" name="desrt_id" placeholder="e.g. 2026-00123" aria-label="DESRT ID Number"/></td>
-            <td><textarea name="details_assumptions" rows="2" placeholder="Enter any other details or assumptions…" aria-label="Other Details and Assumptions"></textarea></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- Requirements Table -->
-      <table class="req-table" id="reqTable">
-        <thead>
-          <tr>
-            <th>Requirement</th>
-            <th>Likelihood of Requirement *</th>
-            <th>Potential Scope</th>
-            <th>Notes or Dependencies</th>
-          </tr>
-        </thead>
-        <tbody>
-
-          <tr>
-            <td>
+          <div class="req-grid__row">
+            <div class="req-grid__cell" data-label="Requirement">
               <span class="req-name">Local Protection Device</span>
               <span class="req-eg">e.g. fuse, recloser, vista switch, etc.</span>
-            </td>
-            <td>
+
               <select name="likelihood_lpd" aria-label="Likelihood – Local Protection Device">
                 <option value="">— Select —</option>
                 <option>High Likelihood</option>
@@ -384,17 +1195,31 @@
                 <option>Low Likelihood</option>
                 <option>N/A</option>
               </select>
-            </td>
-            <td><textarea name="scope_lpd" placeholder="Describe potential scope…" aria-label="Scope – Local Protection Device"></textarea></td>
-            <td><textarea name="notes_lpd" placeholder="Notes or dependencies…" aria-label="Notes – Local Protection Device"></textarea></td>
-          </tr>
 
-          <tr>
-            <td>
+            </div>
+            <div class="req-grid__cell" data-label="Potential Scope">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="scope_lpd_editor">
+                  <div class="ql-editor" data-placeholder="Describe potential scope…"></div>
+                </div>
+                <input type="hidden" name="scope_lpd" id="scope_lpd">
+              </div>
+            </div>
+            <div class="req-grid__cell" data-label="Notes or Dependencies">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="notes_lpd_editor">
+                  <div class="ql-editor" data-placeholder="Notes or dependencies…"></div>
+                </div>
+                <input type="hidden" name="notes_lpd" id="notes_lpd">
+              </div>
+            </div>
+          </div>
+
+          <div class="req-grid__row">
+            <div class="req-grid__cell" data-label=" Requirement">
               <span class="req-name">High-level Feeder Topology Modifications</span>
               <span class="req-eg">e.g. new feeders, load transfers, etc.</span>
-            </td>
-            <td>
+
               <select name="likelihood_ftm" aria-label="Likelihood – Feeder Topology Modifications">
                 <option value="">— Select —</option>
                 <option>High Likelihood</option>
@@ -402,17 +1227,30 @@
                 <option>Low Likelihood</option>
                 <option>N/A</option>
               </select>
-            </td>
-            <td><textarea name="scope_ftm" placeholder="Describe potential scope…" aria-label="Scope – Feeder Topology Modifications"></textarea></td>
-            <td><textarea name="notes_ftm" placeholder="Notes or dependencies…" aria-label="Notes – Feeder Topology Modifications"></textarea></td>
-          </tr>
 
-          <tr>
-            <td>
+            </div>
+            <div class="req-grid__cell" data-label="Potential Scope">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="scope_ftm_editor">
+                  <div class="ql-editor" data-placeholder="Describe potential scope…"></div>
+                </div>
+                <input type="hidden" name="scope_ftm" id="scope_ftm">
+              </div>
+            </div>
+            <div class="req-grid__cell" data-label="Notes or Dependencies">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="notes_ftm_editor">
+                  <div class="ql-editor" data-placeholder="Notes or dependencies…"></div>
+                </div>
+                <input type="hidden" name="notes_ftm" id="notes_ftm">
+              </div>
+            </div>
+          </div>
+
+          <div class="req-grid__row">
+            <div class="req-grid__cell" data-label=" Requirement">
               <span class="req-name">System Civil Works</span>
               <span class="req-eg">e.g. feeder ducts, maintenance holes</span>
-            </td>
-            <td>
               <select name="likelihood_scw" aria-label="Likelihood – System Civil Works">
                 <option value="">— Select —</option>
                 <option>High Likelihood</option>
@@ -420,17 +1258,32 @@
                 <option>Low Likelihood</option>
                 <option>N/A</option>
               </select>
-            </td>
-            <td><textarea name="scope_scw" placeholder="Describe potential scope…" aria-label="Scope – System Civil Works"></textarea></td>
-            <td><textarea name="notes_scw" placeholder="Notes or dependencies…" aria-label="Notes – System Civil Works"></textarea></td>
-          </tr>
 
-          <tr>
-            <td>
+            </div>
+            <div class="req-grid__cell" data-label="Potential Scope">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="scope_scw_editor">
+                  <div class="ql-editor" data-placeholder="Describe potential scope…"></div>
+                </div>
+                <input type="hidden" name="scope_scw" id="scope_scw">
+              </div>
+            </div>
+            <div class="req-grid__cell" data-label="Notes or Dependencies">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="notes_scw_editor">
+                  <div class="ql-editor" data-placeholder="Notes or dependencies…"></div>
+                </div>
+                <input type="hidden" name="notes_scw" id="notes_scw">
+              </div>
+            </div>
+          </div>
+
+          <div class="req-grid__row">
+            <div class="req-grid__cell" data-label=" Requirement">
               <span class="req-name">Primary Line Modifications</span>
-              <span class="req-eg">e.g. voltage regulators, phase-balancing, 3-phasing, reconductoring, cable upgrades, etc.</span>
-            </td>
-            <td>
+              <span class="req-eg">e.g. voltage regulators, phase-balancing, 3-phasing, reconductoring, cable upgrades,
+                etc.</span>
+
               <select name="likelihood_plm" aria-label="Likelihood – Primary Line Modifications">
                 <option value="">— Select —</option>
                 <option>High Likelihood</option>
@@ -438,95 +1291,331 @@
                 <option>Low Likelihood</option>
                 <option>N/A</option>
               </select>
-            </td>
-            <td><textarea name="scope_plm" placeholder="Describe potential scope…" aria-label="Scope – Primary Line Modifications"></textarea></td>
-            <td><textarea name="notes_plm" placeholder="Notes or dependencies…" aria-label="Notes – Primary Line Modifications"></textarea></td>
-          </tr>
 
-        </tbody>
-      </table>
+            </div>
+            <div class="req-grid__cell" data-label="Potential Scope">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="scope_plm_editor">
+                  <div class="ql-editor" data-placeholder="Describe potential scope…"></div>
+                </div>
+                <input type="hidden" name="scope_plm" id="scope_plm">
+              </div>
+            </div>
+            <div class="req-grid__cell" data-label="Notes or Dependencies">
+              <div class="rich-text-wrapper">
+                <div class="ql-container" id="notes_plm_editor">
+                  <div class="ql-editor" data-placeholder="Notes or dependencies…"></div>
+                </div>
+                <input type="hidden" name="notes_plm" id="notes_plm">
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <!-- Additional Requirements -->
-      <div class="add-req-hdr">Additional Requirements Not Noted Above</div>
-      <div class="add-req-body">
-        <textarea name="additional_requirements" placeholder="Describe any additional requirements not captured in the table above…" aria-label="Additional Requirements"></textarea>
-      </div>
+        <!-- Additional Requirements -->
+        <section class="add-req" aria-labelledby="additionalReqsTitle">
+          <div class="add-req-hdr">Additional Requirements Not Noted Above</div>
+          <div class="add-req-body">
+            <div class="rich-text-wrapper">
+              <div class="ql-container" id="additional_requirements_editor">
+                <div class="ql-editor"
+                  data-placeholder="Describe any additional requirements not captured in the table above…"></div>
+              </div>
+              <input type="hidden" name="additional_requirements" id="additional_requirements">
+            </div>
+          </div>
+        </section>
 
-      <!-- Footer row -->
-      <div class="footer-row">
-        <div class="footer-field">
-          <label for="completedDate">Completed Date</label>
-          <input type="date" id="completedDate" name="completed_date"/>
+        <!-- Footer row -->
+        <div class="footer-row">
+          <div class="footer-field">
+            <label for="completedDate">Completed Date</label>
+            <input type="date" id="completedDate" name="completed_date">
+          </div>
+          <div class="footer-field">
+            <label for="completedBy">Completed By</label>
+            <input type="text" id="completedBy" name="completed_by" placeholder="Full name">
+          </div>
+
         </div>
-        <div class="footer-field">
-          <label for="completedBy">Completed By</label>
-          <input type="text" id="completedBy" name="completed_by" placeholder="Full name"/>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button type="button" class="btn btn-reset" onclick="resetForm()">Reset Form</button>
+          <button type="button" class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+          <button type="button" class="btn btn-submit" onclick="submitForm()">Submit</button>
         </div>
-        <div class="info-stamp">INFORMATION ONLY</div>
-      </div>
 
-      <!-- Actions -->
-      <div class="actions">
-        <button type="button" class="btn btn-reset" onclick="resetForm()">Reset Form</button>
-        <button type="button" class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
-        <button type="button" class="btn btn-submit" onclick="submitForm()">Submit</button>
-      </div>
+      </div><!-- /main -->
 
-    </div><!-- /main -->
+      <!-- ── ASIDE ── -->
+      <div class="aside">
+        <div class="limitations">
+          <div class="section-title"><span class="material-symbols-sharp">
+              notification_important
+            </span>Use &amp; Limitations</div>
+          <ul class="limitations-list">
+            <li>This review and preliminary scope assessment <strong>does not reserve</strong> circuit capacity.</li>
+            <li>Once the customer confirms their detailed load information, a <strong>Confirmed Load</strong> DESRT
+              Request is required to determine detailed system requirements.</li>
+            <li>For <strong>Internal Use Only</strong></li>
+          </ul>
+        </div>
 
-    <!-- ── ASIDE ── -->
-    <div class="aside">
+        <!-- Likelihood Legend -->
+        <div class="legend">
+          <div class="section-title"><span class="material-symbols-sharp">
+              asterisk
+            </span>Likelihood Key</div>
+          <div class="legend-item"><strong>High Likelihood:</strong> These items will be or are very likely to be
+            required for the project.</div>
+          <div class="legend-item"><strong>Medium Likelihood:</strong> These items have a moderate chance of being
+            required for the project.</div>
+          <div class="legend-item"><strong>Low Likelihood:</strong> These items are less likely to be required, but
+            shouldn't be completely ruled out.</div>
+          <div class="legend-item"><strong>N/A:</strong> Not Applicable</div>
+        </div>
 
-      <div class="section-title">Use &amp; Limitations</div>
-      <ul class="limitations-list">
-        <li>This review and preliminary scope assessment <strong>does not reserve</strong> circuit capacity.</li>
-        <li>Once the customer confirms their detailed load information, a <strong>Confirmed Load</strong> DESRT Request is required to determine detailed system requirements.</li>
-        <li>For <strong>Internal Use Only</strong></li>
-      </ul>
+      </div><!-- /aside -->
 
-      <!-- Likelihood Legend -->
-      <div class="legend">
-        <div class="section-title">Likelihood Key *</div>
-        <div class="legend-item"><strong>High Likelihood:</strong> These items will be or are very likely to be required for the project.</div>
-        <div class="legend-item"><strong>Medium Likelihood:</strong> These items have a moderate chance of being required for the project.</div>
-        <div class="legend-item"><strong>Low Likelihood:</strong> These items are less likely to be required, but shouldn't be completely ruled out.</div>
-        <div class="legend-item"><strong>N/A:</strong> Not Applicable</div>
-      </div>
+    </div><!-- /body -->
 
-    </div><!-- /aside -->
+  </div><!-- /page -->
 
-  </div><!-- /body -->
+  <script>
+    const published_date = '2026-04-24';
+    const revision = '1.0';
+    const prBar = document.querySelector('.pub-bar');
+    prBar.textContent = `Published: ${published_date} | Revision: ${revision}`;
 
-</div><!-- /page -->
+    // ── Quill Rich Text Editors Configuration ── 
+    const quillEditors = {};
+    const quillConfig = {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          [{ 'header': [1, 2, 3, false] }],
+          ['link'],
+          ['clean']
+        ]
+      },
+      placeholder: 'Enter text here…'
+    };
 
-<script>
-  function showFileName(input) {
-    const label = document.getElementById('file-name');
-    if (input.files.length === 0) { label.textContent = ''; return; }
-    const names = Array.from(input.files).map(f => f.name).join(', ');
-    label.textContent = names;
-  }
+    // Initialize Quill editors
+    document.addEventListener('DOMContentLoaded', function () {
+      const editors = [
+        ['desrt_id', "Paste DESRT link here"],
+        ['details_assumptions', "Enter any other details or assumptions…"],
+        ['scope_lpd', "Enter scope details…"],
+        ['notes_lpd', "Enter notes…"],
+        ['scope_ftm', "Enter scope details…"],
+        ['notes_ftm', "Enter notes…"],
+        ['scope_scw', "Enter scope details…"],
+        ['notes_scw', "Enter notes…"],
+        ['scope_plm', "Enter scope details…"],
+        ['notes_plm', "Enter notes…"],
+        ['additional_requirements', "Enter additional requirements…"]
+      ];
 
-  function resetForm() {
-    if (!confirm('Reset all form fields?')) return;
-    document.querySelectorAll('input[type="text"], input[type="date"], textarea, select').forEach(el => {
-      if (el.tagName === 'SELECT') el.selectedIndex = 0;
-      else el.value = '';
+      editors.forEach(([editorId, place_holder]) => {
+        console.log('Initializing editor:', editorId);
+        const container = document.getElementById(editorId + '_editor');
+        if (container) {
+          console.log('Found container for:', place_holder);
+          const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
+          quillEditors[editorId] = quill;
+
+          // Sync content to hidden input on change
+          quill.on('text-change', function () {
+            const hiddenInput = document.getElementById(editorId);
+            hiddenInput.value = quill.root.innerHTML;
+          });
+        }
+      });
+
+      // Initialize URL detection for textareas
+      initializeUrlDetection();
     });
-    document.getElementById('file-name').textContent = '';
-    document.getElementById('attachInput').value = '';
-  }
 
-  function submitForm() {
-    // Collect values for demonstration
-    const data = {};
-    document.querySelectorAll('[name]').forEach(el => {
-      data[el.name] = el.value;
-    });
-    console.log('Form data:', data);
-    alert('Form submitted successfully!\n\nIn a live environment this would POST to your backend.');
-  }
-</script>
+    // ── Link Detection & Auto-Hyperlinking ──
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+
+    function createLinkWrapper (element) {
+      const existingWrapper = element.parentElement?.querySelector('.link-wrapper');
+      if (existingWrapper) {
+        existingWrapper.remove();
+      }
+      const wrapper = document.createElement('div');
+      wrapper.className = 'link-wrapper';
+
+      const link = document.createElement('a');
+
+      wrapper.appendChild(link);
+      element.parentElement.insertBefore(wrapper, element.nextSibling);
+
+      return link;
+    }
+
+    function detectAndHyperlinkUrl (element) {
+      const value = element.value.trim();
+      const urlMatch = value.match(urlRegex);
+
+      if (urlMatch && urlMatch.length > 0) {
+        let url = urlMatch[0];
+        // Ensure the URL has a protocol
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url;
+        }
+        const link = createLinkWrapper(element);
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = text || url;
+
+      }
+    }
+
+    function initializeUrlDetection () {
+      // Attach event listeners to text inputs (not Quill editors)
+      const inputElements = document.querySelectorAll(
+        'input[type="text"]:not([type="file"]):not([type="hidden"]), .proj-table textarea'
+      );
+
+      inputElements.forEach(element => {
+        if (element.tagName === 'TEXTAREA') {
+          element.addEventListener('paste', function (e) {
+            setTimeout(() => {
+              detectAndHyperlinkUrl(this);
+            }, 0);
+          });
+
+          element.addEventListener('blur', function () {
+            detectAndHyperlinkUrl(this);
+          });
+        } else if (element.tagName === 'INPUT') {
+          element.addEventListener('paste', function (e) {
+            setTimeout(() => {
+              detectAndHyperlinkUrl(this);
+            }, 0);
+          });
+
+          element.addEventListener('blur', function () {
+            detectAndHyperlinkUrl(this);
+          });
+        }
+      });
+    }
+
+    function showFileName (input) {
+      const label = document.getElementById('file-name');
+      if (input.files.length === 0) { label.textContent = ''; return; }
+      const names = Array.from(input.files).map(f => f.name).join(', ');
+      label.textContent = names;
+    }
+
+    function resetForm () {
+      if (!confirm('Reset all form fields?')) return;
+
+      // Reset text inputs and selects
+      document.querySelectorAll('input[type="text"]:not([type="hidden"]), input[type="date"], select').forEach(el => {
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+      });
+
+      // Reset Quill editors
+      Object.keys(quillEditors).forEach(editorId => {
+        quillEditors[editorId].setContents([]);
+        document.getElementById(editorId).value = '';
+      });
+
+      document.getElementById('file-name').textContent = '';
+      const attachInput = document.getElementById('attachInput');
+      if (attachInput) attachInput.value = '';
+
+      // Remove all link wrappers
+      document.querySelectorAll('.link-wrapper').forEach(wrapper => wrapper.remove());
+    }
+
+    function submitForm () {
+      // Sync all Quill editors to hidden inputs before submission
+      Object.keys(quillEditors).forEach(editorId => {
+        const hiddenInput = document.getElementById(editorId);
+        hiddenInput.value = quillEditors[editorId].root.innerHTML;
+      });
+
+      // Collect values for demonstration
+      const data = {};
+      document.querySelectorAll('[name]:not([type="hidden"])').forEach(el => {
+        if (el.getAttribute('type') !== 'hidden') {
+          data[el.name] = el.value;
+        }
+      });
+
+      // Also include hidden inputs with editor content
+      document.querySelectorAll('input[type="hidden"]').forEach(el => {
+        if (el.name && el.value) {
+          data[el.name] = el.value;
+        }
+      });
+
+      console.log('Form data:', data);
+
+      // Save local copy of HTML file with form data
+      saveFormAsHTML(data);
+
+      alert('Form submitted successfully!\n\nLocal copy saved to your computer.\n\nIn a live environment this would also POST to your backend.\n\nCheck console for full form data including rich text content.');
+    }
+
+    function saveFormAsHTML (data) {
+      const clone = document.documentElement.cloneNode(true);
+      const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
+      const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
+      for (let i = 0; i < liveControls.length; i++) {
+        const live = liveControls[i], el = cloneControls[i];
+        if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
+        if (el.tagName === 'SELECT') {
+          Array.from(el.options).forEach(o => o.removeAttribute('selected'));
+          if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
+          continue;
+        }
+        const type = el.getAttribute('type')?.toLowerCase();
+        if (type === 'radio' || type === 'checkbox') {
+          if (live.checked) el.setAttribute('checked', '');
+          else el.removeAttribute('checked');
+          continue;
+        }
+        el.setAttribute('value', live.value);
+      }
+
+      const progressClone = clone.querySelector('#progressBar');
+      if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
+
+      const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
+      const a = document.createElement('a');
+      // Detect if this is an already-saved snapshot file (opened locally)
+      if (window.location.protocol === 'file:') {
+        // If so, trigger a download with the same name to overwrite it
+        const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
+        const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
+        a.download = cleanFilename;
+      }
+      a.href = url;
+      a.download = `Load_Requirements_${ts}.html`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      this.toast('Snapshot saved', 'success');
+    }
+  </script>
 
 </body>
+
 </html>
