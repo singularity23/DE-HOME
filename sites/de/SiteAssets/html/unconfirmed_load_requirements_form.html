@@ -581,18 +581,36 @@
 
     /* ── Footer row (date / by / stamp) ── */
     .footer-row {
-      display: flex;
-      gap: var(--space-4);
-      align-items: flex-end;
+      display: grid;
+      gap: var(--space-3);
+      grid-template-columns: repeat(2, 1fr);
       margin-top: var(--space-5);
       padding-top: var(--space-4);
       border-top: 1px solid var(--border-default);
-      flex-wrap: wrap;
+    }
+
+    #signature {
+      grid-row: 1 / span 2;
+      grid-column: 2 / 3;
+    }
+
+    #signature textarea {
+      flex-grow: 1;
+      /* fills remaining vertical space */
+      /* optionally remove default rows height if needed */
+      resize: vertical;
     }
 
     .footer-field {
-      flex: 1;
       min-width: 160px;
+    }
+
+    .footer-field:last-child {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      /* pushes textarea to bottom */
+      height: 100%;
     }
 
     .footer-field label {
@@ -857,7 +875,7 @@
     }
 
     .req-grid .ql-editor {
-      min-height: 120px;
+      min-height: 160px;
     }
 
     .add-req-body .rich-text-wrapper {
@@ -1124,8 +1142,8 @@
     <div class="header">
 
       <div>
-        <h1>
-          Unconfirmed Load Requirements Form
+        <h1 class="title">
+          <span id="title">Unconfirmed</span> Load Requirements Form
         </h1>
         <p>DDCC Work Smart &mdash; Complete the following form to document the preliminary system requirements.</p>
       </div>
@@ -1336,6 +1354,9 @@
             <label for="completedBy">Completed By</label>
             <input type="text" id="completedBy" name="completed_by" placeholder="Full name">
           </div>
+          <div class="footer-field" id="signature" style="display: none;"><label class="field-label"
+              for="sig">Signature</label><textarea class="field-input" id="sig" rows="6"
+              placeholder="Signature"></textarea> </div>
 
         </div>
 
@@ -1355,10 +1376,12 @@
               notification_important
             </span>Use &amp; Limitations</div>
           <ul class="limitations-list">
-            <li>This review and preliminary scope assessment <strong>does not reserve</strong> circuit capacity.</li>
-            <li>Once the customer confirms their detailed load information, a <strong>Confirmed Load</strong> DESRT
+            <li id="limitations_1">This review and preliminary scope assessment <strong>does not reserve</strong>
+              circuit capacity.</li>
+            <li id="limitations_2">Once the customer confirms their detailed load information, a <strong>Confirmed
+                Load</strong> DESRT
               Request is required to determine detailed system requirements.</li>
-            <li>For <strong>Internal Use Only</strong></li>
+            <li id="limitations_3">For <strong>Internal Use Only</strong></li>
           </ul>
         </div>
 
@@ -1570,6 +1593,38 @@
       alert('Form submitted successfully!\n\nLocal copy saved to your computer.\n\nIn a live environment this would also POST to your backend.\n\nCheck console for full form data including rich text content.');
     }
 
+    function getRadioValue (name) {
+      return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
+    }
+    function updateTitle () {
+      const isConfirmed = getRadioValue('review_stage') === 'Confirmed';
+      const titleEl = document.getElementById('title');
+      const limitation_2 = document.getElementById('limitations_2');
+      const limitation_3 = document.getElementById('limitations_3');
+      const signature = document.getElementById('signature');
+      signature.style.display = isConfirmed ? 'flex' : 'none';
+      titleEl.textContent = isConfirmed ? 'Confirmed' : 'Unconfirmed';
+      limitation_2.innerHTML = isConfirmed
+        ? 'This confirmed load form is valid for up to <strong>2 years</strong>.'
+        : 'Once the customer confirms their detailed load information, a <strong>Confirmed Load</strong> DESRT Request is required to determine detailed system requirements.';
+
+      limitation_3.innerHTML = isConfirmed
+        ? 'This form is intended for high level load assessment and <strong>not</strong> for use as baseline for design scope. Design scope <strong>might change</strong> during detailed design stage.'
+        : 'For <strong>Internal Use Only</strong>';
+    }
+
+    function attachEventListeners () {
+      document.addEventListener('change', handleGlobalChange.bind(this));
+    }
+
+    function handleGlobalChange (e) {
+      console.log(e.target.name);
+      if (e.target.name === 'review_stage') {
+        updateTitle();
+      }
+    }
+
+
     function saveFormAsHTML (data) {
       const clone = document.documentElement.cloneNode(true);
       const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
@@ -1614,6 +1669,8 @@
       URL.revokeObjectURL(url);
       this.toast('Snapshot saved', 'success');
     }
+
+    attachEventListeners();
   </script>
 
 </body>

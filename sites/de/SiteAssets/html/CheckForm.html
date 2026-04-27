@@ -1186,7 +1186,8 @@
       padding: var(--space-cell-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
     }
 
-    .comments-cell:first-child {
+    .comments-cell:first-child,
+    .comments-cell:nth-child(3) {
       padding: var(--space-cell-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
     }
 
@@ -1513,11 +1514,6 @@
       font-style: italic;
     }
 
-    .comments-area {
-      border: 1px solid var(--border-soft);
-      margin-bottom: var(--gap-md);
-    }
-
     /* Signature Pad Styles */
     .signature-pad-container {
       display: flex;
@@ -1526,6 +1522,7 @@
       background: var(--surface);
       overflow: hidden;
       height: 100px;
+
     }
 
     .signature-pad-tabs {
@@ -1737,7 +1734,101 @@
       border: 1px solid var(--border-soft);
       border-radius: 4px;
     }
+
+    /* ── Quill Rich Text Editor Styles ── */
+    .ql-toolbar {
+      border: 1px solid var(--border);
+      border-bottom: none;
+      background: var(--surface-base);
+      border-radius: 0;
+    }
+
+    .ql-toolbar.ql-snow {
+      border: 1px solid var(--border);
+      box-sizing: border-box;
+      padding: 8px;
+    }
+
+    .ql-container {
+      border: 1px solid var(--border-hard);
+      border-radius: 0;
+      font-family: inherit;
+      font-size: 13px;
+      min-height: 100px;
+      overflow: hidden;
+    }
+
+    .ql-editor {
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      line-height: 1.6;
+      min-height: 100px;
+    }
+
+    .ql-editor.ql-blank::before {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .ql-toolbar.ql-snow {
+      padding: 8px;
+    }
+
+    .ql-toolbar.ql-snow .ql-formats {
+      margin-right: 12px;
+    }
+
+    .ql-toolbar.ql-snow .ql-stroke {
+      stroke: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow .ql-fill {
+      fill: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow .ql-picker-label {
+      color: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow button:hover,
+    .ql-toolbar.ql-snow button.ql-active,
+    .ql-toolbar.ql-snow button:focus,
+    .ql-toolbar.ql-snow button:active {
+      stroke: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .ql-toolbar.ql-snow button:hover .ql-stroke,
+    .ql-toolbar.ql-snow button.ql-active .ql-stroke,
+    .ql-toolbar.ql-snow button:focus .ql-stroke,
+    .ql-toolbar.ql-snow button:active .ql-stroke {
+      stroke: var(--accent);
+    }
+
+    .ql-toolbar.ql-snow button:hover .ql-fill,
+    .ql-toolbar.ql-snow button.ql-active .ql-fill,
+    .ql-toolbar.ql-snow button:focus .ql-fill,
+    .ql-toolbar.ql-snow button:active .ql-fill {
+      fill: var(--accent);
+    }
+
+    .ql-container.ql-snow:focus-within {
+      border-color: var(--accent);
+    }
+
+    .rich-text-wrapper {
+      position: relative;
+    }
+
+    .comments-area .rich-text-wrapper {
+      margin-bottom: var(--gap-md);
+    }
   </style>
+
+  <!-- Quill Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 
 <body>
@@ -2040,7 +2131,6 @@
                       data-testid="ch-sig-choose">
                       Choose Signature Image
                     </button>
-                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
                     <div id="chSigPreview" class="sig-preview"></div>
                   </div>
                 </div>
@@ -2133,7 +2223,6 @@
                       data-testid="pr-sig-choose">
                       Choose Signature Image
                     </button>
-                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
                     <div id="prSigPreview" class="sig-preview"></div>
                   </div>
                 </div>
@@ -2163,42 +2252,50 @@
         <div class="sec-body" id="s5">
           <div class="comments-grid" id="commentsGrid">
             <div class="comments-cell" id="commentsCell1">
-              <label class="field-label" for="checkerComments">Checker Comments &amp; Corrections</label>
+              <label class="field-label" id="for_checkerComments">Checker Comments &amp; Corrections</label>
               <div class="comments-area">
-                <textarea class="field-input comments-textarea" id="checkerComments"
-                  placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)" rows="4"
-                  aria-describedby="checkerCommentsHint" data-testid="checker-comments"></textarea>
-
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="checkerComments-editor">
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
+                  </div>
+                  <input type="hidden" name="checkerComments" id="checkerComments">
+                </div>
                 <div class="comments-image-gallery" id="checkerComments-gallery" aria-live="polite"></div>
               </div>
             </div>
             <div class="comments-cell" id="commentsCell2">
-              <label class="field-label" for="engineerResponse">Engineer Response</label>
+              <label class="field-label" id="for_engineerResponse">Engineer Response</label>
               <div class="comments-area">
-                <textarea class="field-input comments-textarea" id="engineerResponse"
-                  placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"
-                  aria-describedby="engineerResponseHint" data-testid="engineer-response"></textarea>
-
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="engineerResponse-editor">
+                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
+                  </div>
+                  <input type="hidden" name="engineerResponse" id="engineerResponse">
+                </div>
                 <div class="comments-image-gallery" id="engineerResponse-gallery" aria-live="polite"></div>
               </div>
             </div>
             <div class="comments-cell hidden" id="commentsCell3">
-              <label class="field-label" for="reviewerComments">Reviewer Comments &amp; Corrections</label>
+              <label class="field-label" id="for_reviewerComments">Reviewer Comments &amp; Corrections</label>
               <div class="comments-area">
-                <textarea class="field-input comments-textarea" id="reviewerComments"
-                  placeholder="Enter comments, corrections, or corrective actions… (Paste images with Ctrl+V)" rows="4"
-                  aria-describedby="reviewerCommentsHint" data-testid="reviewer-comments"></textarea>
-
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="reviewerComments-editor">
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
+                  </div>
+                  <input type="hidden" name="reviewerComments" id="reviewerComments">
+                </div>
                 <div class="comments-image-gallery" id="reviewerComments-gallery" aria-live="polite"></div>
               </div>
             </div>
             <div class="comments-cell hidden" id="commentsCell4">
-              <label class="field-label" for="engineerResponse_2">Engineer Response</label>
+              <label class="field-label" id="for_engineerResponse_2">Engineer Response</label>
               <div class="comments-area">
-                <textarea class="field-input comments-textarea" id="engineerResponse_2"
-                  placeholder="Accept / Reject / Address comments… (Paste images with Ctrl+V)" rows="4"
-                  aria-describedby="engineerResponse2Hint" data-testid="engineer-response-2"></textarea>
-
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="engineerResponse_2-editor">
+                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
+                  </div>
+                  <input type="hidden" name="engineerResponse_2" id="engineerResponse_2">
+                </div>
                 <div class="comments-image-gallery" id="engineerResponse_2-gallery" aria-live="polite"></div>
               </div>
             </div>
@@ -2276,7 +2373,6 @@
                       data-testid="ft1-sig-choose">
                       Choose Signature Image
                     </button>
-                    <p class="sig-upload-hint">or drag and drop PNG/JPG</p>
                     <div id="fT1SigPreview" class="sig-preview"></div>
                   </div>
                 </div>
@@ -2458,8 +2554,8 @@
             wiInput: document.querySelector('#checker_por input'),
             chNameLabel: document.querySelector('label[for="ch_name"]'),
             chSigLabel: document.querySelector('#ch_sig'),
-            checkerCommentsLabel: document.querySelector('label[for="checkerComments"]'),
-            engineerResponseLabel: document.querySelector('label[for="engineerResponse"]'),
+            checkerCommentsLabel: document.querySelector('label[id="for_checkerComments"]'),
+            engineerResponseLabel: document.querySelector('label[id="for_engineerResponse"]'),
             // Section bodies
             s2Body: get('s2'), s2Head: get('sec2-head'),
             s3Body: get('s3'), s3Head: get('sec3-head'),
@@ -2486,11 +2582,12 @@
           this.attachEventListeners();
           this.updateProgress();
           this.syncAllSectionVisibility();
-          this.autosizeAllTextareas();
           this.syncCommentsHeights();
           this.updateRoleLabels(!this.isRestored);
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
+          this.initQuillEditors();
+          if (this.isRestored) this.restoreQuillEditors();
         }
 
         buildAllRows () {
@@ -2512,6 +2609,93 @@
           if (this.signatureModalCanvas) {
             this.setupModalCanvasDrawing(this.signatureModalCanvas);
           }
+        }
+
+        initQuillEditors () {
+          // Configuration for Quill editors
+          const quillConfig = {
+            theme: 'snow',
+            modules: {
+              toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered' }],
+                [{ 'header': [1, 2, 3, false] }],
+                ['link'],
+                ['clean']
+              ]
+            }
+          };
+
+          // Array of comment field IDs
+          const commentFields = [
+            'checkerComments',
+            'engineerResponse',
+            'reviewerComments',
+            'engineerResponse_2'
+          ];
+
+          this.quillEditors = {};
+
+          commentFields.forEach(fieldId => {
+            const container = document.getElementById(`${fieldId}-editor`);
+            if (container) {
+              const quill = new Quill(container, quillConfig);
+              this.quillEditors[fieldId] = quill;
+
+              // Sync Quill content to hidden input on text change
+              quill.on('text-change', () => {
+                const hiddenInput = document.getElementById(fieldId);
+                hiddenInput.value = quill.root.innerHTML;
+              });
+
+              // Handle paste of content (including images)
+              //const editor = container.querySelector('.ql-editor');
+              //if (editor) {
+              //editor.addEventListener('paste', (e) => {
+              //this.handleQuillPaste(e, fieldId);
+              //});
+              //}
+            }
+          });
+        }
+
+        handleQuillPaste (e, fieldId) {
+          const items = e.clipboardData?.items;
+          if (!items) return;
+
+          for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+              const file = item.getAsFile();
+              if (file) {
+                e.preventDefault();
+                this.processImageFile(file, fieldId);
+              }
+            }
+          }
+        }
+
+        syncAllQuillEditors () {
+          if (!this.quillEditors) return;
+
+          Object.keys(this.quillEditors).forEach(fieldId => {
+            const quill = this.quillEditors[fieldId];
+            const hiddenInput = document.getElementById(fieldId);
+            if (quill && hiddenInput) {
+              hiddenInput.value = quill.root.innerHTML;
+            }
+          });
+        }
+
+        restoreQuillEditors () {
+          if (!this.quillEditors) return;
+
+          Object.keys(this.quillEditors).forEach(fieldId => {
+            const quill = this.quillEditors[fieldId];
+            const hiddenInput = document.getElementById(fieldId);
+            if (quill && hiddenInput && hiddenInput.value) {
+              quill.root.innerHTML = hiddenInput.value;
+            }
+          });
         }
 
         changeSignatureTab (tabBtn) {
@@ -2653,7 +2837,7 @@
           let lastW = 3;
           const minW = 3.0;
           const maxW = 9.0;
-          const smoothing = 0.32; // lower = smoother width changes
+          const smoothing = 0.168; // lower = smoother width changes
           /**
            * Convert a pointer/touch event to canvas-space coordinates,
            * correctly accounting for any DPR scaling.
@@ -2692,23 +2876,26 @@
             const midY = (lastY + y) / 2;
             const dx = x - lastX;
             const dy = y - lastY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const speed = dist / dt; // px/ms
+            let dist, speed, targetW, w;
+
+            dist = Math.sqrt(dx * dx + dy * dy);
+            speed = dist / dt; // px/ms
             // Pen feel: slow => thicker, fast => thinner
-            const targetW = Math.max(minW, Math.min(maxW, maxW - speed * 3.0));
-            const w = lastW + (targetW - lastW) * smoothing;
+            targetW = Math.max(minW, Math.min(maxW, maxW - speed * 3.0));
+            w = lastW + (targetW - lastW) * smoothing;
             ctx.lineWidth = w;
             ctx.beginPath();
+
 
             if (!hasLastMid) {
               // First segment: no previous midpoint yet — start at last sample.
               ctx.moveTo(lastX, lastY);
-              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
+              ctx.quadraticCurveTo(lastX, y, midX, midY);
               hasLastMid = true;
             } else {
               // Continue chain: from previous midpoint, control at last sample, end at new midpoint.
               ctx.moveTo(lastMidX, lastMidY);
-              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
+              ctx.quadraticCurveTo(x, lastY, midX, midY);
             }
             var grd = ctx.createLinearGradient(lastX, lastY, midX, midY);
             grd.addColorStop("0", "white");
@@ -2812,7 +2999,6 @@
           document.addEventListener('change', this.handleGlobalChange.bind(this));
           document.addEventListener('input', this.handleGlobalInput.bind(this));
           document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
-          document.addEventListener('paste', this.handlePaste.bind(this));
           document.addEventListener('click', this.handleSignatureUploadTriggerClick.bind(this));
 
           // MutationObserver for radio changes (progress updates)
@@ -2984,6 +3170,11 @@
 
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
+          }
+
+          if (e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+
             this.syncCommentsHeights();
           }
         }
@@ -3000,6 +3191,11 @@
           }
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
+          }
+
+          if (e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+
             this.syncCommentsHeights();
           }
         }
@@ -3015,96 +3211,14 @@
             e.preventDefault();
             head.click();
           }
-        }
 
-        handlePaste (e) {
-          const textarea = e.target.closest('.comments-textarea');
-          if (!textarea) return;
-
-          const items = e.clipboardData?.items;
-          if (!items) return;
-
-          for (let item of items) {
-            if (item.type.indexOf('image') !== -1) {
-              const file = item.getAsFile();
-              if (file) {
-                e.preventDefault();
-                this.processImageFile(file, textarea.id);
-              }
-            }
+          if (e.key === 'Enter' && e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+            this.syncCommentsHeights();
           }
         }
 
 
-
-        processImageFile (file, textareaId) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const gallery = document.getElementById(`${textareaId}-gallery`);
-            if (gallery) this.addImageToGallery(gallery, e.target.result);
-          };
-          reader.readAsDataURL(file);
-        }
-
-        addImageToGallery (gallery, imgDataUrl) {
-          const container = document.createElement('div');
-          container.className = 'image-thumbnail';
-
-          const img = document.createElement('img');
-          img.src = imgDataUrl;
-          img.alt = 'Pasted screenshot';
-
-          const removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.className = 'image-thumbnail-remove';
-          removeBtn.innerHTML = `<span class="material-symbols-sharp">cancel</span>`;
-          removeBtn.setAttribute('aria-label', 'Remove this image');
-          removeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            container.remove();
-          });
-
-          img.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showImageModal(imgDataUrl);
-          });
-
-          container.appendChild(img);
-          container.appendChild(removeBtn);
-          gallery.appendChild(container);
-        }
-
-        showImageModal (imgDataUrl) {
-          const modal = document.createElement('div');
-          modal.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); display: flex; align-items: center;
-            justify-content: center; z-index: 10000; cursor: pointer;
-          `;
-          const img = document.createElement('img');
-          img.src = imgDataUrl;
-          img.style.cssText = `
-            max-width: 90vw; max-height: 90vh; object-fit: contain;
-            border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-          `;
-          const closeBtn = document.createElement('button');
-          closeBtn.innerHTML = '&times;';
-          closeBtn.style.cssText = `
-            position: absolute; top: 20px; right: 20px; width: 40px; height: 40px;
-            border: none; background: rgba(255,255,255,0.2); color: white;
-            font-size: 28px; cursor: pointer; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; transition: background 0.2s ease;
-          `;
-          closeBtn.addEventListener('mouseover', () => { closeBtn.style.background = 'rgba(255,255,255,0.4)'; });
-          closeBtn.addEventListener('mouseout', () => { closeBtn.style.background = 'rgba(255,255,255,0.2)'; });
-          const close = () => modal.remove();
-          closeBtn.addEventListener('click', close);
-          modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
-          modal.appendChild(img);
-          modal.appendChild(closeBtn);
-          document.body.appendChild(modal);
-        }
 
         // ---------- UI State Updates ----------
         toggleSection (head) {
@@ -3112,7 +3226,6 @@
           const body = document.getElementById(head.getAttribute('aria-controls'));
           if (body) body.classList.toggle('open');
           head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
-          this.autosizeAllTextareas();
         }
 
         setRiskLevel (level) {
@@ -3239,7 +3352,6 @@
           const finalShown = showPeer || isHighRisk;
           this.elements.cardFinal.classList.toggle('hidden', !finalShown);
           this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, isHighRisk && finalShown);
-          this.autosizeAllTextareas();
         }
 
         syncAllSectionVisibility () {
@@ -3388,10 +3500,6 @@
           el.style.height = el.scrollHeight + 'px';
         }
 
-        autosizeAllTextareas () {
-          document.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
-        }
-
         syncCommentsHeights () {
           const pair = (aId, bId) => {
             const a = document.getElementById(aId), b = document.getElementById(bId);
@@ -3406,15 +3514,14 @@
             const h = Math.max(a.scrollHeight, b.scrollHeight);
             a.style.height = h + 'px'; b.style.height = h + 'px';
           };
-          pair('checkerComments', 'engineerResponse');
-          pair('reviewerComments', 'engineerResponse_2');
+          pair('checkerComments-editor', 'engineerResponse-editor');
+          pair('reviewerComments-editor', 'engineerResponse_2-editor');
         }
 
         // ---------- Section Clearing ----------
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           if (!sec) return;
-          console.log(sec);
           sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
           // Only clear mutable input types. Never clear `value` on radio/checkbox inputs,
           // otherwise their semantic values ('yes'/'no'/'na', roles, etc.) get overwritten.
@@ -3474,12 +3581,13 @@
           this.syncAllSectionVisibility();
           this.showRiskConsistencyNotices();
           this.updateProgress();
-          this.autosizeAllTextareas();
           this.syncCommentsHeights();
           this.toast('Form reset', 'info');
         }
 
         saveSnapshot () {
+          // Sync all Quill editors to hidden inputs before saving
+          this.syncAllQuillEditors();
 
           const clone = document.documentElement.cloneNode(true);
           const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
@@ -3545,6 +3653,9 @@
         }
 
         saveJasonFile () {
+          // Sync all Quill editors to hidden inputs before saving
+          this.syncAllQuillEditors();
+
           const form = document.getElementById('check_form');
           const formData = new FormData(form);
           let jsonData = {};
