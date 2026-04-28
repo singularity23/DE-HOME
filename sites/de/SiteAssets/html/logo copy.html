@@ -1,111 +1,105 @@
-<style>
-  :root {
-    --table--width: 300px;
-    --table--height: 150px;
-  }
+<!DOCTYPE html>
+<html lang="en">
 
-  .container {
-    position: absolute;
-    background-color: rgb(255, 255, 255);
-    height: 320px;
-    width: 320px;
-    left: 0px;
-    top: 0px;
-    border-radius: 100%;
-    border: 10px solid rgb(255, 255, 255);
-  }
+<head>
+  <title>lazy-brush Basic Example</title>
+  <style>
+    body {
+      margin: 0;
+    }
 
-  .table-container {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    margin-left: calc(var(--table--width)/-2);
-    margin-top: calc(var(--table--height)/-2);
-    background-color: rgb(255, 255, 255);
-  }
-
-  table {
-    max-width: var(--table--width);
-    min-height: var(--table--height);
-    border-spacing: 0px;
-    border-collapse: collapse;
-    border: 10px solid rgb(0, 0, 0);
-  }
-
-  td {
-    width: 50px;
-    height: 40px;
-    border: 10px solid rgb(0, 0, 0);
-    padding: 0px;
-    margin: 0px;
-  }
-
-  .no-right {
-    border-right: none;
-  }
-
-  .no-left {
-    border-left: none;
-  }
-
-  .no-top {
-    border-top: none;
-  }
-
-  .no-bottom {
-    border-bottom: none;
-  }
-
-  .bar {
-    position: relative;
-    height: 0;
-    width: 0;
-    top: -10px;
-    border-left: 23px solid transparent;
-    border-top: 23px solid black;
-    float: right;
-  }
-
-  .blue,
-  .green,
-  .red {
-    background-color: white;
-  }
-</style>
+    canvas {
+      display: block;
+      cursor: crosshair;
+    }
+  </style>
+</head>
 
 <body>
-  <div class='container'>
-    <table class='table-container'>
-      <tr>
-        <td class='no-bottom blue'>
-          <div class='bar'></div>
-        </td>
-        <td class='no-right no-bottom green'></td>
-        <td class='no-left no-right no-bottom green'></td>
-        <td class='no-left no-bottom green'>
-          <div class='bar'></div>
-        </td>
-        <td class='no-right no-bottom red'></td>
-        <td class='no-left no-bottom no-top no-right red'>
-          <div class='bar'></div>
-        </td>
-      </tr>
-      <tr>
-        <td class='no-top no-bottom blue'></td>
-        <td class='no-top green'></td>
-        <td class='no-top green'></td>
-        <td class='no-top green'></td>
-        <td class='no-top red'></td>
-        <td class='no-top red'></td>
-      </tr>
-      <tr>
-        <td class='no-top no-right blue'></td>
-        <td class='no-left no-right blue'></td>
-        <td class='no-left no-right blue'></td>
-        <td class='no-left no-right blue'></td>
-        <td class='no-left no-right blue'></td>
-        <td class='no-left blue'></td>
-      </tr>
-    </table>
+  <div id="app">
+    <canvas id="canvas" width="1024" height="768"></canvas>
   </div>
+
+  <script type="module">
+    import { LazyBrush } from 'https://cdn.jsdelivr.net/npm/lazy-brush@2.0.0/lib/lazy-brush.js'
+
+    // The lazy radius.
+    const LAZY_RADIUS = 10
+    const BRUSH_RADIUS = 5
+
+    // Create new LazyBrush instance.
+    const lazy = new LazyBrush({
+      enabled: true,
+      radius: LAZY_RADIUS
+    })
+    const canvas = document.getElementById('canvas')
+    const ctx = canvas.getContext('2d')
+    ctx.strokeStyle = 'black'
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    let lastX, lastY;
+    canvas.addEventListener('mousedown', function (e) {
+      const x = e.clientX
+      const y = e.clientY
+      lazy.update({ x, y })
+      lastX = x;
+      lastY = y;
+    })
+
+    function drawLine (lastX, lastY, midX, midY) {
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(midX, midY);
+      ctx.stroke();
+
+    }
+    // While not always reccommended, we can directly draw in your event
+    // handler here. Generally it is better to do that in an animation loop.
+    // See the "friction.html" example on how to do that.
+    canvas.addEventListener('mousemove', function (e) {
+      const x = e.clientX
+      const y = e.clientY
+      lazy.update({ x, y })
+
+      const brushHasMoved = lazy.brushHasMoved()
+
+      // We only need to update the canvas if the brush has moved.
+      if (brushHasMoved) {
+        // Get the updated brush coordinates.
+        const brush = lazy.getBrushCoordinates()
+
+        // Draw the canvas.
+
+        // Clear entire canvaas.
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        // Draw brush point
+        ctx.beginPath()
+        ctx.fillStyle = 'red'
+        ctx.arc(brush.x, brush.y, BRUSH_RADIUS, 0, Math.PI * 2, true)
+        ctx.fill()
+
+        // Draw the lazy radius.
+        ctx.beginPath()
+        ctx.strokeStyle = '#ccc'
+        ctx.arc(brush.x, brush.y, LAZY_RADIUS, 0, Math.PI * 2, true)
+        ctx.stroke()
+
+        // Update lazy brush with optional friction for smoother trailing[reference:4].
+        // Friction of 0.3 gives a subtle dampening effect.
+
+        // Check if brush actually moved
+        if (lazy.brushHasMoved()) {
+          // Draw a line from last brush position to current
+          drawLine(lastX, lastY, brush.x, brush.y);
+          lastX = brush.x;
+          lastY = brush.y;
+        }
+
+      }
+    })
+  </script>
 </body>
+
+</html>

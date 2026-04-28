@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Lazy Brush Signature Pad</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      /* Prevents accidental text/image selection while drawing */
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    .signature-container {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h2 {
+      margin: 0 0 0.5rem 0;
+      text-align: center;
+      color: #1e293b;
+    }
+
+    .canvas-wrapper {
+      border: 2px solid #e2e8f0;
+      border-radius: 0.5rem;
+      background: white;
+      cursor: crosshair;
+      margin-bottom: 1rem;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: white;
+      touch-action: none;
+      /* Prevents scrolling on touch devices */
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    button {
+      background: #f1f5f9;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #334155;
+    }
+
+    button:hover {
+      background: #e2e8f0;
+      transform: translateY(-1px);
+    }
+
+    button.primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    button.primary:hover {
+      background: #2563eb;
+    }
+
+    .status {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 1rem;
+    }
+  </style>
+  <script type="module">
+    import { LazyBrush } from 'https://cdn.jsdelivr.net/npm/lazy-brush@2.0.0/lib/lazy-brush.js'
+  </script>
+</head>
+
+<body>
+
+  <div class="signature-container">
+    <h2>✍️ Sign Here</h2>
+    <p class="status">Draw your signature using mouse or touch</p>
+
+    <div class="canvas-wrapper">
+      <canvas id="signatureCanvas" width="700" height="300"
+        style="width:100%; height:auto; max-width:700px; aspect-ratio:700/300"></canvas>
+    </div>
+
+    <div class="toolbar">
+      <button id="clearBtn">Clear</button>
+      <button id="saveBtn" class="primary">Save Signature</button>
+    </div>
+  </div>
+
+
+  <script>
+    // --- Module 1: Setup Canvas and Lazy Brush ---
+    const canvas = document.getElementById('signatureCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas intrinsic size (high resolution for crisp export)
+    // width=700, height=300 matches the canvas attributes in HTML
+    canvas.width = 700;
+    canvas.height = 300;
+
+    // Fill with white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Drawing style
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // --- Module 2: Lazy Brush Initialization ---
+    // The LazyBrush acts as a "proxy" between pointer and actual drawing.
+    // 'radius' defines how far the pointer must move before the brush follows.
+    // A larger radius creates more smoothing (less shakiness)[reference:3].
+    // 'friction' slows down the brush movement for an even smoother feel.
+    const lazy = new LazyBrush({
+      radius: 15,          // Adjust this between 5-30 for desired smoothing
+      enabled: true,
+      initialPoint: { x: 0, y: 0 }
+    });
+
+    let drawing = false;     // Tracks if we are actively drawing
+    let lastX = 0, lastY = 0; // Last brush position for drawing lines
+
+    // --- Module 3: Helper Functions ---
+    function getCanvasCoordinates (e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;   // Account for CSS scaling
+      const scaleY = canvas.height / rect.height;
+
+      let clientX, clientY;
+      if (e.touches) {
+        // Touch event
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        // Mouse event
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      // Calculate pixel coordinates inside canvas
+      let canvasX = (clientX - rect.left) * scaleX;
+      let canvasY = (clientY - rect.top) * scaleY;
+
+      // Clamp to canvas boundaries
+      canvasX = Math.min(Math.max(0, canvasX), canvas.width);
+      canvasY = Math.min(Math.max(0, canvasY), canvas.height);
+      return { x: canvasX, y: canvasY };
+    }
+
+    // Draw a line from (fromX, fromY) to (toX, toY)
+    function drawLine (fromX, fromY, toX, toY) {
+      ctx.beginPath();
+      ctx.moveTo(fromX, fromY);
+      ctx.lineTo(toX, toY);
+      ctx.stroke();
+    }
+
+    // --- Module 4: Core Drawing Logic with Lazy Brush ---
+    function handlePointerStart (e) {
+      e.preventDefault();
+      drawing = true;
+
+      const pointerPos = getCanvasCoordinates(e);
+      // Update both brush and pointer at start to avoid a jump
+      lazy.update(pointerPos, { both: true });
+      const brushPos = lazy.getBrushCoordinates();
+      lastX = brushPos.x;
+      lastY = brushPos.y;
+
+      // Draw a single dot for immediate feedback
+      drawDot(brushPos.x, brushPos.y);
+    }
+
+    function handlePointerMove (e) {
+      if (!drawing) return;
+      e.preventDefault();
+
+      const pointerPos = getCanvasCoordinates(e);
+      // Update lazy brush with optional friction for smoother trailing[reference:4].
+      // Friction of 0.3 gives a subtle dampening effect.
+      lazy.update(pointerPos, { friction: 0.3 });
+
+      // Check if brush actually moved
+      if (lazy.brushHasMoved()) {
+        const brushPos = lazy.getBrushCoordinates();
+        // Draw a line from last brush position to current
+        drawLine(lastX, lastY, brushPos.x, brushPos.y);
+        lastX = brushPos.x;
+        lastY = brushPos.y;
+      }
+    }
+
+    function handlePointerEnd (e) {
+      if (!drawing) return;
+      e.preventDefault();
+      drawing = false;
+      // No need to draw anything on end
+    }
+
+    // Helper to draw a dot (for single clicks/taps)
+    function drawDot (x, y) {
+      ctx.beginPath();
+      ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2);
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.fill();
+    }
+
+    // --- Module 5: Event Listeners (Mouse + Touch) ---
+    function attachEvents () {
+      // Mouse events
+      canvas.addEventListener('mousedown', handlePointerStart);
+      window.addEventListener('mousemove', handlePointerMove);
+      window.addEventListener('mouseup', handlePointerEnd);
+
+      // Touch events
+      canvas.addEventListener('touchstart', handlePointerStart, { passive: false });
+      canvas.addEventListener('touchmove', handlePointerMove, { passive: false });
+      canvas.addEventListener('touchend', handlePointerEnd);
+      canvas.addEventListener('touchcancel', handlePointerEnd);
+    }
+
+    attachEvents();
+
+    // --- Module 6: UI Actions (Clear and Save) ---
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Reset lazy brush to avoid lingering state
+      lazy.update({ x: 0, y: 0 }, { both: true });
+      drawing = false;
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      // Convert canvas content to PNG data URL
+      const dataURL = canvas.toDataURL('image/png');
+      // Create a temporary link to trigger download
+      const link = document.createElement('a');
+      link.download = 'signature.png';
+      link.href = dataURL;
+      link.click();
+    });
+
+    // Optional: Handle window resize to maintain scaling
+    window.addEventListener('resize', () => {
+      // No action needed because canvas uses CSS scaling
+      // The getCanvasCoordinates function handles scaling dynamically
+    });
+  </script>
+</body>
+
+</html>

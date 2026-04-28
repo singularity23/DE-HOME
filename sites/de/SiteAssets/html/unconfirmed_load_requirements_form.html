@@ -124,7 +124,7 @@
     }
 
     .header-logo {
-      width: 120px;
+      width: 150px;
       height: auto;
       margin-left: var(--space-4);
     }
@@ -158,7 +158,7 @@
       font-size: 14px;
       font-weight: 400;
       color: var(--color-info);
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
     }
 
     /* ── Body layout ── */
@@ -417,7 +417,7 @@
       padding: 5px 5px;
       font-size: 0.6rem;
       font-weight: 600;
-      font-family: 'Roboto', ui-monospace, monospace;
+      font-family: var(--font-sans);
       cursor: pointer;
       color: var(--text-muted);
       transition: color 0.2s ease, background 0.2s ease;
@@ -940,7 +940,7 @@
       padding-right: var(--space-4);
       display: flex;
       margin: auto 10px;
-      font-size: 14px;
+      font-size: 16px;
       letter-spacing: .08em;
       color: var(--color-primary);
     }
@@ -1145,7 +1145,7 @@
         <h1 class="title">
           <span id="title">Unconfirmed</span> Load Requirements Form
         </h1>
-        <p>DDCC Work Smart &mdash; Complete the following form to document the preliminary system requirements.</p>
+        <p>Document the preliminary system requirements.</p>
       </div>
       <div><img class="header-logo"
           src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-bw-rgb.svg"
@@ -1484,28 +1484,18 @@
     }
 
     function detectAndHyperlinkUrl (element) {
-      const value = element.value.trim();
-      const urlMatch = value.match(urlRegex);
-
-      if (urlMatch && urlMatch.length > 0) {
-        let url = urlMatch[0];
-        // Ensure the URL has a protocol
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          url = 'https://' + url;
-        }
-        const link = createLinkWrapper(element);
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = text || url;
-
+      const pasted = element.querySelector('a');
+      console.log(pasted);
+      if (pasted.href.includes("designhub")) {
+        const number = pasted.href.match(/\d{7}/)[0];
+        pasted.textContent = "DESRT: " + number;
       }
     }
 
     function initializeUrlDetection () {
       // Attach event listeners to text inputs (not Quill editors)
       const inputElements = document.querySelectorAll(
-        'input[type="text"]:not([type="file"]):not([type="hidden"]), .proj-table textarea'
+        'input[type="text"]:not([type="file"]):not([type="hidden"]), .proj-table textarea, .ql-editor'
       );
 
       inputElements.forEach(element => {
@@ -1520,6 +1510,16 @@
             detectAndHyperlinkUrl(this);
           });
         } else if (element.tagName === 'INPUT') {
+          element.addEventListener('paste', function (e) {
+            setTimeout(() => {
+              detectAndHyperlinkUrl(this);
+            }, 0);
+          });
+
+          element.addEventListener('blur', function () {
+            detectAndHyperlinkUrl(this);
+          });
+        } else if (element.classList.contains('ql-editor')) {
           element.addEventListener('paste', function (e) {
             setTimeout(() => {
               detectAndHyperlinkUrl(this);
