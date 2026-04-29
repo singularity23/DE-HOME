@@ -1,104 +1,209 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-  <title>lazy-brush Basic Example</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lazy Brush + Quadratic Curves (60Hz tuned)</title>
   <style>
+    html,
     body {
       margin: 0;
+      height: 100%;
+      background: #f5f6f8;
+      font-family: system-ui, sans-serif;
+    }
+
+    .wrap {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      box-sizing: border-box;
     }
 
     canvas {
-      display: block;
+      width: min(1000px, 96vw);
+      height: auto;
+      aspect-ratio: 5 / 3;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      touch-action: none;
       cursor: crosshair;
     }
   </style>
 </head>
 
 <body>
-  <div id="app">
-    <canvas id="canvas" width="1024" height="768"></canvas>
+  <div class="wrap">
+    <canvas id="c" width="1000" height="600"></canvas>
   </div>
 
-  <script type="module">
-    import { LazyBrush } from 'https://cdn.jsdelivr.net/npm/lazy-brush@2.0.0/lib/lazy-brush.js'
+  <script>
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d");
 
-    // The lazy radius.
-    const LAZY_RADIUS = 10
-    const BRUSH_RADIUS = 5
+    // --------------------------
+    // Tuned for responsive 60Hz feel
+    // --------------------------
+    const TARGET_DT_MS = 1000 / 60;
 
-    // Create new LazyBrush instance.
-    const lazy = new LazyBrush({
-      enabled: true,
-      radius: LAZY_RADIUS
-    })
-    const canvas = document.getElementById('canvas')
-    const ctx = canvas.getContext('2d')
-    ctx.strokeStyle = 'black'
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+    // Lazy brush
+    const lazyRadius = 8;   // lower = more responsive
+    const friction = 0.02;   // lower = less lag
 
-    let lastX, lastY;
-    canvas.addEventListener('mousedown', function (e) {
-      const x = e.clientX
-      const y = e.clientY
-      lazy.update({ x, y })
-      lastX = x;
-      lastY = y;
-    })
+    // Smoothing rates
+    const posSmoothingHz = 26;
+    const widthSmoothingHz = 20;
 
-    function drawLine (lastX, lastY, midX, midY) {
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(midX, midY);
-      ctx.stroke();
+    // Speed-based line width
+    const minWidth = 3.0;
+    const maxWidth = 9.0;
+    const speedForMinWidth = 1100; // px/s where width reaches min
 
+    // --------------------------
+    // State
+    // --------------------------
+    let drawing = false;
+    let hasPointer = false;
+
+    let pointer = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
+    let brush = { ...pointer };
+    let prevBrush = { ...brush };
+
+    let currentWidth = maxWidth;
+    let lastTs = performance.now();
+
+    // For quadratic smoothing
+    let prevMid = null;
+
+    // --------------------------
+    // Helpers
+    // --------------------------
+    function clamp (v, lo, hi) {
+      return Math.max(lo, Math.min(hi, v));
     }
-    // While not always reccommended, we can directly draw in your event
-    // handler here. Generally it is better to do that in an animation loop.
-    // See the "friction.html" example on how to do that.
-    canvas.addEventListener('mousemove', function (e) {
-      const x = e.clientX
-      const y = e.clientY
-      lazy.update({ x, y })
 
-      const brushHasMoved = lazy.brushHasMoved()
+    function expSmoothingFactor (hz, dtSec) {
+      return 1 - Math.exp(-hz * dtSec);
+    }
 
-      // We only need to update the canvas if the brush has moved.
-      if (brushHasMoved) {
-        // Get the updated brush coordinates.
-        const brush = lazy.getBrushCoordinates()
+    function getCanvasPoint (e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
 
-        // Draw the canvas.
+    function endDraw () {
+      drawing = false;
+      hasPointer = false;
+      prevMid = null;
+    }
 
-        // Clear entire canvaas.
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+    function clearCanvas () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
-        // Draw brush point
-        ctx.beginPath()
-        ctx.fillStyle = 'red'
-        ctx.arc(brush.x, brush.y, BRUSH_RADIUS, 0, Math.PI * 2, true)
-        ctx.fill()
+    // --------------------------
+    // Pointer events
+    // --------------------------
+    canvas.addEventListener("pointerdown", (e) => {
+      canvas.setPointerCapture(e.pointerId);
+      hasPointer = true;
+      drawing = true;
 
-        // Draw the lazy radius.
-        ctx.beginPath()
-        ctx.strokeStyle = '#ccc'
-        ctx.arc(brush.x, brush.y, LAZY_RADIUS, 0, Math.PI * 2, true)
-        ctx.stroke()
+      pointer = getCanvasPoint(e);
+      brush = { ...pointer };
+      prevBrush = { ...pointer };
+      currentWidth = maxWidth;
+      prevMid = null;
+    });
 
-        // Update lazy brush with optional friction for smoother trailing[reference:4].
-        // Friction of 0.3 gives a subtle dampening effect.
+    canvas.addEventListener("pointermove", (e) => {
+      if (!hasPointer) return;
+      pointer = getCanvasPoint(e);
+    });
 
-        // Check if brush actually moved
-        if (lazy.brushHasMoved()) {
-          // Draw a line from last brush position to current
-          drawLine(lastX, lastY, brush.x, brush.y);
-          lastX = brush.x;
-          lastY = brush.y;
+    canvas.addEventListener("pointerup", endDraw);
+    canvas.addEventListener("pointercancel", endDraw);
+
+    // Double click to clear
+    canvas.addEventListener("dblclick", clearCanvas);
+
+    // --------------------------
+    // Main RAF loop
+    // --------------------------
+    function frame (ts) {
+      const dtMsRaw = ts - lastTs || TARGET_DT_MS;
+      const dtMs = Math.min(33, Math.max(1, dtMsRaw)); // clamp stalls
+      const dtSec = dtMs / 1000;
+      lastTs = ts;
+
+      if (hasPointer) {
+        // Lazy brush position update
+        const dx = pointer.x - brush.x;
+        const dy = pointer.y - brush.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist > lazyRadius) {
+          const pull = dist - lazyRadius;
+          const tx = brush.x + (dx / dist) * pull;
+          const ty = brush.y + (dy / dist) * pull;
+
+          const posAlpha = expSmoothingFactor(posSmoothingHz, dtSec) * (1 - friction);
+          brush.x += (tx - brush.x) * posAlpha;
+          brush.y += (ty - brush.y) * posAlpha;
         }
 
+        // Speed -> width (px/sec for frame-rate stability)
+        const vx = brush.x - prevBrush.x;
+        const vy = brush.y - prevBrush.y;
+        const speed = Math.hypot(vx, vy) / dtSec;
+
+        const t = clamp(speed / speedForMinWidth, 0, 1);
+        const targetWidth = maxWidth - (maxWidth - minWidth) * t;
+
+        const widthAlpha = expSmoothingFactor(widthSmoothingHz, dtSec);
+        currentWidth += (targetWidth - currentWidth) * widthAlpha;
+
+        // Quadratic curve stroke
+        if (drawing) {
+          const midX = (prevBrush.x + brush.x) * 0.5;
+          const midY = (prevBrush.y + brush.y) * 0.5;
+
+          ctx.strokeStyle = "#111";
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.lineWidth = currentWidth;
+
+          ctx.beginPath();
+          if (!prevMid) {
+            ctx.moveTo(prevBrush.x, prevBrush.y);
+          } else {
+            ctx.moveTo(prevMid.x, prevMid.y);
+          }
+
+          // Control point at previous brush, end at midpoint
+          ctx.quadraticCurveTo(prevBrush.x, prevBrush.y, midX, midY);
+          ctx.stroke();
+
+          prevMid = { x: midX, y: midY };
+        }
+
+        prevBrush.x = brush.x;
+        prevBrush.y = brush.y;
       }
-    })
+
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
   </script>
 </body>
 

@@ -422,7 +422,7 @@
       border-bottom: 1px solid var(--border-soft);
       user-select: none;
       gap: var(--gap-md);
-      background: var(--surface);
+      background: var(--header-bg);
     }
 
     .sec-head[aria-label='Your role'] {
@@ -1776,20 +1776,20 @@
 
     /* Quill Rich Text Editor Styles */
     .ql-toolbar {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       border-bottom: none;
       background: var(--surface-base);
       border-radius: 0;
     }
 
     .ql-toolbar.ql-snow {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       box-sizing: border-box;
       padding: 8px;
     }
 
     .ql-container {
-      border: 1px solid var(--border-hard);
+      border: 1px solid var(--border-soft);
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
@@ -1864,7 +1864,7 @@
     }
 
     .ql-container.ql-snow:focus-within {
-      border-color: var(--accent);
+      border: 0;
     }
 
     .rich-text-wrapper {
@@ -1873,6 +1873,10 @@
 
     .comments-area .rich-text-wrapper {
       margin-bottom: var(--gap-md);
+    }
+
+    .comments-area .rich-text-wrapper:focus-within {
+      border: 1px solid var(--color-link) !important;
     }
   </style>
 
@@ -2835,10 +2839,10 @@
           const ctx = canvas.getContext('2d');
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          ctx.lineWidth = 5;
-          ctx.strokeStyle = 'black';
-          const LAZY_RADIUS = 2;
-          const BRUSH_RADIUS = 1;
+          ctx.lineWidth = 9;
+          ctx.strokeStyle = 'rgba(0,0,0,1)'; // Semi-transparent stroke for better visibility
+          const LAZY_RADIUS = 5;
+          const BRUSH_RADIUS = 5;
           // LazyBrush configuration
           const lazy = new window.LazyBrush({
             radius: LAZY_RADIUS,        // Lazy smoothing radius
@@ -2848,7 +2852,7 @@
           let isDrawing = false;
           let strokes = [];
           let lastX, lastY, lastMidX, lastMidY, midX, midY, lastT, lastW, w;
-          const minW = 5.0, maxW = 10.0, smoothing = 0.4;
+          const minW = 9.0, maxW = 10.0, smoothing = 0.2;
           let hasLastMid = false;
 
           const getPos = (e) => {
@@ -2864,6 +2868,8 @@
           };
 
           function drawLine (lastX, lastY, midX, midY) {
+            ctx.strokeStyle = 'rgba(0,0,0,1)'; // Semi-transparent stroke for better visibility
+
             ctx.beginPath();
             ctx.moveTo(lastX, lastY);
             ctx.quadraticCurveTo(lastX, lastY, midX, midY);
@@ -2883,8 +2889,8 @@
             lastMidX = brushPos.x;
             lastMidY = brushPos.y;
             lastT = performance.now();
-            lastW = 5;
-            w = 5;
+            lastW = 8;
+            w = 8;
             // Draw a single dot for immediate feedback
           }
 
@@ -2900,16 +2906,8 @@
 
             if (lazy.brushHasMoved()) {
               // Draw a line from last brush position to current
-              ctx.beginPath()
-              ctx.fillStyle = 'rgba(0,0,0,0.4)'
-              ctx.arc(brushPos.x, brushPos.y, BRUSH_RADIUS, 0, Math.PI * 2, true)
-              ctx.fill()
-
-              // Draw the lazy radius.
-              ctx.beginPath()
-              ctx.strokeStyle = 'rgba(0,0,0,0.3)'
-              ctx.arc(brushPos.x, brushPos.y, LAZY_RADIUS, 0, Math.PI * 2, true)
-              ctx.stroke()              // Check if brush actually move
+              drawDot(brushPos.x, brushPos.y);
+              // Check if brush actually move
 
               const now = performance.now();
               const dt = Math.max(now - lastT, 1);
@@ -2918,7 +2916,7 @@
               const dx = brushPos.x - lastX, dy = brushPos.y - lastY;
               let dist = Math.sqrt(dx * dx + dy * dy);
               let speed = dist / dt;
-              let targetW = Math.max(minW, Math.min(maxW, maxW - speed * 5.0));
+              let targetW = Math.max(minW, Math.min(maxW, maxW - speed * 6.0));
               let w = lastW + (targetW - lastW) * smoothing;
               ctx.lineWidth = w; // Draw dot at current brush position for better visibility
               if (!hasLastMid) {
@@ -2941,6 +2939,12 @@
           function handlePointerEnd (e) {
             if (!isDrawing) return;
             e.preventDefault();
+            if (hasLastMid) {
+              ctx.beginPath();
+              ctx.moveTo(lastMidX, lastMidY);
+              ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
+              ctx.stroke();
+            }
             isDrawing = false;
             // No need to draw anything on end
           }
@@ -2948,8 +2952,8 @@
           // Helper to draw a dot (for single clicks/taps)
           function drawDot (x, y) {
             ctx.beginPath();
-            ctx.arc(x, y, ctx.lineWidth / 3, 0, Math.PI * 2);
-            ctx.fillStyle = "red";
+            ctx.arc(x, y, ctx.lineWidth / 4, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(120,0,0,0.5)"; // Solid color for dots
             ctx.fill();
           }
 

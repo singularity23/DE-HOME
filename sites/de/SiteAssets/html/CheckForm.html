@@ -1737,20 +1737,21 @@
 
     /* ── Quill Rich Text Editor Styles ── */
     .ql-toolbar {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       border-bottom: none;
       background: var(--surface-base);
       border-radius: 0;
     }
 
     .ql-toolbar.ql-snow {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft) !important;
       box-sizing: border-box;
       padding: 8px;
+      font-family: var(--font-sans);
     }
 
     .ql-container {
-      border: 1px solid var(--border-hard);
+      border: 1px solid var(--border-soft);
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
@@ -1783,16 +1784,12 @@
       font-style: italic;
     }
 
-    .ql-toolbar.ql-snow {
-      padding: 8px;
-    }
-
     .ql-toolbar.ql-snow .ql-formats {
       margin-right: 12px;
     }
 
     .ql-toolbar.ql-snow .ql-stroke {
-      stroke: var(--color-primary);
+      stroke: var(--color-info);
     }
 
     .ql-toolbar.ql-snow .ql-fill {
@@ -1800,7 +1797,7 @@
     }
 
     .ql-toolbar.ql-snow .ql-picker-label {
-      color: var(--color-primary);
+      color: var(--color-info);
     }
 
     .ql-toolbar.ql-snow button:hover,
@@ -1825,7 +1822,7 @@
       fill: var(--accent);
     }
 
-    .ql-container.ql-snow:focus-within {
+    .rich-text-wrapper:focus-within {
       border-color: var(--accent);
     }
 
@@ -2835,108 +2832,165 @@
 
         setupModalCanvasDrawing (canvas) {
           const ctx = canvas.getContext('2d');
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          ctx.lineWidth = 5;
+          // --------------------------
+          // Tuned for responsive 60Hz feel
+          // --------------------------
+          const TARGET_DT_MS = 1000 / 60;
+
+          // Lazy brush
+          const lazyRadius = 6;   // lower = more responsive
+          const friction = 0.02;   // lower = less lag
+
+          // Smoothing rates
+          const posSmoothingHz = 26;
+          const widthSmoothingHz = 20;
+
+          // Speed-based line width
+          const minWidth = 5.0;
+          const maxWidth = 12.0;
+          const speedForMinWidth = 1100; // px/s where width reaches min
+
+          // --------------------------
+          // State
+          // --------------------------
           let drawing = false;
-          let lastX = 0;
-          let lastY = 0;
-          let lastMidX = 0;
-          let lastMidY = 0;
-          let hasLastMid = false;
-          let lastT = 0;
-          let lastW = 5;
-          const minW = 5.0;
-          const maxW = 10.0;
-          const smoothing = 0.1; // lower = smoother width changes
-          /**
-           * Convert a pointer/touch event to canvas-space coordinates,
-           * correctly accounting for any DPR scaling.
-           */
-          const getPos = (e) => {
+          let hasPointer = false;
+
+          let pointer = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
+          let brush = { ...pointer };
+          let prevBrush = { ...brush };
+
+          let currentWidth = maxWidth;
+          let lastTs = performance.now();
+
+          // For quadratic smoothing
+          let prevMid = null;
+
+          // --------------------------
+          // Helpers
+          // --------------------------
+          function clamp (v, lo, hi) {
+            return Math.max(lo, Math.min(hi, v));
+          }
+
+          function expSmoothingFactor (hz, dtSec) {
+            return 1 - Math.exp(-hz * dtSec);
+          }
+
+          function getCanvasPoint (e) {
             const rect = canvas.getBoundingClientRect();
-            // Map from CSS pixels → canvas internal pixels (canvas is sized in CSS pixels here).
-            // Using clientX/clientY avoids offsetX quirks when pointer capture is active.
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
-            const clientX = e.clientX ?? 0;
-            const clientY = e.clientY ?? 0;
             return {
-              x: (clientX - rect.left) * scaleX,
-              y: (clientY - rect.top) * scaleY,
+              x: (e.clientX - rect.left) * scaleX,
+              y: (e.clientY - rect.top) * scaleY
             };
-          };
-          canvas.addEventListener('pointerdown', (e) => {
-            canvas.setPointerCapture(e.pointerId);
-            drawing = true;
-            hasLastMid = false;
-            let { x, y } = getPos(e);
-            x = Math.round(x * 100) / 100;
-            y = Math.round(y * 100) / 100;
-            lastX = x;
-            lastY = y;
-            lastMidX = x;
-            lastMidY = y;
-            lastT = performance.now();
-            lastW = 3;
-          });
-          canvas.addEventListener('pointermove', (e) => {
-            if (!drawing) return;
-            let { x, y } = getPos(e);
-            x = Math.round(x * 100) / 100;
-            y = Math.round(y * 100) / 100;
-            const now = performance.now();
-            const dt = Math.max(now - lastT, 1);
-            const midX = (lastX + x) / 2;
-            const midY = (lastY + y) / 2;
-            const dx = x - lastX;
-            const dy = y - lastY;
-            let dist, speed, targetW, w;
-
-            dist = Math.sqrt(dx * dx + dy * dy);
-            speed = dist / dt; // px/ms
-            // Pen feel: slow => thicker, fast => thinner
-            targetW = Math.max(minW, Math.min(maxW, maxW - speed * 5.0));
-            w = lastW + (targetW - lastW) * smoothing;
-            ctx.lineWidth = w;
-            ctx.beginPath();
-
-
-            if (!hasLastMid) {
-              // First segment: no previous midpoint yet — start at last sample.
-              ctx.moveTo(lastX, lastY);
-              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
-              hasLastMid = true;
-            } else {
-              // Continue chain: from previous midpoint, control at last sample, end at new midpoint.
-              ctx.moveTo(lastMidX, lastMidY);
-              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
-            }
-
-            ctx.stroke();
-            lastMidX = midX;
-            lastMidY = midY;
-            lastX = x;
-            lastY = y;
-            lastT = now;
-            lastW = w;
-
-          });
-          function endStroke () {
-            if (!drawing) return;
-            drawing = false;
-            // Optional: draw a short tail to the final raw point so the stroke reaches the cursor.
-            if (hasLastMid) {
-              ctx.beginPath();
-              ctx.moveTo(lastMidX, lastMidY);
-              ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
-              ctx.stroke();
-            }
-            hasLastMid = false;
           }
-          canvas.addEventListener('pointerup', endStroke);
-          canvas.addEventListener('pointercancel', endStroke);
-          canvas.addEventListener('lostpointercapture', endStroke);
+
+          function endDraw () {
+            drawing = false;
+            hasPointer = false;
+            prevMid = null;
+          }
+
+          function clearCanvas () {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+
+          // --------------------------
+          // Pointer events
+          // --------------------------
+          canvas.addEventListener("pointerdown", (e) => {
+            canvas.setPointerCapture(e.pointerId);
+            hasPointer = true;
+            drawing = true;
+
+            pointer = getCanvasPoint(e);
+            brush = { ...pointer };
+            prevBrush = { ...pointer };
+            currentWidth = maxWidth;
+            prevMid = null;
+          });
+
+          canvas.addEventListener("pointermove", (e) => {
+            if (!hasPointer) return;
+            pointer = getCanvasPoint(e);
+          });
+
+          canvas.addEventListener("pointerup", endDraw);
+          canvas.addEventListener("pointercancel", endDraw);
+
+          // Double click to clear
+          canvas.addEventListener("dblclick", clearCanvas);
+
+          // --------------------------
+          // Main RAF loop
+          // --------------------------
+          function frame (ts) {
+            const dtMsRaw = ts - lastTs || TARGET_DT_MS;
+            const dtMs = Math.min(33, Math.max(1, dtMsRaw)); // clamp stalls
+            const dtSec = dtMs / 1000;
+            lastTs = ts;
+
+            if (hasPointer) {
+              // Lazy brush position update
+              const dx = pointer.x - brush.x;
+              const dy = pointer.y - brush.y;
+              const dist = Math.hypot(dx, dy);
+
+              if (dist > lazyRadius) {
+                const pull = dist - lazyRadius;
+                const tx = brush.x + (dx / dist) * pull;
+                const ty = brush.y + (dy / dist) * pull;
+
+                const posAlpha = expSmoothingFactor(posSmoothingHz, dtSec) * (1 - friction);
+                brush.x += (tx - brush.x) * posAlpha;
+                brush.y += (ty - brush.y) * posAlpha;
+              }
+
+              // Speed -> width (px/sec for frame-rate stability)
+              const vx = brush.x - prevBrush.x;
+              const vy = brush.y - prevBrush.y;
+              const speed = Math.hypot(vx, vy) / dtSec;
+
+              const t = clamp(speed / speedForMinWidth, 0, 1);
+              const targetWidth = maxWidth - (maxWidth - minWidth) * t;
+
+              const widthAlpha = expSmoothingFactor(widthSmoothingHz, dtSec);
+              currentWidth += (targetWidth - currentWidth) * widthAlpha;
+
+              // Quadratic curve stroke
+              if (drawing) {
+                const midX = (prevBrush.x + brush.x) * 0.5;
+                const midY = (prevBrush.y + brush.y) * 0.5;
+
+                ctx.strokeStyle = "#111";
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+                ctx.lineWidth = currentWidth;
+
+                ctx.beginPath();
+                if (!prevMid) {
+                  ctx.moveTo(prevBrush.x, prevBrush.y);
+                } else {
+                  ctx.moveTo(prevMid.x, prevMid.y);
+                }
+
+                // Control point at previous brush, end at midpoint
+                ctx.quadraticCurveTo(prevBrush.x, prevBrush.y, midX, midY);
+                ctx.stroke();
+
+                prevMid = { x: midX, y: midY };
+              }
+
+              prevBrush.x = brush.x;
+              prevBrush.y = brush.y;
+            }
+
+            requestAnimationFrame(frame);
+          }
+
+          requestAnimationFrame(frame);
         }
 
 
@@ -3125,6 +3179,8 @@
           // Risk buttons
           if (e.target.classList.contains('risk-btn')) {
             this.setRiskLevel(e.target.dataset.risk);
+            this.syncSectionVisibility();
+            this.showRiskConsistencyNotices();
           }
 
           // Clear buttons
@@ -3186,6 +3242,11 @@
             e.preventDefault();
 
             this.syncCommentsHeights();
+          }
+
+          if (e.target.classList.contains('risk-btn')) {
+            this.showRiskConsistencyNotices();
+            this.syncSectionVisibility();
           }
         }
 
@@ -3552,6 +3613,8 @@
           if (sectionId === 's3') this.syncCheckWarning();
           sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
           this.syncCommentsHeights();
+          this.syncAllSectionVisibility();
+
           this.toast('Section cleared', 'info');
         }
 
