@@ -1247,6 +1247,7 @@
       border-radius: 50px;
       border-style: dashed;
       text-decoration: none;
+      min-width: max(15%, 200px);
     }
 
     .btn-action {
@@ -1610,7 +1611,7 @@
 
     .sig-inline-preview {
       position: absolute;
-      inset: 10px;
+      inset: 5px;
       display: none;
       align-items: center;
       justify-content: center;
@@ -1737,26 +1738,29 @@
 
     /* ── Quill Rich Text Editor Styles ── */
     .ql-toolbar {
-      border: 1px solid var(--border-soft);
-      border-bottom: none;
+      border-bottom: none !important;
       background: var(--surface-base);
       border-radius: 0;
     }
 
     .ql-toolbar.ql-snow {
-      border: 1px solid var(--border-soft) !important;
+      border: 1px solid var(--border-soft);
       box-sizing: border-box;
-      padding: 8px;
+      padding: 0px !important;
       font-family: var(--font-sans);
     }
 
     .ql-container {
-      border: 1px solid var(--border-soft);
+      border: 1px solid var(--border-soft) !important;
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
       min-height: 100px;
       overflow: hidden;
+    }
+
+    .ql-container:focus-within {
+      border-color: var(--color-primary) !important;
     }
 
     .ql-container .ql-tooltip {
@@ -1780,8 +1784,8 @@
     }
 
     .ql-editor.ql-blank::before {
-      color: var(--text-muted);
-      font-style: italic;
+      color: var(--border-soft);
+      font-style: normal;
     }
 
     .ql-toolbar.ql-snow .ql-formats {
@@ -2594,8 +2598,8 @@
           this.updateRoleLabels(!this.isRestored);
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
-          if (!this.isRestored) this.initQuillEditors();
-          if (!this.isRestored) this.restoreQuillEditors();
+          this.initQuillEditors();
+          this.restoreQuillEditors();
         }
 
         buildAllRows () {
@@ -2636,23 +2640,24 @@
 
           // Array of comment field IDs
           const commentFields = [
-            'checkerComments',
-            'engineerResponse',
-            'reviewerComments',
-            'engineerResponse_2'
+            ['checkerComments', 'Ctrl+V to paste screenshots or images'],
+            ['engineerResponse', 'Enter responses to checker comments here'],
+            ['reviewerComments', 'Enter reviewer comments here'],
+            ['engineerResponse_2', 'Enter response to reviewer comments here']
           ];
 
           this.quillEditors = {};
 
-          commentFields.forEach(fieldId => {
+          commentFields.forEach(([fieldId, place_holder]) => {
             const container = document.getElementById(`${fieldId}-editor`);
             if (container) {
-              const quill = new Quill(container, quillConfig);
+              const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
               this.quillEditors[fieldId] = quill;
+              const hiddenInput = document.getElementById(fieldId);
 
               // Sync Quill content to hidden input on text change
               quill.on('text-change', () => {
-                const hiddenInput = document.getElementById(fieldId);
+                if (!hiddenInput) return;
                 hiddenInput.value = quill.root.innerHTML;
               });
 
@@ -2800,7 +2805,7 @@
           const ctx = canvas.getContext('2d');
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 3;
         }
 
         loadDataUrlIntoModalCanvas (dataUrl) {
@@ -2838,8 +2843,8 @@
           const TARGET_DT_MS = 1000 / 60;
 
           // Lazy brush
-          const lazyRadius = 6;   // lower = more responsive
-          const friction = 0.02;   // lower = less lag
+          const lazyRadius = 7;   // lower = more responsive
+          const friction = 0.03;   // lower = less lag
 
           // Smoothing rates
           const posSmoothingHz = 26;
@@ -3059,11 +3064,16 @@
         }
 
         attachEventListeners () {
-          document.addEventListener('click', this.handleGlobalClick.bind(this));
-          document.addEventListener('change', this.handleGlobalChange.bind(this));
-          document.addEventListener('input', this.handleGlobalInput.bind(this));
-          document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
-          document.addEventListener('click', this.handleSignatureUploadTriggerClick.bind(this));
+          this._boundHandlers ??= {
+            click: this.handleGlobalClick.bind(this),
+            change: this.handleGlobalChange.bind(this),
+            input: this.handleGlobalInput.bind(this),
+            keydown: this.handleGlobalKeydown.bind(this)
+          };
+          document.addEventListener('click', this._boundHandlers.click);
+          document.addEventListener('change', this._boundHandlers.change);
+          document.addEventListener('input', this._boundHandlers.input);
+          document.addEventListener('keydown', this._boundHandlers.keydown);
 
           // MutationObserver for radio changes (progress updates)
           const observer = new MutationObserver(() => this.updateProgress());
@@ -3081,21 +3091,25 @@
 
           const uploadInput = document.getElementById(`${prefix}SigUpload`);
           if (uploadInput) uploadInput.click();
-          uploadInput.addEventListener('change', (e) => this.handleSignatureUpload(e, prefix));
+          if (uploadInput && uploadInput.dataset.boundChange !== '1') {
+            uploadInput.addEventListener('change', (ev) => this.handleSignatureUpload(ev, prefix));
+            uploadInput.dataset.boundChange = '1';
+          }
 
           const container = document.getElementById(`${prefix}SigContainer`);
           const uploadArea = container?.querySelector('.sig-upload-area');
-          if (uploadArea && uploadInput) {
+          if (uploadArea && uploadInput && uploadArea.dataset.boundDnD !== '1') {
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-              uploadArea.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
+              uploadArea.addEventListener(evt, (ev) => { ev.preventDefault(); ev.stopPropagation(); });
             });
-            uploadArea.addEventListener('drop', (e) => {
-              const files = e.dataTransfer.files;
+            uploadArea.addEventListener('drop', (ev) => {
+              const files = ev.dataTransfer.files;
               if (files.length > 0) {
                 uploadInput.files = files;
                 uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
               }
             });
+            uploadArea.dataset.boundDnD = '1';
           }
 
         }
@@ -3116,6 +3130,7 @@
 
         // ---------- Event Handlers ----------
         handleGlobalClick (e) {
+          this.handleSignatureUploadTriggerClick(e);
 
           const tabBtn = e.target.closest('.btn-sig-tab');
           if (tabBtn) {
@@ -3224,7 +3239,7 @@
           }
 
           if (e.target.matches('input') || e.target.matches('select')) {
-            if (e.target.validity.valid || e.target.focus()) {
+            if (e.target.validity.valid) {
               e.target.previousElementSibling?.removeAttribute('style');
             }
           }
@@ -3312,42 +3327,46 @@
         }
 
         getActiveRiskLevel () {
-          return document.querySelector('.risk-btn.active')?.dataset?.risk ?? null;
+          return Array.from(this.elements.riskBtns).find(b => b.classList.contains('active'))?.dataset?.risk ?? null;
         }
 
         showRiskConsistencyNotices () {
           const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
           const level = this.getActiveRiskLevel();
           const exp = level ? CheckForm.RISK_MAP[level] : null;
-          const getVal = (n) => document.querySelector(`input[name="sc${n}"]:checked`)?.value;
+          const getVal = (n) => this.elements.scRows?.querySelector(`input[name="sc${n}"]:checked`)?.value;
+          const sc8 = getVal(8);
+          const sc9 = getVal(9);
+          const sc10 = getVal(10);
+          const sc11 = getVal(11);
 
           const blocks8 = [];
-          if (exp && getVal(8) && getVal(8) !== 'na' && getVal(8) !== exp.sc8) {
+          if (exp && sc8 && sc8 !== 'na' && sc8 !== exp.sc8) {
             blocks8.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 8, blocks8);
 
           const blocks9 = [];
-          if (getVal(9) === 'yes') {
+          if (sc9 === 'yes') {
             blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete this check form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form</strong></a>.`, type: 'warn' });
             if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 9, blocks9);
 
           const blocks10 = [];
-          if (exp && getVal(10) && getVal(10) !== 'na' && getVal(10) !== exp.sc10) {
+          if (exp && sc10 && sc10 !== 'na' && sc10 !== exp.sc10) {
             blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
           }
-          if (getVal(10) === 'yes') {
-            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
+          if (sc10 === 'yes') {
+            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form. A <b>Type 1 Reviewer</b> will be appointed by the <b>Team Lead</b> to complete the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 10, blocks10);
 
           const blocks11 = [];
-          if (isEit && getVal(11) === 'yes') {
+          if (isEit && sc11 === 'yes') {
             blocks11.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
           }
-          if (getVal(11) === 'no') {
+          if (sc11 === 'no') {
             blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 11, blocks11);
@@ -3384,9 +3403,8 @@
         }
 
         syncCheckWarning () {
-          const hasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
+          const hasNo = !!this.elements.chRows?.querySelector('input[value="no"]:checked');
           this.elements.chNotice.classList.toggle('hidden', !hasNo);
-          this.syncSectionVisibility();
         }
 
         syncSectionVisibility () {
@@ -3403,10 +3421,14 @@
           if (showCheck) this.syncCheckerNames();
 
           // Peer Review section
-          const chHasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
+          const chHasNo = !!this.elements.chRows?.querySelector('input[value="no"]:checked');
           const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk;
           this.elements.cardPr.classList.toggle('hidden', !showPeer);
-          this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, showPeer && chHasNo);
+          if (!showPeer) {
+            this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, false);
+          } else if (chHasNo) {
+            this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
+          }
 
           // Comments & Final sections
           const dsShown = !this.elements.cardDs.classList.contains('hidden');
@@ -3416,13 +3438,15 @@
           this.elements.cardComments.classList.toggle('hidden', !commentsShown);
           this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, commentsShown);
 
-          this.elements.commentsCell3.classList.toggle('hidden', !prShown);
-          this.elements.commentsCell4.classList.toggle('hidden', !prShown);
+          const prAnswered = (this.elements.prRows?.querySelectorAll('input[type="radio"]:checked').length ?? 0) > 0;
+          const showPrCommentCells = prShown && prAnswered;
+          this.elements.commentsCell3.classList.toggle('hidden', !showPrCommentCells);
+          this.elements.commentsCell4.classList.toggle('hidden', !showPrCommentCells);
           this.syncCommentsHeights();
 
           const finalShown = showPeer || isHighRisk;
           this.elements.cardFinal.classList.toggle('hidden', !finalShown);
-          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, isHighRisk && finalShown);
+          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, prAnswered && finalShown);
         }
 
         syncAllSectionVisibility () {
@@ -3501,9 +3525,16 @@
 
         // ---------- Progress & Validation ----------
         updateProgress () {
+          const rowsById = {
+            '#sc-rows': this.elements.scRows,
+            '#ds-rows': this.elements.dsRows,
+            '#ch-rows': this.elements.chRows,
+            '#pr-rows': this.elements.prRows
+          };
           const counts = new Map();
           this.sectionConfig.forEach(s => {
-            const cnt = document.querySelectorAll(`${s.rowsId} input[type="radio"]:checked`).length;
+            const rowsEl = rowsById[s.rowsId];
+            const cnt = rowsEl ? rowsEl.querySelectorAll('input[type="radio"]:checked').length : 0;
             counts.set(s.rowsId, cnt);
             if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
             if (s.num) {
@@ -3682,21 +3713,6 @@
             }
             el.setAttribute('value', live.value);
           }
-
-          // Save canvas data from hidden input fields
-          const signatures = Array.from(document.querySelectorAll('sig-draw-surface has-signature'));
-          const cloneSignatures = Array.from(clone.querySelectorAll('sig-draw-surface has-signature'));
-
-          signatures.forEach((canvas, idx) => {
-            const cloneSig = cloneCanvases[idx];
-            if (!cloneSig) return;
-            const prefix = clone.getAttribute('data-prefix');
-            const dataInput = document.getElementById(`${prefix}_sig_data`);
-            if (dataInput?.value) {
-              // Store the canvas drawing data in a data attribute for restoration
-              cloneSig.setAttribute('data-url', dataInput.value);
-            }
-          });
 
           const progressClone = clone.querySelector('#progressBar');
           if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
