@@ -1202,7 +1202,7 @@
     -------------------------------- */
     .actions {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: var(--gap-md);
       padding: var(--space-inset-y) var(--space-inset-x);
       background: var(--header-bg);
@@ -1226,6 +1226,19 @@
       min-height: var(--touch-min);
     }
 
+    .btn-print.completed {
+      background: var(--low-bg);
+      border: 1px solid var(--low-border);
+      color: var(--low);
+    }
+
+    .btn-print.completed:hover {
+      border-color: var(--low-border);
+      color: var(--surface);
+      background: var(--low-border);
+    }
+
+    .btn-print,
     .btn-ghost,
     .btn-sig-upload,
     .btn-open-modal {
@@ -1313,134 +1326,6 @@
       pointer-events: none;
     }
 
-    /* --------------------------------
-    18. Print Styles
-    -------------------------------- */
-    @media print {
-      :root {
-        --space-1: 5px;
-        --space-2: 5px;
-        --space-3: 5px;
-        --space-4: 5px;
-        --space-5: 5px;
-        --space-6: 5px;
-      }
-
-      @page {
-        size: letter portrait;
-        margin: 0.15in;
-      }
-
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        background-clip: padding-box !important;
-      }
-
-      body {
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        max-width: 100%;
-      }
-
-      .shell {
-        max-width: 100%;
-        margin: 10px;
-      }
-
-      .sec-head {
-        padding: 5px 15px;
-      }
-
-      .check-row {
-        padding: 2px 15px;
-      }
-
-      .card,
-      .header {
-        margin-bottom: 5px;
-      }
-
-      /* Expand all accordion bodies for print */
-      .sec-body {
-        display: block !important;
-      }
-
-      .sec-head .chevron {
-        display: none !important;
-      }
-
-      /* Hide non-printable elements */
-      .sec-badge,
-      .actions,
-      .progress-strip,
-      .sec-num,
-      .btn-clear {
-        display: none !important;
-      }
-
-      /* Improve page breaks */
-      .card {
-        page-break-inside: avoid;
-      }
-
-      .notice {
-        page-break-inside: avoid;
-      }
-
-      /* Remove shadows and transitions */
-      * {
-        box-shadow: none !important;
-        transition: none !important;
-      }
-
-      a {
-        color: var(--text) !important;
-        text-decoration: underline;
-      }
-
-      /* Hide unchecked radio labels */
-      input[type='radio']:not(:checked)+label,
-      input[type='checkbox']:not(:checked)+label,
-      .risk-btn:not(.active) {
-        display: none !important;
-      }
-
-      .meta-grid {
-        padding-bottom: 5px !important;
-      }
-
-      .meta-cell,
-      .sig-grid {
-        padding-bottom: 0px !important;
-      }
-
-      .field-input::placeholder {
-        color: transparent;
-      }
-
-      .field-input:valid {
-        background-color: var(--valid) !important;
-      }
-
-      .meta-cell:has(input:disabled) {
-        display: none;
-      }
-
-      /* Disable animations */
-      @keyframes fadeUp {
-        from {
-          opacity: 1;
-          transform: none;
-        }
-
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-    }
 
     /* --------------------------------
     19. Comments Image Gallery
@@ -1755,7 +1640,7 @@
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
-      min-height: 100px;
+      height: 100% !important;
       overflow: hidden;
     }
 
@@ -1775,7 +1660,9 @@
       font-size: 13px;
       font-family: inherit;
       line-height: 1.6;
+      height: 100%;
       min-height: 100px;
+      overflow: hidden;
     }
 
     .ql-editor ol li:not(.ql-direction-rtl),
@@ -1826,6 +1713,7 @@
       fill: var(--accent);
     }
 
+
     .rich-text-wrapper:focus-within {
       border-color: var(--accent);
     }
@@ -1836,6 +1724,154 @@
 
     .comments-area .rich-text-wrapper {
       margin-bottom: var(--gap-md);
+    }
+
+
+    /* --------------------------------
+    18. Print Styles
+    -------------------------------- */
+    @media print {
+      :root {
+        --space-1: 5px;
+        --space-2: 5px;
+        --space-3: 5px;
+        --space-4: 5px;
+        --space-5: 5px;
+        --space-6: 5px;
+      }
+
+      @page {
+        size: letter portrait;
+        margin: 0.15in;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background-clip: padding-box !important;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .shell {
+        max-width: 100%;
+        margin: 10px;
+      }
+
+      .sec-head {
+        padding: 5px 15px;
+      }
+
+      .check-row {
+        padding: 2px 15px;
+      }
+
+      .card,
+      .header {
+        margin-bottom: 5px;
+      }
+
+      /* Expand all accordion bodies for print */
+      .sec-body {
+        display: block !important;
+      }
+
+      .sec-head .chevron {
+        display: none !important;
+      }
+
+      /* Hide non-printable elements */
+      .sec-badge,
+      .actions,
+      .progress-strip,
+      .sec-num,
+      .btn-clear {
+        display: none !important;
+      }
+
+      /* Improve page breaks */
+      .card {
+        page-break-inside: avoid;
+      }
+
+      .notice {
+        page-break-inside: avoid;
+      }
+
+      /* Remove shadows and transitions */
+      * {
+        box-shadow: none !important;
+        transition: none !important;
+      }
+
+      a {
+        color: var(--text) !important;
+        text-decoration: underline;
+      }
+
+      /* Hide unchecked radio labels */
+      .signature-pad-tabs,
+      input[type='radio']:not(:checked)+label,
+      input[type='checkbox']:not(:checked)+label,
+      .risk-btn:not(.active) {
+        display: none !important;
+      }
+
+      .meta-grid {
+        padding-bottom: 5px !important;
+      }
+
+      .meta-cell,
+      .sig-grid {
+        padding-bottom: 0px !important;
+      }
+
+      .field-input::placeholder {
+        color: transparent;
+      }
+
+      .field-input:valid {
+        background-color: var(--valid) !important;
+      }
+
+      .meta-cell:has(input:disabled) {
+        display: none;
+      }
+
+      .sig-tab-content {
+        border-left: 0 !important;
+      }
+
+      .sig-draw-surface .image-thumbnail-remove,
+      .sig-draw-surface.has-signature .image-thumbnail-remove {
+        opacity: 0;
+      }
+
+      .material-symbols-sharp {
+        display: none;
+      }
+
+      .ql-toolbar {
+        display: none;
+      }
+
+      /* Disable animations */
+      @keyframes fadeUp {
+        from {
+          opacity: 1;
+          transform: none;
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
     }
   </style>
 
@@ -1920,12 +1956,13 @@
                   type="button" data-risk="medium" aria-describedby="riskLevelLabel"
                   aria-pressed="false">Medium</button><button class="risk-btn" type="button" data-risk="high"
                   aria-describedby="riskLevelLabel" aria-pressed="false">High</button></div>
+              <input type="hidden" id="riskLevel" name="riskLevel">
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell deliverable-cell">
               <label class="field-label" for="deliverable">Check / Review Deliverable or Milestone</label>
               <select class="field-input" id="deliverable" name="deliverable" required>
-                <option value="" disabled selected>Choose an item…</option>
+                <option value disabled selected>Choose an item…</option>
                 <option>Memo</option>
                 <option>Standard Form</option>
                 <option>Settings Sheet</option>
@@ -1939,8 +1976,8 @@
             </div>
             <div class="meta-cell review-level-cell">
               <label class="field-label" for="minCheckLevel">Minimum Check / Review Level</label>
-              <select class="field-input" id="minCheckLevel" required>
-                <option value="" disabled selected>Select level…</option>
+              <select class="field-input" id="minCheckLevel" name="minCheckLevel" required>
+                <option value disabled selected>Select level…</option>
                 <option>Self-Check</option>
                 <option>Check</option>
                 <option>Peer Review</option>
@@ -1956,8 +1993,8 @@
             </div>
             <div class="meta-cell checker-cell" id="checker_por">
               <label class="field-label" for="checker">Checker</label>
-              <input class="field-input" id="checker" type="text" placeholder="Checker name..." autocomplete="name"
-                disabled>
+              <input class="field-input" id="checker" name="checker" type="text" placeholder="Checker name..."
+                autocomplete="name" disabled>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
           </div>
@@ -1987,14 +2024,14 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="sc-date">
+                <input class="field-input" id="sc_date" name="sc_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="sc-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_name">Name (Engineer) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="sc-name">
+                <input class="field-input" id="sc_name" name="sc_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="sc-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2021,7 +2058,7 @@
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="sc" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2097,14 +2134,14 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ch-date">
+                <input class="field-input" id="ch_date" name="ch_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ch-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_name">Name (Checker) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="ch-name">
+                <input class="field-input" id="ch_name" name="ch_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="ch-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2131,7 +2168,7 @@
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2187,15 +2224,15 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="pr-date">
+                <input class="field-input" id="pr_date" name="pr_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="pr-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_name">Name (Peer Reviewer) <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="pr-name">
+                <input class="field-input" id="pr_name" name="pr_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="pr-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2223,7 +2260,7 @@
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2338,15 +2375,15 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="fT1Date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1Date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ft1-date">
+                <input class="field-input" id="fT1Date" name="fT1Date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ft1-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="fT1">Assigned Type 1 Reviewer <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1" type="text" placeholder="Full name" autocomplete="name" required
-                  aria-required="true" data-testid="ft1-name">
+                <input class="field-input" id="fT1" name="fT1" type="text" placeholder="Full name" autocomplete="name"
+                  required aria-required="true" data-testid="ft1-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2373,7 +2410,7 @@
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="fT1" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2432,9 +2469,17 @@
       </div>
 
       <div class="actions">
-        <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
-        <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
-        <button class="btn btn-primary" type="submit" id="saveSnapshotBtn" data-testid="save-snapshot">Save</button>
+        <div>
+          <input type="file" id="draftImportInput" accept="application/json" hidden>
+          <button class="btn btn-ghost" type="button" id="exportDraftBtn" data-testid="export-draft">Export
+            Data</button>
+          <button class="btn btn-ghost" type="button" id="importDraftBtn" data-testid="import-draft">Import
+            Data</button>
+          <button class="btn btn-print" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
+        </div>
+        <div>
+          <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
+        </div>
       </div>
     </main>
   </form>
@@ -2444,6 +2489,11 @@
       "use strict";
 
       class CheckForm {
+        static DRAFT_DB_NAME = 'de-checkform';
+        static DRAFT_DB_VERSION = 1;
+        static DRAFT_STORE = 'drafts';
+        static DRAFT_KEY = 'latest';
+
         // ---------- Static configuration ----------
         static SC_ITEMS = [
           "Meets client/user objectives and requirements?",
@@ -2597,7 +2647,7 @@
           this.attachEventListeners();
           this.updateProgress();
           this.syncAllSectionVisibility();
-          this.syncCommentsHeights();
+          this.scheduleCommentsHeightSync();
           this.updateRoleLabels(!this.isRestored);
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
@@ -2650,11 +2700,10 @@
           ];
 
           this.quillEditors = {};
-
-          commentFields.forEach(([fieldId, place_holder]) => {
+          commentFields.forEach(([fieldId, placeholder]) => {
             const container = document.getElementById(`${fieldId}-editor`);
             if (container) {
-              const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
+              const quill = new Quill(container, { ...quillConfig, placeholder });
               this.quillEditors[fieldId] = quill;
               const hiddenInput = document.getElementById(fieldId);
 
@@ -2662,33 +2711,59 @@
               quill.on('text-change', () => {
                 if (!hiddenInput) return;
                 hiddenInput.value = quill.root.innerHTML;
+                // Resize after text change
+                this.scheduleCommentsHeightSync();
               });
 
-              // Handle paste of content (including images)
-              //const editor = container.querySelector('.ql-editor');
-              //if (editor) {
-              //editor.addEventListener('paste', (e) => {
-              //this.handleQuillPaste(e, fieldId);
-              //});
-              //}
+              // ✅ NEW: Listen for image loads in the editor
+              const qlEditor = container.querySelector('.ql-editor');
+              if (qlEditor) {
+                // Create observer for when images are added
+                const observer = new MutationObserver(() => {
+                  // Image or content added; wait for images to load
+                  const images = qlEditor.querySelectorAll('img');
+                  let loadedCount = 0;
+
+                  if (images.length === 0) {
+                    this.scheduleCommentsHeightSync();
+                    return;
+                  }
+
+                  images.forEach(img => {
+                    if (img.complete) {
+                      // Image already loaded (cached)
+                      loadedCount++;
+                      if (loadedCount === images.length) {
+                        this.scheduleCommentsHeightSync();
+                      }
+                    } else {
+                      // Wait for image to load
+                      img.onload = () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) {
+                          this.scheduleCommentsHeightSync();
+                        }
+                      };
+                      img.onerror = () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) {
+                          this.scheduleCommentsHeightSync();
+                        }
+                      };
+                    }
+                  });
+                });
+
+                observer.observe(qlEditor, {
+                  childList: true,
+                  subtree: true,
+                  characterData: true
+                });
+              }
             }
           });
         }
 
-        handleQuillPaste (e, fieldId) {
-          const items = e.clipboardData?.items;
-          if (!items) return;
-
-          for (let item of items) {
-            if (item.type.indexOf('image') !== -1) {
-              const file = item.getAsFile();
-              if (file) {
-                e.preventDefault();
-                this.processImageFile(file, fieldId);
-              }
-            }
-          }
-        }
 
         syncAllQuillEditors () {
           if (!this.quillEditors) return;
@@ -2772,6 +2847,7 @@
 
           // Focus modal for keyboard escape
           this.signatureModal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
+
         }
 
         closeSignatureModal (save) {
@@ -2784,9 +2860,10 @@
             this.setSignaturePreview(prefix, dataUrl);
           }
           const modalBtn = document.querySelector("a.btn-open-modal[data-prefix='" + prefix + "']");
-          modalBtn.classList.remove('anchor-element');
+          if (modalBtn) modalBtn.classList.remove('anchor-element');
           this.signatureModal.classList.remove('open');
           this.activeSignaturePrefix = null;
+
         }
 
         clearModalSignature () {
@@ -3001,8 +3078,6 @@
           requestAnimationFrame(frame);
         }
 
-
-
         /**
          * Build radio button rows using DOM APIs (no innerHTML for better security/performance)
          */
@@ -3071,7 +3146,7 @@
             click: this.handleGlobalClick.bind(this),
             change: this.handleGlobalChange.bind(this),
             input: this.handleGlobalInput.bind(this),
-            keydown: this.handleGlobalKeydown.bind(this)
+            keydown: this.handleGlobalKeydown.bind(this),
           };
           document.addEventListener('click', this._boundHandlers.click);
           document.addEventListener('change', this._boundHandlers.change);
@@ -3091,6 +3166,7 @@
             document.removeEventListener('change', this._boundHandlers.change);
             document.removeEventListener('input', this._boundHandlers.input);
             document.removeEventListener('keydown', this._boundHandlers.keydown);
+
           }
           if (this.observer) {
             this.observer.disconnect();
@@ -3130,6 +3206,7 @@
 
         }
         handleSignatureUpload (e, prefix) {
+
           const file = e.target.files?.[0];
           if (!file) return;
 
@@ -3223,6 +3300,11 @@
             clearSec4Btn: () => this.clearSection('s4'),
             clearSec5Btn: () => this.clearSection('s5'),
             clearSec6Btn: () => this.clearSection('s6'),
+            loadDraftBtn: () => this.loadDraftFromDb(true),
+            saveDraftBtn: () => this.saveDraftNow(true),
+            clearDraftBtn: () => this.clearDraftFromDb(true),
+            exportDraftBtn: () => this.exportDraftJson(),
+            importDraftBtn: () => this.triggerDraftImport(),
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
@@ -3237,6 +3319,7 @@
         }
 
         handleGlobalChange (e) {
+
           if (e.target.matches('input[type="radio"]')) {
             this.updateProgress();
             const name = e.target.name;
@@ -3269,12 +3352,6 @@
             this.autosizeTextarea(e.target);
           }
 
-          if (e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-
-            this.syncCommentsHeights();
-          }
-
           if (e.target.classList.contains('risk-btn')) {
             this.showRiskConsistencyNotices();
             this.syncSectionVisibility();
@@ -3282,6 +3359,7 @@
         }
 
         handleGlobalInput (e) {
+
           // Name sync
           if (e.target.id === 'engineer') this.elements.scName.value = e.target.value;
           if (e.target.id === 'sc_name') this.elements.engineer.value = e.target.value;
@@ -3294,15 +3372,10 @@
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
           }
-
-          if (e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-
-            this.syncCommentsHeights();
-          }
         }
 
         handleGlobalKeydown (e) {
+
           if (e.key === 'Escape' && this.signatureModal?.classList.contains('open')) {
             e.preventDefault();
             this.closeSignatureModal(false);
@@ -3315,12 +3388,216 @@
           }
 
           if (e.key === 'Enter' && e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-            this.syncCommentsHeights();
+            this.scheduleCommentsHeightSync();
           }
+
         }
 
+        // ---------- IndexedDB Draft Storage ----------
+        openDraftDb () {
+          return new Promise((resolve, reject) => {
+            if (!('indexedDB' in window)) {
+              reject(new Error('IndexedDB not available in this browser'));
+              return;
+            }
+            const req = indexedDB.open(CheckForm.DRAFT_DB_NAME, CheckForm.DRAFT_DB_VERSION);
+            req.onupgradeneeded = () => {
+              const db = req.result;
+              if (!db.objectStoreNames.contains(CheckForm.DRAFT_STORE)) {
+                db.createObjectStore(CheckForm.DRAFT_STORE);
+              }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error ?? new Error('IndexedDB open failed'));
+          });
+        }
 
+        draftTx (mode) {
+          return this._draftDb.then(db => db.transaction(CheckForm.DRAFT_STORE, mode).objectStore(CheckForm.DRAFT_STORE));
+        }
+
+        getFormJsonData () {
+          this.syncAllQuillEditors();
+          const form = document.getElementById('check_form');
+          const formData = new FormData(form);
+          const jsonData = {};
+          formData.forEach((value, key) => {
+            if (key in jsonData) {
+              if (!Array.isArray(jsonData[key])) jsonData[key] = [jsonData[key]];
+              jsonData[key].push(value);
+            } else {
+              jsonData[key] = value;
+            }
+          });
+          return jsonData;
+        }
+
+        scheduleDraftAutosave () {
+          if (!this._draftDb) return;
+          clearTimeout(this._draftAutosaveTimer);
+          this._draftAutosaveTimer = setTimeout(() => this.saveDraftNow(false), 750);
+        }
+
+        async saveDraftNow (notify) {
+          if (!this._draftDb) return;
+          const payload = {
+            savedAt: new Date().toISOString(),
+            title: this.elements.workTitle?.value?.trim() ?? '',
+            data: this.getFormJsonData()
+          };
+          const store = await this.draftTx('readwrite');
+          await new Promise((resolve, reject) => {
+            const req = store.put(payload, CheckForm.DRAFT_KEY);
+            req.onsuccess = () => resolve();
+            req.onerror = () => reject(req.error ?? new Error('Draft save failed'));
+          });
+          if (notify) this.toast('Draft saved locally', 'success');
+        }
+
+        async loadDraftFromDb (confirmRestore) {
+          if (!this._draftDb) {
+            this.toast('Local drafts unavailable (IndexedDB unsupported)', 'warn');
+            return;
+          }
+          const store = await this.draftTx('readonly');
+          const payload = await new Promise((resolve, reject) => {
+            const req = store.get(CheckForm.DRAFT_KEY);
+            req.onsuccess = () => resolve(req.result ?? null);
+            req.onerror = () => reject(req.error ?? new Error('Draft load failed'));
+          });
+          if (!payload) {
+            this.toast('No local draft found', 'info');
+            return;
+          }
+          if (confirmRestore) {
+            const ok = confirm(`Restore locally saved draft from ${payload.savedAt}?`);
+            if (!ok) return;
+          }
+          this.applyDraftData(payload.data);
+          this.restoreQuillEditors();
+          this.refreshAllSignaturePreviews();
+          this.syncAllSectionVisibility();
+          this.showRiskConsistencyNotices();
+          this.updateProgress();
+          this.scheduleCommentsHeightSync();
+          this.toast('Draft restored', 'success');
+        }
+
+        async clearDraftFromDb (confirmClear) {
+          if (!this._draftDb) {
+            this.toast('Local drafts unavailable (IndexedDB unsupported)', 'warn');
+            return;
+          }
+          if (confirmClear) {
+            const ok = confirm('Clear locally saved draft data on this device?');
+            if (!ok) return;
+          }
+          const store = await this.draftTx('readwrite');
+          await new Promise((resolve, reject) => {
+            const req = store.delete(CheckForm.DRAFT_KEY);
+            req.onsuccess = () => resolve();
+            req.onerror = () => reject(req.error ?? new Error('Draft clear failed'));
+          });
+          this.toast('Local draft cleared', 'success');
+        }
+
+        applyDraftData (data) {
+          if (!data || typeof data !== 'object') return;
+
+          let riskLevel = null;
+
+          Object.entries(data).forEach(([key, value]) => {
+            const values = Array.isArray(value) ? value : [value];
+            if (key === 'riskLevel') {
+              riskLevel = String(values[0] ?? '');
+            }
+
+            const radios = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(key)}"]`);
+            if (radios.length) {
+              const v = values[0];
+              radios.forEach(r => { r.checked = r.value === v; });
+              return;
+            }
+
+            const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="${CSS.escape(key)}"]`);
+            if (checkboxes.length) {
+              const set = new Set(values.map(String));
+              checkboxes.forEach(c => { c.checked = set.has(String(c.value)); });
+              return;
+            }
+
+            const byName = document.querySelectorAll(`[name="${CSS.escape(key)}"]`);
+            if (byName.length) {
+              byName.forEach((el, idx) => {
+                const v = values[Math.min(idx, values.length - 1)];
+                if (el instanceof HTMLSelectElement) {
+                  el.value = String(v);
+                } else if (el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) {
+                  el.value = String(v);
+                }
+              });
+              return;
+            }
+
+            const byId = document.getElementById(key);
+            if (byId && (byId instanceof HTMLInputElement || byId instanceof HTMLTextAreaElement || byId instanceof HTMLSelectElement)) {
+              byId.value = String(values[0]);
+            }
+          });
+
+          if (riskLevel) {
+            this.setRiskLevel(riskLevel);
+          }
+
+        }
+
+        exportDraftJson () {
+          const jsonStr = JSON.stringify(this.getFormJsonData(), null, 2);
+          const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
+          const jsonUrl = URL.createObjectURL(jsonBlob);
+          const jsonA = document.createElement('a');
+          jsonA.href = jsonUrl;
+          jsonA.download = `DE_CheckForm_draft.json`;
+          document.body.appendChild(jsonA);
+          jsonA.click();
+          jsonA.remove();
+          URL.revokeObjectURL(jsonUrl);
+        }
+
+        triggerDraftImport () {
+          const input = document.getElementById('draftImportInput');
+          if (!input) return;
+          input.value = '';
+          input.click();
+        }
+
+        bindDraftImport () {
+          const input = document.getElementById('draftImportInput');
+          if (!input) return;
+          input.addEventListener('change', () => {
+            const file = input.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async () => {
+              try {
+                const parsed = JSON.parse(String(reader.result ?? 'null'));
+                this.applyDraftData(parsed);
+                this.restoreQuillEditors();
+                this.refreshAllSignaturePreviews();
+                this.syncAllSectionVisibility();
+                this.showRiskConsistencyNotices();
+                this.updateProgress();
+                this.scheduleCommentsHeightSync();
+                this.updateRoleLabels();
+                this.toast('Draft imported', 'success');
+              } catch (err) {
+                console.error(err);
+                this.toast('Import failed (invalid JSON)', 'error');
+              }
+            };
+            reader.readAsText(file);
+          });
+        }
 
         // ---------- UI State Updates ----------
         toggleSection (head) {
@@ -3333,6 +3610,8 @@
         setRiskLevel (level) {
           this.elements.riskBtns.forEach(b => b.classList.remove('active'));
           document.querySelector(`.risk-btn[data-risk="${level}"]`)?.classList.add('active');
+          const riskInput = document.getElementById('riskLevel');
+          if (riskInput) riskInput.value = level ?? '';
           const levelMap = { low: 'Self-Check', medium: 'Check', high: 'Type 1 Independent Review Required' };
           if (levelMap[level]) {
             this.elements.minCheckLevel.value = levelMap[level];
@@ -3463,7 +3742,7 @@
           const showPrCommentCells = prShown && prAnswered;
           this.elements.commentsCell3.classList.toggle('hidden', !showPrCommentCells);
           this.elements.commentsCell4.classList.toggle('hidden', !showPrCommentCells);
-          this.syncCommentsHeights();
+          this.scheduleCommentsHeightSync();
 
           const finalShown = showPeer || isHighRisk;
           this.elements.cardFinal.classList.toggle('hidden', !finalShown);
@@ -3583,8 +3862,11 @@
               answered += counts.get(s.rowsId) ?? 0;
             }
           });
+          const printBtn = document.getElementById('saveAsPdfBtn');
+
           const pct = total ? Math.round((answered / total) * 100) : 0;
           this.elements.progressStrip.classList.toggle('completed', pct === 100);
+          printBtn.classList.toggle('completed', pct === 100);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
         }
@@ -3620,25 +3902,40 @@
         autosizeTextarea (el) {
           if (!el) return;
           el.style.height = 'auto';
-          el.style.height = el.scrollHeight + 'px';
+          //el.style.height = el.scrollHeight + 'px';
+          el.style.height = 'fit-content';
         }
 
         syncCommentsHeights () {
           const pair = (aId, bId) => {
             const a = document.getElementById(aId), b = document.getElementById(bId);
+            const aChild = a.querySelector('.ql-editor'), bChild = b.querySelector('.ql-editor');
             const aHidden = a?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
             const bHidden = b?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
-            if (!a || !b || aHidden || bHidden) {
-              if (a && !aHidden) this.autosizeTextarea(a);
-              if (b && !bHidden) this.autosizeTextarea(b);
-              return;
+            if (!a || !b || aHidden || bHidden) return;
+
+            if (a && !aHidden) {
+              this.autosizeTextarea(aChild);
+              this.autosizeTextarea(a);
             }
-            a.style.height = 'auto'; b.style.height = 'auto';
-            const h = Math.max(a.scrollHeight, b.scrollHeight);
-            a.style.height = h + 'px'; b.style.height = h + 'px';
+            if (b && !bHidden) {
+              this.autosizeTextarea(bChild);
+              this.autosizeTextarea(b);
+            }
+
+            aChild.style.height = 'fit-content'; bChild.style.height = 'fit-content';
+            const h = Math.max(aChild.scrollHeight, bChild.scrollHeight);
+            aChild.style.height = h + 'px'; bChild.style.height = h + 'px';
           };
           pair('checkerComments-editor', 'engineerResponse-editor');
           pair('reviewerComments-editor', 'engineerResponse_2-editor');
+        }
+
+        /** After programmatic Quill DOM updates, layout/scrollHeight may lag one frame. */
+        scheduleCommentsHeightSync () {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => this.syncCommentsHeights());
+          });
         }
 
         // ---------- Section Clearing ----------
@@ -3654,7 +3951,13 @@
           sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
           sec.querySelectorAll('input[type="hidden"]').forEach(c => c.value = '');
           sec.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'))
-          sec.querySelectorAll('.ql-editor').forEach(f => f.innerHTML = ''); // FIX = '');
+
+          Object.entries(this.quillEditors).forEach(([key, quill]) => {
+            quill.setContents([]);  // Clear via API
+            // Also update hidden input
+            const hiddenInput = document.getElementById(key);
+            if (hiddenInput) hiddenInput.value = '';
+          });
 
           this.removeCanvas(sec);
           this.updateProgress();
@@ -3664,7 +3967,7 @@
           }
           if (sectionId === 's3') this.syncCheckWarning();
           sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
-          this.syncCommentsHeights();
+          this.scheduleCommentsHeightSync();
           this.syncAllSectionVisibility();
 
           this.toast('Section cleared', 'info');
@@ -3689,25 +3992,13 @@
         // ---------- Form Actions ----------
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
-          document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="hidden"][id$="_sig_data"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
-          document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-          document.querySelectorAll('textarea').forEach(t => t.value = '');
-          document.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'));
-
-          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
-          document.getElementById('sc_role_eng').checked = true;
-
-          this.removeCanvas(document);
-          document.querySelectorAll('.sig-preview').forEach(p => { p.innerHTML = ''; });
-
-          this.updateRoleLabels(true);
-          this.syncAllSectionVisibility();
-          this.showRiskConsistencyNotices();
-          this.updateProgress();
-          this.syncCommentsHeights();
+          this.clearSection('sec-info-body');
+          this.clearSection('s1');
+          this.clearSection('s2');
+          this.clearSection('s3');
+          this.clearSection('s4');
+          this.clearSection('s5');
+          this.clearSection('s6');
           this.toast('Form reset', 'info');
         }
 
@@ -3764,17 +4055,7 @@
         }
 
         saveJasonFile () {
-          // Sync all Quill editors to hidden inputs before saving
-          this.syncAllQuillEditors();
-
-          const form = document.getElementById('check_form');
-          const formData = new FormData(form);
-          let jsonData = {};
-
-          formData.forEach((value, key) => {
-            jsonData[key] = value;
-          });
-          const jsonStr = JSON.stringify(jsonData);
+          const jsonStr = JSON.stringify(this.getFormJsonData());
           const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
           const jsonUrl = URL.createObjectURL(jsonBlob);
           const jsonA = document.createElement('a');
@@ -3798,10 +4079,21 @@
       }
 
       // Initialize the application when DOM is ready
-      window.addEventListener('DOMContentLoaded', () => new CheckForm());
+      let form = null;
+      window.addEventListener('DOMContentLoaded', async () => {
+        form = new CheckForm();
+        form._draftDb = form.openDraftDb();
+        form.bindDraftImport();
+        try {
+          await form._draftDb;
+          form.loadDraftFromDb(true);
+        } catch (e) {
+          console.warn(e);
+        }
+      });
 
       // Call on unload
-      window.addEventListener('beforeunload', () => form.destroy());
+      window.addEventListener('beforeunload', () => form?.destroy?.());
 
     })();
   </script>

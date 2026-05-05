@@ -18,16 +18,14 @@
       LPT: 'LPT',
       PMT: 'PMT',
       SDT: 'SDT',
-      SUBMERSIBLE_1: 'SUBMERSIBLE 1P',
-      SUBMERSIBLE_3: 'SUBMERSIBLE 3P',
+      SUBMERSIBLE: 'SUBMERSIBLE',
     },
     voltageLabels: {
       'OH': 'L-N',
       'PMT': 'L-L',
       'SDT': 'L-L',
       'LPT': 'L-N',
-      'SUBMERSIBLE 1P': { '2.4 x 7.2': 'L-N', '12 x 25': 'L-L' },
-      'SUBMERSIBLE 3P': 'L-L',
+      'SUBMERSIBLE': { '2.4 x 7.2': 'L-N', '12 x 25': 'L-L' },
     },
     placeholders: {
       default: '—',
@@ -38,6 +36,7 @@
     classes: {
       hidden: 'hidden',
       highlight: 'highlight',
+      highlight_2: 'highlight-2',
       tableWrap: 'table-wrap',
       impedanceTable: 'impedance-table',
     },
@@ -53,13 +52,13 @@
         { class: 'col-1', label: 'Config' },
       ],
       ugHeaders: [
-        { class: 'col-1-5', label: 'CAD ID' },
+        { class: 'col-2', label: 'CAD ID' },
         { class: 'col-1', label: 'Type' },
         { class: 'col-1', label: 'kVA' },
-        { class: 'col-2', label: 'Primary (kV)' },
-        { class: 'col-2', label: 'Secondary (V)' },
+        { class: 'col-1-5', label: 'Primary (kV)' },
+        { class: 'col-1-5', label: 'Secondary (V)' },
         { class: 'col-1', label: 'Min Z (%)' },
-        { class: 'col-1-5', label: 'Feed Type' },
+        { class: 'col-2', label: 'Feed Type' },
       ],
     },
   });
@@ -73,14 +72,18 @@
      */
     processFuseData () {
       return (window.FUSE_DATA || [])
-        .map(r => ({
+        .map(r =>
+        ({
           transformer: this.sanitize(r.transformer),
           voltage: this.sanitize(r.voltage),
           kva: Number(r.kva) || 0,
-          bonFuse: this.sanitize(r.bonFuse),
-          sourceFuse: this.sanitize(r.sourceFuse),
+          bonFuse: r.transformer === 'OH' ? this.sanitize(r.TxFuse) : this.sanitize(r.bonFuse),
+          Upstream: this.sanitize(r.Upstream),
+          CLFuse: r.transformer === 'OH' ? this.sanitize(r.CLFuse) : r.transformer === CONFIG.transformerTypes.PMT ? this.sanitize(r.bonFault) : '',
+          CLUpstream: r.transformer === 'OH' ? this.sanitize(r.CLUpstream) : r.transformer === CONFIG.transformerTypes.PMT ? this.sanitize(r.bonUpstream) : '',
         }))
         .sort((a, b) => a.kva - b.kva);
+
     },
 
     /**
@@ -97,7 +100,7 @@
         maxImpedance: r['Maximum impedance (%)'] || 0,
         bushing: this.sanitize(r.Bushing),
         configuration: this.sanitize(r.Configuration),
-      }));
+      })).sort((a, b) => a.cadId - b.cadId);
     },
 
     /**
@@ -109,10 +112,10 @@
         cadId: this.sanitize(r['CAD ID']),
         kva: Number(r.kVA) || 0,
         voltage: this.sanitize(r['Primary (kV)']),
-        secondary: this.sanitize(r['Secondary (V)']),
+        secondary: this.sanitize(r['Transformer Type'] === CONFIG.transformerTypes.SDT ? r['Secondary (kV)'] : r['Secondary (V)']),
         minImpedance: r['Minimum Impedance (%)'] || '—',
         feed: this.sanitize(r.Feed),
-      }));
+      })).sort((a, b) => a.cadId - b.cadId);
     },
 
     /**
@@ -146,12 +149,49 @@
     },
 
     /**
+     * Extract single voltages from all voltage combinations
+     * e.g., "2.4 x 7.2" → ["2.4", "7.2"], "7.2" → ["7.2"]
+     */
+    extractSingleVoltages (voltageList) {
+      const singleVoltages = new Set();
+
+      voltageList.forEach(voltage => {
+        if (!voltage || voltage === CONFIG.placeholders.default) return;
+
+        // Split by 'x' or '×' and extract individual voltages
+        const parts = String(voltage)
+          .split(/\s*[x×]\s*/)
+          .map(v => v.trim())
+          .filter(v => v && !isNaN(parseFloat(v)));
+
+        parts.forEach(part => singleVoltages.add(part));
+      });
+
+      return this.getUnique(Array.from(singleVoltages));
+    },
+
+    /**
+     * Get label for single voltage in SUBMERSIBLE 1P transformers
+     * Find which voltage range contains this single voltage, then return its label
+     */
+    getSingleVoltageLabel (singleVoltage, allVoltageRanges) {
+      for (const range of allVoltageRanges) {
+        if (range.includes(singleVoltage)) {
+          return CONFIG.voltageLabels[CONFIG.transformerTypes.SUBMERSIBLE][range];
+        }
+      }
+      // Fallback if not found
+      return 'L-N';
+    },
+
+    /**
      * Filter data based on selections
      */
     filterData (data, transformer, voltage, kva) {
       return data.filter(row => {
         const transformerMatch = !transformer || row.transformer === transformer;
-        const voltageMatch = !voltage || row.voltage === voltage;
+        // Match voltage if selected voltage is contained in or equals the row voltage
+        const voltageMatch = !voltage || row.voltage === voltage || row.voltage.includes(voltage);
         const kvaMatch = !Number.isFinite(kva) || row.kva === kva;
         return transformerMatch && voltageMatch && kvaMatch;
       });
@@ -199,7 +239,7 @@
      * Check if transformer type is underground
      */
     isUnderground (type) {
-      return [CONFIG.transformerTypes.PMT, CONFIG.transformerTypes.LPT, CONFIG.transformerTypes.SDT, CONFIG.transformerTypes.SUBMERSIBLE_1, CONFIG.transformerTypes.SUBMERSIBLE_3].includes(type);
+      return [CONFIG.transformerTypes.PMT, CONFIG.transformerTypes.LPT, CONFIG.transformerTypes.SDT, CONFIG.transformerTypes.SUBMERSIBLE].includes(type);
     },
 
     /**
@@ -216,9 +256,9 @@
       if (!rows?.length) return '';
 
       const isOH = rows[0].transformer === CONFIG.transformerTypes.OH;
-      const html = ['<h3>Transformer Details</h3>'];
+      const html = ['<h2>Transformer Details</h2>'];
       html.push(`<div class="${CONFIG.classes.tableWrap}">`);
-      html.push(`<table class="${CONFIG.classes.impedanceTable}">`);
+      html.push(`<table class="${CONFIG.classes.impedanceTable}" data-sortable="true">`);
 
       if (isOH) {
         html.push(this.renderOHTable(rows));
@@ -227,7 +267,116 @@
       }
 
       html.push('</table></div>');
-      return html.join('');
+
+      const tableHtml = html.join('');
+
+      // Attach sort listeners after DOM insertion (will be done in showResult)
+      this._tableHtml = tableHtml;
+      this._tableData = rows;
+      this._isOHTable = isOH;
+
+      return tableHtml;
+    },
+
+    /**
+     * Attach sort event listeners to table headers
+     */
+    attachTableSortListeners (tableElement, rows, isOH) {
+      if (!tableElement) return;
+
+      const headers = tableElement.querySelectorAll('th');
+      headers.forEach((header, columnIndex) => {
+        header.style.cursor = 'pointer';
+        header.setAttribute('data-column', columnIndex);
+        header.addEventListener('click', () => {
+          const sortDir = header.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+
+          // Clear sort indicators from all headers
+          headers.forEach(h => {
+            h.removeAttribute('data-sort-dir');
+            h.textContent = h.textContent.replace(/\s*[▲▼]$/, '');
+          });
+
+          // Set current header sort direction
+          header.setAttribute('data-sort-dir', sortDir);
+          header.textContent += sortDir === 'asc' ? ' ▲' : ' ▼';
+
+          // Sort data
+          const sortedRows = this.sortTableData(rows, columnIndex, sortDir, isOH);
+
+          // Re-render table
+          const tbody = tableElement.querySelector('tbody');
+          tbody.innerHTML = '';
+
+          if (isOH) {
+            sortedRows.forEach(r => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = [
+                `<td>${this.escapeHtml(r.cadId)}</td>`,
+                `<td>${r.kva}</td>`,
+                `<td>${this.escapeHtml(r.voltage)}</td>`,
+                `<td>${this.escapeHtml(r.secondary)}</td>`,
+                `<td>${r.minImpedance}</td>`,
+                `<td>${r.maxImpedance}</td>`,
+                `<td>${this.escapeHtml(r.bushing)}</td>`,
+                `<td>${this.escapeHtml(r.configuration)}</td>`,
+              ].join('');
+              tbody.appendChild(tr);
+            });
+          } else {
+            sortedRows.forEach(r => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = [
+                `<td>${this.escapeHtml(r.cadId)}</td>`,
+                `<td>${this.escapeHtml(r.transformer)}</td>`,
+                `<td>${r.kva}</td>`,
+                `<td>${this.escapeHtml(r.voltage)}</td>`,
+                `<td>${this.escapeHtml(r.secondary)}</td>`,
+                `<td>${r.minImpedance}</td>`,
+                `<td>${this.escapeHtml(r.feed)}</td>`,
+              ].join('');
+              tbody.appendChild(tr);
+            });
+          }
+        });
+      });
+    },
+
+    /**
+     * Sort table data by column
+     */
+    sortTableData (rows, columnIndex, direction, isOH) {
+      const sorted = [...rows];
+
+      sorted.sort((a, b) => {
+        let aVal, bVal;
+
+        if (isOH) {
+          const ohColumns = ['cadId', 'kva', 'voltage', 'secondary', 'minImpedance', 'maxImpedance', 'bushing', 'configuration'];
+          aVal = a[ohColumns[columnIndex]];
+          bVal = b[ohColumns[columnIndex]];
+        } else {
+          const ugColumns = ['cadId', 'transformer', 'kva', 'voltage', 'secondary', 'minImpedance', 'feed'];
+          aVal = a[ugColumns[columnIndex]];
+          bVal = b[ugColumns[columnIndex]];
+        }
+
+        // Handle numeric values
+        const aNum = parseFloat(aVal);
+        const bNum = parseFloat(bVal);
+
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return direction === 'asc' ? aNum - bNum : bNum - aNum;
+        }
+
+        // Handle strings
+        const aStr = String(aVal).toLowerCase();
+        const bStr = String(bVal).toLowerCase();
+
+        return direction === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
+      });
+
+      return sorted;
     },
 
     /**
@@ -269,8 +418,13 @@
       const html = [];
       html.push('<thead><tr>');
 
-      CONFIG.tableColumns.ugHeaders.forEach(h => {
-        html.push(`<th class="${h.class}">${h.label}</th>`);
+      CONFIG.tableColumns.ugHeaders.forEach((h, index) => {
+        let label = h.label;
+        // For SDT transformers, change Secondary (V) to Secondary (kV)
+        if (index === 4 && rows.length > 0 && rows[0].transformer === CONFIG.transformerTypes.SDT) {
+          label = 'Secondary (kV)';
+        }
+        html.push(`<th class="${h.class}">${label}</th>`);
       });
 
       html.push('</tr></thead><tbody>');
@@ -608,15 +762,25 @@
         return;
       }
 
-      const VoltageByFuse = this.fuseData.filter(r => r.transformer === transformer).map(r => r.voltage);
+      const voltageByFuse = this.fuseData.filter(r => r.transformer === transformer).map(r => r.voltage);
       const dataRows = transformer === CONFIG.transformerTypes.OH
         ? this.ohData
         : this.ugData.filter(r => r.transformer === transformer);
       const voltagesByImpedance = dataRows.map(r => r.voltage);
-      const voltages = DataProcessor.getUnique([...VoltageByFuse, ...voltagesByImpedance]);
 
-      const voltageLabel = (v) => `kV ${transformer === CONFIG.transformerTypes.SUBMERSIBLE_1 ? CONFIG.voltageLabels[transformer][v] : CONFIG.voltageLabels[transformer]}`;
-      DOM.populateSelect(this.els.voltage, voltages, v => `${v} ${voltageLabel(v)}`);
+      // Extract only single voltages from all voltage combinations
+      const allVoltages = [...voltageByFuse, ...voltagesByImpedance];
+      const singleVoltages = DataProcessor.extractSingleVoltages(allVoltages);
+
+      const voltageLabel = (v) => {
+        if (transformer === CONFIG.transformerTypes.SUBMERSIBLE) {
+          const label = DataProcessor.getSingleVoltageLabel(v, allVoltages);
+          return `kV ${label}`;
+        }
+        return `kV ${CONFIG.voltageLabels[transformer]}`;
+      };
+
+      DOM.populateSelect(this.els.voltage, singleVoltages, v => `${v} ${voltageLabel(v)}`);
 
       DOM.setDisabled(this.els.voltage, false);
       DOM.resetAndDisable(this.els.kva, CONFIG.placeholders.kva);
@@ -636,7 +800,10 @@
       }
 
       const transformer = this.els.transformer.value;
-      const fuseKVAs = this.fuseData.filter(r => r.voltage === voltage && r.transformer === transformer).map(r => r.kva);
+      // Filter fuse data by voltage match (exact or contains)
+      const fuseKVAs = this.fuseData.filter(r =>
+        (r.voltage === voltage || r.voltage.includes(voltage)) && r.transformer === transformer
+      ).map(r => r.kva);
       const dataRows = transformer === CONFIG.transformerTypes.OH
         ? this.ohData
         : this.ugData.filter(r => r.transformer === transformer);
@@ -687,7 +854,19 @@
      */
     getFuseCADId (fuse) {
       if (fuse === CONFIG.placeholders.default) return fuse;
+      fuse = fuse.split(',');
+      // Handle array of fuses
+      if (Array.isArray(fuse)) {
+        return fuse.map(item => {
+          const parts = item.split(' ');
+          const match = this.fuseCadData.find(r => r.fuse === parts[0]);
+          const text = match ? [`${parts[0]}${parts.slice(1)}`, `(${match.cadId})`].join(' ').replace(/\s+/g, ' ') : item;
+          text.replace(/ (?!.*[,])/g, '\u00A0');
+          return text;
+        }).join(', ');
+      }
 
+      // Handle single fuse string
       const match = this.fuseCadData.find(r => r.fuse === fuse);
       return match ? `${fuse} (${match.cadId})` : fuse;
     }
@@ -717,6 +896,11 @@
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = tableHTML;
           this.els.result.appendChild(tempDiv);
+
+          // Attach sort listeners to impedance table
+          const impedanceTable = tempDiv.querySelector('table');
+          const isOH = transformer === CONFIG.transformerTypes.OH;
+          ImpedanceHandler.attachTableSortListeners(impedanceTable, impedanceMatches, isOH);
         }
         if (impedanceMatches.length === 0) {
           const msg = document.createElement('h3');
@@ -749,10 +933,30 @@
       if (!row) return;
 
       const h2 = document.createElement('h2');
-      h2.textContent = 'Fuse Match Found';
+      h2.textContent = 'Fuse Coordination';
       this.els.result.appendChild(h2);
 
-      const ul = document.createElement('ul');
+      const table = document.createElement('table');
+      table.className = 'fuse-match-table';
+
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+
+      const th1 = document.createElement('th');
+      th1.className = 'col-2-5';
+      th1.textContent = 'Property';
+      th1.style.cursor = 'pointer';
+      const th2 = document.createElement('th');
+      th2.className = 'col-7-5';
+      th2.textContent = 'Value';
+      th2.style.cursor = 'pointer';
+
+      headerRow.appendChild(th1);
+      headerRow.appendChild(th2);
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
       const voltageLabel = CONFIG.voltageLabels[row.transformer] || 'kV';
 
       const fields = [
@@ -760,29 +964,108 @@
         [`Operating kV (${voltageLabel})`, row.voltage],
         ['kVA', row.kva],
         [
-          row.transformer === CONFIG.transformerTypes.OH ? 'Current Limiting Fuse' : 'BON Fuse',
-          this.getFuseCADId(row.bonFuse) ? this.getFuseCADId(row.bonFuse) : 'Unknown',
+          row.transformer === CONFIG.transformerTypes.OH ? 'Transformer Fuse (CAD ID)' : 'Dual Sensing Fuse (CAD ID)',
+          this.getFuseCADId(row.bonFuse),
           CONFIG.classes.highlight,
         ],
-        ['Source-side Fuse', this.getFuseCADId(row.sourceFuse) ? this.getFuseCADId(row.sourceFuse) : 'Unknown', CONFIG.classes.highlight],
+        [
+          'Upstream Fuse @ Fault Current (CAD ID)',
+          this.getFuseCADId(row.Upstream),
+          CONFIG.classes.highlight
+        ],
+        [
+          row.transformer === CONFIG.transformerTypes.OH ? 'Current Limiting Fuse (CAD ID)' : row.transformer === CONFIG.transformerTypes.PMT ? 'Fault Sensing Fuse (CAD ID)' : '',
+          this.getFuseCADId(row.CLFuse),
+          CONFIG.classes.highlight_2
+        ],
+        [
+          row.transformer === CONFIG.transformerTypes.OH ? 'CL Upstream Fuse @ Fault Current (CAD ID)' : row.transformer === CONFIG.transformerTypes.PMT ? 'FS Upstream Fuse (CAD ID)' : '',
+          this.getFuseCADId(row.CLUpstream),
+          CONFIG.classes.highlight_2
+        ],
       ];
 
       fields.forEach(([label, value, className]) => {
-        const li = document.createElement('li');
+        // Skip empty labels for non-OH transformers
+        if (!label) return;
+
+        const tr = document.createElement('tr');
         if (className && value !== CONFIG.placeholders.default && value !== 'Unknown') {
-          li.className = className;
+          tr.className = className;
         }
 
-        const strong = document.createElement('strong');
-        strong.textContent = `${label}: `;
-        li.appendChild(strong);
-        li.appendChild(document.createTextNode(String(value)));
-        ul.appendChild(li);
+        const td1 = document.createElement('td');
+        td1.className = 'col-2-5';
+        td1.textContent = label;
+
+        const td2 = document.createElement('td');
+        td2.className = 'col-7-5';
+        td2.textContent = String(value).replace(/ (?!.*[,])/g, '\u00A0');
+
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tbody.appendChild(tr);
+
+
+
       });
 
-      this.els.result.appendChild(ul);
+      table.appendChild(tbody);
+      const table_wrap = document.createElement('div');
+      table_wrap.className = 'table-wrap';
+      table_wrap.appendChild(table);
+      this.els.result.appendChild(table_wrap);
+
+      // Attach sort listeners to match table headers
+      this.attachMatchTableSortListeners(table, th1, th2);
     }
 
+
+    /**
+     * Attach sort event listeners to match table headers
+     */
+    attachMatchTableSortListeners (table, th1, th2) {
+      const headers = [th1, th2];
+
+      headers.forEach((header, columnIndex) => {
+        header.addEventListener('click', () => {
+          const sortDir = header.getAttribute('data-sort-dir') === 'asc' ? 'desc' : 'asc';
+
+          // Clear sort indicators from all headers
+          headers.forEach(h => {
+            h.removeAttribute('data-sort-dir');
+            h.textContent = h.textContent.replace(/\s*[▲▼]$/, '');
+          });
+
+          // Set current header sort direction
+          header.setAttribute('data-sort-dir', sortDir);
+          header.textContent += sortDir === 'asc' ? ' ▲' : ' ▼';
+
+          // Sort table rows
+          const tbody = table.querySelector('tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+
+          rows.sort((rowA, rowB) => {
+            const aVal = String(rowA.cells[columnIndex].textContent).toLowerCase().trim();
+            const bVal = String(rowB.cells[columnIndex].textContent).toLowerCase().trim();
+
+            // Try numeric sort first
+            const aNum = parseFloat(aVal);
+            const bNum = parseFloat(bVal);
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+              return sortDir === 'asc' ? aNum - bNum : bNum - aNum;
+            }
+
+            // Fall back to string sort
+            return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+          });
+
+          // Re-append sorted rows
+          rows.forEach(row => tbody.appendChild(row));
+        });
+      });
+    }
 
     /**
      * Hide result
