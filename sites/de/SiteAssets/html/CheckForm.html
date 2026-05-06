@@ -1837,6 +1837,13 @@
     .comments-area .rich-text-wrapper {
       margin-bottom: var(--gap-md);
     }
+
+    .info-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-style: italic;
+    }
   </style>
 
   <!-- Quill Rich Text Editor -->
@@ -2001,43 +2008,22 @@
             <div class="sig-cell">
               <div class="field-label" id="sc_sig">Signature (Engineer) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="scSigContainer" data-prefix="sc">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="scSigDrawTab" tabindex="0"
-                    data-testid="sc-sig-draw">
-                    <span class="material-symbols-sharp">signature</span>
-                  </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="scSigUploadTab"
-                    tabindex="-1" data-testid="sc-sig-upload">
-                    <span class="material-symbols-sharp">upload</span>
-                  </button>
-                </div>
-                <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
-                  tabindex="0">
-                  <div class="sig-draw-surface" data-mode="draw" data-prefix="sc" data-testid="sc-sig-surface">
-                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="sc" data-testid="sc-sig-open">
-                      Open signature pad
-                    </a>
-                    <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                    </div>
-                    <button class="image-thumbnail-remove" type="button" data-prefix="sc" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">cancel</span>
-                    </button>
+                <div class="sig-tab-content active">
+                  <div class="form-group">
+                    <label class="field-label" for="certSelect"></label>
+                    <select class="field-input" id="certSelect" disabled>
+                    </select>
                   </div>
+                  <p class="info-text" id="certInfo"></p>
+
                 </div>
-                <div class="sig-tab-content" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
-                  tabindex="0">
-                  <div class="sig-upload-area">
-                    <input type="file" id="scSigUpload" accept="image/*" hidden data-testid="sc-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="sc"
-                      data-testid="sc-sig-choose">
-                      Choose Signature Image
-                    </button>
-                    <div id="scSigPreview" class="sig-preview"></div>
-                  </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="btnRefreshCerts" type="button">
+                    Certificates
+                  </button>
+                  <button class="btn .btn-sig-tab" id="btnSign" type="button" disabled>
+                    Sign
+                  </button>
                 </div>
               </div>
               <input type="hidden" id="sc_sig_data" name="sc_sig_data">
@@ -3805,6 +3791,139 @@
 
     })();
   </script>
+  <script src="https://cloudfront.notarius.com/certifio-manager.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script>
+    var certifioManager = null;
+    var certificates = [];
+    var lastSignatureResult = null;
+
+    var dataToSign = document.getElementById('check_form');
+    var certSelect = document.getElementById('certSelect');
+    var certInfo = document.getElementById('certInfo');
+    var btnRefreshCerts = document.getElementById('btnRefreshCerts');
+    var btnSign = document.getElementById('btnSign');
+
+
+    // ──────────────────────────────────────────────
+    // Initialise CertifiO Manager
+    // ──────────────────────────────────────────────
+    function initializeCertifioManager () {
+
+      try {
+        certifioManager = new CertifioManager('en'); // 'en' or 'fr'
+        return true;
+      } catch (error) {
+        console.error('Failed to initialise CertifioManager:', error);
+        return false;
+      }
+    }
+
+    function loadCertificates () {
+      if (!certifioManager) {
+        if (!initializeCertifioManager()) return;
+      }
+
+      certSelect.disabled = true;
+      certSelect.innerHTML = '<option value="">Loading certificates...</option>';
+      //btnSign.disabled = true;
+
+      certifioManager.getCertificates(
+        // success callback
+        function (certs) {
+          certificates = certs || [];
+          certSelect.innerHTML = '';
+
+          if (certificates.length === 0) {
+            certSelect.innerHTML =
+              '<option value="">-- No certificates found --</option>';
+
+          } else {
+            for (var i = 0; i < certificates.length; i++) {
+              var cert = certificates[i];
+              var option = document.createElement('option');
+              option.value = cert.deviceId;
+              option.textContent =
+                cert.displayName ||
+                (cert.cn || '') + (cert.org ? ' (' + cert.org + ')' : '');
+              // Store additional info in data attributes (optional)
+              option.setAttribute('data-index', String(i));
+              certSelect.appendChild(option);
+            }
+
+          }
+          certSelect.disabled = false;
+          var selectedDeviceId = certSelect.value;
+          btnSign.disabled = !selectedDeviceId;
+
+          if (selectedDeviceId) {
+            var selectedCert = null;
+            for (var i = 0; i < certificates.length; i++) {
+              if (certificates[i] && certificates[i].deviceId === selectedDeviceId) {
+                selectedCert = certificates[i];
+                break;
+              }
+            }
+            if (selectedCert) {
+              certInfo.innerHTML =
+                '<small style="color:var(--text-secondary)">' +
+                'dn: ' + (selectedCert.dn || '') + '<br>' +
+                'org: ' + (selectedCert.org || '') +
+                '</small>';
+            }
+          }
+        },
+        // failure callback
+        function (error) {
+          console.error('Failed to load certificates:', error);
+          certSelect.innerHTML =
+            '<option value="">-- Failed to load certificates --</option>';
+          certSelect.disabled = false;
+        }
+      );
+    }
+
+    function signData () {
+      if (!certifioManager) return;
+
+      var deviceId = certSelect.value;
+
+      var sigType = "ENVELOPED";
+
+      // Disable sign button while processing
+      btnSign.disabled = true;
+      btnSign.textContent = '⏳ Signing...';
+
+      var signRequest = {
+        deviceId: deviceId,
+        type: sigType,
+        data: dataToSign.outerHTML
+      };
+
+      certifioManager.sign(
+        signRequest,
+        // success callback
+        function (signatureData) {
+          lastSignatureResult = signatureData;
+          btnSign.disabled = false;
+          btnSign.textContent = '✍️ Sign Data';
+        },
+        // failure callback
+        function (error) {
+          console.error('Signing failed:', error);
+          lastSignatureResult = null;
+          btnSign.disabled = false;
+          btnSign.textContent = '✍️ Sign Data';
+        }
+      );
+    }
+
+    btnRefreshCerts.addEventListener('click', loadCertificates);
+    btnSign.addEventListener('click', signData);
+
+
+  </script>
+
 </body>
 
 </html>

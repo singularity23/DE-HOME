@@ -1006,8 +1006,6 @@
         tr.appendChild(td2);
         tbody.appendChild(tr);
 
-
-
       });
 
       table.appendChild(tbody);
