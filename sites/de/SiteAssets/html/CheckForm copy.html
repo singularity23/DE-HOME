@@ -1,88 +1,2021 @@
-handlePaste (e) {
-const textarea = e.target.closest('.comments-textarea');
-if (!textarea) return;
+<!DOCTYPE html>
+<html lang="en">
 
-const items = e.clipboardData?.items;
-if (!items) return;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BC Hydro Distribution Engineering Check & Review Form">
+  <title>Distribution Engineering Check Form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-for (let item of items) {
-if (item.type.indexOf('image') !== -1) {
-const file = item.getAsFile();
-if (file) {
-e.preventDefault();
-this.processImageFile(file, textarea.id);
-}
-}
-}
-}
+    :root {
+      --color-primary: #323232;
+      --color-secondary: #fafafa;
+      --color-tertiary: #d4d4d8;
+      --surface-base: #fafafa;
+      --surface-inverse: #231f20;
+      --color-success: #046a38;
+      --color-warning: #9adbe8;
+      --color-medium: #ffb656;
+      --color-error: #fa4616;
+      --color-info: #71717a;
+      --color-link: #0074a4;
+      --header-bg: #e9e9ef;
+      --surface: #ffffff;
+      --border: #cbd5e1;
+      --border-soft: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #475569;
+      --muted-border: #94a3b8;
+      --accent: #323232;
+      --warn: #0369a1;
+      --warn-bg: #e0f2fe;
+      --error-bg: #fee2e2;
+      --low: #046a38;
+      --low-bg: #e0f2e9;
+      --high: #fa4616;
+      --high-bg: #ffe6e0;
+      --medium: #ffb656;
+      --medium-bg: #fff4e5;
+      --space-base: 16px;
+      --gap-xs: 4px;
+      --gap-sm: 8px;
+      --gap-md: 10px;
+      --gap-lg: 12px;
+      --touch-min: 36px;
+      --radius: 0;
+      --font-sans: 'Roboto', system-ui, sans-serif;
+      --font-mono: 'Roboto Mono', monospace;
+    }
 
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--text);
+      padding: 16px 16px 32px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
 
+    .material-symbols-sharp {
+      font-family: 'Material Symbols Sharp';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
 
-processImageFile (file, textareaId) {
-const reader = new FileReader();
-reader.onload = (e) => {
-const gallery = document.getElementById(`${textareaId}-gallery`);
-if (gallery) this.addImageToGallery(gallery, e.target.result);
-};
-reader.readAsDataURL(file);
-}
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
 
-addImageToGallery (gallery, imgDataUrl) {
-const container = document.createElement('div');
-container.className = 'image-thumbnail';
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transform: translateY(-160%);
+      transition: transform 0.18s ease;
+      z-index: 9;
+    }
 
-const img = document.createElement('img');
-img.src = imgDataUrl;
-img.alt = 'Pasted screenshot';
+    .skip-link:focus {
+      transform: translateY(0);
+      outline: 2px solid var(--color-primary);
+    }
 
-const removeBtn = document.createElement('button');
-removeBtn.type = 'button';
-removeBtn.className = 'image-thumbnail-remove';
-removeBtn.innerHTML = `<span class="material-symbols-sharp">cancel</span>`;
-removeBtn.setAttribute('aria-label', 'Remove this image');
-removeBtn.addEventListener('click', (e) => {
-e.preventDefault();
-e.stopPropagation();
-container.remove();
-});
+    .shell {
+      animation: fadeUp 0.2s ease both;
+    }
 
-img.addEventListener('click', (e) => {
-e.preventDefault();
-this.showImageModal(imgDataUrl);
-});
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
 
-container.appendChild(img);
-container.appendChild(removeBtn);
-gallery.appendChild(container);
-}
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-showImageModal (imgDataUrl) {
-const modal = document.createElement('div');
-modal.style.cssText = `
-position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-background: rgba(0,0,0,0.8); display: flex; align-items: center;
-justify-content: center; z-index: 10000; cursor: pointer;
-`;
-const img = document.createElement('img');
-img.src = imgDataUrl;
-img.style.cssText = `
-max-width: 90vw; max-height: 90vh; object-fit: contain;
-border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-`;
-const closeBtn = document.createElement('button');
-closeBtn.innerHTML = '&times;';
-closeBtn.style.cssText = `
-position: absolute; top: 20px; right: 20px; width: 40px; height: 40px;
-border: none; background: rgba(255,255,255,0.2); color: white;
-font-size: 28px; cursor: pointer; border-radius: 50%; display: flex;
-align-items: center; justify-content: center; transition: background 0.2s ease;
-`;
-closeBtn.addEventListener('mouseover', () => { closeBtn.style.background = 'rgba(255,255,255,0.4)'; });
-closeBtn.addEventListener('mouseout', () => { closeBtn.style.background = 'rgba(255,255,255,0.2)'; });
-const close = () => modal.remove();
-closeBtn.addEventListener('click', close);
-modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
-modal.appendChild(img);
-modal.appendChild(closeBtn);
-document.body.appendChild(modal);
-}
+    @media(prefers-reduced-motion: reduce) {
+      .shell {
+        animation: none;
+      }
+    }
+
+    .header {
+      background: var(--surface-inverse);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--gap-lg);
+      padding-right: 40px;
+      margin-bottom: var(--gap-lg);
+      border: 2px solid var(--border);
+    }
+
+    .header-logo {
+      width: 192px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .header-sub {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      text-align: right;
+      color: var(--color-tertiary);
+    }
+
+    .progress-strip {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      padding: 10px 15px;
+      margin-bottom: var(--gap-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--gap-md);
+    }
+
+    .progress-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-track::-webkit-progress-value {
+      background: var(--color-primary);
+      transition: width 0.2s;
+    }
+
+    .progress-pct {
+      font-weight: 600;
+      width: 40px;
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .progress-strip.completed .progress-track::-webkit-progress-value {
+      background: var(--low);
+    }
+
+    .card {
+      border: 2px solid var(--border);
+      margin-bottom: var(--gap-lg);
+      background: var(--surface);
+    }
+
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-soft);
+      background: var(--header-bg);
+      gap: var(--gap-md);
+    }
+
+    .sec-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .sec-num {
+      width: 28px;
+      height: 28px;
+      background: var(--color-secondary);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .sec-num.complete {
+      background: var(--color-success);
+      color: white;
+      border-color: var(--color-success);
+    }
+
+    .sec-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .sec-badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      background: white;
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .chevron {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+
+    .sec-head.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .sec-body {
+      display: none;
+    }
+
+    .sec-body.open {
+      display: block;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-areas: 'title title title title title revision' 'role role role level level level' 'deliverable deliverable deliverable review review review' 'engineer engineer engineer checker checker checker';
+    }
+
+    .work-title-cell {
+      grid-area: title;
+    }
+
+    .revision-cell {
+      grid-area: revision;
+    }
+
+    .role-cell {
+      grid-area: role;
+    }
+
+    .risk-level-cell {
+      grid-area: level;
+    }
+
+    .deliverable-cell {
+      grid-area: deliverable;
+    }
+
+    .review-level-cell {
+      grid-area: review;
+    }
+
+    .engineer-cell {
+      grid-area: engineer;
+    }
+
+    .checker-cell {
+      grid-area: checker;
+    }
+
+    .meta-cell {
+      padding: 5px 15px;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+    }
+
+    .field-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--border-soft);
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      background: var(--surface);
+      min-height: var(--touch-min);
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .field-input:valid {
+      background-color: #f4f9f4;
+    }
+
+    .required-field-underline {
+      border-bottom: 1px solid var(--color-error);
+      width: 100%;
+    }
+
+    .role-selector {
+      display: inline-grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr 1fr;
+    }
+
+    .role-selector input {
+      display: none;
+    }
+
+    .role-selector label {
+      padding: 6px 12px;
+      text-align: center;
+      background: var(--header-bg);
+      border: 1px solid var(--border-soft);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .role-selector input:checked+label {
+      background: var(--color-tertiary);
+      border-color: var(--color-info);
+      color: var(--color-info);
+    }
+
+    .risk-row {
+      display: flex;
+    }
+
+    .risk-btn {
+      flex: 1;
+      padding: 8px 4px;
+      background: var(--header-bg);
+      border: 1px solid var(--border-soft);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .risk-btn.active[data-risk="low"] {
+      background: var(--low-bg);
+      border-color: var(--low);
+      color: var(--low);
+    }
+
+    .risk-btn.active[data-risk="medium"] {
+      background: var(--medium-bg);
+      border-color: var(--medium);
+      color: #b45309;
+    }
+
+    .risk-btn.active[data-risk="high"] {
+      background: var(--high-bg);
+      border-color: var(--high);
+      color: var(--high);
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 8px 15px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .check-text {
+      flex: 1;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .check-num {
+      font-size: 0.8rem;
+      min-width: 32px;
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 0;
+    }
+
+    .pill-group input {
+      display: none;
+    }
+
+    .pill-group label {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: var(--color-secondary);
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      width: 42px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .pill-group input:checked+label {
+      background: #e2e8f0;
+    }
+
+    .pill-group input[id$='_yes']:checked+label {
+      background: var(--low-bg);
+      border-color: var(--low);
+      color: var(--low);
+    }
+
+    .pill-group input[id$='_no']:checked+label {
+      background: var(--high-bg);
+      border-color: var(--high);
+      color: var(--high);
+    }
+
+    .pill-group input[id$='_na']:checked+label {
+      background: var(--border-soft);
+      color: var(--text-muted);
+    }
+
+    .row-notice-stack {
+      margin-top: 8px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .row-notice-stack.hidden {
+      display: none;
+    }
+
+    .notice {
+      display: flex;
+      gap: 10px;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      align-items: center;
+    }
+
+    .notice.warn {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn);
+      color: var(--warn);
+    }
+
+    .notice.error {
+      background: var(--error-bg);
+      border: 1px solid var(--color-error);
+      color: var(--color-error);
+    }
+
+    .notice.success {
+      background: var(--low-bg);
+      border-color: var(--low);
+      color: var(--low);
+    }
+
+    .sig-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--border-soft);
+      background: var(--header-bg);
+    }
+
+    .sig-cell {
+      padding: 10px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .signature-pad-container {
+      display: flex;
+      flex-direction: row;
+      border: 1px solid var(--border-soft);
+      background: var(--surface);
+      min-height: 100px;
+    }
+
+    .signature-pad-tabs {
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .btn-sig-tab {
+      background: var(--header-bg);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .btn-sig-tab.success {
+      background: var(--low-bg);
+      color: var(--low);
+      border-color: var(--low);
+    }
+
+    .sig-tab-content {
+      display: none;
+      flex: 1;
+      padding: 8px;
+    }
+
+    .sig-tab-content.active {
+      display: block;
+    }
+
+    .btn-open-modal {
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .sig-draw-surface {
+      position: relative;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sig-inline-preview img {
+      max-width: 100%;
+      max-height: 80px;
+    }
+
+    .sig-draw-surface.has-signature .btn-open-modal {
+      display: none;
+    }
+
+    .image-thumbnail-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+    }
+
+    .comments-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--border-soft);
+      gap: 1px;
+    }
+
+    .comments-cell {
+      background: var(--surface);
+      padding: 12px;
+    }
+
+    .ql-container {
+      min-height: 100px;
+      font-size: 13px;
+      border: 1px solid var(--border-soft) !important;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--gap-md);
+      padding: 12px 15px;
+      background: var(--header-bg);
+      border: 2px solid var(--border);
+      margin-top: var(--gap-lg);
+    }
+
+    .btn {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: var(--bg);
+      border-color: var(--border);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-clear {
+      border-color: var(--border);
+    }
+
+    .btn-clear:hover {
+      background: var(--error-bg);
+      border-color: var(--color-error);
+      color: var(--color-error);
+    }
+
+    .btn-print.completed {
+      background: var(--low-bg);
+      border-color: var(--low);
+      color: var(--low);
+    }
+
+    .sig-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sig-modal.open {
+      display: flex;
+    }
+
+    .sig-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .sig-modal-panel {
+      position: relative;
+      width: min(720px, 94vw);
+      background: white;
+      border: 1px solid var(--border);
+    }
+
+    .sig-modal-canvas-wrap {
+      height: 240px;
+      border: 1px dashed var(--border-soft);
+    }
+
+    .signature-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media print {
+
+      .no-print,
+      .actions,
+      .progress-strip,
+      .sec-badge,
+      .chevron,
+      .btn-clear,
+      .signature-pad-tabs,
+      .ql-toolbar {
+        display: none !important;
+      }
+
+      .sec-body {
+        display: block !important;
+      }
+
+      .card,
+      .header {
+        break-inside: avoid;
+      }
+
+      body {
+        padding: 0;
+        background: white;
+      }
+
+      .field-input:valid {
+        background: #f0f9f0;
+      }
+    }
+
+    @media(max-width: 600px) {
+
+      .meta-grid,
+      .sig-grid,
+      .comments-grid {
+        display: flex !important;
+        flex-direction: column;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js"></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <form class="shell" id="check_form">
+    <div class="header">
+      <div><img class="header-logo"
+          src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-reversed.jpg"
+          alt="BC Hydro logo"></div>
+      <div>
+        <div class="header-title">Distribution Engineering</div>
+        <div class="header-sub">Check &amp; Review Form</div>
+      </div>
+    </div>
+    <main id="main">
+      <div class="progress-strip no-print" id="progressStrip">
+        <span class="progress-label">Completion</span><progress class="progress-track" id="progressBar" max="100"
+          value="0"></progress>
+        <div class="completion">
+          <span class="progress-pct" id="progressPct">0</span>
+          <span class="material-symbols-sharp">percent</span>
+        </div>
+      </div>
+      <div class="card" id="card-info">
+        <div class="sec-head open" id="sec-info-head">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-info">
+              <span class="material-symbols-sharp">info_i</span>
+            </div>
+            <span class="sec-title">Work Information</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn">Clear</button>
+            <svg class="chevron" viewbox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body open" id="sec-info-body">
+          <div class="meta-grid">
+            <div class="meta-cell work-title-cell">
+              <label class="field-label" for="workTitle">Work Title</label>
+              <input class="field-input" id="workTitle" name="workTitle" required>
+              <div class="required-field-underline"></div>
+            </div>
+            <div class="meta-cell revision-cell">
+              <label class="field-label" for="revision">Revision</label><input class="field-input" id="revision"
+                name="revision" type="number" min="0" value="0" required>
+              <div class="required-field-underline"></div>
+            </div>
+            <div class="meta-cell role-cell">
+              <div class="field-label">Your Role</div>
+              <div class="role-selector"><input type="radio" name="sc_role" id="sc_role_eng" value="Engineer"
+                  checked><label for="sc_role_eng">Engineer</label><input type="radio" name="sc_role" id="sc_role_eit"
+                  value="Engineer-in-Training"><label for="sc_role_eit">Engineer-in-Training</label>
+              </div>
+              <div class="required-field-underline"></div>
+            </div>
+            <div class="meta-cell risk-level-cell">
+              <div class="field-label">Risk Level</div>
+              <div class="risk-row" id="riskButtons">
+                <button class="risk-btn" type="button" data-risk="low">Low</button>
+                <button class="risk-btn" type="button" data-risk="medium">Medium</button>
+                <button class="risk-btn" type="button" data-risk="high">High</button>
+              </div>
+              <div class="required-field-underline"></div>
+            </div>
+            <div class="meta-cell deliverable-cell">
+              <label class="field-label" for="deliverable">Deliverable</label>
+              <select class="field-input" id="deliverable" name="deliverable" required>
+                <option value="" disabled selected>Choose…</option>
+                <option>Memo</option>
+                <option>Standard Form</option>
+                <option>Settings Sheet</option>
+                <option>Preliminary Design</option>
+                <option>Detailed Design</option>
+                <option>Final Design</option>
+                <option>In Construction</option>
+                <option>Report</option>
+              </select>
+              <div class="required-field-underline"></div>
+            </div>
+            <div class="meta-cell review-level-cell">
+              <label class="field-label" for="minCheckLevel">Min Check
+                Level</label>
+              <select class="field-input" id="minCheckLevel" required>
+                <option value="" disabled selected>Select level…</option>
+                <option>Self-Check</option>
+                <option>Check</option>
+                <option>Peer Review</option>
+                <option>Type 1 Independent Review Required</option>
+              </select>
+              <div class="required-field-underline"></div>
+            </div>
+            <div class="meta-cell engineer-cell">
+              <label class="field-label" for="engineer">Engineer</label><input class="field-input" id="engineer"
+                name="engineer" required>
+              <div class="required-field-underline"></div>
+            </div>
+            <div class="meta-cell checker-cell">
+              <label class="field-label" for="checker">Checker</label><input class="field-input" id="checker"
+                type="text" disabled>
+              <div class="required-field-underline"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="card-sc">
+        <div class="sec-head open" id="sec1-head">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-1">1</div>
+            <span class="sec-title">Self-Check</span>
+            <span class="sec-badge" id="badge-1">0 / 11</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" id="clearSec1Btn">Clear</button>
+            <svg class="chevron" viewbox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body open" id="s1">
+          <div id="sc-rows" data-section="sc"></div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div>
+                <label class="field-label" for="sc_date">Date</label><input class="field-input" id="sc_date"
+                  name="sc_date" type="date" required>
+                <div class="required-field-underline"></div>
+              </div>
+              <div>
+                <label class="field-label" for="sc_name">Name (Engineer)</label><input class="field-input" id="sc_name"
+                  name="sc_name" required>
+                <div class="required-field-underline"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label">Signature</div>
+              <div class="signature-pad-container" id="scSigContainer" data-prefix="sc">
+                <div class="sig-tab-content active">
+                  <select class="field-input" id="sc_certSelect" disabled></select>
+                  <div class="info-text" id="sc_certInfo"></div>
+                </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="sc_btnRefreshCerts" type="button">Get Consigno
+                    Certificates</button>
+                  <button class="btn btn-sig-tab" id="sc_btnSign" type="button" style="display:none;">Sign</button>
+                </div>
+              </div><input type="hidden" id="sc_sig_data" name="sc_sig_data">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card hidden" id="card-ds">
+        <div class="sec-head" id="sec2-head">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-2">2</div>
+            <span class="sec-title">Direct Supervision</span>
+            <span class="sec-badge" id="badge-2">0 / 5</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" id="clearSec2Btn">Clear</button>
+            <svg class="chevron" viewbox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body" id="s2">
+          <div id="ds-rows" data-section="ds"></div>
+        </div>
+      </div>
+      <div class="card hidden" id="card-ch">
+        <div class="sec-head" id="sec3-head">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-3">3</div>
+            <span class="sec-title">Check</span>
+            <span class="sec-badge" id="badge-3">0 / 10</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" id="clearSec3Btn">Clear</button>
+            <svg class="chevron" viewbox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body" id="s3">
+          <div id="ch-rows" data-section="ch"></div>
+          <div class="notice warn hidden" id="chNotice">⚠️ A "No" answer requires Team Lead Peer Review.</div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div>
+                <label class="field-label" for="ch_date">Date</label><input class="field-input" id="ch_date"
+                  name="ch_date" type="date" required>
+                <div class="required-field-underline"></div>
+              </div>
+              <div>
+                <label class="field-label" for="ch_name">Name (Checker)</label><input class="field-input" id="ch_name"
+                  name="ch_name" required>
+                <div class="required-field-underline"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label">Signature</div>
+              <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
+                <div class="sig-tab-content active">
+                  <select class="field-input" id="ch_certSelect" disabled></select>
+                  <div class="info-text" id="ch_certInfo"></div>
+                </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="ch_btnRefreshCerts">Get Consigno
+                    Certificates</button>
+                  <button class="btn btn-sig-tab" id="ch_btnSign" style="display:none;">Sign</button>
+                </div>
+              </div><input type="hidden" id="ch_sig_data" name="ch_sig_data">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card hidden" id="card-pr">
+        <div class="sec-head" id="sec4-head">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-4">4</div>
+            <span class="sec-title">Peer Review</span>
+            <span class="sec-badge" id="badge-4">0 / 9</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" id="clearSec4Btn">Clear</button>
+            <svg class="chevron" viewbox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body" id="s4">
+          <div id="pr-rows" data-section="pr"></div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div>
+                <label class="field-label" for="pr_date">Date</label><input class="field-input" id="pr_date"
+                  name="pr_date" type="date" required>
+                <div class="required-field-underline"></div>
+              </div>
+              <div>
+                <label class="field-label" for="pr_name">Peer Reviewer</label><input class="field-input" id="pr_name"
+                  name="pr_name" required>
+                <div class="required-field-underline"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label">Signature</div>
+              <div class="signature-pad-container" id="prSigContainer" data-prefix="pr">
+                <div class="sig-tab-content active">
+                  <select class="field-input" id="pr_certSelect" disabled></select>
+                  <div class="info-text" id="pr_certInfo"></div>
+                </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="pr_btnRefreshCerts">Get Consigno
+                    Certificates</button>
+                  <button class="btn btn-sig-tab" id="pr_btnSign" style="display:none;">Sign</button>
+                </div>
+              </div><input type="hidden" id="pr_sig_data" name="pr_sig_data">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card hidden" id="card-comments">
+        <div class="sec-head" id="sec5-head">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-5">5</div>
+            <span class="sec-title">Comments &amp; Actions</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" id="clearSec5Btn">Clear</button>
+            <svg class="chevron" viewbox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body" id="s5">
+          <div class="comments-grid" id="commentsGrid">
+            <div class="comments-cell">
+              <label class="field-label">Checker Comments</label>
+              <div class="rich-text-wrapper">
+                <div id="checkerComments-editor">
+                  <div class="ql-editor"></div>
+                </div><input type="hidden" name="checkerComments" id="checkerComments">
+              </div>
+            </div>
+            <div class="comments-cell">
+              <label class="field-label">Engineer Response</label>
+              <div class="rich-text-wrapper">
+                <div id="engineerResponse-editor">
+                  <div class="ql-editor"></div>
+                </div><input type="hidden" name="engineerResponse" id="engineerResponse">
+              </div>
+            </div>
+            <div class="comments-cell hidden" id="commentsCell3">
+              <label class="field-label">Reviewer Comments</label>
+              <div class="rich-text-wrapper">
+                <div id="reviewerComments-editor">
+                  <div class="ql-editor"></div>
+                </div><input type="hidden" name="reviewerComments" id="reviewerComments">
+              </div>
+            </div>
+            <div class="comments-cell hidden" id="commentsCell4">
+              <label class="field-label">Engineer Response 2</label>
+              <div class="rich-text-wrapper">
+                <div id="engineerResponse_2-editor">
+                  <div class="ql-editor"></div>
+                </div><input type="hidden" name="engineerResponse_2" id="engineerResponse_2">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card hidden" id="card-final">
+        <div class="sec-head" id="sec6-head">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-6">6</div>
+            <span class="sec-title">Final Signatures</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" id="clearSec6Btn">Clear</button>
+            <svg class="chevron" viewbox="0 0 20 20" fill="currentColor">
+              <path
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body" id="s6">
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div>
+                <label class="field-label" for="fT1Date">Date</label><input class="field-input" id="fT1Date"
+                  name="fT1Date" type="date" required>
+                <div class="required-field-underline"></div>
+              </div>
+              <div>
+                <label class="field-label" for="fT1">Type 1 Reviewer</label><input class="field-input" id="fT1"
+                  name="fT1" required>
+                <div class="required-field-underline"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label">DE TL Signature</div>
+              <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1">
+                <div class="sig-tab-content active">
+                  <select class="field-input" id="fT1_certSelect" disabled></select>
+                  <div class="info-text" id="fT1_certInfo"></div>
+                </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="fT1_btnRefreshCerts">Get Consigno
+                    Certificates</button>
+                  <button class="btn btn-sig-tab" id="fT1_btnSign" style="display:none;">Sign</button>
+                </div>
+              </div><input type="hidden" id="fT1_sig_data" name="fT1_sig_data">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notice info hidden" id="globalNotice">
+        <span class="material-symbols-sharp">info</span>
+        <div id="globalNoticeText"></div>
+        <div class="notice-actions">
+          <button class="notice-close" id="dismissNoticeBtn">✖</button>
+        </div>
+      </div>
+      <div class="sig-modal" id="sigModal">
+        <div class="sig-modal-backdrop" data-action="close-sig-modal"></div>
+        <div class="sig-modal-panel">
+          <div class="sig-modal-head">
+            <span class="sig-modal-title">Draw Signature</span>
+            <button class="btn" data-action="close-sig-modal">Close</button>
+          </div>
+          <div class="sig-modal-body">
+            <div class="sig-modal-canvas-wrap">
+              <canvas id="sigModalCanvas" class="signature-canvas"></canvas>
+            </div>
+          </div>
+          <div class="sig-modal-actions">
+            <button class="btn-clear" data-action="clear-sig-modal">Clear</button>
+            <button class="btn-primary" data-action="save-sig-modal">Save</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div class="actions no-print">
+      <div><input type="file" id="draftImportInput" accept="application/json" hidden><button class="btn"
+          id="exportDraftBtn">Export Data</button>
+        <button class="btn" id="importDraftBtn">Import Data</button>
+        <button class="btn btn-print" id="saveAsPdfBtn">Print / PDF</button>
+      </div>
+      <div>
+        <button class="btn-clear" id="resetFormBtn">Reset Form</button>
+      </div>
+    </div>
+  </form>
+</body>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cloudfront.notarius.com/certifio-manager.js"></script>
+<script>
+  (function () {
+    "use strict";
+    const SC_ITEMS = [
+      "Meets client/user objectives and requirements?",
+      "Meets construction/operation requirements?",
+      "Relevant field observations and data used?",
+      "Have appropriate text and grammar been used?",
+      "Meets BCH format and template standards?",
+      "Includes standard BCH waivers/disclaimers?",
+      "Completed with correct calculations / up-to-date software?",
+      "Engineering Work is deemed as 'Low Risk' as per the latest DE Documents and Processes sheet, or per a completed Project Based Risk Assessment for work not listed in that sheet.",
+      "Work is a non-standard structural design.",
+      "Work is defined as 'High-Risk'.",
+      "I am the Professional of Record and have sufficient experience and knowledge in the discipline and type of work to self-check."
+    ];
+    const DS_ITEMS = [
+      "I have active involvement, control, and interaction in delegated work.",
+      "I have adequate supervision of field reviews.",
+      "I am involved in all engineering and geoscience decisions.",
+      "I have provided supervision appropriate to the experience of the professional registrant and subordinate.",
+      "Supporting documentation such as meeting minutes, markups, discussion notes and dates are recorded in writing and kept."
+    ];
+    const CH_ITEMS = [
+      "I have sufficient experience and knowledge in the discipline and type of work to complete a check.",
+      "Meets client/user objectives and requirements?",
+      "Meets construction/operation requirements?",
+      "Relevant field observations and data used?",
+      "Have appropriate text and grammar been used?",
+      "Meets BCH format and drawing standards?",
+      "Includes standard BCH waivers/disclaimers?",
+      "Completed with correct calculations / up-to-date software?",
+      "Meets applicable codes, standards, regulations and bylaws?",
+      "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?"
+    ];
+    const PR_ITEMS = [
+      "Meets client/user objectives and requirements?",
+      "Meets construction/operation requirements?",
+      "Meets applicable codes, standards, regulations and bylaws?",
+      "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?",
+      "Meets health, safety and environmental requirements?",
+      "Meets other stakeholders (e.g. Local Government, First Nations) requirements?",
+      "Have all major risks been identified?",
+      "Considered safety by design?",
+      "Have opportunities for innovation or cost savings been identified?"
+    ];
+    const RISK_MAP = {
+      low: {
+        sc8: 'yes',
+        sc10: 'no'
+      },
+      medium: {
+        sc8: 'no',
+        sc10: 'no'
+      },
+      high: {
+        sc8: 'no',
+        sc10: 'yes'
+      }
+    };
+
+    class CheckForm {
+      constructor() {
+        this.elements = this.cacheElements();
+        this.quillEditors = {};
+        this.signatureModal = null;
+        this.activeSignaturePrefix = null;
+        this.init();
+      }
+      cacheElements () {
+        const get = id => document.getElementById(id);
+        return {
+          progressBar: get('progressBar'),
+          progressPct: get('progressPct'),
+          progressStrip: get('progressStrip'),
+          workTitle: get('workTitle'),
+          engineer: get('engineer'),
+          checker: get('checker'),
+          minCheckLevel: get('minCheckLevel'),
+          revision: get('revision'),
+          cardSc: get('card-sc'),
+          cardDs: get('card-ds'),
+          cardCh: get('card-ch'),
+          cardPr: get('card-pr'),
+          cardComments: get('card-comments'),
+          cardFinal: get('card-final'),
+          chNotice: get('chNotice'),
+          globalNotice: get('globalNotice'),
+          globalNoticeText: get('globalNoticeText'),
+          commentsCell3: get('commentsCell3'),
+          commentsCell4: get('commentsCell4'),
+          badge1: get('badge-1'),
+          num1: get('snum-1'),
+          badge2: get('badge-2'),
+          num2: get('snum-2'),
+          badge3: get('badge-3'),
+          num3: get('snum-3'),
+          badge4: get('badge-4'),
+          num4: get('snum-4'),
+          scRows: get('sc-rows'),
+          dsRows: get('ds-rows'),
+          chRows: get('ch-rows'),
+          prRows: get('pr-rows'),
+          scName: get('sc_name'),
+          chName: get('ch_name'),
+          riskBtns: document.querySelectorAll('.risk-btn'),
+          roleRadios: document.getElementsByName('sc_role'),
+          engLabel: document.querySelector('#engineer_eit .field-label'),
+          scNameLabel: document.querySelector('label[for="sc_name"]'),
+          scSigLabel: document.querySelector('#sc_sig'),
+          wiLabel: document.querySelector('#checker_por .field-label'),
+          chNameLabel: document.querySelector('label[for="ch_name"]'),
+          s2Body: get('s2'),
+          s2Head: get('sec2-head'),
+          s3Body: get('s3'),
+          s3Head: get('sec3-head'),
+          s4Body: get('s4'),
+          s4Head: get('sec4-head'),
+          s5Body: get('s5'),
+          s5Head: get('sec5-head'),
+          s6Body: get('s6'),
+          s6Head: get('sec6-head')
+        };
+      }
+      init () {
+        this.buildAllRows();
+        this.attachEvents();
+        this.initQuillEditors();
+        this.initSignatureModal();
+        this.updateProgress();
+        this.syncAllSectionVisibility();
+        this.updateRoleLabels(true);
+        window.deCheckForm = this;
+      }
+      buildAllRows () {
+        this.buildRows(this.elements.scRows, 'sc', SC_ITEMS, new Set([8, 9, 10, 11]));
+        this.buildRows(this.elements.dsRows, 'ds', DS_ITEMS);
+        this.buildRows(this.elements.chRows, 'ch', CH_ITEMS, new Set([1]));
+        this.buildRows(this.elements.prRows, 'pr', PR_ITEMS);
+      }
+      buildRows (container, prefix, items, binarySet = new Set()) {
+        if (!container)
+          return;
+
+        container.innerHTML = '';
+        const sectionNum = {
+          sc: '1',
+          ds: '2',
+          ch: '3',
+          pr: '4'
+        }[prefix];
+        items.forEach((text, idx) => {
+          const n = idx + 1,
+            isBinary = binarySet.has(n);
+          const row = document.createElement('div');
+          row.className = 'check-row';
+          const numSpan = document.createElement('span');
+          numSpan.className = 'check-num';
+          numSpan.textContent = `${sectionNum}.${n}`;
+          const textSpan = document.createElement('span');
+          textSpan.className = 'check-text';
+          textSpan.innerHTML = text;
+          const pillGroup = document.createElement('div');
+          pillGroup.className = `pill-group${isBinary ? ' pill-group--yes-no' : ''
+            }`;
+          const name = `${prefix}${n}`;
+          const addRadio = (val, lbl, disabled = false) => {
+            const id = `${name}_${val}`,
+              radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = name;
+            radio.id = id;
+            radio.value = val;
+            if (disabled)
+              radio.disabled = true;
+
+            const label = document.createElement('label');
+            label.htmlFor = id;
+            label.textContent = lbl;
+            return { radio, label };
+          };
+          if (isBinary) {
+            const yes = addRadio('yes', 'Yes'),
+              no = addRadio('no', 'No'),
+              na = addRadio('na', ' ', true);
+            pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
+          } else {
+            const yes = addRadio('yes', 'Yes'),
+              no = addRadio('no', 'No'),
+              na = addRadio('na', 'N/A');
+            pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
+          }
+          const noticeStack = document.createElement('div');
+          noticeStack.className = 'row-notice-stack hidden';
+          noticeStack.id = `${name}_notice_stack`;
+          row.append(numSpan, textSpan, pillGroup, noticeStack);
+          container.appendChild(row);
+        });
+      }
+      attachEvents () {
+        document.addEventListener('click', this.handleClick.bind(this));
+        document.addEventListener('change', this.handleChange.bind(this));
+        document.addEventListener('input', this.handleInput.bind(this));
+        [
+          'clearWorkInfoBtn',
+          'clearSec1Btn',
+          'clearSec2Btn',
+          'clearSec3Btn',
+          'clearSec4Btn',
+          'clearSec5Btn',
+          'clearSec6Btn',
+          'resetFormBtn',
+          'exportDraftBtn',
+          'importDraftBtn',
+          'saveAsPdfBtn',
+          'dismissNoticeBtn'
+        ].forEach(id => {
+          const btn = document.getElementById(id);
+          if (btn)
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              this[id]?.();
+            });
+
+        });
+        document.getElementById('saveAsPdfBtn')?.addEventListener('click', (e) => this.printFormAsPdf(e));
+        document.getElementById('resetFormBtn')?.addEventListener('click', () => this.resetForm());
+        document.getElementById('exportDraftBtn')?.addEventListener('click', () => this.exportDraftJson());
+        document.getElementById('importDraftBtn')?.addEventListener('click', () => document.getElementById('draftImportInput')?.click());
+        document.getElementById('draftImportInput')?.addEventListener('change', e => this.importDraftJson(e));
+      }
+      handleClick (e) {
+        const tabBtn = e.target.closest('.btn-sig-tab');
+        if (tabBtn && tabBtn.closest('.signature-pad-container')) {
+          e.preventDefault();
+          this.changeSignatureTab(tabBtn);
+          return;
+        }
+        const openSig = e.target.closest('.btn-open-modal');
+        if (openSig) {
+          e.preventDefault();
+          const prefix = openSig.getAttribute('data-prefix');
+          if (prefix)
+            this.openSignatureModal(prefix);
+
+          return;
+        }
+        const clearInline = e.target.closest('.image-thumbnail-remove');
+        if (clearInline) {
+          e.preventDefault();
+          const prefix = clearInline.getAttribute('data-prefix');
+          if (prefix)
+            this.clearSignature(prefix);
+
+          return;
+        }
+        if (e.target.closest('[data-action="close-sig-modal"]')) {
+          this.closeSignatureModal(false);
+          return;
+        }
+        if (e.target.closest('[data-action="save-sig-modal"]')) {
+          this.closeSignatureModal(true);
+          return;
+        }
+        if (e.target.closest('[data-action="clear-sig-modal"]')) {
+          this.clearModalSignature();
+          return;
+        }
+        if (e.target.classList.contains('risk-btn')) {
+          this.setRiskLevel(e.target.dataset.risk);
+          this.showRiskNotices();
+        }
+        const head = e.target.closest('.sec-head');
+        if (head && !e.target.closest('button, input, select, a')) {
+          this.toggleSection(head);
+        }
+      }
+      handleChange (e) {
+        if (e.target.matches('input[type="radio"]')) {
+          this.updateProgress();
+          if (e.target.name === 'sc_role')
+            this.updateRoleLabels(true);
+
+          if (e.target.name === 'sc11')
+            this.syncDirectSupervision();
+
+          this.showRiskNotices();
+          this.syncSectionVisibility();
+        }
+        if (e.target.id === 'minCheckLevel')
+          this.syncSectionVisibility();
+
+      }
+      handleInput (e) {
+        if (e.target.id === 'engineer')
+          this.elements.scName.value = e.target.value;
+
+        if (e.target.id === 'sc_name')
+          this.elements.engineer.value = e.target.value;
+
+        if (e.target.id === 'checker' && !this.elements.cardCh.classList.contains('hidden'))
+          this.elements.chName.value = e.target.value;
+
+        if (e.target.id === 'ch_name')
+          this.elements.checker.value = e.target.value;
+
+        this.updateProgress();
+      }
+      toggleSection (head) {
+        head.classList.toggle('open');
+        const body = document.getElementById(head.getAttribute('aria-controls'));
+        if (body)
+          body.classList.toggle('open');
+
+      }
+      setRiskLevel (level) {
+        this.elements.riskBtns.forEach(b => b.classList.remove('active'));
+        const btn = document.querySelector(`.risk-btn[data-risk="${level}"]`);
+        if (btn)
+          btn.classList.add('active');
+
+        const map = {
+          low: 'Self-Check',
+          medium: 'Check',
+          high: 'Type 1 Independent Review Required'
+        };
+        if (map[level])
+          this.elements.minCheckLevel.value = map[level];
+
+        this.updateProgress();
+        this.syncSectionVisibility();
+      }
+      getActiveRiskLevel () {
+        return Array.from(this.elements.riskBtns).find(b => b.classList.contains('active'))?.dataset?.risk ?? null;
+      }
+      showRiskNotices () {
+        const level = this.getActiveRiskLevel(),
+          exp = level ? RISK_MAP[level] : null;
+        const getVal = n => this.elements.scRows?.querySelector(`input[name="sc${n}"]:checked`)?.value;
+        const sc8 = getVal(8),
+          sc9 = getVal(9),
+          sc10 = getVal(10);
+        const blocks8 = [];
+        if (exp && sc8 && sc8 !== 'na' && sc8 !== exp.sc8)
+          blocks8.push({
+            message: `Inconsistent with Risk Level (${level}). Expected "${exp.sc8 === 'yes' ? 'Yes' : 'No'
+              }"`,
+            type: 'error'
+          });
+
+        this.renderNoticeStack('sc', 8, blocks8);
+        const blocks9 = [];
+        if (sc9 === 'yes')
+          blocks9.push({ message: `Non-standard structural design: complete Independent Structural Review form.`, type: 'warn' });
+
+        this.renderNoticeStack('sc', 9, blocks9);
+        const blocks10 = [];
+        if (exp && sc10 && sc10 !== 'na' && sc10 !== exp.sc10)
+          blocks10.push({
+            message: `Risk mismatch: expected "${exp.sc10 === 'yes' ? 'Yes' : 'No'
+              }"`,
+            type: 'error'
+          });
+
+        if (sc10 === 'yes')
+          blocks10.push({ message: `High-Risk: Type 1 Independent Review required.`, type: 'warn' });
+
+        this.renderNoticeStack('sc', 10, blocks10);
+      }
+      renderNoticeStack (prefix, n, blocks) {
+        const stack = document.getElementById(`${prefix}${n}_notice_stack`);
+        if (!stack)
+          return;
+
+        if (!blocks.length) {
+          stack.innerHTML = '';
+          stack.classList.add('hidden');
+          return;
+        }
+        stack.classList.remove('hidden');
+        stack.innerHTML = blocks.map(
+          b => `<div class="notice ${b.type
+            }"><span class="material-symbols-sharp">${b.type === 'error' ? 'error' : 'warning'
+            }</span><span>${b.message
+            }</span></div>`
+        ).join('');
+      }
+      syncDirectSupervision () {
+        const noChecked = document.getElementById('sc11_no')?.checked ?? false;
+        this.elements.cardDs.classList.toggle('hidden', !noChecked);
+        if (this.elements.s2Body && this.elements.s2Head) {
+          this.elements.s2Head.classList.toggle('open', noChecked);
+          this.elements.s2Body.classList.toggle('open', noChecked);
+        }
+      }
+      syncSectionVisibility () {
+        const isEit = document.querySelector('input[name="sc_role"]:checked')?.value === 'Engineer-in-Training';
+        const q111No = document.getElementById('sc11_no')?.checked ?? false;
+        const isHighRisk = this.getActiveRiskLevel() === 'high';
+        const minLevel = this.elements.minCheckLevel.value;
+        const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
+        this.elements.cardCh.classList.toggle('hidden', !showCheck);
+        this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, showCheck);
+        if (showCheck)
+          this.elements.checker.required = true,
+            this.elements.checker.disabled = false;
+        else
+          this.elements.checker.required = false,
+            this.elements.checker.disabled = true;
+
+        const chHasNo = !!this.elements.chRows?.querySelector('input[value="no"]:checked');
+        const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk;
+        this.elements.cardPr.classList.toggle('hidden', !showPeer);
+        const commentsShown = !this.elements.cardDs.classList.contains('hidden') || !this.elements.cardCh.classList.contains('hidden') || !this.elements.cardPr.classList.contains('hidden');
+        this.elements.cardComments.classList.toggle('hidden', !commentsShown);
+        this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, commentsShown);
+        const prAnswered = (this.elements.prRows?.querySelectorAll('input[type="radio"]:checked').length ?? 0) > 0;
+        this.elements.commentsCell3.classList.toggle('hidden', !(showPeer && prAnswered));
+        this.elements.commentsCell4.classList.toggle('hidden', !(showPeer && prAnswered));
+        const finalShown = showPeer || isHighRisk;
+        this.elements.cardFinal.classList.toggle('hidden', !finalShown);
+        this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, prAnswered && finalShown);
+      }
+      setSectionOpen (head, body, open) {
+        if (head && body) {
+          head.classList.toggle('open', open);
+          body.classList.toggle('open', open);
+          head.setAttribute('aria-expanded', String(open));
+        }
+      }
+      updateRoleLabels (resetSc11) {
+        const isEit = document.querySelector('input[name="sc_role"]:checked')?.value === 'Engineer-in-Training';
+        if (resetSc11 && isEit)
+          document.getElementById('sc11_no')?.click();
+
+        this.elements.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
+        this.elements.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
+        if (this.elements.scSigLabel)
+          this.elements.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
+
+        const usePor = (document.getElementById('sc11_no')?.checked ?? false) || isEit;
+        const secondShort = usePor ? 'POR' : 'Checker';
+        if (this.elements.wiLabel)
+          this.elements.wiLabel.textContent = usePor ? 'Professional of Record' : 'Checker';
+
+        if (this.elements.chNameLabel)
+          this.elements.chNameLabel.textContent = `Name (${secondShort})`;
+
+        this.syncSectionVisibility();
+      }
+      updateProgress () {
+        const sections = [
+          {
+            rows: this.elements.scRows,
+            count: SC_ITEMS.length,
+            badge: this.elements.badge1,
+            num: this.elements.num1,
+            label: '1',
+            cardId: 'card-sc'
+          }, {
+            rows: this.elements.dsRows,
+            count: DS_ITEMS.length,
+            badge: this.elements.badge2,
+            num: this.elements.num2,
+            label: '2',
+            cardId: 'card-ds'
+          }, {
+            rows: this.elements.chRows,
+            count: CH_ITEMS.length,
+            badge: this.elements.badge3,
+            num: this.elements.num3,
+            label: '3',
+            cardId: 'card-ch'
+          }, {
+            rows: this.elements.prRows,
+            count: PR_ITEMS.length,
+            badge: this.elements.badge4,
+            num: this.elements.num4,
+            label: '4',
+            cardId: 'card-pr'
+          }
+        ];
+        let total = 0,
+          answered = 0;
+        sections.forEach(s => {
+          const hidden = document.getElementById(s.cardId)?.classList.contains('hidden');
+          const cnt = s.rows ? s.rows.querySelectorAll('input[type="radio"]:checked').length : 0;
+          if (s.badge)
+            s.badge.textContent = `${cnt} / ${s.count
+              }`;
+
+          if (s.num) {
+            if (cnt === s.count) {
+              s.num.classList.add('complete');
+              s.num.innerHTML = '<span class="material-symbols-sharp">check</span>';
+            } else {
+              s.num.classList.remove('complete');
+              s.num.textContent = s.label;
+            }
+          }
+          if (!hidden && (s.rowsId !== '#pr-rows' || cnt > 0)) {
+            total += s.count;
+            answered += cnt;
+          }
+        });
+        const pct = total ? Math.round((answered / total) * 100) : 0;
+        this.elements.progressBar.value = pct;
+        this.elements.progressPct.textContent = pct;
+        if (pct === 100)
+          this.elements.progressStrip.classList.add('completed');
+        else
+          this.elements.progressStrip.classList.remove('completed');
+
+      }
+      allRequiredFieldsValid () {
+        return Array.from(document.querySelectorAll('.required-field-underline')).every(el => !el.closest('.hidden') && parseFloat(getComputedStyle(el).borderBottomWidth) === 0);
+      }
+      printFormAsPdf (e) {
+        e.preventDefault();
+        this.updateProgress();
+        if (!this.allRequiredFieldsValid() || this.elements.progressBar.value < 100) {
+          this.toast('Complete all required fields and reach 100%', 'error');
+          return;
+        }
+        window.print();
+      }
+      toast (msg, type = 'info') {
+        this.elements.globalNoticeText.innerHTML = msg;
+        this.elements.globalNotice.classList.remove('hidden', 'info', 'success', 'error');
+        this.elements.globalNotice.classList.add(type);
+        setTimeout(() => this.elements.globalNotice.classList.add('hidden'), 4000);
+      }
+      clearSection (sectionId) {
+        const sec = document.getElementById(sectionId);
+        if (!sec)
+          return;
+
+        sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        sec.querySelectorAll('input:not([type="radio"]), select, textarea').forEach(i => i.value = '');
+        sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
+        this.syncAllQuillText();
+        setTimeout(() => {
+          this.updateProgress();
+          this.syncSectionVisibility();
+          this.toast('Section cleared', 'info');
+        }, 50);
+      }
+      syncAllQuillText () {
+        if (this.quillEditors)
+          Object.values(this.quillEditors).forEach(q => {
+            const html = q.root.innerHTML;
+            q.root.innerHTML = '';
+            if (html)
+              q.root.innerHTML = '';
+
+            document.getElementById(q.container?.parentElement?.querySelector('input')?.id)?.setAttribute('value', '');
+          });
+
+      }
+      resetForm () {
+        if (confirm('Reset entire form?')) {
+          [
+            'sec-info-body',
+            's1',
+            's2',
+            's3',
+            's4',
+            's5',
+            's6'
+          ].forEach(id => this.clearSection(id));
+          document.getElementById('sc_role_eng').checked = true;
+          this.elements.revision.value = '0';
+          this.toast('Form reset', 'info');
+        }
+      }
+      exportDraftJson () {
+        const data = {};
+        new FormData(document.getElementById('check_form')).forEach((v, k) => data[k] = v);
+        data.riskLevel = this.getActiveRiskLevel();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'DE_CheckForm_draft.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+      importDraftJson (e) {
+        const file = e.target.files[0];
+        if (!file)
+          return;
+
+        const reader = new FileReader();
+        reader.onload = ev => {
+          try {
+            const data = JSON.parse(ev.target.result);
+            Object.entries(data).forEach(([k, v]) => {
+              const el = document.querySelector(`[name="${k}"]`) || document.getElementById(k);
+              if (el)
+                el.value = v;
+
+            });
+            this.setRiskLevel(data.riskLevel);
+            this.updateProgress();
+            this.syncSectionVisibility();
+            this.toast('Imported', 'success');
+          } catch (err) {
+            this.toast('Invalid file', 'error');
+          }
+        };
+        reader.readAsText(file);
+      }
+      initQuillEditors () {
+        ['checkerComments', 'engineerResponse', 'reviewerComments', 'engineerResponse_2'].forEach(id => {
+          const container = document.getElementById(`${id}-editor`);
+          if (container) {
+            const quill = new Quill(container, {
+              theme: 'snow',
+              modules: {
+                toolbar: [
+                  [
+                    'bold', 'italic', 'underline'
+                  ],
+                  [
+                    {
+                      'list': 'ordered'
+                    }
+                  ],
+                  ['link']
+                ]
+              },
+              placeholder: 'Enter text...'
+            });
+            this.quillEditors[id] = quill;
+            const hidden = document.getElementById(id);
+            quill.on('text-change', () => {
+              if (hidden)
+                hidden.value = quill.root.innerHTML;
+
+            });
+          }
+        });
+      }
+      initSignatureModal () {
+        this.signatureModal = document.getElementById('sigModal');
+        this.modalCanvas = document.getElementById('sigModalCanvas');
+        if (this.modalCanvas)
+          this.setupModalCanvasDrawing();
+
+      }
+      setupModalCanvasDrawing () {
+        const canvas = this.modalCanvas,
+          ctx = canvas.getContext('2d');
+        let drawing = false,
+          hasPointer = false,
+          lastX = 0,
+          lastY = 0;
+        const resize = () => {
+          const rect = canvas.parentElement.getBoundingClientRect();
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+          ctx.lineCap = 'round';
+          ctx.lineWidth = 3;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+        const draw = (x, y) => {
+          if (!drawing)
+            return;
+
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          [lastX, lastY] = [x, y];
+        };
+        canvas.addEventListener('pointerdown', e => {
+          drawing = true;
+          hasPointer = true;
+          const rect = canvas.getBoundingClientRect(),
+            scaleX = canvas.width / rect.width,
+            scaleY = canvas.height / rect.height;
+          lastX = (e.clientX - rect.left) * scaleX;
+          lastY = (e.clientY - rect.top) * scaleY;
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener('pointermove', e => {
+          if (!drawing)
+            return;
+
+          const rect = canvas.getBoundingClientRect(),
+            scaleX = canvas.width / rect.width,
+            scaleY = canvas.height / rect.height;
+          const x = (e.clientX - rect.left) * scaleX,
+            y = (e.clientY - rect.top) * scaleY;
+          draw(x, y);
+        });
+        canvas.addEventListener('pointerup', () => {
+          drawing = false;
+          hasPointer = false;
+        });
+        canvas.addEventListener('dblclick', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+      }
+      openSignatureModal (prefix) {
+        this.activeSignaturePrefix = prefix;
+        this.signatureModal.classList.add('open');
+        this.clearModalSignature();
+        const existing = document.getElementById(`${prefix}_sig_data`)?.value;
+        if (existing) {
+          const img = new Image();
+          img.onload = () => {
+            this.modalCanvas.getContext('2d').drawImage(img, 0, 0, this.modalCanvas.width, this.modalCanvas.height);
+          };
+          img.src = existing;
+        }
+      }
+      closeSignatureModal (save) {
+        if (save && this.activeSignaturePrefix) {
+          const dataUrl = this.modalCanvas.toDataURL();
+          document.getElementById(`${this.activeSignaturePrefix
+            }_sig_data`).value = dataUrl;
+          this.setSignaturePreview(this.activeSignaturePrefix, dataUrl);
+        }
+        this.signatureModal.classList.remove('open');
+        this.activeSignaturePrefix = null;
+      }
+      clearModalSignature () {
+        const ctx = this.modalCanvas.getContext('2d');
+        ctx.clearRect(0, 0, this.modalCanvas.width, this.modalCanvas.height);
+      }
+      setSignaturePreview (prefix, dataUrl) {
+        const container = document.querySelector(`#${prefix}SigContainer .sig-tab-content.active`);
+        if (!container)
+          return;
+
+        const previewDiv = container.querySelector('.sig-preview-img') || (() => {
+          const div = document.createElement('div');
+          div.className = 'sig-preview';
+          div.innerHTML = '<img style="max-height:60px">';
+          container.appendChild(div);
+          return div;
+        })();
+        const img = previewDiv.querySelector('img');
+        if (dataUrl) {
+          img.src = dataUrl;
+          previewDiv.style.display = 'block';
+        } else {
+          previewDiv.style.display = 'none';
+          img.removeAttribute('src');
+        }
+      }
+      clearSignature (prefix) {
+        document.getElementById(`${prefix}_sig_data`).value = '';
+        this.setSignaturePreview(prefix, '');
+      }
+      changeSignatureTab (btn) {
+        const container = btn.closest('.signature-pad-container');
+        const tabId = btn.getAttribute('aria-controls');
+        container.querySelectorAll('.sig-tab-content').forEach(c => c.classList.toggle('active', c.id === tabId));
+        container.querySelectorAll('.btn-sig-tab').forEach(b => b.classList.toggle('active', b === btn));
+      }
+    }
+    window.CheckFormInstance = new CheckForm();
+    // Certifio bridge
+    document.addEventListener('DOMContentLoaded', () => {
+      let certifioManager = null;
+      function initCertifio () {
+        try {
+          certifioManager = new CertifioManager('en');
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      document.querySelectorAll('.signature-pad-container').forEach(container => {
+        const prefix = container.dataset.prefix;
+        const certSelect = document.getElementById(`${prefix}_certSelect`),
+          btnRefresh = document.getElementById(`${prefix}_btnRefreshCerts`),
+          btnSign = document.getElementById(`${prefix}_btnSign`),
+          sigData = document.getElementById(`${prefix}_sig_data`);
+        if (!certSelect || !btnRefresh)
+          return;
+
+        const loadCerts = () => {
+          if (!certifioManager && !initCertifio())
+            return;
+
+          certSelect.disabled = true;
+          certifioManager.getCertificates(certs => {
+            certSelect.innerHTML = '';
+            certs.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c.deviceId;
+              opt.textContent = c.displayName || c.cn || '';
+              certSelect.appendChild(opt);
+            });
+            certSelect.disabled = false;
+            if (certSelect.value)
+              btnSign.style.display = 'block';
+            else
+              btnSign.style.display = 'none';
+
+          }, () => {
+            certSelect.innerHTML = '<option>Failed to load</option>';
+            certSelect.disabled = false;
+          });
+        };
+        btnRefresh.addEventListener('click', loadCerts);
+        btnSign?.addEventListener('click', async () => {
+          if (!certifioManager)
+            return;
+
+          const card = document.getElementById(`card-${prefix === 'fT1' ? 'final' : prefix
+            }`);
+          const infoCard = document.getElementById('card-info');
+          if (!card)
+            return;
+
+          btnSign.disabled = true;
+          btnSign.textContent = 'Signing...';
+          try {
+            const deviceId = certSelect.value;
+            const r1 = {
+              deviceId,
+              type: 'ENVELOPED',
+              data: card.outerHTML
+            };
+            const r2 = {
+              deviceId,
+              type: 'ENVELOPED',
+              data: infoCard.outerHTML
+            };
+            const sig1 = await new Promise((res, rej) => certifioManager.sign(r1, res, rej));
+            const sig2 = await new Promise((res, rej) => certifioManager.sign(r2, res, rej));
+            sigData.value = JSON.stringify([sig1, sig2]);
+            btnSign.textContent = 'Success';
+            btnSign.classList.add('success');
+          } catch (err) {
+            btnSign.textContent = 'Failed';
+            console.error(err);
+          } finally {
+            btnSign.disabled = false;
+          }
+        });
+        if (sigData?.value)
+          btnSign.style.display = 'block';
+
+      });
+    });
+  })();</script>

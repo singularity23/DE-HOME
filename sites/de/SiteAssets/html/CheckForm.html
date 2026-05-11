@@ -4,19 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="BC Hydro Distribution Engineering Check & Review Form">
+  <meta name="description" content="BC Hydro Distribution Engineering Check &amp; Review Form">
   <title>Distribution Engineering Check Form</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Fonts -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
-    rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&amp;family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&amp;display=swap"
     rel="stylesheet">
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&amp;display=swap"
     rel="stylesheet">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
@@ -153,7 +151,7 @@
       padding: 10px 12px;
       background: var(--surface);
       color: var(--text);
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
       border-radius: 0;
       z-index: 9;
       transform: translateY(-160%);
@@ -249,7 +247,7 @@
       background: var(--surface-inverse);
       color: var(--color-secondary);
       border-radius: 0;
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       margin-bottom: var(--gap-lg);
       display: flex;
       align-items: center;
@@ -313,7 +311,7 @@
 
     .progress-strip {
       background: var(--surface);
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       border-radius: 0;
       padding: var(--space-inset-y) var(--space-inset-x);
       margin-bottom: var(--gap-lg);
@@ -324,7 +322,7 @@
 
     .progress-strip.completed {
       background: color-mix(in srgb, var(--low-bg) 30%, #fff);
-      border: 2px solid color-mix(in srgb, var(--low-border) 60%, #fff);
+      border: 2pt solid color-mix(in srgb, var(--low-border) 60%, #fff);
     }
 
     .progress-strip.completed .material-symbols-sharp,
@@ -393,7 +391,7 @@
     7. Cards & Sections
     -------------------------------- */
     .card {
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       border-radius: 0;
       margin-bottom: var(--gap-lg);
       overflow: hidden;
@@ -416,7 +414,7 @@
       justify-content: space-between;
       padding: var(--space-inset-y) var(--space-inset-x);
       cursor: pointer;
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 2px solid var(--border-soft);
       user-select: none;
       gap: var(--gap-md);
       background: var(--header-bg);
@@ -458,7 +456,7 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
     }
 
     .sec-num.complete {
@@ -476,17 +474,29 @@
       text-transform: uppercase;
     }
 
+    .wrapper-badge {
+      display: grid;
+      /* Shorthand: vertical + horizontal centering */
+      place-items: center;
+      height: 28px;
+    }
+
     .sec-badge {
       font-family: 'Roboto', system-ui, sans-serif;
-      min-width: max-content;
       font-size: 0.75rem;
-      padding: 5px 10px;
+      padding: 0px 10px;
       border-radius: 0;
       background: var(--color-secondary);
       color: var(--color-primary);
       font-weight: 600;
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
       letter-spacing: 0.04em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      width: 84px;
+
     }
 
     .sec-right {
@@ -520,7 +530,7 @@
 
     .sec-banner {
       padding: var(--space-inset-y) var(--space-inset-x);
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 2px solid var(--border-soft);
       background: var(--surface);
     }
 
@@ -628,7 +638,7 @@
     .field-input {
       width: 100%;
       padding: var(--gap-xs) var(--gap-md);
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
       border-radius: 0;
       font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.875rem;
@@ -683,6 +693,14 @@
       overflow: hidden;
     }
 
+    .disabled {
+      opacity: 1;
+    }
+
+    input:disabled+label {
+      color: var(--text);
+    }
+
     .field-error {
       margin-top: 6px;
       font-size: 0.75rem;
@@ -699,6 +717,9 @@
     }
 
 
+    .role_selector input[name="sc_role"]:not(:checked):disabled+label {
+      border: 1px solid var(--color-error);
+    }
 
     input.field-input:valid+.required-field-underline,
     input.field-input:focus+.required-field-underline,
@@ -706,20 +727,26 @@
     select.field-input:focus+.required-field-underline,
     .role-selector:has(input[type='radio']:checked)+.required-field-underline,
     .risk-row:has(.risk-btn.active)+.required-field-underline,
-    input:not(:required)+.required-field-underline,
+    input:disabled+.required-field-underline,
+    select:disabled+.required-field-underline,
     .card.hidden .required-field-underline,
     .sec-body:not(.open) .required-field-underline {
       border-bottom-width: 0;
     }
 
-    input:disabled {
+    input:not(:required):disabled {
       opacity: 0.5;
       background-color: var(--muted-bg);
-      border: 1px solid color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
+      border: 2px solid color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
     }
 
-    .meta-cell:has(input:disabled) {
+    .meta-cell:has(input.field-input:not(:required):disabled) {
       opacity: 0.5;
+    }
+
+    .meta-cell:has(select:disabled),
+    select:disabled {
+      opacity: 1;
     }
 
     /* --------------------------------
@@ -756,7 +783,7 @@
     }
 
     .role-selector input[type='radio']:not(:checked)+label {
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
     }
 
     .role-selector input[id='sc_role_eng']:not(:checked)+label {
@@ -767,15 +794,20 @@
       border-left: 0px !important;
     }
 
+    .role-selector input[id='sc_role_eng']:not(:checked)+label {
+      border-right: 0px !important;
+    }
+
     .role-selector input[type='radio']:not(:checked)+label:hover {
       background: var(--color-info);
       color: var(--color-secondary);
-      border: 1px solid var(--color-info);
+      border: 2px solid var(--color-info);
     }
 
-    .role-selector input[type='radio']:checked+label {
+    .role-selector input[type='radio']:checked+label,
+    .role-selector input[type='radio']:checked:disabled+label {
       background: var(--color-tertiary);
-      border: 1px solid var(--color-info);
+      border: 2px solid var(--color-info);
       color: var(--color-info);
     }
 
@@ -799,8 +831,8 @@
       text-align: center;
       color: var(--text-muted);
       min-height: var(--touch-min);
-      border-top: 1px solid var(--border-soft);
-      border-bottom: 1px solid var(--border-soft);
+      border-top: 2px solid var(--border-soft);
+      border-bottom: 2px solid var(--border-soft);
       text-transform: uppercase;
       box-sizing: border-box;
       transition: color 0.2s ease, background 0.2s ease, border 0.1s ease;
@@ -813,13 +845,13 @@
 
     .risk-btn[data-risk='low'].active {
       background: var(--low-bg);
-      border: 1px solid var(--low-border);
+      border: 2px solid var(--low-border);
       color: var(--low);
     }
 
     .risk-btn[data-risk='high'].active {
       background: var(--high-bg);
-      border: 1px solid var(--high-border);
+      border: 2px solid var(--high-border);
       color: var(--high);
     }
 
@@ -837,7 +869,7 @@
 
     .risk-btn[data-risk='medium'].active {
       background: var(--medium-bg);
-      border: 1px solid var(--medium-border);
+      border: 2px solid var(--medium-border);
       color: var(--medium);
     }
 
@@ -859,23 +891,23 @@
     }
 
     .risk-btn[data-risk='low']:not(.active) {
-      border-left: 1px solid var(--border-soft);
-      border-right: 1px solid var(--border-soft);
+      border-left: 2px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
     }
 
     .risk-btn[data-risk='low']:not(.active):has(~ .risk-btn[data-risk='medium'].active) {
-      border-left: 1px solid var(--border-soft);
+      border-left: 2px solid var(--border-soft);
       border-right: 0px solid var(--border-soft);
     }
 
     .risk-btn[data-risk='high']:not(.active) {
-      border-left: 1px solid var(--border-soft);
-      border-right: 1px solid var(--border-soft);
+      border-left: 2px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
     }
 
     .risk-btn[data-risk='medium'].active~.risk-btn[data-risk='high']:not(.active) {
       border-left: 0px solid var(--border-soft);
-      border-right: 1px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
     }
 
     /* --------------------------------
@@ -890,7 +922,7 @@
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 2px solid var(--border-soft);
       transition: background 0.15s ease;
       row-gap: var(--gap-sm);
       column-gap: 24px;
@@ -917,6 +949,7 @@
       color: var(--text-muted);
       min-width: 28px;
       align-self: center;
+      font-weight: 600;
     }
 
     .row-notice-stack {
@@ -941,6 +974,7 @@
       border-radius: 0;
       overflow: hidden;
       flex-shrink: 0;
+
     }
 
     .pill-group input[type='radio'] {
@@ -948,7 +982,6 @@
     }
 
     .pill-group label {
-      padding: 5px 5px;
       font-size: 0.6rem;
       font-weight: 600;
       font-family: 'Roboto', ui-monospace, monospace;
@@ -957,15 +990,17 @@
       transition: color 0.2s ease, background 0.2s ease;
       letter-spacing: 0.03em;
       width: 36px;
-      text-align: center;
       background: var(--bg);
-      max-height: 24px;
+      height: 24px;
       text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .pill-group input[type='radio']:not(:checked)+label {
-      border-top: 1px solid var(--border-soft);
-      border-bottom: 1px solid var(--border-soft);
+      border-top: 2px solid var(--border-soft);
+      border-bottom: 2px solid var(--border-soft);
 
     }
 
@@ -976,7 +1011,7 @@
 
     .pill-group input[id$='_yes']:checked+label {
       background: var(--low-bg);
-      border: 1px solid var(--low-border);
+      border: 2px solid var(--low-border);
       color: var(--low);
     }
 
@@ -987,7 +1022,7 @@
 
     .pill-group input[id$='_no']:checked+label {
       background: var(--high-bg);
-      border: 1px solid var(--high-border);
+      border: 2px solid var(--high-border);
       color: var(--high);
     }
 
@@ -998,7 +1033,7 @@
 
     .pill-group input[id$='_na']:checked+label {
       background: var(--muted-bg);
-      border: 1px solid var(--muted-border);
+      border: 2px solid var(--muted-border);
       color: var(--muted-border);
     }
 
@@ -1014,21 +1049,21 @@
 
 
     .pill-group input[id$='_na']:not(:checked)+label {
-      border-right: 1px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
     }
 
     .pill-group input[id$='_no']:not(:checked)+label {
-      border-right: 1px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
       border-left: 0px;
     }
 
     .pill-group input[id$='_yes']:not(:checked)+label {
-      border-left: 1px solid var(--border-soft);
-      border-right: 1px solid var(--border-soft);
+      border-left: 2px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
     }
 
     .pill-group input[id$='_yes']:not(:checked)+label:has(+ input[id$='_no']:checked) {
-      border-left: 1px solid var(--border-soft);
+      border-left: 2px solid var(--border-soft);
       border-right: 0px;
 
     }
@@ -1064,19 +1099,20 @@
     .notice.warn,
     .notice.info {
       background: var(--warn-bg);
-      border: 1px solid var(--warn-border);
+      border: 2px solid var(--warn-border);
       color: var(--warn);
     }
 
     .notice.success {
       background: var(--low-bg);
-      border: 1px solid var(--color-success);
+      border: 2px solid var(--color-success);
       color: var(--color-success);
     }
 
+    .btn.Fail,
     .notice.error {
       background: var(--error-bg);
-      border: 1px solid var(--error-border);
+      border: 2px solid var(--error-border);
       color: var(--error);
     }
 
@@ -1123,7 +1159,7 @@
     .sig-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      border-top: 1px solid var(--border-soft);
+      border-top: 2px solid var(--border-soft);
       width: 100%;
       background-color: var(--header-bg);
       padding-bottom: var(--gap-md);
@@ -1202,11 +1238,11 @@
     -------------------------------- */
     .actions {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: var(--gap-md);
       padding: var(--space-inset-y) var(--space-inset-x);
       background: var(--header-bg);
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       border-radius: 0;
       margin-top: var(--gap-lg);
       align-items: center;
@@ -1221,7 +1257,7 @@
       padding: var(--gap-sm) var(--gap-md);
       border-radius: 0;
       cursor: pointer;
-      border: 1px solid transparent;
+      border: 2px solid transparent;
       transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
       min-height: var(--touch-min);
     }
@@ -1242,6 +1278,27 @@
       background: var(--warn-bg);
     }
 
+    .btn-print,
+    .btn-ghost,
+    .btn-sig-upload,
+    .btn-open-modal {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+
+    .btn-print.completed {
+      background: var(--low-bg);
+      border: 2px solid var(--low-border);
+      color: var(--low);
+    }
+
+    .btn-print.completed:hover {
+      border-color: var(--low-border);
+      color: var(--surface);
+      background: var(--low-border);
+    }
+
     .btn-sig-upload,
     .btn-open-modal {
       border-radius: 50px;
@@ -1254,7 +1311,7 @@
       padding: 8px 14px;
       background: var(--warn);
       color: var(--warn-bg);
-      border: 1px solid var(--warn);
+      border: 2px solid var(--warn);
       cursor: pointer;
       font-weight: 600;
     }
@@ -1277,7 +1334,7 @@
       padding: var(--gap-sm) var(--gap-md);
       border-radius: 0;
       cursor: pointer;
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
       background: var(--bg);
       color: var(--text-muted);
       transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -1401,9 +1458,7 @@
       }
 
       /* Hide unchecked radio labels */
-      input[type='radio']:not(:checked)+label,
-      input[type='checkbox']:not(:checked)+label,
-      .risk-btn:not(.active) {
+      .risk-btn:not(.active):disabled {
         display: none !important;
       }
 
@@ -1424,8 +1479,25 @@
         background-color: var(--valid) !important;
       }
 
-      .meta-cell:has(input:disabled) {
+      .role-selector input[type='radio']:not(:checked):disabled+label {
+        display: none !important;
+      }
+
+      .meta-cell:has(input.field-input:not(:required):disabled) {
+        display: none !important;
+      }
+
+      .signature-pad-tabs,
+      .btn-sig-tab {
         display: none;
+      }
+
+      .ql-toolbar.ql-snow {
+        display: none;
+      }
+
+      .signature-pad-container select.field-input {
+        background: transparent;
       }
 
       /* Disable animations */
@@ -1454,7 +1526,7 @@
     .image-thumbnail {
       position: relative;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 2px solid var(--border);
       background: var(--muted-bg);
       cursor: pointer;
       transition: transform 0.2s ease, border-color 0.2s ease;
@@ -1519,7 +1591,7 @@
     .signature-pad-container {
       display: flex;
       flex-direction: row;
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
       background: var(--surface);
       overflow: hidden;
       height: 100px;
@@ -1529,10 +1601,12 @@
     .signature-pad-tabs {
       display: flex;
       flex-direction: column;
+      padding: var(--gap-sm) var(--gap-sm) var(--gap-sm) var(--gap-xs);
+      justify-content: center;
+      gap: 10px;
     }
 
     .btn-sig-tab {
-      flex: 1;
       font-size: var(--font-size-sm);
       font-weight: 600;
       font-family: var(--font-sans);
@@ -1541,12 +1615,14 @@
       color: var(--text-muted);
       transition: color 0.15s ease, background 0.15s ease;
       white-space: nowrap;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       background-color: var(--header-bg);
       text-transform: uppercase;
-      padding: var(--gap-xs) var(--gap-xs);
-      height: 50px;
+      border: 2px solid var(--border);
+      padding: var(--gap-sm) var(--gap-sm);
+      text-wrap: auto;
     }
 
     .btn-sig-tab:hover {
@@ -1554,7 +1630,7 @@
     }
 
     .btn-sig-tab[data-tab="draw"].active {
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border);
     }
 
     .btn-sig-tab[data-tab="draw"].active .material-symbols-sharp,
@@ -1563,7 +1639,7 @@
     }
 
     .btn-sig-tab[data-tab="upload"].active {
-      border-top: 1px solid var(--border);
+      border-top: 2px solid var(--border);
     }
 
     .btn-sig-tab.active {
@@ -1571,21 +1647,33 @@
       color: var(--color-info);
     }
 
+    .btn-sig-tab.active.success,
+    .btn-sig-tab.success {
+      color: var(--low);
+      background: var(--low-bg);
+      border: 2px solid var(--low-border);
+    }
+
     .sig-tab-content.active {
-      display: block;
+      display: flex;
+      align-items: center;
+
       width: 100%;
-      align-content: center;
-      text-align: center;
+      flex-direction: column;
+      text-wrap: balance;
+      border: 2px dashed var(--border);
+      margin: var(--gap-sm) var(--gap-xs) var(--gap-sm) var(--gap-sm);
+      border-radius: 10px;
     }
 
     .sig-tab-content.active:hover {
-      border-left: 1px solid var(--border-soft);
+      border: 2px solid var(--border);
 
     }
 
     .sig-tab-content {
       display: none;
-      border-left: 1px solid var(--border-soft);
+      border: 2px dashed var(--border-soft);
     }
 
     .signature-canvas {
@@ -1668,7 +1756,7 @@
       position: absolute;
       width: min(720px, calc(100vw - 24px));
       background: var(--bg);
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       overflow: hidden;
     }
@@ -1685,7 +1773,7 @@
       justify-content: space-between;
       gap: 12px;
       padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border);
       background: var(--header-bg);
     }
 
@@ -1697,7 +1785,7 @@
     .sig-modal-canvas-wrap {
       width: 100%;
       height: 240px;
-      border: 1px dashed var(--border-soft);
+      border: 2px dashed var(--border-soft);
       background: var(--surface-base);
       overflow: hidden;
     }
@@ -1707,7 +1795,7 @@
       gap: 8px;
       justify-content: flex-end;
       padding: 12px 14px;
-      border-top: 1px solid var(--border);
+      border-top: 2px solid var(--border);
       background: var(--header-bg);
     }
 
@@ -1732,7 +1820,7 @@
     .sig-preview img {
       max-width: 100%;
       max-height: 150px;
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
       border-radius: 4px;
     }
 
@@ -1744,14 +1832,14 @@
     }
 
     .ql-toolbar.ql-snow {
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
       box-sizing: border-box;
       padding: 0px !important;
       font-family: var(--font-sans);
     }
 
     .ql-container {
-      border: 1px solid var(--border-soft) !important;
+      border: 2px solid var(--border-soft) !important;
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
@@ -1839,18 +1927,31 @@
     }
 
     .info-text {
-      font-size: 0.75rem;
+      font-size: 0.6rem;
       color: var(--text-muted);
-      margin-top: 4px;
       font-style: italic;
+      text-align: center;
+    }
+
+    small {
+      width: 100%;
+    }
+
+    .signature-pad-container select.field-input {
+      width: fit-content;
+      font-size: 0.75rem;
+      border: none;
+      text-align: center;
+      min-height: 0;
+      background: transparent;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .signature-pad-container label {
+      display: none;
     }
   </style>
-
-  <!-- Quill Rich Text Editor -->
-  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js"
-    integrity="sha512-78KH17QLT5e55GJqP76vutp1D2iAoy06WcYBXB6iBCsmO6wWzx0Qdg8EDpm8mKXv68BcvHOyeeP4wxAL0twJGQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
@@ -1859,7 +1960,7 @@
     <div class="header">
       <div><img class="header-logo"
           src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-reversed.jpg"
-          alt="BC Hydro logo"></div>
+          alt="BC Hydro logo" decoding="async" fetchpriority="high"></div>
       <div class="header-group">
         <div class="header-title">Distribution Engineering</div>
         <div class="header-sub">Check &amp; Review Form</div>
@@ -1879,7 +1980,7 @@
       </div>
 
       <!-- Document Information -->
-      <div class="card info">
+      <div class="card info" id="card-info">
         <div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
           <div class="sec-left">
             <div class="sec-num" id="snum-info"><span class="material-symbols-sharp">
@@ -1972,7 +2073,7 @@
       </div>
 
       <!-- Section 1: Self-Check -->
-      <div class="card sc">
+      <div class="card" id="card-sc">
         <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
           <div class="sec-left">
             <div class="sec-num" id="snum-1">1</div>
@@ -1994,14 +2095,14 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="sc-date">
+                <input class="field-input" id="sc_date" name="sc_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="sc-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_name">Name (Engineer) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="sc-name">
+                <input class="field-input" id="sc_name" name="sc_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="sc-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2010,25 +2111,25 @@
               <div class="signature-pad-container" id="scSigContainer" data-prefix="sc">
                 <div class="sig-tab-content active">
                   <div class="form-group">
-                    <label class="field-label" for="certSelect"></label>
-                    <select class="field-input" id="certSelect" disabled>
+                    <label class="field-label" for="sc_certSelect"></label>
+                    <select class="field-input" id="sc_certSelect" name="sc_certSelect" disabled>
                     </select>
                   </div>
-                  <p class="info-text" id="certInfo"></p>
-
+                  <div class="info-text" id="sc_certInfo" name="sc_certInfo"></div>
                 </div>
                 <div class="signature-pad-tabs">
-                  <button class="btn btn-sig-tab" id="btnRefreshCerts" type="button">
+                  <button class="btn btn-sig-tab" id="sc_btnRefreshCerts" type="button">
+                    Get
+                    Consigno
                     Certificates
                   </button>
-                  <button class="btn .btn-sig-tab" id="btnSign" type="button" disabled>
+                  <button class="btn btn-sig-tab" id="sc_btnSign" type="button" style="display: none;">
                     Sign
                   </button>
                 </div>
               </div>
               <input type="hidden" id="sc_sig_data" name="sc_sig_data">
             </div>
-
           </div>
         </div>
       </div>
@@ -2083,57 +2184,37 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ch-date">
+                <input class="field-input" id="ch_date" name="ch_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ch-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_name">Name (Checker) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="ch-name">
+                <input class="field-input" id="ch_name" name="ch_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="ch-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="chSigDrawTab" tabindex="0"
-                    data-testid="ch-sig-draw">
-                    <span class="material-symbols-sharp">signature</span>
-                  </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="chSigUploadTab"
-                    tabindex="-1" data-testid="ch-sig-upload">
-                    <span class="material-symbols-sharp">upload</span>
-                  </button>
-                </div>
-                <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
-                  tabindex="0">
-                  <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
-                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="ch" data-testid="ch-sig-open">
-                      Open signature pad
-                    </a>
-                    <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                    </div>
-                    <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">cancel</span>
-                    </button>
+                <div class="sig-tab-content active">
+                  <div class="form-group">
+                    <label class="field-label" for="ch_certSelect"></label>
+                    <select class="field-input" id="ch_certSelect" name="ch_certSelect" disabled>
+                    </select>
                   </div>
+                  <div class="info-text" id="ch_certInfo" name="ch_certInfo"></div>
                 </div>
-                <div class="sig-tab-content" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
-                  tabindex="0">
-                  <div class="sig-upload-area">
-                    <input type="file" id="chSigUpload" accept="image/*" hidden data-testid="ch-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch"
-                      data-testid="ch-sig-choose">
-                      Choose Signature Image
-                    </button>
-                    <div id="chSigPreview" class="sig-preview"></div>
-                  </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="ch_btnRefreshCerts" type="button">
+                    Get
+                    Consigno
+                    Certificates
+                  </button>
+                  <button class="btn btn-sig-tab" id="ch_btnSign" type="button" style="display: none;">
+                    Sign
+                  </button>
                 </div>
               </div>
               <input type="hidden" id="ch_sig_data" name="ch_sig_data">
@@ -2173,15 +2254,15 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="pr-date">
+                <input class="field-input" id="pr_date" name="pr_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="pr-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_name">Name (Peer Reviewer) <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="pr-name">
+                <input class="field-input" id="pr_name" name="pr_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="pr-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2189,48 +2270,27 @@
               <div class="field-label" id="pr_sig">Signature (Peer Reviewer) <span class="sr-only">(required)</span>
               </div>
               <div class="signature-pad-container" id="prSigContainer" data-prefix="pr">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="prSigDrawTab" tabindex="0"
-                    data-testid="pr-sig-draw">
-                    <span class="material-symbols-sharp">signature</span>
-                  </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="prSigUploadTab"
-                    tabindex="-1" data-testid="pr-sig-upload">
-                    <span class="material-symbols-sharp">upload</span>
-                  </button>
-                </div>
-                <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
-                  tabindex="0">
-                  <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
-                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="pr" data-testid="pr-sig-open">
-                      Open signature pad
-                    </a>
-                    <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                    </div>
-                    <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">cancel</span>
-                    </button>
+                <div class="sig-tab-content active">
+                  <div class="form-group">
+                    <label class="field-label" for="pr_certSelect"></label>
+                    <select class="field-input" id="pr_certSelect" name="pr_certSelect" disabled>
+                    </select>
                   </div>
+                  <div class="info-text" id="pr_certInfo" name="pr_certInfo"></div>
                 </div>
-                <div class="sig-tab-content" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
-                  tabindex="0">
-                  <div class="sig-upload-area">
-                    <input type="file" id="prSigUpload" accept="image/*" hidden data-testid="pr-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr"
-                      data-testid="pr-sig-choose">
-                      Choose Signature Image
-                    </button>
-                    <div id="prSigPreview" class="sig-preview"></div>
-                  </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="pr_btnRefreshCerts" type="button">
+                    Get
+                    Consigno
+                    Certificates
+                  </button>
+                  <button class="btn btn-sig-tab" id="pr_btnSign" type="button" style="display: none;">
+                    Sign
+                  </button>
                 </div>
               </div>
               <input type="hidden" id="pr_sig_data" name="pr_sig_data">
             </div>
-
           </div>
         </div>
       </div>
@@ -2324,58 +2384,38 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="fT1Date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1Date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ft1-date">
+                <input class="field-input" id="fT1Date" name="fT1Date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ft1-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="fT1">Assigned Type 1 Reviewer <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1" type="text" placeholder="Full name" autocomplete="name" required
-                  aria-required="true" data-testid="ft1-name">
+                <input class="field-input" id="fT1" name="fT1" type="text" placeholder="Full name" autocomplete="name"
+                  required aria-required="true" data-testid="ft1-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="fT1Sig">DE TL Signature <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="fT1SigDrawTab" tabindex="0"
-                    data-testid="ft1-sig-draw">
-                    <span class="material-symbols-sharp">signature</span>
-                  </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="fT1SigUploadTab"
-                    tabindex="-1" data-testid="ft1-sig-upload">
-                    <span class="material-symbols-sharp">upload</span>
-                  </button>
-                </div>
-                <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
-                  tabindex="0">
-                  <div class="sig-draw-surface" data-mode="draw" data-prefix="fT1" data-testid="ft1-sig-surface">
-                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="fT1" data-testid="ft1-sig-open">
-                      Open signature pad
-                    </a>
-                    <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                    </div>
-                    <button class="image-thumbnail-remove" type="button" data-prefix="fT1" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">cancel</span>
-                    </button>
+                <div class="sig-tab-content active">
+                  <div class="form-group">
+                    <label class="field-label" for="fT1_certSelect"></label>
+                    <select class="field-input" id="fT1_certSelect" name="fT1_certSelect" disabled>
+                    </select>
                   </div>
+                  <div class="info-text" id="fT1_certInfo" name="fT1_certInfo"></div>
                 </div>
-                <div class="sig-tab-content" id="fT1SigUploadTab" role="tabpanel" aria-labelledby="fT1SigUploadBtn"
-                  tabindex="0">
-                  <div class="sig-upload-area">
-                    <input type="file" id="fT1SigUpload" accept="image/*" hidden data-testid="ft1-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="fT1"
-                      data-testid="ft1-sig-choose">
-                      Choose Signature Image
-                    </button>
-                    <div id="fT1SigPreview" class="sig-preview"></div>
-                  </div>
+                <div class="signature-pad-tabs">
+                  <button class="btn btn-sig-tab" id="fT1_btnRefreshCerts" type="button">
+                    Get
+                    Consigno
+                    Certificates
+                  </button>
+                  <button class="btn btn-sig-tab" id="fT1_btnSign" type="button" style="display: none;">
+                    Sign
+                  </button>
                 </div>
               </div>
               <input type="hidden" id="fT1_sig_data" name="fT1_sig_data">
@@ -2416,14 +2456,30 @@
           </div>
         </div>
       </div>
-
-      <div class="actions">
-        <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
-        <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
-        <button class="btn btn-primary" type="submit" id="saveSnapshotBtn" data-testid="save-snapshot">Save</button>
-      </div>
     </main>
+    <button class="invisible" type="submit" hidden></button>
   </form>
+  <div class="actions">
+    <div>
+      <input type="file" id="draftImportInput" accept="application/json" hidden>
+      <button class="btn btn-ghost" type="button" id="exportDraftBtn" data-testid="export-draft">Export
+        Data</button>
+      <button class="btn btn-ghost" type="button" id="importDraftBtn" data-testid="import-draft">Import
+        Data</button>
+      <button class="btn btn-print" type="submit" id="saveAsPdfBtn" form="check_form" data-testid="save-pdf">Print /
+        PDF</button>
+    </div>
+    <div>
+      <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
+    </div>
+
+  </div>
+
+  <!-- Quill + DOMPurify loaded here to avoid render-blocking script in the head -->
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js"
+    integrity="sha512-78KH17QLT5e55GJqP76vutp1D2iAoy06WcYBXB6iBCsmO6wWzx0Qdg8EDpm8mKXv68BcvHOyeeP4wxAL0twJGQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script>
     (function () {
@@ -2489,6 +2545,13 @@
           ch: new Set([1])
         };
 
+        static STATUS = {
+          scCompleted: false,
+          dsCompleted: false,
+          chCompleted: false,
+          prCompleted: false,
+        };
+
         // ---------- Constructor ----------
         constructor() {
           this.elements = this.cacheElements();
@@ -2498,7 +2561,6 @@
           this.penColor = '#000000';
           this.signaturePads = {};
           this.isRestored = false;
-          this.init();
         }
 
         // Cache all frequently used DOM elements
@@ -2514,10 +2576,10 @@
             engineer: get('engineer'),
             checker: get('checker'),
             minCheckLevel: get('minCheckLevel'),
-            riskBtns: document.querySelectorAll('.risk-btn'),
+            revision: get('revision'),
             // Role radios
-            roleRadios: document.getElementsByName('sc_role'),
             // Cards
+            cardSc: get('card-sc'),
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
             cardPr: get('card-pr'),
@@ -2548,6 +2610,8 @@
             scSigDrawTab: get('scSigDrawTab'),
             scSigUploadTab: get('scSigUploadTab'),
             // Dynamic labels
+            roleRadios: document.getElementsByName('sc_role'),
+            riskBtns: document.querySelectorAll('.risk-btn'),
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
             scSigLabel: document.querySelector('#sc_sig'),
@@ -2563,15 +2627,16 @@
             s4Body: get('s4'), s4Head: get('sec4-head'),
             s5Body: get('s5'), s5Head: get('sec5-head'),
             s6Body: get('s6'), s6Head: get('sec6-head')
+
           };
         }
 
         buildSectionConfig () {
           return [
-            { rowsId: '#sc-rows', count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc' },
-            { rowsId: '#ds-rows', count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds' },
-            { rowsId: '#ch-rows', count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch' },
-            { rowsId: '#pr-rows', count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr' }
+            { rowsId: '#sc-rows', count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc', status: false, prefix: 'sc' },
+            { rowsId: '#ds-rows', count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds', status: false, prefix: 'ds' },
+            { rowsId: '#ch-rows', count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch', status: false, prefix: 'ch' },
+            { rowsId: '#pr-rows', count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', status: false, prefix: 'pr' }
           ];
         }
 
@@ -2583,12 +2648,14 @@
           this.attachEventListeners();
           this.updateProgress();
           this.syncAllSectionVisibility();
-          this.syncCommentsHeights();
+          this.scheduleCommentsHeightSync();
           this.updateRoleLabels(!this.isRestored);
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
           this.initQuillEditors();
           this.restoreQuillEditors();
+          this.elements.roleRadios[0].checked = true;
+          this.elements.revision.value = '0';
         }
 
         buildAllRows () {
@@ -2597,8 +2664,6 @@
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
         }
-
-
 
         // ---------- Signature Pad Methods ----------
         initSignaturePads () {
@@ -2648,15 +2713,54 @@
               quill.on('text-change', () => {
                 if (!hiddenInput) return;
                 hiddenInput.value = quill.root.innerHTML;
-              });
+                this.scheduleCommentsHeightSync();
 
-              // Handle paste of content (including images)
-              //const editor = container.querySelector('.ql-editor');
-              //if (editor) {
-              //editor.addEventListener('paste', (e) => {
-              //this.handleQuillPaste(e, fieldId);
-              //});
-              //}
+              });
+              const qlEditor = container.querySelector('.ql-editor');
+              if (qlEditor) {
+                // Create observer for when images are added
+                const observer = new MutationObserver(() => {
+                  // Image or content added; wait for images to load
+                  const images = qlEditor.querySelectorAll('img');
+                  let loadedCount = 0;
+
+                  if (images.length === 0) {
+                    this.scheduleCommentsHeightSync();
+                    return;
+                  }
+
+                  images.forEach(img => {
+                    if (img.complete) {
+                      // Image already loaded (cached)
+                      loadedCount++;
+                      if (loadedCount === images.length) {
+                        this.scheduleCommentsHeightSync();
+                      }
+                    } else {
+                      // Wait for image to load
+                      img.onload = () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) {
+                          this.scheduleCommentsHeightSync();
+                        }
+                      };
+                      img.onerror = () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) {
+                          this.scheduleCommentsHeightSync();
+                        }
+                      };
+                    }
+                  });
+                });
+
+                observer.observe(qlEditor, {
+                  childList: true,
+                  subtree: true,
+                  characterData: true
+                });
+              }
+
             }
           });
         }
@@ -3114,6 +3218,14 @@
             uploadArea.dataset.boundDnD = '1';
           }
 
+          const rskBtn = e.target.closest('.risk-btn');
+          if (rskBtn) {
+            this.elements.riskBtns.forEach(b => b.classList.remove('active'));
+            rskBtn.previousElementSibling?.removeAttribute('style');
+            rskBtn.classList.add('active');
+            return;
+          }
+
         }
         handleSignatureUpload (e, prefix) {
           const file = e.target.files?.[0];
@@ -3211,6 +3323,9 @@
             clearSec6Btn: () => this.clearSection('s6'),
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
+            exportDraftBtn: () => this.exportDraftJson(),
+            importDraftBtn: () => this.triggerDraftImport(),
+            resetFormBtn: () => this.resetForm(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
             dismissNoticeBtn: () => this.hideGlobalNotice()
           };
@@ -3239,8 +3354,9 @@
             this.syncSectionVisibility();
 
           }
-
+          console.log(e.target);
           if (e.target.matches('input') || e.target.matches('select')) {
+            this.updateProgress();
             if (e.target.validity.valid) {
               e.target.previousElementSibling?.removeAttribute('style');
             }
@@ -3257,8 +3373,7 @@
 
           if (e.target.className.includes('ql-editor')) {
             e.preventDefault();
-
-            this.syncCommentsHeights();
+            this.scheduleCommentsHeightSync();
           }
 
           if (e.target.classList.contains('risk-btn')) {
@@ -3280,11 +3395,14 @@
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
           }
+          if (e.target.matches('input') || e.target.matches('select')
+            || e.target.matches('button[class="risk-btn"]')) {
+            this.updateProgress();
+          }
 
           if (e.target.className.includes('ql-editor')) {
             e.preventDefault();
-
-            this.syncCommentsHeights();
+            this.scheduleCommentsHeightSync();
           }
         }
 
@@ -3302,10 +3420,246 @@
 
           if (e.key === 'Enter' && e.target.className.includes('ql-editor')) {
             e.preventDefault();
-            this.syncCommentsHeights();
+            this.scheduleCommentsHeightSync();
           }
         }
 
+        // ---------- IndexedDB Draft Storage ----------
+
+
+        draftTx (mode) {
+          return this._draftDb.then(db => db.transaction(CheckForm.DRAFT_STORE, mode).objectStore(CheckForm.DRAFT_STORE));
+        }
+
+        getFormJsonData () {
+          this.syncAllQuillEditors();
+          const form = document.getElementById('check_form');
+          const formData = new FormData(form);
+          console.log(formData);
+          const jsonData = {};
+          formData.forEach((value, key) => {
+            console.log(key, value);
+            if (key in jsonData) {
+              if (!Array.isArray(jsonData[key])) jsonData[key] = [jsonData[key]];
+              jsonData[key].push(value);
+            } else {
+              jsonData[key] = value;
+            }
+          });
+
+          const riskLevel = this.getActiveRiskLevel();
+          jsonData.riskLevel = riskLevel;
+          const riskLevelLabelMap = { low: 'Self-Check', medium: 'Check', high: 'Type 1 Independent Review Required' };
+          jsonData.riskLevelLabel = riskLevel ? (riskLevelLabelMap[riskLevel] ?? String(riskLevel)) : '';
+
+          document.querySelectorAll('.signature-pad-container').forEach((container) => {
+            const prefix = container.dataset.prefix;
+            if (!prefix) return;
+            const certSelect = container.querySelector(`#${prefix}_certSelect`);
+            const certInfo = container.querySelector(`#${prefix}_certInfo`);
+            let certSelectOptionHtml = '';
+            if (certSelect instanceof HTMLSelectElement && certSelect.selectedIndex >= 0) {
+              const opt = certSelect.options[certSelect.selectedIndex];
+              certSelectOptionHtml = opt?.outerHTML ?? '';
+            }
+            jsonData[`${prefix}_certSelect`] = certSelectOptionHtml;
+            jsonData[`${prefix}_certInfo`] = certInfo?.textContent?.trim() ?? '';
+          });
+          console.log(jsonData);
+          return jsonData;
+        }
+
+        scheduleDraftAutosave () {
+          if (!this._draftDb) return;
+          clearTimeout(this._draftAutosaveTimer);
+          this._draftAutosaveTimer = setTimeout(() => this.saveDraftNow(false), 750);
+        }
+
+        applyDraftData (data) {
+          if (!data || typeof data !== 'object') return;
+
+          let riskLevel = null;
+
+          Object.entries(data).forEach(([key, value]) => {
+            const values = Array.isArray(value) ? value : [value];
+            if (key === 'riskLevel') {
+              riskLevel = String(values[0] ?? '');
+            }
+
+            if (/_certSelect$/.test(key)) {
+              const sel = document.getElementById(key);
+              if (sel instanceof HTMLSelectElement) {
+                const raw = values[0] == null ? '' : String(values[0]);
+                const pref = key.replace(/_certSelect$/, '');
+                const btnSign = document.getElementById(`${pref}_btnSign`);
+                const btnRefreshCerts = document.getElementById(`${pref}_btnRefreshCerts`);
+
+                let matched = false;
+                const bumpSignBtn = () => {
+                  if (btnSign instanceof HTMLButtonElement) {
+                    btnSign.disabled = !sel.value;
+                    btnSign.textContent = sel.value ? 'Success' : '';
+                    btnSign.style.display = sel.value ? 'block' : 'none';
+                    btnSign.classList.toggle('success', sel.value);
+                    btnRefreshCerts.style.display = sel.value ? 'none' : 'block';
+                  }
+                };
+
+                if (/<option\b/i.test(raw)) {
+                  try {
+                    const wrapped = `<select>${raw}</select>`;
+                    const parsedDoc = new DOMParser().parseFromString(wrapped, 'text/html');
+                    const srcOpt = parsedDoc.querySelector('select option');
+                    if (srcOpt instanceof HTMLOptionElement) {
+                      const imported = /** @type {HTMLOptionElement} */ (document.importNode(srcOpt, true));
+                      const wantedVal = imported.value;
+                      matched = false;
+                      for (let i = 0; i < sel.options.length; i++) {
+                        if (sel.options[i].value === wantedVal) {
+                          sel.selectedIndex = i;
+                          matched = true;
+                          break;
+                        }
+                      }
+                      if (!matched) {
+                        sel.appendChild(imported);
+                        sel.selectedIndex = sel.options.length - 1;
+                        matched = true;
+                      }
+                      sel.disabled = false;
+                      bumpSignBtn();
+                    }
+                  } catch (_) { /* fallback below */ }
+                }
+
+                if (!matched && raw.trim() !== '') {
+                  const s = raw.trim();
+                  for (let i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].value === s) {
+                      sel.selectedIndex = i;
+                      matched = true;
+                      break;
+                    }
+                  }
+                  if (!matched) {
+                    for (let i = 0; i < sel.options.length; i++) {
+                      if (sel.options[i].textContent.trim() === s) {
+                        sel.selectedIndex = i;
+                        matched = true;
+                        break;
+                      }
+                    }
+                  }
+                  if (matched) {
+                    sel.disabled = false;
+                  }
+                  bumpSignBtn();
+                }
+
+                if (!matched && raw.trim() === '' && sel.options.length) {
+                  sel.selectedIndex = 0;
+                  bumpSignBtn();
+                }
+              }
+              return;
+            }
+
+            if (/_certInfo$/.test(key)) {
+              const el = document.getElementById(key);
+              if (el instanceof HTMLElement) {
+                el.textContent = values[0] == null ? '' : String(values[0]);
+              }
+              return;
+            }
+
+            const radios = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(key)}"]`);
+            if (radios.length) {
+              const v = values[0];
+              radios.forEach(r => { r.checked = r.value === v; });
+              return;
+            }
+
+            const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="${CSS.escape(key)}"]`);
+            if (checkboxes.length) {
+              const set = new Set(values.map(String));
+              checkboxes.forEach(c => { c.checked = set.has(String(c.value)); });
+              return;
+            }
+
+            const byName = document.querySelectorAll(`[name="${CSS.escape(key)}"]`);
+            if (byName.length) {
+              byName.forEach((el, idx) => {
+                const v = values[Math.min(idx, values.length - 1)];
+                if (el instanceof HTMLSelectElement) {
+                  el.value = String(v);
+                } else if (el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) {
+                  el.value = String(v);
+                }
+              });
+              return;
+            }
+
+            const byId = document.getElementById(key);
+            if (byId && (byId instanceof HTMLInputElement || byId instanceof HTMLTextAreaElement || byId instanceof HTMLSelectElement)) {
+              byId.value = String(values[0]);
+            }
+          });
+
+          if (riskLevel) {
+            this.setRiskLevel(riskLevel);
+          }
+
+        }
+
+        exportDraftJson () {
+          const jsonStr = JSON.stringify(this.getFormJsonData(), null, 2);
+          const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
+          const jsonUrl = URL.createObjectURL(jsonBlob);
+          const jsonA = document.createElement('a');
+          jsonA.href = jsonUrl;
+          jsonA.download = `DE_CheckForm_draft.json`;
+          document.body.appendChild(jsonA);
+          jsonA.click();
+          jsonA.remove();
+          URL.revokeObjectURL(jsonUrl);
+        }
+
+        triggerDraftImport () {
+          const input = document.getElementById('draftImportInput');
+          console.log(input);
+          if (!input) return;
+          input.value = '';
+          input.click();
+        }
+
+        bindDraftImport () {
+          const input = document.getElementById('draftImportInput');
+          if (!input) return;
+          input.addEventListener('change', () => {
+            const file = input.files?.[0];
+            console.log(file);
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async () => {
+              try {
+                const parsed = JSON.parse(String(reader.result ?? 'null'));
+                this.applyDraftData(parsed);
+                this.restoreQuillEditors();
+                this.refreshAllSignaturePreviews();
+                this.syncAllSectionVisibility();
+                this.showRiskConsistencyNotices();
+                this.updateProgress();
+                this.scheduleCommentsHeightSync();
+                this.updateRoleLabels(false);
+                this.toast('Draft imported', 'success');
+              } catch (err) {
+                console.error(err);
+                this.toast('Import failed (invalid JSON)', 'error');
+              }
+            };
+            reader.readAsText(file);
+          });
+        }
 
 
         // ---------- UI State Updates ----------
@@ -3369,7 +3723,7 @@
             blocks11.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
           }
           if (sc11 === 'no') {
-            blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn' });
+            blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/_layouts/15/WopiFrame2.aspx?sourcedoc=%7b63F4D51D-B1EC-4942-A964-4E019285F05B%7d&file=Direct%20Supervision%20Job%20Aid.docm&action=default" target="_blank"><strong>Direct Supervision</strong></a> and <b>Check</b> sections below.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 11, blocks11);
         }
@@ -3449,7 +3803,7 @@
           const showPrCommentCells = prShown && prAnswered;
           this.elements.commentsCell3.classList.toggle('hidden', !showPrCommentCells);
           this.elements.commentsCell4.classList.toggle('hidden', !showPrCommentCells);
-          this.syncCommentsHeights();
+          this.scheduleCommentsHeightSync();
 
           const finalShown = showPeer || isHighRisk;
           this.elements.cardFinal.classList.toggle('hidden', !finalShown);
@@ -3531,7 +3885,7 @@
         }
 
         // ---------- Progress & Validation ----------
-        updateProgress () {
+        updateProgress (init = false) {
           const rowsById = {
             '#sc-rows': this.elements.scRows,
             '#ds-rows': this.elements.dsRows,
@@ -3550,9 +3904,11 @@
                 s.num.innerHTML = `<span class="material-symbols-sharp">
                   check
                   </span>`;
+                s.status = true;
               } else {
                 s.num.classList.remove('complete');
                 s.num.textContent = s.label;
+                s.status = false;
               }
             }
           });
@@ -3569,37 +3925,34 @@
               answered += counts.get(s.rowsId) ?? 0;
             }
           });
+          const printBtn = document.getElementById('saveAsPdfBtn');
+
           const pct = total ? Math.round((answered / total) * 100) : 0;
           this.elements.progressStrip.classList.toggle('completed', pct === 100);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
+
+          printBtn.classList.toggle('completed', pct === 100 && this.allRequiredFieldsValid());
+
         }
 
-        allRequiredFieldsValid () {
+        allRequiredFieldsValid (print = false) {
           const required = Array.from(document.querySelectorAll('.required-field-underline'));
-          let firstInvalid = null;
 
-          required.forEach((el) => {
-            if (el.closest('.hidden')) return;
-            const control =
-              el.previousElementSibling?.matches?.('input, select, textarea') ? el.previousElementSibling :
-                el.parentElement?.querySelector?.('input, select, textarea');
-            if (control?.disabled) return;
+          const requiredShown = required.filter(el => !el.closest('.hidden')
+            && !el.previousElementSibling?.disabled && !el.parentElement?.disabled);
 
-            const isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
-            const label = el.parentElement?.querySelector('.field-label');
-            if (label) label.style.color = isValid ? '' : '#d32f2f';
-            if (!isValid && !firstInvalid) firstInvalid = { el, control };
-          });
+          let isValid;
 
-          if (firstInvalid) {
-            const { el, control } = firstInvalid;
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (control?.focus) control.focus({ preventScroll: true });
-            return false;
-          }
+          return requiredShown.reduce((acc, el) => {
+            isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+            if (print) {
+              const label = el.parentElement?.querySelector('.field-label');
+              if (label) label.style.color = isValid ? '' : '#d32f2f';
+            }
+            return acc && isValid;
+          }, true);
 
-          return true;
         }
 
         // ---------- Textarea Utilities ----------
@@ -3627,6 +3980,12 @@
           pair('reviewerComments-editor', 'engineerResponse_2-editor');
         }
 
+        scheduleCommentsHeightSync () {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => this.syncCommentsHeights());
+          });
+        }
+
         // ---------- Section Clearing ----------
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
@@ -3642,18 +4001,26 @@
           sec.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'))
           sec.querySelectorAll('.ql-editor').forEach(f => f.innerHTML = ''); // FIX = '');
 
-          this.removeCanvas(sec);
-          this.updateProgress();
-          if (sectionId === 's1') {
-            this.syncDirectSupervision();
-            this.showRiskConsistencyNotices();
-          }
-          if (sectionId === 's3') this.syncCheckWarning();
-          sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
-          this.syncCommentsHeights();
-          this.syncAllSectionVisibility();
+          setTimeout(() => {
+            this.removeCanvas(sec);
+            this.updateProgress();
+            if (sectionId === 'sec-info-body') {
+              this.elements.revision.value = 0;
+              this.elements.roleRadios[0].checked = true;
+            }
+            if (sectionId === 's1') {
+              this.syncDirectSupervision();
+              this.showRiskConsistencyNotices();
 
-          this.toast('Section cleared', 'info');
+            }
+            if (sectionId === 's3') this.syncCheckWarning();
+            sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
+            this.scheduleCommentsHeightSync();
+            this.syncAllSectionVisibility();
+
+            this.toast('Section cleared', 'info');
+          }, 1000);
+
         }
 
         // ---------- Global Notice (Toast) ----------
@@ -3675,25 +4042,15 @@
         // ---------- Form Actions ----------
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
-          document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="hidden"][id$="_sig_data"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
-          document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-          document.querySelectorAll('textarea').forEach(t => t.value = '');
-          document.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'));
-
-          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
-          document.getElementById('sc_role_eng').checked = true;
-
-          this.removeCanvas(document);
-          document.querySelectorAll('.sig-preview').forEach(p => { p.innerHTML = ''; });
-
-          this.updateRoleLabels(true);
-          this.syncAllSectionVisibility();
-          this.showRiskConsistencyNotices();
-          this.updateProgress();
-          this.syncCommentsHeights();
+          this.clearSection('sec-info-body');
+          this.clearSection('s1');
+          this.clearSection('s2');
+          this.clearSection('s3');
+          this.clearSection('s4');
+          this.clearSection('s5');
+          this.clearSection('s6');
+          this.elements.roleRadios[0].checked = true;
+          this.elements.revision.value = 0;
           this.toast('Form reset', 'info');
         }
 
@@ -3750,17 +4107,7 @@
         }
 
         saveJasonFile () {
-          // Sync all Quill editors to hidden inputs before saving
-          this.syncAllQuillEditors();
-
-          const form = document.getElementById('check_form');
-          const formData = new FormData(form);
-          let jsonData = {};
-
-          formData.forEach((value, key) => {
-            jsonData[key] = value;
-          });
-          const jsonStr = JSON.stringify(jsonData);
+          const jsonStr = JSON.stringify(this.getFormJsonData());
           const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
           const jsonUrl = URL.createObjectURL(jsonBlob);
           const jsonA = document.createElement('a');
@@ -3775,16 +4122,22 @@
         printFormAsPdf (e) {
           e.preventDefault();
           this.updateProgress();
-          if (!this.allRequiredFieldsValid() || this.elements.progressBar.value < 100) {
+          if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value < 100) {
             this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
             return;
           }
           window.print();
         }
       }
-
+      let form = null;
+      window.addEventListener('DOMContentLoaded', async () => {
+        form = new CheckForm();
+        window.deCheckForm = form;
+        form.init();
+        form.bindDraftImport();
+      });
       // Initialize the application when DOM is ready
-      window.addEventListener('DOMContentLoaded', () => new CheckForm());
+      //window.addEventListener('DOMContentLoaded', () => form.init());
 
       // Call on unload
       window.addEventListener('beforeunload', () => form.destroy());
@@ -3797,19 +4150,48 @@
     var certifioManager = null;
     var certificates = [];
     var lastSignatureResult = null;
-
     var dataToSign = document.getElementById('check_form');
-    var certSelect = document.getElementById('certSelect');
-    var certInfo = document.getElementById('certInfo');
-    var btnRefreshCerts = document.getElementById('btnRefreshCerts');
-    var btnSign = document.getElementById('btnSign');
 
+    function hasSigData (raw) {
+      return Boolean(String(raw ?? '').trim());
+    }
+    /**
+     * Visible = this pad’s enclosing .card does not have .hidden.
+     */
+    function isSignaturePadShown (container) {
+      const card = container.closest('.card');
+      if (!card) return true; // fallback: treat as visible
+      return !card.classList.contains('hidden');
+    }
+    /**
+     * Returns { ok, missing: string[] } where missing is prefixes still empty.
+     */
+    function validateVisibleSignatures () {
+      const missing = [];
+      document.querySelectorAll('.signature-pad-container').forEach((container) => {
+        if (!isSignaturePadShown(container)) return;
+        const prefix = container.getAttribute('data-prefix');
+        const input = document.getElementById(`${prefix}_sig_data`);
+        if (!hasSigData(input?.value)) {
+          return false;
+        }
+      });
+      return true;
+    }
 
-    // ──────────────────────────────────────────────
-    // Initialise CertifiO Manager
-    // ──────────────────────────────────────────────
+    function validateCard (prefix) {
+      console.log(prefix);
+      const cardSC = document.getElementById(`card-${prefix}`);
+      const required = Array.from(cardSC.querySelectorAll('.required-field-underline'));
+      const requiredShown = required.filter(el => !el.closest('.hidden')
+        && !el.previousElementSibling?.disabled && !el.parentElement?.disabled);
+
+      return requiredShown.reduce((acc, el) => {
+        return acc && parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+      }, true);
+    }
+
     function initializeCertifioManager () {
-
       try {
         certifioManager = new CertifioManager('en'); // 'en' or 'fr'
         return true;
@@ -3819,109 +4201,164 @@
       }
     }
 
-    function loadCertificates () {
-      if (!certifioManager) {
-        if (!initializeCertifioManager()) return;
+    function initCertifioContainer (container) {
+      var prefix = container.getAttribute('data-prefix');
+      var certSelect = container.querySelector(`#${prefix}_certSelect`);
+      var certInfo = container.querySelector(`#${prefix}_certInfo`);
+      var btnRefreshCerts = container.querySelector(`#${prefix}_btnRefreshCerts`);
+      var btnSign = container.querySelector(`#${prefix}_btnSign`);
+      var sigData = document.getElementById(`${prefix}_sig_data`);
+      var card = document.getElementById(`card-${prefix}`);
+
+      if (!certSelect || !btnRefreshCerts || !btnSign || !sigData) {
+        console.warn('Certifio container missing required elements for prefix:', prefix);
+        return;
       }
 
-      certSelect.disabled = true;
-      certSelect.innerHTML = '<option value="">Loading certificates...</option>';
-      //btnSign.disabled = true;
+      function loadCertificates () {
+        if (!certifioManager && !initializeCertifioManager()) return;
+        certSelect.innerHTML = '<option value="">Loading certificates...</option>';
 
-      certifioManager.getCertificates(
-        // success callback
-        function (certs) {
-          certificates = certs || [];
-          certSelect.innerHTML = '';
+        certifioManager.getCertificates(
+          function (certs) {
+            certificates = certs || [];
+            certSelect.innerHTML = '';
 
-          if (certificates.length === 0) {
-            certSelect.innerHTML =
-              '<option value="">-- No certificates found --</option>';
-
-          } else {
-            for (var i = 0; i < certificates.length; i++) {
-              var cert = certificates[i];
-              var option = document.createElement('option');
-              option.value = cert.deviceId;
-              option.textContent =
-                cert.displayName ||
-                (cert.cn || '') + (cert.org ? ' (' + cert.org + ')' : '');
-              // Store additional info in data attributes (optional)
-              option.setAttribute('data-index', String(i));
-              certSelect.appendChild(option);
-            }
-
-          }
-          certSelect.disabled = false;
-          var selectedDeviceId = certSelect.value;
-          btnSign.disabled = !selectedDeviceId;
-
-          if (selectedDeviceId) {
-            var selectedCert = null;
-            for (var i = 0; i < certificates.length; i++) {
-              if (certificates[i] && certificates[i].deviceId === selectedDeviceId) {
-                selectedCert = certificates[i];
-                break;
+            if (certificates.length === 0) {
+              certSelect.innerHTML = '<option value="">-- No certificates found --</option>';
+            } else {
+              for (var i = 0; i < certificates.length; i++) {
+                var cert = certificates[i];
+                var option = document.createElement('option');
+                option.value = cert.deviceId;
+                option.textContent =
+                  cert.displayName || (cert.cn || '') + (cert.org ? ' (' + cert.org + ')' : '');
+                option.setAttribute('data-index', String(i));
+                certSelect.appendChild(option);
               }
             }
-            if (selectedCert) {
-              certInfo.innerHTML =
-                '<small style="color:var(--text-secondary)">' +
-                'dn: ' + (selectedCert.dn || '') + '<br>' +
-                'org: ' + (selectedCert.org || '') +
-                '</small>';
+
+            var selectedDeviceId = certSelect.value;
+            btnSign.disabled = !selectedDeviceId;
+
+            if (selectedDeviceId) {
+              var selectedCert = null;
+              for (var i = 0; i < certificates.length; i++) {
+                if (certificates[i] && certificates[i].deviceId === selectedDeviceId) {
+                  selectedCert = certificates[i];
+                  break;
+                }
+              }
+              if (selectedCert) {
+                certInfo.textContent = selectedCert.dn;
+              }
+              btnRefreshCerts.style.display = 'none';
+              btnSign.style.display = 'block';
             }
+          },
+
+
+          function (error) {
+            console.error('Failed to load certificates:', error);
+            certSelect.innerHTML = '<option value="">-- Failed to load certificates --</option>';
+            certSelect.disabled = false;
           }
-        },
-        // failure callback
-        function (error) {
-          console.error('Failed to load certificates:', error);
-          certSelect.innerHTML =
-            '<option value="">-- Failed to load certificates --</option>';
-          certSelect.disabled = false;
+        );
+      }
+
+      function lockDataToSign (data) {
+
+        var elements = data.querySelectorAll('input, select, textarea, button');
+        if (elements) {
+          for (let element of elements) {
+            element.disabled = true;
+          }
         }
-      );
-    }
+      }
 
-    function signData () {
-      if (!certifioManager) return;
+      function lockQuillEditors () {
+        if (this.quillEditors) {
+          Object.values(this.quillEditors).forEach((q) => { if (q) q.enable(false); });
+        }
+      }
 
-      var deviceId = certSelect.value;
+      function signOnce (request) {
+        return new Promise((resolve, reject) => {
+          certifioManager.sign(request, resolve, reject);
+        });
+      }
+      async function signTwoPayloads (deviceId, dataA, dataB) {
+        const r1 = { deviceId, type: 'ENVELOPED', data: dataA };
+        const sig1 = await signOnce(r1);
+        const r2 = { deviceId, type: 'ENVELOPED', data: dataB };
+        const sig2 = await signOnce(r2);
+        return [sig1, sig2];
+      }
 
-      var sigType = "ENVELOPED";
+      async function signData () {
+        if (!certifioManager) return;
 
-      // Disable sign button while processing
-      btnSign.disabled = true;
-      btnSign.textContent = '⏳ Signing...';
+        var deviceId = certSelect.value;
+        var sigType = 'ENVELOPED';
 
-      var signRequest = {
-        deviceId: deviceId,
-        type: sigType,
-        data: dataToSign.outerHTML
-      };
+        btnSign.disabled = true;
+        btnSign.textContent = 'Signing...';
 
-      certifioManager.sign(
-        signRequest,
-        // success callback
-        function (signatureData) {
+        try {
+          var signatureData = await signTwoPayloads(deviceId, card ? card.outerHTML : '', cardInfo ? cardInfo.outerHTML : '');
           lastSignatureResult = signatureData;
+          if (typeof signatureData === 'string') {
+            sigData.value = signatureData;
+          } else if (signatureData) {
+            sigData.value = JSON.stringify(signatureData);
+          }
           btnSign.disabled = false;
-          btnSign.textContent = '✍️ Sign Data';
-        },
-        // failure callback
-        function (error) {
+          btnSign.textContent = 'Success';
+          btnSign.classList.add('success');
+          lockDataToSign(card);
+          lockDataToSign(cardInfo);
+
+        } catch (error) {
           console.error('Signing failed:', error);
           lastSignatureResult = null;
           btnSign.disabled = false;
-          btnSign.textContent = '✍️ Sign Data';
+          btnSign.classList.add('Fail');
+          btnSign.textContent = 'Failed';
         }
-      );
+      }
+
+      btnRefreshCerts.addEventListener('click', loadCertificates);
+
+      btnSign.addEventListener('click',
+        () => {
+          var completed = window.deCheckForm?.sectionConfig.find(s => s.prefix === prefix).status;
+          completed = completed && validateCard(prefix);
+          var infoValid = validateCard('info');
+
+          console.log(prefix, completed);
+          console.log(infoValid);
+          if (prefix === 'fT1') {
+            signData();
+          } else if (prefix === 'sc' && completed && infoValid) {
+            signData();
+          } else if (prefix === 'ch' && completed) {
+            signData();
+          } else if (prefix === 'pr' && completed) {
+            signData();
+          } else {
+            window.deCheckForm?.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
+          }
+
+        });
+
+      if (validateVisibleSignatures()) {
+        lockQuillEditors();
+      }
     }
 
-    btnRefreshCerts.addEventListener('click', loadCertificates);
-    btnSign.addEventListener('click', signData);
-
-
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.signature-pad-container').forEach(initCertifioContainer);
+    });
   </script>
 
 </body>

@@ -706,7 +706,7 @@
     select.field-input:focus+.required-field-underline,
     .role-selector:has(input[type='radio']:checked)+.required-field-underline,
     .risk-row:has(.risk-btn.active)+.required-field-underline,
-    input:not(:required)+.required-field-underline,
+    input:disabled+.required-field-underline,
     .card.hidden .required-field-underline,
     .sec-body:not(.open) .required-field-underline {
       border-bottom-width: 0;
@@ -1956,7 +1956,6 @@
                   type="button" data-risk="medium" aria-describedby="riskLevelLabel"
                   aria-pressed="false">Medium</button><button class="risk-btn" type="button" data-risk="high"
                   aria-describedby="riskLevelLabel" aria-pressed="false">High</button></div>
-              <input type="hidden" id="riskLevel" name="riskLevel">
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell deliverable-cell">
@@ -2578,9 +2577,8 @@
             engineer: get('engineer'),
             checker: get('checker'),
             minCheckLevel: get('minCheckLevel'),
-            riskBtns: document.querySelectorAll('.risk-btn'),
+            revision: get('revision'),
             // Role radios
-            roleRadios: document.getElementsByName('sc_role'),
             // Cards
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
@@ -2612,6 +2610,8 @@
             scSigDrawTab: get('scSigDrawTab'),
             scSigUploadTab: get('scSigUploadTab'),
             // Dynamic labels
+            roleRadios: document.getElementsByName('sc_role'),
+            riskBtns: document.querySelectorAll('.risk-btn'),
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
             scSigLabel: document.querySelector('#sc_sig'),
@@ -2653,6 +2653,8 @@
           this.refreshAllSignaturePreviews();
           this.initQuillEditors();
           this.restoreQuillEditors();
+          this.elements.roleRadios[0].checked = true;
+          this.elements.revision.value = 0;
         }
 
         buildAllRows () {
@@ -3352,6 +3354,11 @@
             this.autosizeTextarea(e.target);
           }
 
+          if (e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+            this.scheduleCommentsHeightSync();
+          }
+
           if (e.target.classList.contains('risk-btn')) {
             this.showRiskConsistencyNotices();
             this.syncSectionVisibility();
@@ -3372,6 +3379,11 @@
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
           }
+
+          if (e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+            this.scheduleCommentsHeightSync();
+          }
         }
 
         handleGlobalKeydown (e) {
@@ -3388,6 +3400,7 @@
           }
 
           if (e.key === 'Enter' && e.target.className.includes('ql-editor')) {
+            e.preventDefault();
             this.scheduleCommentsHeightSync();
           }
 
@@ -3429,6 +3442,7 @@
               jsonData[key] = value;
             }
           });
+          console.log(jsonData);
           return jsonData;
         }
 
@@ -3452,35 +3466,6 @@
             req.onerror = () => reject(req.error ?? new Error('Draft save failed'));
           });
           if (notify) this.toast('Draft saved locally', 'success');
-        }
-
-        async loadDraftFromDb (confirmRestore) {
-          if (!this._draftDb) {
-            this.toast('Local drafts unavailable (IndexedDB unsupported)', 'warn');
-            return;
-          }
-          const store = await this.draftTx('readonly');
-          const payload = await new Promise((resolve, reject) => {
-            const req = store.get(CheckForm.DRAFT_KEY);
-            req.onsuccess = () => resolve(req.result ?? null);
-            req.onerror = () => reject(req.error ?? new Error('Draft load failed'));
-          });
-          if (!payload) {
-            this.toast('No local draft found', 'info');
-            return;
-          }
-          if (confirmRestore) {
-            const ok = confirm(`Restore locally saved draft from ${payload.savedAt}?`);
-            if (!ok) return;
-          }
-          this.applyDraftData(payload.data);
-          this.restoreQuillEditors();
-          this.refreshAllSignaturePreviews();
-          this.syncAllSectionVisibility();
-          this.showRiskConsistencyNotices();
-          this.updateProgress();
-          this.scheduleCommentsHeightSync();
-          this.toast('Draft restored', 'success');
         }
 
         async clearDraftFromDb (confirmClear) {
@@ -3959,18 +3944,25 @@
             if (hiddenInput) hiddenInput.value = '';
           });
 
-          this.removeCanvas(sec);
-          this.updateProgress();
-          if (sectionId === 's1') {
-            this.syncDirectSupervision();
-            this.showRiskConsistencyNotices();
-          }
-          if (sectionId === 's3') this.syncCheckWarning();
-          sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
-          this.scheduleCommentsHeightSync();
-          this.syncAllSectionVisibility();
+          setTimeout(() => {
+            this.removeCanvas(sec);
+            this.updateProgress();
+            if (sectionId === 'sec-info-body') {
+              this.elements.revision.value = 0;
+              this.elements.roleRadios[0].checked = true;
+            }
+            if (sectionId === 's1') {
+              this.syncDirectSupervision();
+              this.showRiskConsistencyNotices();
 
-          this.toast('Section cleared', 'info');
+            }
+            if (sectionId === 's3') this.syncCheckWarning();
+            sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
+            this.scheduleCommentsHeightSync();
+            this.syncAllSectionVisibility();
+
+            this.toast('Section cleared', 'info');
+          }, 1000);
         }
 
         // ---------- Global Notice (Toast) ----------
@@ -3999,7 +3991,10 @@
           this.clearSection('s4');
           this.clearSection('s5');
           this.clearSection('s6');
+          this.elements.roleRadios[0].checked = true;
+          this.elements.revision.value = 0;
           this.toast('Form reset', 'info');
+
         }
 
         saveSnapshot () {

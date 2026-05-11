@@ -363,12 +363,6 @@ else:
     current_datetime = now.strftime("%Y-%m-%d-h%Hm%Ms%S")
 
     network_id = cympy.study.QueryInfoNode("$NetworkId$", "FAULT_POINT")
-    # Check to see if loop sections exist on circuit. If so exit script.
-    if len(cympy.study.ListNodes(cympy.enums.NodeType.Loop, network_id)) > 0:
-        print(
-            "ERROR: Circuit " + network_id + " contains loop sections. Script aborted."
-        )
-        exit()
 
     Source_Name = (
         cympy.study.QueryInfoNode("$UpstreamSource$", "FAULT_POINT") or network_id
