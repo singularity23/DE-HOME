@@ -271,10 +271,6 @@
       height: 28px;
     }
 
-    .header-group {
-      align-items: right;
-    }
-
     .header-title {
       font-family: 'Roboto', system-ui, sans-serif;
       font-size: 1.2rem;
@@ -288,7 +284,6 @@
     .header-sub {
       font-size: 0.7rem;
       font-weight: 400;
-      color: var(--color-tertiary);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       text-align: right;
@@ -786,10 +781,6 @@
       border: 2px solid var(--border-soft);
     }
 
-    .role-selector input[id='sc_role_eng']:not(:checked)+label {
-      border-right: 0px !important;
-    }
-
     .role-selector input[id='sc_role_eit']:not(:checked)+label {
       border-left: 0px !important;
     }
@@ -924,8 +915,6 @@
       box-sizing: border-box;
       border-bottom: 2px solid var(--border-soft);
       transition: background 0.15s ease;
-      row-gap: var(--gap-sm);
-      column-gap: 24px;
     }
 
     .check-row:last-child {
@@ -1218,7 +1207,7 @@
     }
 
     .comments-cell {
-      background: var(--surface);
+      background: var(--bg);
       padding: var(--space-cell-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
     }
 
@@ -1459,6 +1448,10 @@
 
       /* Hide unchecked radio labels */
       .risk-btn:not(.active):disabled {
+        display: none !important;
+      }
+
+      .pill-group input[type='radio']:not(:checked)+label {
         display: none !important;
       }
 
@@ -1864,6 +1857,7 @@
       font-family: inherit;
       line-height: 1.6;
       min-height: 100px;
+      background-color: var(--surface);
     }
 
     .ql-editor ol li:not(.ql-direction-rtl),
@@ -2047,7 +2041,7 @@
             </div>
             <div class="meta-cell review-level-cell">
               <label class="field-label" for="minCheckLevel">Minimum Check / Review Level</label>
-              <select class="field-input" id="minCheckLevel" required>
+              <select class="field-input" id="minCheckLevel" name="minCheckLevel" required>
                 <option value="" disabled selected>Select level…</option>
                 <option>Self-Check</option>
                 <option>Check</option>
@@ -2064,8 +2058,8 @@
             </div>
             <div class="meta-cell checker-cell" id="checker_por">
               <label class="field-label" for="checker">Checker</label>
-              <input class="field-input" id="checker" type="text" placeholder="Checker name..." autocomplete="name"
-                disabled>
+              <input class="field-input" id="checker" name="checker" type="text" placeholder="Checker name..."
+                autocomplete="name" disabled>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
           </div>
@@ -2074,7 +2068,7 @@
 
       <!-- Section 1: Self-Check -->
       <div class="card" id="card-sc">
-        <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
+        <div class="sec-head open" id="sec1-head" tabindex="0" aria-expanded="true" aria-controls="s1">
           <div class="sec-left">
             <div class="sec-num" id="snum-1">1</div>
             <span class="sec-title">Self-Check</span>
@@ -2136,7 +2130,7 @@
 
       <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
       <div class="card hidden" id="card-ds">
-        <div class="sec-head" id="sec2-head" tabindex="2" aria-expanded="false" aria-controls="s2">
+        <div class="sec-head" id="sec2-head" tabindex="0" aria-expanded="false" aria-controls="s2">
           <div class="sec-left">
             <div class="sec-num" id="snum-2">2</div>
             <span class="sec-title">Direct Supervision</span>
@@ -2157,7 +2151,7 @@
 
       <!-- Section 3: Check -->
       <div class="card hidden" id="card-ch">
-        <div class="sec-head" id="sec3-head" tabindex="3" aria-expanded="false" aria-controls="s3">
+        <div class="sec-head" id="sec3-head" tabindex="0" aria-expanded="false" aria-controls="s3">
           <div class="sec-left">
             <div class="sec-num" id="snum-3">3</div>
             <span class="sec-title">Check</span>
@@ -2226,7 +2220,7 @@
 
       <!-- Section 4: Peer Review -->
       <div class="card hidden" id="card-pr">
-        <div class="sec-head" id="sec4-head" tabindex="4" aria-expanded="false" aria-controls="s4">
+        <div class="sec-head" id="sec4-head" tabindex="0" aria-expanded="false" aria-controls="s4">
           <div class="sec-left">
             <div class="sec-num" id="snum-4">4</div>
             <span class="sec-title">Peer Review</span>
@@ -2297,7 +2291,7 @@
 
       <!-- Section 5: Comments -->
       <div class="card hidden" id="card-comments">
-        <div class="sec-head" id="sec5-head" tabindex="5" aria-expanded="false" aria-controls="s5">
+        <div class="sec-head" id="sec5-head" tabindex="0" aria-expanded="false" aria-controls="s5">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div>
             <span class="sec-title">Comments &amp; Corrective Actions</span>
@@ -2366,7 +2360,7 @@
 
       <!-- Section 6: Final Signatures -->
       <div class="card hidden" id="card-final">
-        <div class="sec-head" id="sec6-head" tabindex="6" aria-expanded="false" aria-controls="s6">
+        <div class="sec-head" id="sec6-head" tabindex="0" aria-expanded="false" aria-controls="s6">
           <div class="sec-left">
             <div class="sec-num" id="snum-6">6</div>
             <span class="sec-title">Final Signatures</span>
@@ -2545,13 +2539,6 @@
           ch: new Set([1])
         };
 
-        static STATUS = {
-          scCompleted: false,
-          dsCompleted: false,
-          chCompleted: false,
-          prCompleted: false,
-        };
-
         // ---------- Constructor ----------
         constructor() {
           this.elements = this.cacheElements();
@@ -2642,7 +2629,10 @@
 
         // ---------- Initialization ----------
         init () {
-          this.isRestored = !!this.elements.scRows.querySelector('input[type="radio"]:checked');
+          this.isRestored = !!(
+            this.elements.scRows?.querySelector('input[type="radio"]:checked') ||
+            this.elements.workTitle?.value?.trim()
+          );
 
           if (!this.isRestored) this.buildAllRows();
           this.attachEventListeners();
@@ -2654,8 +2644,10 @@
           this.refreshAllSignaturePreviews();
           this.initQuillEditors();
           this.restoreQuillEditors();
-          this.elements.roleRadios[0].checked = true;
-          this.elements.revision.value = '0';
+          if (!this.isRestored) {
+            this.elements.roleRadios[0].checked = true;
+            this.elements.revision.value = '0';
+          }
         }
 
         buildAllRows () {
@@ -2874,7 +2866,7 @@
             this.setSignaturePreview(prefix, dataUrl);
           }
           const modalBtn = document.querySelector("a.btn-open-modal[data-prefix='" + prefix + "']");
-          modalBtn.classList.remove('anchor-element');
+          modalBtn?.classList.remove('anchor-element');
           this.signatureModal.classList.remove('open');
           this.activeSignaturePrefix = null;
         }
@@ -3169,9 +3161,9 @@
           document.addEventListener('keydown', this._boundHandlers.keydown);
 
           // MutationObserver for radio changes (progress updates)
-          const observer = new MutationObserver(() => this.updateProgress());
+          this._progressObserver = new MutationObserver(() => this.updateProgress());
           [this.elements.scRows, this.elements.dsRows, this.elements.chRows, this.elements.prRows].forEach(container => {
-            if (container) observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
+            if (container) this._progressObserver.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
           });
         }
 
@@ -3182,10 +3174,8 @@
             document.removeEventListener('input', this._boundHandlers.input);
             document.removeEventListener('keydown', this._boundHandlers.keydown);
           }
-          if (this.observer) {
-            this.observer.disconnect();
-          }
-          // Clear other references...
+          this._progressObserver?.disconnect();
+          clearTimeout(this.toastTimer);
         }
 
         handleSignatureUploadTriggerClick (e) {
@@ -3218,13 +3208,6 @@
             uploadArea.dataset.boundDnD = '1';
           }
 
-          const rskBtn = e.target.closest('.risk-btn');
-          if (rskBtn) {
-            this.elements.riskBtns.forEach(b => b.classList.remove('active'));
-            rskBtn.previousElementSibling?.removeAttribute('style');
-            rskBtn.classList.add('active');
-            return;
-          }
 
         }
         handleSignatureUpload (e, prefix) {
@@ -3306,11 +3289,16 @@
             }
           }
           // Risk buttons
-          if (e.target.classList.contains('risk-btn')) {
-            this.setRiskLevel(e.target.dataset.risk);
+          const rskBtn = e.target.closest('.risk-btn');
+          if (rskBtn) {
+            this.elements.riskBtns.forEach(b => b.classList.remove('active'));
+            rskBtn.parentElement.previousElementSibling?.removeAttribute('style');
+            rskBtn.classList.add('active');
+            this.setRiskLevel(rskBtn.dataset.risk);
             this.syncSectionVisibility();
             this.showRiskConsistencyNotices();
           }
+
 
           // Clear buttons
           const clearActions = {
@@ -3325,7 +3313,6 @@
             saveSnapshotBtn: () => this.saveSnapshot(),
             exportDraftBtn: () => this.exportDraftJson(),
             importDraftBtn: () => this.triggerDraftImport(),
-            resetFormBtn: () => this.resetForm(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
             dismissNoticeBtn: () => this.hideGlobalNotice()
           };
@@ -3335,17 +3322,23 @@
             e.stopPropagation();
             clearActions[id](e);
           }
+
+          if (e.target.matches('input') || e.target.matches('select')) {
+            this.updateProgress();
+            if (e.target.validity.valid) {
+              e.target.previousElementSibling?.removeAttribute('style');
+            }
+          }
         }
 
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
             this.updateProgress();
             const name = e.target.name;
-            if (name.startsWith('sc')) {
-              if (name === 'sc11') {
-                this.updateRoleLabels(false);
-              }
+            if (name === 'sc11') {
+              this.updateRoleLabels(false);
             }
+
             if (name.startsWith('ch')) this.syncCheckWarning();
             if (name === 'sc_role') {
               this.updateRoleLabels(true);
@@ -3354,7 +3347,6 @@
             this.syncSectionVisibility();
 
           }
-          console.log(e.target);
           if (e.target.matches('input') || e.target.matches('select')) {
             this.updateProgress();
             if (e.target.validity.valid) {
@@ -3371,11 +3363,6 @@
             this.autosizeTextarea(e.target);
           }
 
-          if (e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-            this.scheduleCommentsHeightSync();
-          }
-
           if (e.target.classList.contains('risk-btn')) {
             this.showRiskConsistencyNotices();
             this.syncSectionVisibility();
@@ -3384,8 +3371,18 @@
 
         handleGlobalInput (e) {
           // Name sync
-          if (e.target.id === 'engineer') this.elements.scName.value = e.target.value;
-          if (e.target.id === 'sc_name') this.elements.engineer.value = e.target.value;
+          if (e.target.id === 'engineer') {
+            const scName = this.elements.scName;
+            scName.value = e.target.value
+            scName.previousElementSibling?.removeAttribute('style');
+            e.target.previousElementSibling?.removeAttribute('style');
+          };
+          if (e.target.id === 'sc_name') {
+            const engineer = this.elements.engineer;
+            engineer.value = e.target.value
+            engineer.previousElementSibling?.removeAttribute('style');
+            e.target.previousElementSibling?.removeAttribute('style');
+          };
           if (e.target.id === 'checker' && !this.elements.cardCh.classList.contains('hidden')) {
             this.elements.chName.value = e.target.value;
           }
@@ -3395,15 +3392,7 @@
           if (e.target.matches('textarea')) {
             this.autosizeTextarea(e.target);
           }
-          if (e.target.matches('input') || e.target.matches('select')
-            || e.target.matches('button[class="risk-btn"]')) {
-            this.updateProgress();
-          }
 
-          if (e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-            this.scheduleCommentsHeightSync();
-          }
         }
 
         handleGlobalKeydown (e) {
@@ -3417,28 +3406,26 @@
             e.preventDefault();
             head.click();
           }
-
-          if (e.key === 'Enter' && e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-            this.scheduleCommentsHeightSync();
-          }
         }
 
-        // ---------- IndexedDB Draft Storage ----------
-
-
-        draftTx (mode) {
-          return this._draftDb.then(db => db.transaction(CheckForm.DRAFT_STORE, mode).objectStore(CheckForm.DRAFT_STORE));
+        validateVisibleSignatures () {
+          let allSigned = true;
+          document.querySelectorAll('.signature-pad-container').forEach((container) => {
+            if (!isSignaturePadShown(container)) return;
+            const prefix = container.getAttribute('data-prefix');
+            const input = document.getElementById(`${prefix}_sig_data`);
+            if (!hasSigData(input?.value)) {
+              allSigned = false;
+            }
+          });
+          return allSigned;
         }
-
         getFormJsonData () {
           this.syncAllQuillEditors();
           const form = document.getElementById('check_form');
           const formData = new FormData(form);
-          console.log(formData);
           const jsonData = {};
           formData.forEach((value, key) => {
-            console.log(key, value);
             if (key in jsonData) {
               if (!Array.isArray(jsonData[key])) jsonData[key] = [jsonData[key]];
               jsonData[key].push(value);
@@ -3465,14 +3452,7 @@
             jsonData[`${prefix}_certSelect`] = certSelectOptionHtml;
             jsonData[`${prefix}_certInfo`] = certInfo?.textContent?.trim() ?? '';
           });
-          console.log(jsonData);
           return jsonData;
-        }
-
-        scheduleDraftAutosave () {
-          if (!this._draftDb) return;
-          clearTimeout(this._draftAutosaveTimer);
-          this._draftAutosaveTimer = setTimeout(() => this.saveDraftNow(false), 750);
         }
 
         applyDraftData (data) {
@@ -3626,7 +3606,6 @@
 
         triggerDraftImport () {
           const input = document.getElementById('draftImportInput');
-          console.log(input);
           if (!input) return;
           input.value = '';
           input.click();
@@ -3637,7 +3616,6 @@
           if (!input) return;
           input.addEventListener('change', () => {
             const file = input.files?.[0];
-            console.log(file);
             if (!file) return;
             const reader = new FileReader();
             reader.onload = async () => {
@@ -3671,8 +3649,13 @@
         }
 
         setRiskLevel (level) {
-          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
-          document.querySelector(`.risk-btn[data-risk="${level}"]`)?.classList.add('active');
+          this.elements.riskBtns.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          const activeBtn = document.querySelector(`.risk-btn[data-risk="${level}"]`);
+          activeBtn?.classList.add('active');
+          activeBtn?.setAttribute('aria-pressed', 'true');
           const levelMap = { low: 'Self-Check', medium: 'Check', high: 'Type 1 Independent Review Required' };
           if (levelMap[level]) {
             this.elements.minCheckLevel.value = levelMap[level];
@@ -3881,7 +3864,7 @@
         }
 
         getRadioValue (name) {
-          return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
+          return document.querySelector(`input[name="${CSS.escape(name)}"]:checked`)?.value ?? null;
         }
 
         // ---------- Progress & Validation ----------
@@ -3997,30 +3980,24 @@
           sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           sec.querySelectorAll('textarea').forEach(t => t.value = '');
           sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
-          sec.querySelectorAll('input[type="hidden"]').forEach(c => c.value = '');
           sec.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'))
-          sec.querySelectorAll('.ql-editor').forEach(f => f.innerHTML = ''); // FIX = '');
+          sec.querySelectorAll('.ql-editor').forEach(f => f.innerHTML = '');
 
-          setTimeout(() => {
-            this.removeCanvas(sec);
-            this.updateProgress();
-            if (sectionId === 'sec-info-body') {
-              this.elements.revision.value = 0;
-              this.elements.roleRadios[0].checked = true;
-            }
-            if (sectionId === 's1') {
-              this.syncDirectSupervision();
-              this.showRiskConsistencyNotices();
-
-            }
-            if (sectionId === 's3') this.syncCheckWarning();
-            sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
-            this.scheduleCommentsHeightSync();
-            this.syncAllSectionVisibility();
-
-            this.toast('Section cleared', 'info');
-          }, 1000);
-
+          this.removeCanvas(sec);
+          this.updateProgress();
+          if (sectionId === 'sec-info-body') {
+            this.elements.revision.value = '0';
+            this.elements.roleRadios[0].checked = true;
+          }
+          if (sectionId === 's1') {
+            this.syncDirectSupervision();
+            this.showRiskConsistencyNotices();
+          }
+          if (sectionId === 's3') this.syncCheckWarning();
+          sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
+          this.scheduleCommentsHeightSync();
+          this.syncAllSectionVisibility();
+          this.toast('Section cleared', 'info');
         }
 
         // ---------- Global Notice (Toast) ----------
@@ -4089,7 +4066,7 @@
           const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
           const a = document.createElement('a');
           // Detect if this is an already-saved snapshot file (opened locally)
-          if (window.location.protocol === 'file:') {
+          if (window.location.origin === 'file://') {
             // If so, trigger a download with the same name to overwrite it
             const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
             const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
@@ -4101,12 +4078,12 @@
           a.click();
           a.remove();
           URL.revokeObjectURL(url);
-          this.saveJasonFile();
+          this.saveJsonFile();
           this.toast('Snapshot saved', 'success');
 
         }
 
-        saveJasonFile () {
+        saveJsonFile () {
           const jsonStr = JSON.stringify(this.getFormJsonData());
           const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
           const jsonUrl = URL.createObjectURL(jsonBlob);
@@ -4119,13 +4096,37 @@
           URL.revokeObjectURL(jsonUrl);
         }
 
+        lockQuillEditors () {
+          const editors = window.deCheckForm?.quillEditors;
+          if (!editors) return;
+          Object.values(editors).forEach((q) => { if (q) q.enable(false); });
+        }
+
+        lockDataToSign (data) {
+
+          var elements = data.querySelectorAll('input, select, textarea, button');
+          if (elements) {
+            for (let element of elements) {
+              element.disabled = true;
+            }
+          }
+        }
+
         printFormAsPdf (e) {
           e.preventDefault();
           this.updateProgress();
+
           if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value < 100) {
             this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
             return;
           }
+
+          if (this.validateVisibleSignatures()) {
+            this.lockQuillEditors();
+            console.log(document.querySelectorAll('.card'));
+            document.querySelectorAll('.card').forEach(this.lockDataToSign);
+          }
+
           window.print();
         }
       }
@@ -4136,8 +4137,6 @@
         form.init();
         form.bindDraftImport();
       });
-      // Initialize the application when DOM is ready
-      //window.addEventListener('DOMContentLoaded', () => form.init());
 
       // Call on unload
       window.addEventListener('beforeunload', () => form.destroy());
@@ -4146,6 +4145,7 @@
   </script>
   <script src="https://cloudfront.notarius.com/certifio-manager.js"></script>
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
   <script>
     var certifioManager = null;
     var certificates = [];
@@ -4166,21 +4166,9 @@
     /**
      * Returns { ok, missing: string[] } where missing is prefixes still empty.
      */
-    function validateVisibleSignatures () {
-      const missing = [];
-      document.querySelectorAll('.signature-pad-container').forEach((container) => {
-        if (!isSignaturePadShown(container)) return;
-        const prefix = container.getAttribute('data-prefix');
-        const input = document.getElementById(`${prefix}_sig_data`);
-        if (!hasSigData(input?.value)) {
-          return false;
-        }
-      });
-      return true;
-    }
+
 
     function validateCard (prefix) {
-      console.log(prefix);
       const cardSC = document.getElementById(`card-${prefix}`);
       const required = Array.from(cardSC.querySelectorAll('.required-field-underline'));
       const requiredShown = required.filter(el => !el.closest('.hidden')
@@ -4266,21 +4254,9 @@
         );
       }
 
-      function lockDataToSign (data) {
 
-        var elements = data.querySelectorAll('input, select, textarea, button');
-        if (elements) {
-          for (let element of elements) {
-            element.disabled = true;
-          }
-        }
-      }
 
-      function lockQuillEditors () {
-        if (this.quillEditors) {
-          Object.values(this.quillEditors).forEach((q) => { if (q) q.enable(false); });
-        }
-      }
+
 
       function signOnce (request) {
         return new Promise((resolve, reject) => {
@@ -4299,13 +4275,16 @@
         if (!certifioManager) return;
 
         var deviceId = certSelect.value;
-        var sigType = 'ENVELOPED';
 
         btnSign.disabled = true;
         btnSign.textContent = 'Signing...';
 
         try {
-          var signatureData = await signTwoPayloads(deviceId, card ? card.outerHTML : '', cardInfo ? cardInfo.outerHTML : '');
+          var signatureData = await signTwoPayloads(
+            deviceId,
+            'ENVELOPED',
+            card ? card.outerHTML : '',
+          );
           lastSignatureResult = signatureData;
           if (typeof signatureData === 'string') {
             sigData.value = signatureData;
@@ -4315,8 +4294,6 @@
           btnSign.disabled = false;
           btnSign.textContent = 'Success';
           btnSign.classList.add('success');
-          lockDataToSign(card);
-          lockDataToSign(cardInfo);
 
         } catch (error) {
           console.error('Signing failed:', error);
@@ -4331,12 +4308,10 @@
 
       btnSign.addEventListener('click',
         () => {
-          var completed = window.deCheckForm?.sectionConfig.find(s => s.prefix === prefix).status;
-          completed = completed && validateCard(prefix);
+          var section = window.deCheckForm?.sectionConfig.find(s => s.prefix === prefix);
+          var completed = section?.status && validateCard(prefix);
           var infoValid = validateCard('info');
 
-          console.log(prefix, completed);
-          console.log(infoValid);
           if (prefix === 'fT1') {
             signData();
           } else if (prefix === 'sc' && completed && infoValid) {
@@ -4351,9 +4326,6 @@
 
         });
 
-      if (validateVisibleSignatures()) {
-        lockQuillEditors();
-      }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
