@@ -3823,7 +3823,6 @@
           this.elements.progressStrip.classList.toggle('completed', pct === 100);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
-
           printBtn.classList.toggle('completed', pct === 100 && this.allRequiredFieldsValid());
 
         }

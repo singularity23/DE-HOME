@@ -9,10 +9,17 @@
       transformer: 'transformer',
       voltage: 'voltage',
       kva: 'kva',
+      fuseSelect: 'fuseSelect',
+      fuseUpstreamResult: 'fuseUpstreamResult',
       reset: 'reset',
       result: 'result',
       gridBody: '#grid tbody',
     },
+    fuseRoles: [
+      { key: 'bonFuse', label: 'Dual Sensing / BON Fuse', upstreamKey: 'Upstream' },
+      { key: 'TxFuse', label: 'Transformer Fuse', upstreamKey: 'Upstream' },
+      { key: 'CLFuse', label: 'Current Limiting Fuse', upstreamKey: 'CLUpstream' },
+    ],
     transformerTypes: {
       OH: 'OH',
       LPT: 'LPT',
@@ -195,6 +202,54 @@
         const kvaMatch = !Number.isFinite(kva) || row.kva === kva;
         return transformerMatch && voltageMatch && kvaMatch;
       });
+    },
+
+    /**
+     * Find fuse-data rows where fuseCode matches bonFuse, TxFuse, or CLFuse
+     */
+    findRowsByFuse (fuseCode) {
+      const code = this.sanitize(fuseCode);
+      if (!code || code === CONFIG.placeholders.default) return [];
+
+      const seen = new Set();
+      const matches = [];
+      for (const row of window.FUSE_DATA || []) {
+        for (const role of CONFIG.fuseRoles) {
+          const fuseVal = row[role.key];
+          if (fuseVal == null || fuseVal === '') continue;
+          if (String(fuseVal).trim() !== code) continue;
+
+          const upstream = row[role.upstreamKey];
+          const dedupeKey = `${role.key}|${JSON.stringify(upstream)}`;
+          if (seen.has(dedupeKey)) continue;
+          seen.add(dedupeKey);
+
+          matches.push({
+            role: role.label,
+            fuseField: role.key,
+            upstream,
+          });
+        }
+      }
+
+      return matches.sort((a, b) => String(a.role).localeCompare(String(b.role)));
+    },
+
+    /**
+     * Format upstream fuse list with CAD IDs where known
+     */
+    formatUpstreamWithCad (upstream, fuseCadData) {
+      if (upstream == null || upstream === '' || upstream === '—') {
+        return CONFIG.placeholders.default;
+      }
+      const items = Array.isArray(upstream) ? upstream : [upstream];
+      return items.map((item) => {
+        const text = String(item).trim();
+        if (!text || text === '—') return text;
+        const fuseToken = text.split(/\s+/)[0];
+        const match = fuseCadData.find((r) => r.fuse === fuseToken);
+        return match ? `${text} (${match.cadId})` : text;
+      }).join(', ');
     },
   };
 
@@ -594,7 +649,13 @@
     },
 
     closeAll (exceptSelect = null) {
-      for (const select of [document.getElementById(CONFIG.selectors.transformer), document.getElementById(CONFIG.selectors.voltage), document.getElementById(CONFIG.selectors.kva)]) {
+      for (const id of [
+        CONFIG.selectors.transformer,
+        CONFIG.selectors.voltage,
+        CONFIG.selectors.kva,
+        CONFIG.selectors.fuseSelect,
+      ]) {
+        const select = document.getElementById(id);
         if (!select || select === exceptSelect) continue;
         this.close(select);
       }
@@ -1082,6 +1143,96 @@
   }
 
   /**
+   * Reverse fuse lookup — select a fuse, show upstream coordination rows
+   */
+  class FuseLookupController {
+    constructor(fuseCadData) {
+      this.fuseCadData = fuseCadData;
+      this.els = {
+        fuseSelect: document.getElementById(CONFIG.selectors.fuseSelect),
+        result: document.getElementById(CONFIG.selectors.fuseUpstreamResult),
+      };
+      if (!this.els.fuseSelect || !this.els.result) {
+        console.warn('Fuse lookup controls not found; skipping fuse lookup init');
+        return;
+      }
+      CustomSelect.init(this.els.fuseSelect);
+      this.populateFuseSelect();
+      this.els.fuseSelect.addEventListener('change', () => this.showUpstream());
+    }
+
+    populateFuseSelect () {
+      DOM.resetSelect(this.els.fuseSelect, 'Select Fuse');
+      const fuses = DataProcessor.getUnique(this.fuseCadData.map((r) => r.fuse));
+      DOM.populateSelect(this.els.fuseSelect, fuses, (fuse) => {
+        const match = this.fuseCadData.find((r) => r.fuse === fuse);
+        return match ? `${fuse} (${match.cadId})` : fuse;
+      });
+    }
+
+    showUpstream () {
+      const fuse = this.els.fuseSelect.value;
+      DOM.clear(this.els.result);
+
+      if (!fuse) {
+        DOM.hide(this.els.result);
+        return;
+      }
+
+      DOM.show(this.els.result);
+
+      const cadLabel = this.fuseCadData.find((r) => r.fuse === fuse);
+      const title = document.createElement('h2');
+      title.textContent = cadLabel
+        ? `Upstream for ${fuse} (${cadLabel.cadId})`
+        : `Upstream for ${fuse}`;
+      this.els.result.appendChild(title);
+
+      const matches = DataProcessor.findRowsByFuse(fuse);
+      if (matches.length === 0) {
+        const msg = document.createElement('p');
+        msg.textContent = 'No upstream data for this fuse in bonFuse, TxFuse, or CLFuse fields.';
+        this.els.result.appendChild(msg);
+        return;
+      }
+
+      const table = document.createElement('table');
+      table.className = 'fuse-match-table';
+
+      const thead = document.createElement('thead');
+      thead.innerHTML = [
+        '<tr>',
+        '<th class="col-2-5">Matched as</th>',
+        '<th class="col-7-5">Upstream (CAD ID)</th>',
+        '</tr>',
+      ].join('');
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      matches.forEach((row) => {
+        const tr = document.createElement('tr');
+        if (row.fuseField === 'CLFuse') {
+          tr.className = CONFIG.classes.highlight_2;
+        } else {
+          tr.className = CONFIG.classes.highlight;
+        }
+        const upstreamText = DataProcessor.formatUpstreamWithCad(row.upstream, this.fuseCadData);
+        tr.innerHTML = [
+          `<td class="col-2-5">${ImpedanceHandler.escapeHtml(row.role)}</td>`,
+          `<td class="col-7-5">${ImpedanceHandler.escapeHtml(upstreamText)}</td>`,
+        ].join('');
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+
+      const wrap = document.createElement('div');
+      wrap.className = CONFIG.classes.tableWrap;
+      wrap.appendChild(table);
+      this.els.result.appendChild(wrap);
+    }
+  }
+
+  /**
    * Application initialization
    */
   function init () {
@@ -1101,6 +1252,7 @@
 
       // Initialize UI controller
       new UIController(elements, fuseData, ohData, ugData, fuseCadData);
+      new FuseLookupController(fuseCadData);
 
       console.log('Fuse Selector initialized successfully');
     } catch (err) {

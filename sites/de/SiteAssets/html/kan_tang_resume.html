@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kan Tang – M.Eng P.Eng</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #1a1a1a;
+      --rule: #c8b89a;
+      --accent: #8b5e3c;
+      --accent-light: #f5efe8;
+      --muted: #6b6055;
+      --page: #faf8f4;
+      --sidebar: #f0ebe3;
+      --serif: 'Playfair Display', Georgia, serif;
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      background: #e8e0d5;
+      font-family: var(--sans);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem 4rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      background: var(--page);
+      width: 210mm;
+      min-height: 297mm;
+      box-shadow: 0 8px 60px rgba(0, 0, 0, 0.18), 0 2px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      animation: rise 0.6s ease both;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--ink);
+      color: #faf8f4;
+      padding: 0.6rem 1.6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      right: -40px;
+      bottom: -60px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 2px solid rgba(200, 184, 154, 0.25);
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      right: 20px;
+      top: -30px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 2px solid rgba(200, 184, 154, 0.15);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+    }
+
+    .name {
+      font-family: var(--sans);
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      color: #faf8f4;
+    }
+
+    .name span {
+      color: var(--rule);
+      font-weight: 400;
+      font-style: italic;
+      font-size: 1.2rem;
+      display: block;
+      margin-top: 0.3rem;
+      letter-spacing: 0.5px;
+    }
+
+    .contact {
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: rgba(250, 248, 244, 0.75);
+      line-height: 1.9;
+    }
+
+    .contact a {
+      color: var(--rule);
+      text-decoration: none;
+    }
+
+    .contact a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── BODY LAYOUT ── */
+    .body {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      min-height: calc(297mm - 130px);
+    }
+
+    /* ── MAIN ── */
+    .main {
+      padding: 0.6rem 1rem 1.6rem 1.6rem;
+      border-right: 1px solid #ddd6cc;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    /* Experience */
+    .job {
+      margin-bottom: 1.6rem;
+    }
+
+    .job:last-child {
+      margin-bottom: 0;
+    }
+
+    .employer {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.2px;
+    }
+
+    .role-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .role {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .role-meta,
+    .location {
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .dept-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .dept {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .location {
+      white-space: nowrap;
+    }
+
+    ul.bullets {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul.bullets li {
+      font-size: 0.7rem;
+      color: #3a3530;
+      padding-left: 1.1rem;
+      position: relative;
+      margin-bottom: 0.3rem;
+      font-weight: 300;
+    }
+
+    ul.bullets li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--rule);
+      font-size: 0.6rem;
+      top: 0.18rem;
+    }
+
+    ul.bullets li strong {
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .sub-role {
+      margin-top: 0.8rem;
+      padding-top: 0.8rem;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--sidebar);
+      padding: 0.6rem 1.6rem;
+    }
+
+    .side-section {
+      margin-bottom: 1rem;
+    }
+
+    .side-title,
+    .section-title {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--accent);
+      padding-bottom: 0.1rem;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 0.6rem;
+    }
+
+    .profile-text {
+      font-size: 0.7rem;
+      color: #4a3f36;
+      font-weight: 300;
+    }
+
+    .skill-item {
+      font-size: 0.7rem;
+      color: #4a3f36;
+      padding-left: 1rem;
+      position: relative;
+      margin-bottom: 0.45rem;
+      font-weight: 300;
+    }
+
+    .skill-item::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      color: var(--rule);
+      font-size: 0.45rem;
+      top: 0.22rem;
+    }
+
+    .cert-num {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+      font-weight: 300;
+    }
+
+    /* Education sidebar */
+    .edu-school,
+    .cert-name {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .edu-degree {
+      font-size: 0.65rem;
+      color: var(--accent);
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    .edu-detail {
+      font-size: 0.65rem;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 0.3rem;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.35rem;
+    }
+
+    .tag {
+      background: rgba(139, 94, 60, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(139, 94, 60, 0.2);
+      border-radius: 2px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.58rem;
+      font-family: var(--mono);
+      letter-spacing: 0.3px;
+    }
+
+    .link-text {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    .link-text a {
+      color: var(--accent);
+    }
+
+    .divider {
+      border-bottom: 1px dashed var(--rule);
+      margin: 0.3rem 0;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .job,
+      .side-section,
+      .page-divider {
+        break-inside: avoid;
+      }
+
+      .page {
+        box-shadow: none;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="name-block">
+          <div class="name">Kan Tang<span>M.Eng &nbsp;·&nbsp; P.Eng</span></div>
+        </div>
+        <div class="contact">
+          778-928-8264<br>
+          <a href="mailto:micookie@gmail.com">micookie@gmail.com</a><br>
+          206-7088 14th Ave, Burnaby, BC V3N0E7<br>
+          <a href="https://www.linkedin.com/in/kantang52/" target="_blank">linkedin.com/in/kantang52</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- BODY -->
+    <div class="body">
+
+      <!-- MAIN COLUMN -->
+      <main class="main">
+
+        <section class="section">
+          <div class="section-title">Professional Experience</div>
+
+          <!-- BC Hydro -->
+          <div class="job">
+            <div class="employer">British Columbia Hydro and Power Authority</div>
+            <div class="dept-row">
+              <span class="dept">Integrated Planning, Distribution Engineering</span>
+              <span class="location">Burnaby, BC</span>
+            </div>
+            <div class="role-line">
+              <span class="role">Distribution Systems Specialist Engineer</span>
+              <span class="role-meta">2024 – Present</span>
+            </div>
+            <ul class="bullets">
+              <li>Promoted to province-wide specialist; sought by cross-functional DE groups as technical authority on
+                complex distribution matters.</li>
+              <li>Leading solutions for unmetered services modernization and switchgear-on-private-property standards,
+                in collaboration with Line, Policy, and municipal stakeholders.</li>
+              <li>Driving DE software strategy: advocating for enhanced CYME modelling, ESRI access, and GIS accuracy;
+                hosting circuit-study workshops to raise team competency.</li>
+            </ul>
+            <div class="divider"></div>
+            <div class="role-line">
+              <span class="role">Senior Distribution Engineer</span>
+              <span class="role-meta">2017.07 – 2024</span>
+            </div>
+
+            <ul class="bullets">
+              <li><strong>People Leadership:</strong> Acted as Team Lead for DE Interior; participated in LMN
+                recruitment and succession planning.</li>
+              <li><strong>EGBC Compliance:</strong> High audit compliance as PoR on capital and end-of-life programs
+                (voltage conversion, GIS, switchgear, capacitor).</li>
+              <li><strong>Resource Management:</strong> Carried 18 concurrent projects; completed 47/171 OE reviews —
+                ~one-third of DE's total — covering territory of 3–4 engineers with no turnaround delays.</li>
+              <li><strong>Process Improvement:</strong> Built the Field Review Tracking site (province-wide adoption),
+                a load balancing script for distribution optimization, and the DE SharePoint Toolbox.</li>
+              <li><strong>Emergency Response:</strong> Led Vista protection settings change during the heatwave;
+                delivered Spot network contingency plan under urgent timelines.</li>
+              <li><strong>Stakeholder Engagement:</strong> Resolved high-profile Rogers infrastructure conflict in
+                North Vancouver; recognized by Rogers VP for Western Canada.</li>
+              <li><strong>Project Delivery:</strong> Developed outage mitigation plans for Arbutus ductbank feeders;
+                led Norgate PCB removal strategy to minimize scope, cost, and reliability impact.</li>
+              <li>2020 BC Hydro Award — Customer Service (External); "Exceptional" annual performance ratings.</li>
+              <li>Manages multiple projects in high-paced environments to quality and timeliness benchmarks</li>
+
+            </ul>
+          </div>
+          <!-- SNC-Lavalin -->
+          <div class="job">
+            <div class="employer">SNC-Lavalin Inc.</div>
+            <div class="dept-row">
+              <span class="dept">Construction, Hydro &amp; Power Delivery</span>
+              <span class="location">Vancouver, BC</span>
+            </div>
+            <div class="role-line">
+              <span class="role">Construction Manager</span>
+              <span class="role-meta">2013.10 – 2017.07</span>
+            </div>
+            <ul class="bullets">
+              <li><strong>Team delivery:</strong> Directed multi-disciplinary teams on multi-million-dollar T&amp;D
+                projects as BC Hydro's representative; earned VP commendation and 15% merit raise.</li>
+              <li><strong>ESP management:</strong> Held contractors accountable for scope, schedule, and quality on
+                VVO/PCM and major equipment upgrades (GIS, HV transformers, circuit breakers, telecom).</li>
+              <li><strong>Safety leadership:</strong> Championed safe work practices and environmental compliance across
+                active construction sites.</li>
+            </ul>
+            <div class="divider"></div>
+            <div class="dept-row">
+              <span class="dept">Field Engineering, Transmission &amp; Distribution</span>
+              <span class="location">Calgary, AB</span>
+            </div>
+            <div class="role-line">
+              <span class="role">Field Protection &amp; Control Engineer</span>
+              <span class="role-meta">2013.01 – 2013.10</span>
+            </div>
+          </div>
+
+          <!-- Hydro One -->
+          <div class="job">
+            <div class="employer">Hydro One Networks Inc.</div>
+            <div class="dept-row">
+              <span class="dept">Ottawa Protection and Control, Grid Operations</span>
+              <span class="location">Ottawa, ON</span>
+            </div>
+            <div class="role-line">
+              <span class="role">Field Protection &amp; Control Engineer/Officer</span>
+              <span class="role-meta">2009.07 – 2012.05</span>
+            </div>
+            <div class="divider"></div>
+
+            <div class="dept-row">
+              <span class="dept">Transmission Planning, Asset Management (Rotation)</span>
+              <span class="location">Toronto, ON</span>
+            </div>
+            <div class="role-line">
+              <span class="role">Network Management Engineer/Officer</span>
+              <span class="role-meta">
+                2010.11 – 2011.09
+              </span>
+            </div>
+            <div class="divider"></div>
+
+            <div class="dept-row">
+              <span class="dept">Metering &amp; Technical Services, Grid Operations (Rotation)</span>
+              <span class="location">Mississauga, ON</span>
+            </div>
+            <div class="role-line">
+              <span class="role">Protection &amp; Control Engineer/Officer</span>
+              <span class="role-meta">
+                2010.05 – 2010.11
+              </span>
+            </div>
+            <div class="divider"></div>
+
+            <div class="dept-row">
+              <span class="dept">Telecom Engineering, Engineering Services</span>
+              <span class="location">Toronto, ON</span>
+            </div>
+            <div class="role-line">
+              <span class="role">University Student Intern</span>
+              <span class="role-meta">
+                2006.05 – 2007.05
+              </span>
+            </div>
+          </div>
+
+          <!-- Hatch -->
+          <div class="job">
+            <div class="employer">Hatch Ltd.</div>
+            <div class="dept-row">
+              <span class="dept">Electrical Team, Project Delivery Group</span>
+              <span class="location">Mississauga, ON</span>
+            </div>
+            <div class="role-line">
+              <span class="role">Electrical Engineer in Training</span>
+              <span class="role-meta">2008.05 – 2009.03</span>
+            </div>
+          </div>
+
+        </section>
+      </main>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+
+        <div class="side-section">
+          <div class="side-title">Profile</div>
+          <p class="profile-text">Registered P.Eng. with 15+ years in power utility industry,
+            including distribution design, engineering and operations. Seeking the Engineering Team
+            Lead role, where my technical expertise, proven
+            people leadership, and deep familiarity with BC Hydro processes and safety framework can lead the Lower
+            Mainland
+            North regional team to success.</p>
+        </div>
+
+        <div class="side-section">
+          <div class="side-title">Skills</div>
+
+          <ul class="bullets">
+            <li>Electrical power systems specialist — significant experience in project and construction management</li>
+            <li>Strong analytical skills: evaluating alternatives, and formulating recommendations</li>
+            <li>Communicates complex problems with clarity using critical thinking</li>
+            <li>Versatile in multi-cultural and multi-disciplinary settings</li>
+            <li>Leads by example; motivates team collaboration</li>
+            <li>Cultivates knowledge-sharing and personal growth in team members</li>
+            <li>Resilient under high pressure; committed to efficient processes and productive team interactions</li>
+          </ul>
+        </div>
+
+
+        <div class="side-section">
+          <div class="side-title">Education</div>
+
+          <div class="edu-school">University of British Columbia</div>
+          <div class="edu-degree">Master of Engineering Leadership</div>
+          <div class="edu-detail">Urban Systems</div>
+
+          <div class="edu-school">Queen's University at Kingston</div>
+          <div class="edu-degree">B.Sc. Electrical Engineering</div>
+          <div class="edu-detail">First Class Honours with Professional Internship (Nortel Networks Upper Year Award
+            &amp;
+            Dean's Award)</div>
+
+          <div class="edu-degree">B.A. Economics</div>
+          <div class="edu-detail">First Class</div>
+
+          <div class="edu-school">Hydro One Networks </div>
+          <div class="edu-detail">New Grad Program</div>
+
+          <div class="edu-school">University of Waterloo</div>
+          <div class="edu-detail">Power systems courses</div>
+
+          <div class="edu-school">BC Institute of Technology</div>
+          <div class="edu-detail">Construction operations courses</div>
+        </div>
+
+        <div class="side-section">
+          <div class="side-title">License &amp; Certificate</div>
+          <div class="cert-name">Engineers &amp; Geoscientists BC</div>
+          <div class="cert-num">License # 43694</div>
+          <div class="edu-detail">BC Hydro Power System Safety Protection – Category 2 &amp; 3</div>
+          <div class="edu-detail">First Aid CPR, Level A</div>
+          <div class="edu-detail">BC Driver's License,Class 5</div>
+        </div>
+
+      </aside>
+    </div><!-- /body -->
+  </div><!-- /page -->
+</body>
+
+</html>

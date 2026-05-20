@@ -70,6 +70,10 @@ h1 {
     box-shadow: 0 0 0 1px rgba(255, 255, 255, .05) inset
 }
 
+.fuse-lookup {
+    margin-top: 1rem;
+}
+
 .field {
     display: flex;
     flex-direction: column;

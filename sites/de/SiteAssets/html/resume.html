@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Resume of Kan Tang, M.Eng P.Eng — Senior Distribution Engineer">
+  <title>Kan Tang — Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #0e0e0e;
+      --paper: #f7f6f2;
+      --paper-muted: #f0eeea;
+      --canvas: #dedad4;
+      --text: #2e2e2e;
+      --text-mid: #3d3d3d;
+      --text-dim: #7a7a7a;
+      --rule: #d0cdc6;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 2.5rem;
+      --space-3xl: 3rem;
+      --sidebar-width: 15rem;
+      --page-max: 210mm;
+      --transition: 200ms ease;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: var(--space-sm);
+      z-index: 100;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-decoration: none;
+    }
+
+    .skip-link:focus {
+      left: var(--space-md);
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    body {
+      background: var(--canvas);
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: var(--space-2xl) var(--space-md) 5rem;
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+    }
+
+    .page {
+      background: var(--paper);
+      width: min(var(--page-max), 100%);
+      min-height: 297mm;
+      box-shadow:
+        0 4px 16px rgba(14, 14, 14, 0.1),
+        0 20px 80px rgba(14, 14, 14, 0.12);
+      animation: lift 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+
+    @keyframes lift {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Header */
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      padding: var(--space-3xl) var(--space-3xl) var(--space-xl);
+      border-bottom: 2.5px solid var(--ink);
+      gap: var(--space-xl);
+    }
+
+    .name {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 8vw, 4.2rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      color: var(--ink);
+    }
+
+    .credentials {
+      display: block;
+      font-family: var(--font-mono);
+      font-style: normal;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      margin-top: 0.6rem;
+      text-transform: uppercase;
+    }
+
+    .contact {
+      font-style: normal;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      line-height: 2;
+      color: var(--text-mid);
+    }
+
+    .contact ul {
+      list-style: none;
+    }
+
+    .contact a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+      cursor: pointer;
+      transition: border-color var(--transition), color var(--transition);
+    }
+
+    .contact a:hover {
+      border-bottom-color: var(--ink);
+    }
+
+    .contact a:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    /* Layout */
+    .resume-layout {
+      display: grid;
+      grid-template-columns: 1fr var(--sidebar-width);
+    }
+
+    .main {
+      padding: var(--space-2xl) var(--space-2xl) var(--space-3xl) var(--space-3xl);
+      border-right: 1px solid var(--rule);
+    }
+
+    .section {
+      margin-bottom: var(--space-2xl);
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .sec-label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .sec-label::after,
+    .sec-label::before {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .job {
+      margin-bottom: var(--space-xl);
+    }
+
+    .job:last-child {
+      margin-bottom: 0;
+    }
+
+    .employer {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      margin-bottom: 0.15rem;
+    }
+
+    .role-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-md);
+      margin-bottom: 0.2rem;
+      flex-wrap: wrap;
+    }
+
+    .dept-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .location {
+      white-space: nowrap;
+    }
+
+    .role {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dates {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dept,
+    .location {
+      font-size: 0.7rem;
+      font-style: italic;
+      color: var(--text-dim);
+    }
+
+    .sub-role {
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px dashed var(--rule);
+    }
+
+    .pts {
+      list-style: none;
+    }
+
+    .pts li {
+      font-size: 0.8125rem;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--text);
+      padding-left: 1rem;
+      position: relative;
+      margin-bottom: 0.28rem;
+    }
+
+    .pts li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--rule);
+      font-size: 0.65rem;
+      top: 0.1rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
+      background: var(--paper-muted);
+    }
+
+    .side-block {
+      margin-bottom: var(--space-xl);
+    }
+
+    .side-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .profile-text {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--text-mid);
+    }
+
+    .skill-list {
+      list-style: none;
+    }
+
+    .skill-list li {
+      font-size: 0.8rem;
+      font-weight: 300;
+      line-height: 1.25;
+      color: var(--text-mid);
+      padding-left: 0.85rem;
+      position: relative;
+      margin-bottom: 0.35rem;
+    }
+
+    .skill-list li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--ink);
+      font-size: 1rem;
+      line-height: 1;
+      top: 0.05rem;
+    }
+
+    .cert-block+.cert-block {
+      margin-top: var(--space-md);
+    }
+
+    .cert-name {
+      font-size: 0.66rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-bottom: 0.1rem;
+    }
+
+    .cert-num {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .edu-entry+.edu-entry {
+      margin-top: var(--space-md);
+    }
+
+    .edu-inst {
+      font-family: var(--font-serif);
+      font-size: 0.82rem;
+
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.05rem;
+    }
+
+    .edu-deg {
+      font-size: 0.7rem;
+
+      font-style: italic;
+      color: var(--text-mid);
+      margin-bottom: 0.05rem;
+    }
+
+    .edu-note {
+      font-size: 0.64rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    .other-list {
+      list-style: none;
+    }
+
+    .other-list li {
+      font-size: 0.67rem;
+      font-weight: 300;
+      color: var(--text-mid);
+      line-height: 1.65;
+      margin-bottom: 0.25rem;
+    }
+
+
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        font-size: 10.5pt;
+      }
+
+      .skip-link {
+        display: none;
+      }
+
+      .page {
+        box-shadow: none;
+        width: 100%;
+        animation: none;
+      }
+
+      .sidebar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .contact a {
+        color: inherit;
+        text-decoration: underline;
+        border-bottom: none;
+      }
+
+      .job {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="page">
+    <header class="header">
+      <div>
+        <h1 class="name">Kan Tang<span class="credentials">M.Eng · P.Eng</span></h1>
+      </div>
+      <address class="contact">
+        <ul>
+          <li><a href="tel:+17789288264">778&#8209;928&#8209;8264</a></li>
+          <li><a href="mailto:micookie@gmail.com">micookie@gmail.com</a></li>
+          <li>206-7088 14th Ave, Burnaby, BC V3N 0E7</li>
+          <li>
+            <a href="https://www.linkedin.com/in/kantang52/" target="_blank" rel="noopener noreferrer">
+              linkedin.com/in/kantang52
+            </a>
+          </li>
+        </ul>
+      </address>
+    </header>
+
+    <div class="resume-layout">
+      <main id="main-content" class="main">
+        <section class="section" aria-labelledby="experience-heading">
+          <h2 class="sec-label" id="experience-heading">Professional Experience</h2>
+
+          <article class="job">
+            <h3 class="employer">British Columbia Hydro and Power Authority</h3>
+            <div class="dept-row">
+              <span class="dept">Integrated Planning, Distribution Engineering</span>
+              <span class="location">Burnaby, BC</span>
+            </div>
+            <div class="role-row">
+              <span class="role">Senior Distribution Engineer</span>
+              <span class="dates">
+                <time datetime="2017-07">2017.07</time> – Present
+              </span>
+            </div>
+            <ul class="pts">
+              <li>Received an "Exceptional" rating in annual performance reviews, distinguishing myself as a standout
+                regional engineer.</li>
+              <li>Earned the 2020 BC Hydro Award in the "Customer Service – External" category for my role as
+                Professional of Record (PoR) on a customer-driven project.</li>
+              <li>Instrumental in delivering capital projects (voltage conversion, GIS upgrade) and end-of-life programs
+                (switchgear, capacitor) as Owner's Engineer / PoR.</li>
+              <li>Demonstrated strong time management and teamwork by managing extreme workloads during periods of staff
+                shortage.</li>
+              <li>Served as subject matter expert in multiple specialist teams; contributed to recruitment, onboarding,
+                and mentoring of new engineers.</li>
+              <li>Identified future system needs and developed tools that significantly improved departmental work
+                efficiency.</li>
+              <li>Advocated for innovative IoT use by showcasing a self-developed web app to boost productivity and
+                innovation.</li>
+              <li>Built meaningful stakeholder relationships through effective collaboration, resolving complaints, and
+                providing technical assistance.</li>
+            </ul>
+          </article>
+
+          <article class="job">
+            <h3 class="employer">SNC-Lavalin Inc.</h3>
+            <div class="dept-row">
+              <span class="dept">Construction, Hydro &amp; Power Delivery</span>
+              <span class="location">Vancouver, BC</span>
+            </div>
+            <div class="role-row">
+              <span class="role">Construction Manager</span>
+              <span class="dates">
+                <time datetime="2013-10">2013.10</time> – <time datetime="2017-07">2017.07</time>
+              </span>
+            </div>
+            <ul class="pts">
+              <li>Received VP commendation for delivering multiple high-stake projects on time and within budget;
+                recognized with a 15% salary raise; one project featured on corporate website front page.</li>
+              <li>Managed multi-million-dollar T&amp;D projects as BC Hydro's representative, including VVO/PCM and
+                major equipment upgrades (GIS, HV transformers, circuit breakers, surge arresters, telecom).</li>
+              <li>Collaborated closely with stakeholders to drive engineering improvements and address staffing and
+                capability needs.</li>
+              <li>Championed safe work practices and ensured adherence to environmental policies and regulations.</li>
+            </ul>
+
+            <div class="sub-role">
+              <div class="dept-row">
+                <span class="dept">Field Engineering, Transmission &amp; Distribution</span>
+                <span class="location">Calgary, AB</span>
+              </div>
+              <div class="role-row">
+                <span class="role">Field Protection &amp; Control Engineer</span>
+                <span class="dates">
+                  <time datetime="2013-01">2013.01</time> – <time datetime="2013-10">2013.10</time>
+                </span>
+              </div>
+              <ul class="pts">
+                <li>Supervised installation, commissioning, maintenance, troubleshooting, and root cause analysis of
+                  protective relay control systems.</li>
+                <li>Conducted quality assessments of contractor field activities, ensuring adherence to SNC-Lavalin and
+                  AltaLink standards.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="job">
+            <h3 class="employer">Hydro One Networks Inc.</h3>
+            <div class="dept-row">
+              <span class="dept">Ottawa Protection and Control, Grid Operations</span>
+              <span class="location">Ottawa, ON</span>
+            </div>
+            <div class="role-row">
+              <span class="role">Field Protection &amp; Control Engineer/Officer</span>
+              <span class="dates">
+                <time datetime="2009-07">2009.07</time> – <time datetime="2012-05">2012.05</time>
+              </span>
+            </div>
+            <ul class="pts">
+              <li>Extensive experience in design, troubleshooting, installation, commissioning, and maintenance of
+                P&amp;C systems for HV transmission lines, substations, feeders, and revenue metering.</li>
+              <li>Authored ITPs, Commissioning and In-Service Reports, and Maintenance/Troubleshooting documentation.
+              </li>
+              <li>Conducted pre-service inspections and adjustments of P&amp;C equipment to ensure optimal performance.
+              </li>
+              <li>Maintained a clean safety record throughout, adhering to ESA and NPCC standards.</li>
+            </ul>
+
+            <div class="sub-role">
+              <div class="dept-row">
+                <span class="dept">Transmission Planning, Asset Management (Rotation)</span>
+                <span class="location">Toronto, ON</span>
+              </div>
+              <div class="role-row">
+                <span class="role">Network Management Engineer/Officer</span>
+                <span class="dates">
+                  <time datetime="2010-11">2010.11</time> – <time datetime="2011-09">2011.09</time>
+                </span>
+              </div>
+
+            </div>
+
+            <div class="sub-role">
+              <div class="dept-row">
+                <span class="dept">Metering &amp; Technical Services, Grid Operations (Rotation)</span>
+                <span class="location">Mississauga, ON</span>
+              </div>
+              <div class="role-row">
+                <span class="role">Protection &amp; Control Engineer/Officer</span>
+                <span class="dates">
+                  <time datetime="2010-05">2010.05</time> – <time datetime="2010-11">2010.11</time>
+                </span>
+              </div>
+            </div>
+
+            <div class="sub-role">
+              <div class="dept-row">
+                <span class="dept">Telecom Engineering, Engineering Services</span>
+                <span class="location">Toronto, ON</span>
+              </div>
+              <div class="role-row">
+                <span class="role">University Student Intern</span>
+                <span class="dates">
+                  <time datetime="2006-05">2006.05</time> – <time datetime="2007-05">2007.05</time>
+                </span>
+              </div>
+            </div>
+          </article>
+
+          <article class="job">
+            <h3 class="employer">Hatch Ltd.</h3>
+            <div class="dept-row">
+              <span class="dept">Electrical Team, Project Delivery Group</span>
+              <span class="location">Mississauga, ON</span>
+            </div>
+            <div class="role-row">
+              <span class="role">Electrical Engineer in Training</span>
+              <span class="dates">
+                <time datetime="2008-05">2008.05</time> – <time datetime="2009-03">2009.03</time>
+              </span>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      <aside class="sidebar" aria-label="Profile and qualifications">
+        <section class="side-block" aria-labelledby="profile-heading">
+          <h2 class="sec-label" id="profile-heading">Profile</h2>
+          <p class="profile-text">Proactive professional engineer seeking a dynamic Team Lead position, where my
+            technical acumen, business insights, and construction experience can be fully utilized. Committed to driving
+            company success while fostering the growth of diverse teams, navigating complex engineering challenges, and
+            promoting safety.</p>
+        </section>
+
+        <section class="side-block" aria-labelledby="skills-heading">
+          <h2 class="sec-label" id="skills-heading">Skill Highlights</h2>
+          <ul class="skill-list">
+            <li>Electrical power systems specialist — significant experience in project and construction management</li>
+            <li>Strong analytical skills: data interpretation, evaluating alternatives, and formulating recommendations
+            </li>
+            <li>Communicates complex problems with clarity using critical thinking</li>
+            <li>Manages multiple projects in high-paced environments to quality and timeliness benchmarks</li>
+            <li>Leads by example; motivates teams through a supportive, safety-first culture</li>
+            <li>Versatile in multi-cultural and multi-disciplinary settings</li>
+            <li>Fosters collaboration with clear communication across customers, colleagues, and stakeholders</li>
+            <li>Cultivates knowledge-sharing and personal growth in team members</li>
+            <li>Resilient under high pressure; committed to efficient processes and productive team interactions</li>
+          </ul>
+        </section>
+
+        <section class="side-block" aria-labelledby="certs-heading">
+          <h2 class="sec-label" id="certs-heading">Certification</h2>
+          <div class="cert-block">
+            <p class="cert-name">Engineers &amp; Geoscientists BC</p>
+            <p class="cert-num">License # 43694</p>
+          </div>
+          <div class="cert-block">
+            <p class="cert-name">Project Management Professional</p>
+            <p class="cert-num">License # 2115326</p>
+          </div>
+        </section>
+
+        <section class="side-block" aria-labelledby="education-heading">
+          <h2 class="sec-label" id="education-heading">Education</h2>
+
+          <div class="edu-entry">
+            <p class="edu-inst">University of British Columbia</p>
+            <p class="edu-deg">Master of Engineering Leadership</p>
+            <p class="edu-note">Urban Systems</p>
+          </div>
+
+          <div class="edu-entry">
+            <p class="edu-inst">University of Waterloo</p>
+            <p class="edu-deg">Graduate Coursework</p>
+            <p class="edu-note">Power Systems, Distributed Generation, Distribution Planning, Grounding System Design,
+              Asset Management</p>
+          </div>
+
+          <div class="edu-entry">
+            <p class="edu-inst">Queen's University at Kingston</p>
+            <p class="edu-deg">B.Sc. Electrical Engineering</p>
+            <p class="edu-note">First Class Honours · Professional Internship<br>Nortel Networks Upper Year Award ·
+              Dean's Award</p>
+            <p class="edu-deg">B.A. Economics</p>
+            <p class="edu-note">First Class</p>
+          </div>
+
+          <div class="edu-entry">
+            <p class="edu-inst">Hydro One — New Grad Program</p>
+            <p class="edu-note">Certificate, Protection &amp; Control</p>
+          </div>
+
+          <div class="edu-entry">
+            <p class="edu-inst">BC Institute of Technology</p>
+            <p class="edu-note">Certificate, Construction Operation</p>
+          </div>
+        </section>
+
+        <section class="side-block" aria-labelledby="training-heading">
+          <h2 class="sec-label" id="training-heading">Other Training</h2>
+          <ul class="other-list">
+            <li>BC Hydro Power System Safety Protection — Category 2 &amp; 3</li>
+            <li>BC Driver's Licence, Class 5</li>
+            <li>First Aid CPR, Level A</li>
+          </ul>
+        </section>
+
+        <section class="side-block" aria-labelledby="reference-heading">
+          <h2 class="sec-label" id="reference-heading">Reference</h2>
+          <p class="edu-note">Available upon request</p>
+        </section>
+      </aside>
+    </div>
+  </div>
+</body>
+
+</html>
