@@ -4,21 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="BC Hydro Distribution Engineering Check &amp; Review Form">
+  <meta name="description" content="BC Hydro Distribution Engineering Check & Review Form">
   <title>Distribution Engineering Check Form</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Fonts -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&amp;family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&amp;display=swap"
+    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
     rel="stylesheet">
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&amp;display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
   <style>
     /* ============================================================
@@ -45,7 +49,7 @@
 
       /* Semantic color assignments */
       --header-bg: color-mix(in srgb, var(--color-secondary) 80%, var(--color-tertiary));
-      --valid: color-mix(in srgb, var(--color-secondary) 95%, var(--surface));
+      --valid: color-mix(in srgb, var(--color-warning) 15%, white);
       --surface: #ffffff;
       --border: color-mix(in srgb, var(--color-info) 50%, var(--surface-base));
       --border-hard: var(--color-tertiary);
@@ -126,7 +130,6 @@
       -webkit-font-smoothing: antialiased;
       pointer-events: none;
       font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
-
     }
 
     /* --------------------------------
@@ -151,9 +154,9 @@
       padding: 10px 12px;
       background: var(--surface);
       color: var(--text);
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: 0;
-      z-index: 9;
+      z-index: 9999;
       transform: translateY(-160%);
       transition: transform 180ms ease-out;
     }
@@ -188,7 +191,7 @@
       text-wrap-style: pretty;
     }
 
-    a strong {
+    strong {
       color: var(--color-link);
       text-decoration: underline;
     }
@@ -202,10 +205,10 @@
       font-weight: 400;
     }
 
-    /* Focus styles */
-    :where(a, button, input, select, textarea, [role='button'], [tabindex]):focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+    /* Focus styles - FIXED */
+    :focus-visible {
+      outline: 1px solid var(--color-link) !important;
+      outline-offset: 1px !important;
     }
 
     /* --------------------------------
@@ -214,7 +217,6 @@
     .shell {
       max-width: 860px;
       margin: 0 auto;
-      animation: fadeUp 0.2s ease both;
     }
 
     @keyframes fadeUp {
@@ -229,13 +231,18 @@
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
+    @media (prefers-reduced-motion: no-preference) {
       .shell {
-        animation: none;
+        animation: fadeUp 0.2s ease both;
       }
+    }
 
+    @media (prefers-reduced-motion: reduce) {
+
+      .shell,
       .chevron,
       .progress-fill {
+        animation: none;
         transition: none;
       }
     }
@@ -247,7 +254,7 @@
       background: var(--surface-inverse);
       color: var(--color-secondary);
       border-radius: 0;
-      border: 2pt solid var(--border);
+      border: 2px solid var(--border);
       margin-bottom: var(--gap-lg);
       display: flex;
       align-items: center;
@@ -271,6 +278,10 @@
       height: 28px;
     }
 
+    .header-group {
+      align-items: right;
+    }
+
     .header-title {
       font-family: 'Roboto', system-ui, sans-serif;
       font-size: 1.2rem;
@@ -284,6 +295,7 @@
     .header-sub {
       font-size: 0.7rem;
       font-weight: 400;
+      color: var(--color-tertiary);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       text-align: right;
@@ -306,7 +318,7 @@
 
     .progress-strip {
       background: var(--surface);
-      border: 2pt solid var(--border);
+      border: 2px solid var(--border);
       border-radius: 0;
       padding: var(--space-inset-y) var(--space-inset-x);
       margin-bottom: var(--gap-lg);
@@ -317,7 +329,7 @@
 
     .progress-strip.completed {
       background: color-mix(in srgb, var(--low-bg) 30%, #fff);
-      border: 2pt solid color-mix(in srgb, var(--low-border) 60%, #fff);
+      border: 2px solid color-mix(in srgb, var(--low-border) 60%, #fff);
     }
 
     .progress-strip.completed .material-symbols-sharp,
@@ -332,15 +344,15 @@
       font-family: 'Roboto', system-ui, sans-serif;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--text);
+      color: var(--color-primary);
       white-space: nowrap;
     }
 
     .progress-pct {
       font-weight: 600;
-      color: var(--text);
+      color: var(--color-primary);
       font-family: 'Roboto', system-ui, sans-serif;
-      width: 36px;
+      min-width: 48px;
       text-align: right;
       font-size: 14px;
     }
@@ -386,7 +398,7 @@
     7. Cards & Sections
     -------------------------------- */
     .card {
-      border: 2pt solid var(--border);
+      border: 2px solid var(--border);
       border-radius: 0;
       margin-bottom: var(--gap-lg);
       overflow: hidden;
@@ -409,7 +421,7 @@
       justify-content: space-between;
       padding: var(--space-inset-y) var(--space-inset-x);
       cursor: pointer;
-      border-bottom: 2px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
       user-select: none;
       gap: var(--gap-md);
       background: var(--header-bg);
@@ -451,7 +463,7 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
     }
 
     .sec-num.complete {
@@ -460,38 +472,26 @@
       border-color: var(--success);
     }
 
-    .sec-title,
-    .sig-modal-title {
+    .sec-title {
       font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.875rem;
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-    }
-
-    .wrapper-badge {
-      display: grid;
-      /* Shorthand: vertical + horizontal centering */
-      place-items: center;
-      height: 28px;
+      color: var(--color-primary);
     }
 
     .sec-badge {
       font-family: 'Roboto', system-ui, sans-serif;
+      min-width: max-content;
       font-size: 0.75rem;
-      padding: 0px 10px;
+      padding: 5px 10px;
       border-radius: 0;
       background: var(--color-secondary);
       color: var(--color-primary);
       font-weight: 600;
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       letter-spacing: 0.04em;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 28px;
-      width: 84px;
-
     }
 
     .sec-right {
@@ -525,7 +525,7 @@
 
     .sec-banner {
       padding: var(--space-inset-y) var(--space-inset-x);
-      border-bottom: 2px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
       background: var(--surface);
     }
 
@@ -544,6 +544,7 @@
       display: grid;
       padding-bottom: var(--gap-md);
       grid-template-columns: repeat(6, minmax(0, 1fr));
+      column-gap: 20px;
       grid-template-areas:
         'title title title title title revision'
         'role role role level level level'
@@ -591,14 +592,15 @@
       display: flex;
       flex-direction: column;
       background: var(--surface);
+      overflow-wrap: break-word;
     }
 
     .meta-cell:nth-child(2n) {
-      padding: 5px 15px 5px 10px;
+      padding: 5px 15px 5px 0;
     }
 
     .meta-cell:nth-child(2n-1) {
-      padding: 5px 10px 5px 15px;
+      padding: 5px 0 5px 15px;
     }
 
     @media (max-width: 600px) {
@@ -621,7 +623,7 @@
       font-size: 0.75rem;
       font-weight: 600;
       letter-spacing: 0.03em;
-      color: var(--text-muted);
+      color: var(--color-primary);
       font-family: 'Roboto', system-ui, sans-serif;
     }
 
@@ -633,7 +635,7 @@
     .field-input {
       width: 100%;
       padding: var(--gap-xs) var(--gap-md);
-      border: 2px solid var(--border-soft);
+      border: 1px solid var(--border-soft);
       border-radius: 0;
       font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.875rem;
@@ -648,11 +650,12 @@
       box-sizing: border-box;
     }
 
-    .field-input:valid {
+    input:valid,
+    select:valid {
       background-color: var(--valid);
     }
 
-    .field-input:focus {
+    input.field-input:focus {
       outline: none;
       border-color: var(--accent);
       background: var(--surface);
@@ -688,20 +691,6 @@
       overflow: hidden;
     }
 
-    .disabled {
-      opacity: 1;
-    }
-
-    input:disabled+label {
-      color: var(--text);
-    }
-
-    .field-error {
-      margin-top: 6px;
-      font-size: 0.75rem;
-      color: var(--danger);
-    }
-
     .field-input[aria-invalid='true'] {
       border-color: var(--color-error);
     }
@@ -711,37 +700,26 @@
       border-bottom: 1px solid var(--color-error);
     }
 
-
-    .role_selector input[name="sc_role"]:not(:checked):disabled+label {
-      border: 1px solid var(--color-error);
-    }
-
     input.field-input:valid+.required-field-underline,
     input.field-input:focus+.required-field-underline,
     select.field-input:valid+.required-field-underline,
     select.field-input:focus+.required-field-underline,
     .role-selector:has(input[type='radio']:checked)+.required-field-underline,
     .risk-row:has(.risk-btn.active)+.required-field-underline,
-    input:disabled+.required-field-underline,
-    select:disabled+.required-field-underline,
+    input:not(:required)+.required-field-underline,
     .card.hidden .required-field-underline,
     .sec-body:not(.open) .required-field-underline {
       border-bottom-width: 0;
     }
 
-    input:not(:required):disabled {
+    input:disabled {
       opacity: 0.5;
       background-color: var(--muted-bg);
-      border: 2px solid color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
+      border: 1px solid color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
     }
 
-    .meta-cell:has(input.field-input:not(:required):disabled) {
+    .meta-cell:has(input:disabled) {
       opacity: 0.5;
-    }
-
-    .meta-cell:has(select:disabled),
-    select:disabled {
-      opacity: 1;
     }
 
     /* --------------------------------
@@ -778,27 +756,26 @@
     }
 
     .role-selector input[type='radio']:not(:checked)+label {
-      border: 2px solid var(--border-soft);
-    }
-
-    .role-selector input[id='sc_role_eit']:not(:checked)+label {
-      border-left: 0px !important;
+      border: 1px solid var(--border-soft);
     }
 
     .role-selector input[id='sc_role_eng']:not(:checked)+label {
       border-right: 0px !important;
     }
 
+    .role-selector input[id='sc_role_eit']:not(:checked)+label {
+      border-left: 0px !important;
+    }
+
     .role-selector input[type='radio']:not(:checked)+label:hover {
       background: var(--color-info);
       color: var(--color-secondary);
-      border: 2px solid var(--color-info);
+      border: 1px solid var(--color-info);
     }
 
-    .role-selector input[type='radio']:checked+label,
-    .role-selector input[type='radio']:checked:disabled+label {
+    .role-selector input[type='radio']:checked+label {
       background: var(--color-tertiary);
-      border: 2px solid var(--color-info);
+      border: 1px solid var(--color-info);
       color: var(--color-info);
     }
 
@@ -821,12 +798,13 @@
       cursor: pointer;
       text-align: center;
       color: var(--text-muted);
-      min-height: var(--touch-min);
-      border-top: 2px solid var(--border-soft);
-      border-bottom: 2px solid var(--border-soft);
+      min-height: 36px;
+      border-top: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
       text-transform: uppercase;
       box-sizing: border-box;
       transition: color 0.2s ease, background 0.2s ease, border 0.1s ease;
+
     }
 
     .risk-btn:hover {
@@ -836,13 +814,13 @@
 
     .risk-btn[data-risk='low'].active {
       background: var(--low-bg);
-      border: 2px solid var(--low-border);
+      border: 1px solid var(--low-border);
       color: var(--low);
     }
 
     .risk-btn[data-risk='high'].active {
       background: var(--high-bg);
-      border: 2px solid var(--high-border);
+      border: 1px solid var(--high-border);
       color: var(--high);
     }
 
@@ -860,7 +838,7 @@
 
     .risk-btn[data-risk='medium'].active {
       background: var(--medium-bg);
-      border: 2px solid var(--medium-border);
+      border: 1px solid var(--medium-border);
       color: var(--medium);
     }
 
@@ -882,23 +860,23 @@
     }
 
     .risk-btn[data-risk='low']:not(.active) {
-      border-left: 2px solid var(--border-soft);
-      border-right: 2px solid var(--border-soft);
+      border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
     .risk-btn[data-risk='low']:not(.active):has(~ .risk-btn[data-risk='medium'].active) {
-      border-left: 2px solid var(--border-soft);
+      border-left: 1px solid var(--border-soft);
       border-right: 0px solid var(--border-soft);
     }
 
     .risk-btn[data-risk='high']:not(.active) {
-      border-left: 2px solid var(--border-soft);
-      border-right: 2px solid var(--border-soft);
+      border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
     .risk-btn[data-risk='medium'].active~.risk-btn[data-risk='high']:not(.active) {
       border-left: 0px solid var(--border-soft);
-      border-right: 2px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
     /* --------------------------------
@@ -913,8 +891,10 @@
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      border-bottom: 2px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
       transition: background 0.15s ease;
+      row-gap: var(--gap-sm);
+      column-gap: 24px;
     }
 
     .check-row:last-child {
@@ -930,7 +910,7 @@
       min-width: 0;
       font-size: 0.75rem;
       align-self: center;
-      color: var(--text-muted);
+      color: var(--color-primary);
     }
 
     .check-num {
@@ -938,7 +918,6 @@
       color: var(--text-muted);
       min-width: 28px;
       align-self: center;
-      font-weight: 600;
     }
 
     .row-notice-stack {
@@ -963,7 +942,6 @@
       border-radius: 0;
       overflow: hidden;
       flex-shrink: 0;
-
     }
 
     .pill-group input[type='radio'] {
@@ -971,6 +949,7 @@
     }
 
     .pill-group label {
+      padding: 5px 5px;
       font-size: 0.6rem;
       font-weight: 600;
       font-family: 'Roboto', ui-monospace, monospace;
@@ -979,18 +958,15 @@
       transition: color 0.2s ease, background 0.2s ease;
       letter-spacing: 0.03em;
       width: 36px;
+      text-align: center;
       background: var(--bg);
-      height: 24px;
+      max-height: 24px;
       text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .pill-group input[type='radio']:not(:checked)+label {
-      border-top: 2px solid var(--border-soft);
-      border-bottom: 2px solid var(--border-soft);
-
+      border-top: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
     }
 
     .pill-group input[id$='_yes']:hover+label {
@@ -1000,7 +976,7 @@
 
     .pill-group input[id$='_yes']:checked+label {
       background: var(--low-bg);
-      border: 2px solid var(--low-border);
+      border: 1px solid var(--low-border);
       color: var(--low);
     }
 
@@ -1011,7 +987,7 @@
 
     .pill-group input[id$='_no']:checked+label {
       background: var(--high-bg);
-      border: 2px solid var(--high-border);
+      border: 1px solid var(--high-border);
       color: var(--high);
     }
 
@@ -1022,7 +998,7 @@
 
     .pill-group input[id$='_na']:checked+label {
       background: var(--muted-bg);
-      border: 2px solid var(--muted-border);
+      border: 1px solid var(--muted-border);
       color: var(--muted-border);
     }
 
@@ -1038,21 +1014,21 @@
 
 
     .pill-group input[id$='_na']:not(:checked)+label {
-      border-right: 2px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
     .pill-group input[id$='_no']:not(:checked)+label {
-      border-right: 2px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
       border-left: 0px;
     }
 
     .pill-group input[id$='_yes']:not(:checked)+label {
-      border-left: 2px solid var(--border-soft);
-      border-right: 2px solid var(--border-soft);
+      border-left: 1px solid var(--border-soft);
+      border-right: 1px solid var(--border-soft);
     }
 
     .pill-group input[id$='_yes']:not(:checked)+label:has(+ input[id$='_no']:checked) {
-      border-left: 2px solid var(--border-soft);
+      border-left: 1px solid var(--border-soft);
       border-right: 0px;
 
     }
@@ -1088,20 +1064,19 @@
     .notice.warn,
     .notice.info {
       background: var(--warn-bg);
-      border: 2px solid var(--warn-border);
+      border: 1px solid var(--warn-border);
       color: var(--warn);
     }
 
     .notice.success {
       background: var(--low-bg);
-      border: 2px solid var(--color-success);
+      border: 1px solid var(--color-success);
       color: var(--color-success);
     }
 
-    .btn.Fail,
     .notice.error {
       background: var(--error-bg);
-      border: 2px solid var(--error-border);
+      border: 1px solid var(--error-border);
       color: var(--error);
     }
 
@@ -1118,11 +1093,13 @@
       background: transparent;
       color: currentColor;
       cursor: pointer;
-      padding: 6px;
-      margin: -6px -6px -6px 10px;
       border-radius: 0;
       line-height: 1;
       font-size: 18px;
+      min-height: 24px;
+      min-width: 24px;
+      align-items: center;
+      justify-content: center;
     }
 
     .notice-close:hover .material-symbols-sharp {
@@ -1148,7 +1125,7 @@
     .sig-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      border-top: 2px solid var(--border-soft);
+      border-top: 1px solid var(--border-soft);
       width: 100%;
       background-color: var(--header-bg);
       padding-bottom: var(--gap-md);
@@ -1207,7 +1184,7 @@
     }
 
     .comments-cell {
-      background: var(--bg);
+      background: var(--surface);
       padding: var(--space-cell-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
     }
 
@@ -1216,10 +1193,97 @@
       padding: var(--space-cell-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
     }
 
-    textarea.comments-textarea {
-      border-top: 0px;
-      border-left: 0px;
-      border-right: 0px;
+    textarea.comments-textarea,
+    .comments-inline-editor {
+      width: 100%;
+      min-height: 100px;
+      border: 1px solid var(--border-hard);
+      border-radius: 0;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: none;
+      overflow: hidden;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .comments-inline-editor {
+      display: block;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .comments-inline-editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-muted);
+      font-style: italic;
+      pointer-events: none;
+    }
+
+    .comments-inline-editor:focus {
+      outline: 1px solid var(--color-link);
+      outline-offset: 1px;
+    }
+
+    .comments-inline-editor img,
+    .comments-inline-editor .comments-inline-image {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 8px 0;
+      cursor: zoom-in;
+      border: 1px solid var(--border-soft);
+    }
+
+    .rich-text-wrapper.comments-editor-fallback .ql-container {
+      display: none;
+    }
+
+    .comments-area:has(.comments-editor-fallback) .comments-image-gallery {
+      display: none;
+    }
+
+    .comment-image-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      cursor: pointer;
+    }
+
+    .comment-image-modal img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      cursor: default;
+    }
+
+    .comment-image-modal__close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .comment-image-modal__close:hover {
+      background: rgba(255, 255, 255, 0.4);
     }
 
     /* --------------------------------
@@ -1231,7 +1295,7 @@
       gap: var(--gap-md);
       padding: var(--space-inset-y) var(--space-inset-x);
       background: var(--header-bg);
-      border: 2pt solid var(--border);
+      border: 2px solid var(--border);
       border-radius: 0;
       margin-top: var(--gap-lg);
       align-items: center;
@@ -1246,9 +1310,12 @@
       padding: var(--gap-sm) var(--gap-md);
       border-radius: 0;
       cursor: pointer;
-      border: 2px solid transparent;
+      border: 1px solid transparent;
       transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-      min-height: var(--touch-min);
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-ghost,
@@ -1267,40 +1334,18 @@
       background: var(--warn-bg);
     }
 
-    .btn-print,
-    .btn-ghost,
-    .btn-sig-upload,
-    .btn-open-modal {
-      background: var(--bg);
-      border-color: var(--border);
-      color: var(--text-muted);
-    }
-
-    .btn-print.completed {
-      background: var(--low-bg);
-      border: 2px solid var(--low-border);
-      color: var(--low);
-    }
-
-    .btn-print.completed:hover {
-      border-color: var(--low-border);
-      color: var(--surface);
-      background: var(--low-border);
-    }
-
     .btn-sig-upload,
     .btn-open-modal {
       border-radius: 50px;
       border-style: dashed;
       text-decoration: none;
-      min-width: max(15%, 200px);
     }
 
     .btn-action {
       padding: 8px 14px;
       background: var(--warn);
       color: var(--warn-bg);
-      border: 2px solid var(--warn);
+      border: 1px solid var(--warn);
       cursor: pointer;
       font-weight: 600;
     }
@@ -1320,13 +1365,17 @@
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: var(--gap-sm) var(--gap-md);
+      padding: var(--gap-sm) var(--gap-sm);
       border-radius: 0;
       cursor: pointer;
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text-muted);
       transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-clear:hover {
@@ -1358,6 +1407,11 @@
       opacity: 0.5;
       pointer-events: none;
     }
+
+    /* Signature clear button always visible */
+
+
+
 
     /* --------------------------------
     18. Print Styles
@@ -1447,11 +1501,9 @@
       }
 
       /* Hide unchecked radio labels */
-      .risk-btn:not(.active):disabled {
-        display: none !important;
-      }
-
-      .pill-group input[type='radio']:not(:checked)+label {
+      input[type='radio']:not(:checked)+label,
+      input[type='checkbox']:not(:checked)+label,
+      .risk-btn:not(.active) {
         display: none !important;
       }
 
@@ -1468,16 +1520,13 @@
         color: transparent;
       }
 
-      .field-input:valid {
-        background-color: var(--valid) !important;
+      .meta-cell:has(input:disabled) {
+        display: none;
       }
 
-      .role-selector input[type='radio']:not(:checked):disabled+label {
-        display: none !important;
-      }
-
-      .meta-cell:has(input.field-input:not(:required):disabled) {
-        display: none !important;
+      input:valid,
+      select:valid {
+        background-color: var(--surface) !important;
       }
 
       .signature-pad-tabs,
@@ -1485,13 +1534,7 @@
         display: none;
       }
 
-      .ql-toolbar.ql-snow {
-        display: none;
-      }
 
-      .signature-pad-container select.field-input {
-        background: transparent;
-      }
 
       /* Disable animations */
       @keyframes fadeUp {
@@ -1519,7 +1562,7 @@
     .image-thumbnail {
       position: relative;
       overflow: hidden;
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       background: var(--muted-bg);
       cursor: pointer;
       transition: transform 0.2s ease, border-color 0.2s ease;
@@ -1563,13 +1606,30 @@
     }
 
     .sig-draw-surface.has-signature .image-thumbnail-remove:hover .material-symbols-sharp,
-    .image-thumbnail:hover .image-thumbnail-remove:hover .material-symbols-sharp {
+    .sig-inline-preview:hover .image-thumbnail-remove:hover .material-symbols-sharp {
       font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
-    .sig-draw-surface.has-signature .image-thumbnail-remove,
-    .image-thumbnail:hover .image-thumbnail-remove {
+    .sig-draw-surface.has-signature:hover .image-thumbnail-remove,
+    .sig-inline-preview:hover .image-thumbnail-remove {
       opacity: 1;
+    }
+
+    .sig-draw-surface.has-signature .sig-inline-preview {
+      display: flex;
+    }
+
+    .sig-draw-surface.has-signature .btn-open-modal {
+      display: none;
+    }
+
+    .sig-draw-surface.has-signature .image-thumbnail-remove,
+    .sig-inline-preview .image-thumbnail-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      opacity: 0;
+      pointer-events: auto;
     }
 
     .comments-paste-hint,
@@ -1584,22 +1644,19 @@
     .signature-pad-container {
       display: flex;
       flex-direction: row;
-      border: 2px solid var(--border-soft);
+      border: 1px solid var(--border-soft);
       background: var(--surface);
       overflow: hidden;
       height: 100px;
-
     }
 
     .signature-pad-tabs {
       display: flex;
       flex-direction: column;
-      padding: var(--gap-sm) var(--gap-sm) var(--gap-sm) var(--gap-xs);
-      justify-content: center;
-      gap: 10px;
     }
 
     .btn-sig-tab {
+      flex: 1;
       font-size: var(--font-size-sm);
       font-weight: 600;
       font-family: var(--font-sans);
@@ -1608,14 +1665,14 @@
       color: var(--text-muted);
       transition: color 0.15s ease, background 0.15s ease;
       white-space: nowrap;
-      display: inline-flex;
       align-items: center;
       justify-content: center;
       background-color: var(--header-bg);
       text-transform: uppercase;
-      border: 2px solid var(--border);
-      padding: var(--gap-sm) var(--gap-sm);
-      text-wrap: auto;
+      padding: var(--gap-xs) var(--gap-xs);
+      height: 50px;
+      min-height: 49px;
+      min-width: 24px;
     }
 
     .btn-sig-tab:hover {
@@ -1623,7 +1680,7 @@
     }
 
     .btn-sig-tab[data-tab="draw"].active {
-      border-bottom: 2px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .btn-sig-tab[data-tab="draw"].active .material-symbols-sharp,
@@ -1632,7 +1689,7 @@
     }
 
     .btn-sig-tab[data-tab="upload"].active {
-      border-top: 2px solid var(--border);
+      border-top: 1px solid var(--border);
     }
 
     .btn-sig-tab.active {
@@ -1640,33 +1697,20 @@
       color: var(--color-info);
     }
 
-    .btn-sig-tab.active.success,
-    .btn-sig-tab.success {
-      color: var(--low);
-      background: var(--low-bg);
-      border: 2px solid var(--low-border);
-    }
-
     .sig-tab-content.active {
-      display: flex;
-      align-items: center;
-
+      display: block;
       width: 100%;
-      flex-direction: column;
-      text-wrap: balance;
-      border: 2px dashed var(--border);
-      margin: var(--gap-sm) var(--gap-xs) var(--gap-sm) var(--gap-sm);
-      border-radius: 10px;
+      align-content: center;
+      text-align: center;
     }
 
     .sig-tab-content.active:hover {
-      border: 2px solid var(--border);
-
+      border-left: 1px solid var(--border-soft);
     }
 
     .sig-tab-content {
       display: none;
-      border: 2px dashed var(--border-soft);
+      border-left: 1px solid var(--border-soft);
     }
 
     .signature-canvas {
@@ -1692,7 +1736,7 @@
 
     .sig-inline-preview {
       position: absolute;
-      inset: 5px;
+      inset: 10px;
       display: none;
       align-items: center;
       justify-content: center;
@@ -1705,21 +1749,7 @@
       object-fit: contain;
     }
 
-    .sig-draw-surface.has-signature .sig-inline-preview {
-      display: flex;
-    }
 
-    .sig-draw-surface.has-signature .btn-open-modal {
-      display: none;
-    }
-
-    .sig-draw-surface .image-thumbnail-remove {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      opacity: 0;
-      pointer-events: auto;
-    }
 
     .anchor-element {
       anchor-name: --sig-anchor;
@@ -1749,7 +1779,7 @@
       position: absolute;
       width: min(720px, calc(100vw - 24px));
       background: var(--bg);
-      border: 2px solid var(--border-soft);
+      border: 1px solid var(--border-soft);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       overflow: hidden;
     }
@@ -1766,7 +1796,7 @@
       justify-content: space-between;
       gap: 12px;
       padding: 12px 14px;
-      border-bottom: 2px solid var(--border);
+      border-bottom: 1px solid var(--border);
       background: var(--header-bg);
     }
 
@@ -1778,7 +1808,7 @@
     .sig-modal-canvas-wrap {
       width: 100%;
       height: 240px;
-      border: 2px dashed var(--border-soft);
+      border: 1px dashed var(--border-soft);
       background: var(--surface-base);
       overflow: hidden;
     }
@@ -1788,7 +1818,7 @@
       gap: 8px;
       justify-content: flex-end;
       padding: 12px 14px;
-      border-top: 2px solid var(--border);
+      border-top: 1px solid var(--border);
       background: var(--header-bg);
     }
 
@@ -1813,42 +1843,31 @@
     .sig-preview img {
       max-width: 100%;
       max-height: 150px;
-      border: 2px solid var(--border-soft);
+      border: 1px solid var(--border-soft);
       border-radius: 4px;
     }
 
-    /* ── Quill Rich Text Editor Styles ── */
+    /* Quill Rich Text Editor Styles */
     .ql-toolbar {
-      border-bottom: none !important;
+      border: 1px solid var(--border);
+      border-bottom: none;
       background: var(--surface-base);
       border-radius: 0;
     }
 
     .ql-toolbar.ql-snow {
-      border: 2px solid var(--border-soft);
+      border: 1px solid var(--border);
       box-sizing: border-box;
-      padding: 0px !important;
-      font-family: var(--font-sans);
+      padding: 8px;
     }
 
     .ql-container {
-      border: 2px solid var(--border-soft) !important;
+      border: 1px solid var(--border-hard);
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
       min-height: 100px;
       overflow: hidden;
-    }
-
-    .ql-container:focus-within {
-      border-color: var(--color-primary) !important;
-    }
-
-    .ql-container .ql-tooltip {
-      z-index: 999 !important;
-      left: 0 !important;
-      min-width: fit-content;
-
     }
 
     .ql-editor {
@@ -1857,7 +1876,12 @@
       font-family: inherit;
       line-height: 1.6;
       min-height: 100px;
-      background-color: var(--surface);
+    }
+
+    .ql-container .ql-tooltip {
+      z-index: 999 !important;
+      left: 0 !important;
+      min-width: fit-content;
     }
 
     .ql-editor ol li:not(.ql-direction-rtl),
@@ -1866,8 +1890,12 @@
     }
 
     .ql-editor.ql-blank::before {
-      color: var(--border-soft);
-      font-style: normal;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .ql-toolbar.ql-snow {
+      padding: 8px;
     }
 
     .ql-toolbar.ql-snow .ql-formats {
@@ -1875,7 +1903,7 @@
     }
 
     .ql-toolbar.ql-snow .ql-stroke {
-      stroke: var(--color-info);
+      stroke: var(--color-primary);
     }
 
     .ql-toolbar.ql-snow .ql-fill {
@@ -1883,7 +1911,7 @@
     }
 
     .ql-toolbar.ql-snow .ql-picker-label {
-      color: var(--color-info);
+      color: var(--color-primary);
     }
 
     .ql-toolbar.ql-snow button:hover,
@@ -1908,8 +1936,9 @@
       fill: var(--accent);
     }
 
-    .rich-text-wrapper:focus-within {
-      border-color: var(--accent);
+    .ql-container:focus-within {
+      outline: 1px solid var(--color-link) !important;
+      outline-offset: 1px !important;
     }
 
     .rich-text-wrapper {
@@ -1919,33 +1948,10 @@
     .comments-area .rich-text-wrapper {
       margin-bottom: var(--gap-md);
     }
-
-    .info-text {
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      font-style: italic;
-      text-align: center;
-    }
-
-    small {
-      width: 100%;
-    }
-
-    .signature-pad-container select.field-input {
-      width: fit-content;
-      font-size: 0.75rem;
-      border: none;
-      text-align: center;
-      min-height: 0;
-      background: transparent;
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .signature-pad-container label {
-      display: none;
-    }
   </style>
+
+  <!-- Quill Rich Text Editor -->
+
 </head>
 
 <body>
@@ -1954,7 +1960,7 @@
     <div class="header">
       <div><img class="header-logo"
           src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-reversed.jpg"
-          alt="BC Hydro logo" decoding="async" fetchpriority="high"></div>
+          alt="BC Hydro logo"></div>
       <div class="header-group">
         <div class="header-title">Distribution Engineering</div>
         <div class="header-sub">Check &amp; Review Form</div>
@@ -1968,23 +1974,19 @@
         <progress class="progress-track" id="progressBar" min="0" max="100" value="0"
           aria-labelledby="progressLabel progressPct"></progress>
         <div class="completion"><span class="progress-pct" id="progressPct">0</span><span
-            class="material-symbols-sharp">
-            percent
-          </span></div>
+            class="material-symbols-sharp"> percent </span></div>
       </div>
 
       <!-- Document Information -->
-      <div class="card info" id="card-info">
+      <div class="card info">
         <div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
           <div class="sec-left">
-            <div class="sec-num" id="snum-info"><span class="material-symbols-sharp">
-                info_i
-              </span></div>
+            <div class="sec-num" id="snum-info"><span class="material-symbols-sharp"> info_i </span></div>
             <span class="sec-title">Work Information</span>
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn">Clear</button>
-            <svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
@@ -1997,7 +1999,6 @@
               <input class="field-input" id="workTitle" name="workTitle" type="text" placeholder="Enter work title..."
                 autocomplete="off" required>
               <div class="required-field-underline" aria-hidden="true"></div>
-              <div class="field-error sr-only" id="workTitle_error" aria-live="polite"></div>
             </div>
             <div class="meta-cell revision-cell">
               <label class="field-label" for="revision">Revision</label>
@@ -2041,7 +2042,7 @@
             </div>
             <div class="meta-cell review-level-cell">
               <label class="field-label" for="minCheckLevel">Minimum Check / Review Level</label>
-              <select class="field-input" id="minCheckLevel" name="minCheckLevel" required>
+              <select class="field-input" id="minCheckLevel" required>
                 <option value="" disabled selected>Select level…</option>
                 <option>Self-Check</option>
                 <option>Check</option>
@@ -2058,8 +2059,8 @@
             </div>
             <div class="meta-cell checker-cell" id="checker_por">
               <label class="field-label" for="checker">Checker</label>
-              <input class="field-input" id="checker" name="checker" type="text" placeholder="Checker name..."
-                autocomplete="name" disabled>
+              <input class="field-input" id="checker" type="text" placeholder="Checker name..." autocomplete="name"
+                disabled>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
           </div>
@@ -2067,8 +2068,8 @@
       </div>
 
       <!-- Section 1: Self-Check -->
-      <div class="card" id="card-sc">
-        <div class="sec-head open" id="sec1-head" tabindex="0" aria-expanded="true" aria-controls="s1">
+      <div class="card sc">
+        <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
           <div class="sec-left">
             <div class="sec-num" id="snum-1">1</div>
             <span class="sec-title">Self-Check</span>
@@ -2076,7 +2077,7 @@
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec1Btn" data-testid="clear-sec1">Clear</button>
-            <svg class="chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
@@ -2089,37 +2090,57 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_date" name="sc_date" type="date" autocomplete="off" required
-                  aria-required="true" data-testid="sc-date">
+                <input class="field-input" id="sc_date" type="date" autocomplete="off" required aria-required="true"
+                  data-testid="sc-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_name">Name (Engineer) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_name" name="sc_name" type="text" placeholder="Type full name"
-                  autocomplete="name" required aria-required="true" data-testid="sc-name">
+                <input class="field-input" id="sc_name" type="text" placeholder="Type full name" autocomplete="name"
+                  required aria-required="true" data-testid="sc-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="sc_sig">Signature (Engineer) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="scSigContainer" data-prefix="sc">
-                <div class="sig-tab-content active">
-                  <div class="form-group">
-                    <label class="field-label" for="sc_certSelect"></label>
-                    <select class="field-input" id="sc_certSelect" name="sc_certSelect" disabled>
-                    </select>
-                  </div>
-                  <div class="info-text" id="sc_certInfo" name="sc_certInfo"></div>
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="scSigDrawTab" tabindex="0"
+                    data-testid="sc-sig-draw">
+                    <span class="material-symbols-sharp">signature</span>
+                  </button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="scSigUploadTab"
+                    tabindex="-1" data-testid="sc-sig-upload">
+                    <span class="material-symbols-sharp">upload</span>
+                  </button>
                 </div>
-                <div class="signature-pad-tabs">
-                  <button class="btn btn-sig-tab" id="sc_btnRefreshCerts" type="button">
-                    Get
-                    Consigno
-                    Certificates
-                  </button>
-                  <button class="btn btn-sig-tab" id="sc_btnSign" type="button" style="display: none;">
-                    Sign
-                  </button>
+                <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
+                  tabindex="0">
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="sc" data-testid="sc-sig-surface">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="sc" data-testid="sc-sig-open">
+                      Open signature pad
+                    </a>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="sc" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="sig-tab-content" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="scSigUpload" accept="image/*" hidden data-testid="sc-sig-file">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="sc"
+                      data-testid="sc-sig-choose">
+                      Choose Signature Image
+                    </button>
+                    <div id="scSigPreview" class="sig-preview"></div>
+                  </div>
                 </div>
               </div>
               <input type="hidden" id="sc_sig_data" name="sc_sig_data">
@@ -2130,7 +2151,7 @@
 
       <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
       <div class="card hidden" id="card-ds">
-        <div class="sec-head" id="sec2-head" tabindex="0" aria-expanded="false" aria-controls="s2">
+        <div class="sec-head" id="sec2-head" tabindex="2" aria-expanded="false" aria-controls="s2">
           <div class="sec-left">
             <div class="sec-num" id="snum-2">2</div>
             <span class="sec-title">Direct Supervision</span>
@@ -2138,7 +2159,7 @@
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2">Clear</button>
-            <svg class="chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
@@ -2151,7 +2172,7 @@
 
       <!-- Section 3: Check -->
       <div class="card hidden" id="card-ch">
-        <div class="sec-head" id="sec3-head" tabindex="0" aria-expanded="false" aria-controls="s3">
+        <div class="sec-head" id="sec3-head" tabindex="3" aria-expanded="false" aria-controls="s3">
           <div class="sec-left">
             <div class="sec-num" id="snum-3">3</div>
             <span class="sec-title">Check</span>
@@ -2159,7 +2180,7 @@
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec3Btn" data-testid="clear-sec3">Clear</button>
-            <svg class="chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
@@ -2168,9 +2189,7 @@
         <div class="sec-body" id="s3">
           <div id="ch-rows" data-section="ch"></div>
           <div class="notice warn hidden" id="chNotice" role="alert" aria-live="polite">
-            <span class="material-symbols-sharp">
-              warning
-            </span>
+            <span class="material-symbols-sharp"> warning </span>
             <span><b>Attention:</b> A "No" answer requires your <b>Team Lead</b> to complete a Peer Review for
               acceptance.</span>
           </div>
@@ -2178,49 +2197,68 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_date" name="ch_date" type="date" autocomplete="off" required
-                  aria-required="true" data-testid="ch-date">
+                <input class="field-input" id="ch_date" type="date" autocomplete="off" required aria-required="true"
+                  data-testid="ch-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_name">Name (Checker) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_name" name="ch_name" type="text" placeholder="Type full name"
-                  autocomplete="name" required aria-required="true" data-testid="ch-name">
+                <input class="field-input" id="ch_name" type="text" placeholder="Type full name" autocomplete="name"
+                  required aria-required="true" data-testid="ch-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
-                <div class="sig-tab-content active">
-                  <div class="form-group">
-                    <label class="field-label" for="ch_certSelect"></label>
-                    <select class="field-input" id="ch_certSelect" name="ch_certSelect" disabled>
-                    </select>
-                  </div>
-                  <div class="info-text" id="ch_certInfo" name="ch_certInfo"></div>
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="chSigDrawTab" tabindex="0"
+                    data-testid="ch-sig-draw">
+                    <span class="material-symbols-sharp">signature</span>
+                  </button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="chSigUploadTab"
+                    tabindex="-1" data-testid="ch-sig-upload">
+                    <span class="material-symbols-sharp">upload</span>
+                  </button>
                 </div>
-                <div class="signature-pad-tabs">
-                  <button class="btn btn-sig-tab" id="ch_btnRefreshCerts" type="button">
-                    Get
-                    Consigno
-                    Certificates
-                  </button>
-                  <button class="btn btn-sig-tab" id="ch_btnSign" type="button" style="display: none;">
-                    Sign
-                  </button>
+                <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
+                  tabindex="0">
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="ch" data-testid="ch-sig-open">
+                      Open signature pad
+                    </a>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="sig-tab-content" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="chSigUpload" accept="image/*" hidden data-testid="ch-sig-file">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch"
+                      data-testid="ch-sig-choose">
+                      Choose Signature Image
+                    </button>
+                    <div id="chSigPreview" class="sig-preview"></div>
+                  </div>
                 </div>
               </div>
               <input type="hidden" id="ch_sig_data" name="ch_sig_data">
             </div>
-
           </div>
         </div>
       </div>
 
       <!-- Section 4: Peer Review -->
       <div class="card hidden" id="card-pr">
-        <div class="sec-head" id="sec4-head" tabindex="0" aria-expanded="false" aria-controls="s4">
+        <div class="sec-head" id="sec4-head" tabindex="4" aria-expanded="false" aria-controls="s4">
           <div class="sec-left">
             <div class="sec-num" id="snum-4">4</div>
             <span class="sec-title">Peer Review</span>
@@ -2228,7 +2266,7 @@
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec4Btn" data-testid="clear-sec4">Clear</button>
-            <svg class="chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
@@ -2237,9 +2275,7 @@
         <div class="sec-body" id="s4">
           <div class="sec-banner">
             <div class="notice warn" id="prType1Notice" role="note">
-              <span class="material-symbols-sharp">
-                warning
-              </span>
+              <span class="material-symbols-sharp"> warning </span>
               <span><b>Note:</b> This section is <b>not</b> a Type 1 High Risk Work Independent Review.</span>
             </div>
           </div>
@@ -2248,15 +2284,15 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_date" name="pr_date" type="date" autocomplete="off" required
-                  aria-required="true" data-testid="pr-date">
+                <input class="field-input" id="pr_date" type="date" autocomplete="off" required aria-required="true"
+                  data-testid="pr-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_name">Name (Peer Reviewer) <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_name" name="pr_name" type="text" placeholder="Type full name"
-                  autocomplete="name" required aria-required="true" data-testid="pr-name">
+                <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name"
+                  required aria-required="true" data-testid="pr-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2264,23 +2300,43 @@
               <div class="field-label" id="pr_sig">Signature (Peer Reviewer) <span class="sr-only">(required)</span>
               </div>
               <div class="signature-pad-container" id="prSigContainer" data-prefix="pr">
-                <div class="sig-tab-content active">
-                  <div class="form-group">
-                    <label class="field-label" for="pr_certSelect"></label>
-                    <select class="field-input" id="pr_certSelect" name="pr_certSelect" disabled>
-                    </select>
-                  </div>
-                  <div class="info-text" id="pr_certInfo" name="pr_certInfo"></div>
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="prSigDrawTab" tabindex="0"
+                    data-testid="pr-sig-draw">
+                    <span class="material-symbols-sharp">signature</span>
+                  </button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="prSigUploadTab"
+                    tabindex="-1" data-testid="pr-sig-upload">
+                    <span class="material-symbols-sharp">upload</span>
+                  </button>
                 </div>
-                <div class="signature-pad-tabs">
-                  <button class="btn btn-sig-tab" id="pr_btnRefreshCerts" type="button">
-                    Get
-                    Consigno
-                    Certificates
-                  </button>
-                  <button class="btn btn-sig-tab" id="pr_btnSign" type="button" style="display: none;">
-                    Sign
-                  </button>
+                <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
+                  tabindex="0">
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="pr" data-testid="pr-sig-open">
+                      Open signature pad
+                    </a>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="sig-tab-content" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="prSigUpload" accept="image/*" hidden data-testid="pr-sig-file">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr"
+                      data-testid="pr-sig-choose">
+                      Choose Signature Image
+                    </button>
+                    <div id="prSigPreview" class="sig-preview"></div>
+                  </div>
                 </div>
               </div>
               <input type="hidden" id="pr_sig_data" name="pr_sig_data">
@@ -2291,14 +2347,14 @@
 
       <!-- Section 5: Comments -->
       <div class="card hidden" id="card-comments">
-        <div class="sec-head" id="sec5-head" tabindex="0" aria-expanded="false" aria-controls="s5">
+        <div class="sec-head" id="sec5-head" tabindex="5" aria-expanded="false" aria-controls="s5">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div>
             <span class="sec-title">Comments &amp; Corrective Actions</span>
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec5Btn" data-testid="clear-sec5">Clear</button>
-            <svg class="chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
@@ -2360,14 +2416,14 @@
 
       <!-- Section 6: Final Signatures -->
       <div class="card hidden" id="card-final">
-        <div class="sec-head" id="sec6-head" tabindex="0" aria-expanded="false" aria-controls="s6">
+        <div class="sec-head" id="sec6-head" tabindex="6" aria-expanded="false" aria-controls="s6">
           <div class="sec-left">
             <div class="sec-num" id="snum-6">6</div>
             <span class="sec-title">Final Signatures</span>
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6">Clear</button>
-            <svg class="chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
@@ -2378,52 +2434,69 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="fT1Date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1Date" name="fT1Date" type="date" autocomplete="off" required
-                  aria-required="true" data-testid="ft1-date">
+                <input class="field-input" id="fT1Date" type="date" autocomplete="off" required aria-required="true"
+                  data-testid="ft1-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="fT1">Assigned Type 1 Reviewer <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1" name="fT1" type="text" placeholder="Full name" autocomplete="name"
-                  required aria-required="true" data-testid="ft1-name">
+                <input class="field-input" id="fT1" type="text" placeholder="Full name" autocomplete="name" required
+                  aria-required="true" data-testid="ft1-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="fT1Sig">DE TL Signature <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1">
-                <div class="sig-tab-content active">
-                  <div class="form-group">
-                    <label class="field-label" for="fT1_certSelect"></label>
-                    <select class="field-input" id="fT1_certSelect" name="fT1_certSelect" disabled>
-                    </select>
-                  </div>
-                  <div class="info-text" id="fT1_certInfo" name="fT1_certInfo"></div>
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="true" aria-controls="fT1SigDrawTab" tabindex="0"
+                    data-testid="ft1-sig-draw">
+                    <span class="material-symbols-sharp">signature</span>
+                  </button>
+                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="false" aria-controls="fT1SigUploadTab"
+                    tabindex="-1" data-testid="ft1-sig-upload">
+                    <span class="material-symbols-sharp">upload</span>
+                  </button>
                 </div>
-                <div class="signature-pad-tabs">
-                  <button class="btn btn-sig-tab" id="fT1_btnRefreshCerts" type="button">
-                    Get
-                    Consigno
-                    Certificates
-                  </button>
-                  <button class="btn btn-sig-tab" id="fT1_btnSign" type="button" style="display: none;">
-                    Sign
-                  </button>
+                <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
+                  tabindex="0">
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="fT1" data-testid="ft1-sig-surface">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="fT1" data-testid="ft1-sig-open">
+                      Open signature pad
+                    </a>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="fT1" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="sig-tab-content" id="fT1SigUploadTab" role="tabpanel" aria-labelledby="fT1SigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="fT1SigUpload" accept="image/*" hidden data-testid="ft1-sig-file">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="fT1"
+                      data-testid="ft1-sig-choose">
+                      Choose Signature Image
+                    </button>
+                    <div id="fT1SigPreview" class="sig-preview"></div>
+                  </div>
                 </div>
               </div>
               <input type="hidden" id="fT1_sig_data" name="fT1_sig_data">
             </div>
-
           </div>
         </div>
       </div>
 
       <!-- Global notice -->
       <div class="notice info hidden" id="globalNotice" role="status" aria-live="polite" aria-atomic="true">
-        <span class="material-symbols-sharp">
-          info
-        </span>
+        <span class="material-symbols-sharp"> info </span>
         <div id="globalNoticeText"></div>
         <div class="notice-actions">
           <button class="notice-close" type="button" aria-label="Dismiss notice" id="dismissNoticeBtn"
@@ -2450,31 +2523,21 @@
           </div>
         </div>
       </div>
+
+      <div class="actions">
+        <div> <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
+        </div>
+        <div>
+          <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
+          <button class="btn btn-primary" type="button" id="saveSnapshotBtn" data-testid="save-snapshot">Save</button>
+        </div>
+      </div>
     </main>
-    <button class="invisible" type="submit" hidden></button>
   </form>
-  <div class="actions">
-    <div>
-      <input type="file" id="draftImportInput" accept="application/json" hidden>
-      <button class="btn btn-ghost" type="button" id="exportDraftBtn" data-testid="export-draft">Export
-        Data</button>
-      <button class="btn btn-ghost" type="button" id="importDraftBtn" data-testid="import-draft">Import
-        Data</button>
-      <button class="btn btn-print" type="submit" id="saveAsPdfBtn" form="check_form" data-testid="save-pdf">Print /
-        PDF</button>
-    </div>
-    <div>
-      <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
-    </div>
-
-  </div>
-
-  <!-- Quill + DOMPurify loaded here to avoid render-blocking script in the head -->
-  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.7/purify.min.js"
-    integrity="sha512-78KH17QLT5e55GJqP76vutp1D2iAoy06WcYBXB6iBCsmO6wWzx0Qdg8EDpm8mKXv68BcvHOyeeP4wxAL0twJGQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+  <script type="module">
+    import { LazyBrush } from 'https://cdn.jsdelivr.net/npm/lazy-brush@2.0.0/lib/lazy-brush.js'
+    window.LazyBrush = LazyBrush; // Expose LazyBrush globally for use in signature pads
+  </script>
   <script>
     (function () {
       "use strict";
@@ -2534,16 +2597,21 @@
           high: { sc8: 'no', sc10: 'yes' }
         };
 
-        static RISK_LABELS = {
-          low: 'Self-Check',
-          medium: 'Check',
-          high: 'Type 1 Independent Review Required'
-        };
-
         static BINARY_QUESTIONS = {
           sc: new Set([8, 9, 10, 11]),
           ch: new Set([1])
         };
+
+        static COMMENT_FIELDS = [
+          ['checkerComments', 'Ctrl + V to paste screenshots...'],
+          ['engineerResponse', 'Enter engineer response...'],
+          ['reviewerComments', 'Ctrl + V to paste screenshots...'],
+          ['engineerResponse_2', 'Enter engineer response 2...']
+        ];
+
+        static activeAsyncButton = null;
+        static ModifiedDate = Date.now() - new Date(document.lastModified).getTime() > 0 ? true : false;
+        static origin = window.location.origin === 'file://' ? true : false; // For local testing with file://, use SharePoint origin for links
 
         // ---------- Constructor ----------
         constructor() {
@@ -2551,7 +2619,10 @@
           this.sectionConfig = this.buildSectionConfig();
           this.toastTimer = null;
           this.syncingNames = false;
+          this.penColor = '#000000';
+          this.signaturePads = {};
           this.isRestored = false;
+          this.init();
         }
 
         // Cache all frequently used DOM elements
@@ -2567,10 +2638,10 @@
             engineer: get('engineer'),
             checker: get('checker'),
             minCheckLevel: get('minCheckLevel'),
-            revision: get('revision'),
+            riskBtns: document.querySelectorAll('.risk-btn'),
             // Role radios
+            roleRadios: document.getElementsByName('sc_role'),
             // Cards
-            cardSc: get('card-sc'),
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
             cardPr: get('card-pr'),
@@ -2601,8 +2672,6 @@
             scSigDrawTab: get('scSigDrawTab'),
             scSigUploadTab: get('scSigUploadTab'),
             // Dynamic labels
-            roleRadios: document.getElementsByName('sc_role'),
-            riskBtns: document.querySelectorAll('.risk-btn'),
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
             scSigLabel: document.querySelector('#sc_sig'),
@@ -2618,40 +2687,31 @@
             s4Body: get('s4'), s4Head: get('sec4-head'),
             s5Body: get('s5'), s5Head: get('sec5-head'),
             s6Body: get('s6'), s6Head: get('sec6-head')
-
           };
         }
 
         buildSectionConfig () {
           return [
-            { rowsId: '#sc-rows', rows: this.elements.scRows, count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc', status: false, prefix: 'sc' },
-            { rowsId: '#ds-rows', rows: this.elements.dsRows, count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds', status: false, prefix: 'ds' },
-            { rowsId: '#ch-rows', rows: this.elements.chRows, count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch', status: false, prefix: 'ch' },
-            { rowsId: '#pr-rows', rows: this.elements.prRows, count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', status: false, prefix: 'pr' }
+            { rowsId: '#sc-rows', count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc' },
+            { rowsId: '#ds-rows', count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds' },
+            { rowsId: '#ch-rows', count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch' },
+            { rowsId: '#pr-rows', count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr' }
           ];
         }
 
         // ---------- Initialization ----------
         init () {
-          this.isRestored = !!(
-            this.elements.scRows?.querySelector('input[type="radio"]:checked') ||
-            this.elements.workTitle?.value?.trim()
-          );
+          this.isRestored = this.lastModified && this.origin;
 
           if (!this.isRestored) this.buildAllRows();
           this.attachEventListeners();
           this.updateProgress();
           this.syncAllSectionVisibility();
-          this.scheduleCommentsHeightSync();
+          this.syncCommentsHeights();
           this.updateRoleLabels(!this.isRestored);
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
-          this.initQuillEditors();
-          this.syncQuillEditors('fromHidden');
-          if (!this.isRestored) {
-            this.elements.roleRadios[0].checked = true;
-            this.elements.revision.value = '0';
-          }
+          this.initCommentEditors();
         }
 
         buildAllRows () {
@@ -2671,10 +2731,222 @@
           if (this.signatureModalCanvas) {
             this.setupModalCanvasDrawing(this.signatureModalCanvas);
           }
+          this.setupModalFocusTrap();
+        }
+
+        htmlToPlainText (html) {
+          if (!html || html === '<p><br></p>') return '';
+          const el = document.createElement('div');
+          el.innerHTML = html;
+          return el.textContent?.trim() ?? '';
+        }
+
+        escapeHtml (text) {
+          return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+        }
+
+        buildCommentInitialHtml (initial, gallery) {
+          let html = (initial || '').trim();
+          const galleryUrls = gallery
+            ? [...gallery.querySelectorAll('.image-thumbnail img[src]')].map(img => img.src).filter(Boolean)
+            : [];
+          if (!html.includes('<img') && galleryUrls.length) {
+            const imgs = galleryUrls.map(src =>
+              `<p><img src="${src}" alt="Comment attachment" class="comments-inline-image"></p>`
+            ).join('');
+            html = html ? `${html}${imgs}` : imgs;
+          }
+          if (html && !/<[a-z][\s\S]*>/i.test(html)) {
+            return `<p>${this.escapeHtml(html).replace(/\n/g, '<br>')}</p>`;
+          }
+          return html || '<p><br></p>';
+        }
+
+        insertCommentInlineImage (editor, dataUrl) {
+          if (!editor || !dataUrl) return;
+          editor.focus();
+
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.alt = 'Pasted screenshot';
+          img.className = 'comments-inline-image';
+
+          const sel = window.getSelection();
+          const block = document.createElement('p');
+          block.appendChild(img);
+
+          if (sel?.rangeCount) {
+            let range = sel.getRangeAt(0);
+            if (!editor.contains(range.commonAncestorContainer)) {
+              range = document.createRange();
+              range.selectNodeContents(editor);
+              range.collapse(false);
+            }
+            range.deleteContents();
+            range.insertNode(block);
+            range.setStartAfter(block);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          } else {
+            editor.appendChild(block);
+          }
+        }
+
+        showCommentImageModal (dataUrl) {
+          const modal = document.createElement('div');
+          modal.className = 'comment-image-modal';
+          modal.setAttribute('role', 'dialog');
+          modal.setAttribute('aria-modal', 'true');
+
+          const closeBtn = document.createElement('button');
+          closeBtn.type = 'button';
+          closeBtn.className = 'comment-image-modal__close';
+          closeBtn.setAttribute('aria-label', 'Close preview');
+          closeBtn.innerHTML = '<span class="material-symbols-sharp">close</span>';
+
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.alt = 'Screenshot preview';
+
+          const close = () => modal.remove();
+          modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+          closeBtn.addEventListener('click', close);
+          modal.append(closeBtn, img);
+          document.body.appendChild(modal);
+        }
+
+        processCommentImageFile (file, fieldId) {
+          if (!file?.type?.startsWith('image/')) return;
+          const editor = this.commentTextareas?.[fieldId];
+          if (!editor) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.insertCommentInlineImage(editor, e.target.result);
+            this.syncCommentFieldToHidden(fieldId);
+            this.autosizeCommentEditor(editor);
+            this.syncCommentsHeights();
+          };
+          reader.readAsDataURL(file);
+        }
+
+        syncCommentFieldToHidden (fieldId) {
+          const editor = this.commentTextareas?.[fieldId];
+          const hidden = document.getElementById(fieldId);
+          if (!editor || !hidden) return;
+          hidden.value = editor.innerHTML;
+        }
+
+        bindCommentEditor (editor, fieldId, placeholder) {
+          if (editor.dataset.editorBound === '1') return;
+          editor.dataset.placeholder = placeholder;
+          editor.setAttribute('role', 'textbox');
+          editor.setAttribute('aria-multiline', 'true');
+
+          editor.addEventListener('input', () => {
+            this.syncCommentFieldToHidden(fieldId);
+            this.autosizeCommentEditor(editor);
+            this.syncCommentsHeights();
+          });
+
+          editor.addEventListener('paste', (e) => {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (const item of items) {
+              if (item.type?.startsWith('image/')) {
+                const file = item.getAsFile();
+                if (file) {
+                  e.preventDefault();
+                  this.processCommentImageFile(file, fieldId);
+                }
+              }
+            }
+          });
+
+          editor.addEventListener('click', (e) => {
+            if (e.target instanceof HTMLImageElement && editor.contains(e.target)) {
+              e.preventDefault();
+              this.showCommentImageModal(e.target.src);
+            }
+          });
+
+          editor.dataset.editorBound = '1';
+        }
+
+        autosizeCommentEditor (el) {
+          if (!el) return;
+          el.style.height = 'auto';
+          el.style.height = `${el.scrollHeight}px`;
+        }
+
+        initCommentEditors () {
+          if (typeof Quill !== 'undefined') {
+            try {
+              this.initQuillEditors();
+              if (!this.isRestored) this.restoreQuillEditors();
+              return;
+            } catch (err) {
+              console.warn('Quill editor failed; using textarea fallback.', err);
+            }
+          } else {
+            console.warn('Quill is not available; using textarea fallback.');
+          }
+          this.initCommentTextareaFallbacks();
+          if (!this.isRestored) this.restoreQuillEditors();
+          this.toast('Rich text editor unavailable. Type and paste screenshots directly in the comment box.', 'warn');
+        }
+
+        initCommentTextareaFallbacks () {
+          this.quillEditors = null;
+          this.commentTextareas = {};
+
+          CheckForm.COMMENT_FIELDS.forEach(([fieldId, placeholder]) => {
+            const container = document.getElementById(`${fieldId}-editor`);
+            const wrapper = container?.closest('.rich-text-wrapper');
+            const hidden = document.getElementById(fieldId);
+            const commentsArea = wrapper?.closest('.comments-area');
+            const gallery = document.getElementById(`${fieldId}-gallery`);
+            if (!container || !wrapper || !hidden) return;
+
+            wrapper.classList.add('comments-editor-fallback');
+            container.removeAttribute('id');
+            container.hidden = true;
+
+            const existingEditor = container.querySelector('.ql-editor');
+            const initial = hidden.value || existingEditor?.innerHTML || '';
+
+            wrapper.querySelector('textarea.comments-textarea')?.remove();
+
+            let editor = wrapper.querySelector('.comments-inline-editor');
+            if (!editor) {
+              editor = document.createElement('div');
+              editor.className = 'field-input comments-textarea comments-inline-editor';
+              editor.contentEditable = 'true';
+              wrapper.insertBefore(editor, hidden);
+            }
+            editor.id = `${fieldId}-editor`;
+            editor.innerHTML = this.buildCommentInitialHtml(initial, gallery);
+
+            this.bindCommentEditor(editor, fieldId, placeholder);
+            this.syncCommentFieldToHidden(fieldId);
+            this.autosizeCommentEditor(editor);
+
+            if (commentsArea && !commentsArea.querySelector('.comments-paste-hint')) {
+              const hint = document.createElement('p');
+              hint.className = 'comments-paste-hint';
+              hint.textContent = 'Tip: Ctrl+V to paste screenshots inside the comment box.';
+              commentsArea.appendChild(hint);
+            }
+
+            this.commentTextareas[fieldId] = editor;
+          });
         }
 
         initQuillEditors () {
-          // Configuration for Quill editors
           const quillConfig = {
             theme: 'snow',
             modules: {
@@ -2688,80 +2960,88 @@
             }
           };
 
-          // Array of comment field IDs
-          const commentFields = [
-            ['checkerComments', 'Ctrl+V to paste screenshots or images'],
-            ['engineerResponse', 'Enter responses to checker comments here'],
-            ['reviewerComments', 'Enter reviewer comments here'],
-            ['engineerResponse_2', 'Enter response to reviewer comments here']
-          ];
-
           this.quillEditors = {};
+          this.commentTextareas = null;
 
-          commentFields.forEach(([fieldId, place_holder]) => {
+          CheckForm.COMMENT_FIELDS.forEach(([fieldId, place_holder]) => {
             const container = document.getElementById(`${fieldId}-editor`);
             if (container) {
-              const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
-              this.quillEditors[fieldId] = quill;
-              const hiddenInput = document.getElementById(fieldId);
-
-              // Sync Quill content to hidden input on text change
-              quill.on('text-change', () => {
-                if (!hiddenInput) return;
-                hiddenInput.value = quill.root.innerHTML;
-                this.scheduleCommentsHeightSync();
-
-              });
-              const qlEditor = container.querySelector('.ql-editor');
-              if (qlEditor) {
-                // Create observer for when images are added
-                const observer = new MutationObserver(() => {
-                  const imgs = [...qlEditor.querySelectorAll('img')];
-                  const done = () => this.scheduleCommentsHeightSync();
-                  if (!imgs.length) return done();
-                  Promise.all(imgs.map(img =>
-                    img.complete ? Promise.resolve() : img.decode().catch(() => { })
-                  )).then(done);
-                });
-
-                observer.observe(qlEditor, {
-                  childList: true,
-                  subtree: true,
-                  characterData: true
-                });
+              const wrapper = container.closest('.rich-text-wrapper');
+              if (wrapper) {
+                wrapper.querySelectorAll('.ql-toolbar').forEach(toolbar => toolbar.remove());
               }
 
+              const existingEditor = container.querySelector('.ql-editor');
+              const existingHtml = existingEditor ? existingEditor.innerHTML : '';
+
+              // Reset serialized Quill DOM from reopened snapshots so initialization is idempotent.
+              container.classList.remove('ql-snow');
+              container.innerHTML = '<div class="ql-editor"></div>';
+
+              const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
+              this.quillEditors[fieldId] = quill;
+
+              if (existingHtml && existingHtml !== '<p><br></p>') {
+                quill.root.innerHTML = existingHtml;
+              }
+
+              quill.on('text-change', () => {
+                const hiddenInput = document.getElementById(fieldId);
+                hiddenInput.value = quill.root.innerHTML;
+              });
             }
           });
         }
 
-        syncQuillEditors (direction = 'toHidden') {
-          if (!this.quillEditors) return;
-          for (const [fieldId, quill] of Object.entries(this.quillEditors)) {
-            const hidden = document.getElementById(fieldId);
-            if (!quill || !hidden) continue;
-            if (direction === 'toHidden') hidden.value = quill.root.innerHTML;
-            else if (hidden.value) quill.root.innerHTML = hidden.value;
+        syncAllQuillEditors () {
+          if (this.quillEditors) {
+            Object.keys(this.quillEditors).forEach(fieldId => {
+              const quill = this.quillEditors[fieldId];
+              const hiddenInput = document.getElementById(fieldId);
+              if (quill && hiddenInput) hiddenInput.value = quill.root.innerHTML;
+            });
+            return;
           }
+          if (!this.commentTextareas) return;
+          Object.keys(this.commentTextareas).forEach((fieldId) => {
+            this.syncCommentFieldToHidden(fieldId);
+          });
         }
 
-        // changeSignatureTab (tabBtn) {
-        //   const container = tabBtn.closest('.signature-pad-container');
-        //   const tabContent = tabBtn.getAttribute('aria-controls');
-        //   // Update tab buttons
-        //   container.querySelectorAll('.btn-sig-tab').forEach((b) => {
-        //     const isActive = b === tabBtn;
-        //     b.classList.toggle('active', isActive);
-        //     b.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        //     b.setAttribute('tabindex', isActive ? '0' : '-1');
-        //   });
+        restoreQuillEditors () {
+          if (this.quillEditors) {
+            Object.keys(this.quillEditors).forEach(fieldId => {
+              const quill = this.quillEditors[fieldId];
+              const hiddenInput = document.getElementById(fieldId);
+              if (quill && hiddenInput && hiddenInput.value) {
+                quill.root.innerHTML = hiddenInput.value;
+              }
+            });
+            return;
+          }
+          if (!this.commentTextareas) return;
+          Object.entries(this.commentTextareas).forEach(([fieldId, editor]) => {
+            const hiddenInput = document.getElementById(fieldId);
+            if (!editor || !hiddenInput?.value) return;
+            editor.innerHTML = hiddenInput.value;
+            this.autosizeCommentEditor(editor);
+          });
+        }
 
-        //   // Update tab content
-        //   container.querySelectorAll('.sig-tab-content').forEach(c => {
-        //     c.classList.toggle('active', c.id === tabContent);
-        //   });
-
-        // }
+        changeSignatureTab (tabBtn) {
+          const container = tabBtn.closest('.signature-pad-container');
+          const tabContent = tabBtn.getAttribute('aria-controls');
+          const prefix = container.getAttribute('data-prefix');
+          container.querySelectorAll('.btn-sig-tab').forEach((b) => {
+            const isActive = b === tabBtn;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            b.setAttribute('tabindex', isActive ? '0' : '-1');
+          });
+          container.querySelectorAll('.sig-tab-content').forEach(c => {
+            c.getAttribute('id') === tabContent ? c.classList.add('active') : c.classList.remove('active');
+          });
+        }
 
         refreshAllSignaturePreviews () {
           ['sc', 'ch', 'pr', 'fT1'].forEach((prefix) => {
@@ -2774,7 +3054,6 @@
           const surface = document.querySelector(`.sig-draw-surface[data-prefix="${prefix}"]`);
           const img = surface?.querySelector('.sig-inline-preview img');
           if (!surface || !img) return;
-
           if (dataUrl) {
             img.src = dataUrl;
             surface.classList.add('has-signature');
@@ -2782,11 +3061,9 @@
             img.removeAttribute('src');
             surface.classList.remove('has-signature');
           }
-
-          // const tabBtn = surface.closest('.signature-pad-container')?.querySelector('.btn-sig-tab[data-tab="draw"]');
-          // this.changeSignatureTab(tabBtn);
+          const tabBtn = surface.closest('.signature-pad-container')?.querySelector('.btn-sig-tab[data-tab="draw"]');
+          this.changeSignatureTab(tabBtn);
         }
-
 
         openSignatureModal (prefix) {
           if (!this.signatureModal || !this.signatureModalCanvas) return;
@@ -2794,14 +3071,13 @@
           if (this.signatureModalTitle) this.signatureModalTitle.textContent = 'Draw signature';
           this.signatureModal.classList.add('open');
           this.signatureModal.setAttribute("data-prefix", prefix);
-
           this.resizeModalCanvas();
           const dataInput = document.getElementById(`${prefix}_sig_data`);
           const existing = dataInput?.value || '';
           this.loadDataUrlIntoModalCanvas(existing);
-
-          // Focus modal for keyboard escape
           this.signatureModal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
+
+          // Focus trap setup is handled by the open event listener in setupModalFocusTrap
         }
 
         closeSignatureModal (save) {
@@ -2814,7 +3090,7 @@
             this.setSignaturePreview(prefix, dataUrl);
           }
           const modalBtn = document.querySelector("a.btn-open-modal[data-prefix='" + prefix + "']");
-          modalBtn?.classList.remove('anchor-element');
+          if (modalBtn) modalBtn.classList.remove('anchor-element');
           this.signatureModal.classList.remove('open');
           this.activeSignaturePrefix = null;
         }
@@ -2838,7 +3114,7 @@
           const ctx = canvas.getContext('2d');
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 2;
         }
 
         loadDataUrlIntoModalCanvas (dataUrl) {
@@ -2868,6 +3144,7 @@
           });
         }
 
+
         setupModalCanvasDrawing (canvas) {
           const ctx = canvas.getContext('2d');
           // --------------------------
@@ -2876,8 +3153,8 @@
           const TARGET_DT_MS = 1000 / 60;
 
           // Lazy brush
-          const lazyRadius = 7;   // lower = more responsive
-          const friction = 0.03;   // lower = less lag
+          const lazyRadius = 6;   // lower = more responsive
+          const friction = 0.02;   // lower = less lag
 
           // Smoothing rates
           const posSmoothingHz = 26;
@@ -3031,33 +3308,147 @@
           requestAnimationFrame(frame);
         }
 
+        setupStandardCanvasDrawing (canvas) {
+          const ctx = canvas.getContext('2d');
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.lineWidth = 3;
 
+          let drawing = false;
+          let lastX = 0, lastY = 0, lastMidX = 0, lastMidY = 0, hasLastMid = false, lastT = 0, lastW = 3;
+          const minW = 3.0, maxW = 9.0, smoothing = 0.25;
+
+          const getPos = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+            const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+            return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+          };
+
+          canvas.addEventListener('pointerdown', (e) => {
+            canvas.setPointerCapture(e.pointerId);
+            drawing = true;
+            hasLastMid = false;
+            const { x, y } = getPos(e);
+            lastX = x;
+            lastY = y;
+            lastMidX = x;
+            lastMidY = y;
+            lastT = performance.now();
+            lastW = 3;
+          });
+
+          canvas.addEventListener('pointermove', (e) => {
+            if (!drawing) return;
+            const { x, y } = getPos(e);
+            const now = performance.now();
+            const dt = Math.max(now - lastT, 1);
+            const midX = (lastX + x) / 2;
+            const midY = (lastY + y) / 2;
+            const dx = x - lastX, dy = y - lastY;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            let speed = dist / dt;
+            let targetW = Math.max(minW, Math.min(maxW, maxW - speed * 3.0));
+            let w = lastW + (targetW - lastW) * smoothing;
+            ctx.lineWidth = w;
+            ctx.beginPath();
+            if (!hasLastMid) {
+              ctx.moveTo(lastX, lastY);
+              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
+              hasLastMid = true;
+            } else {
+              ctx.moveTo(lastMidX, lastMidY);
+              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
+            }
+            ctx.stroke();
+            lastMidX = midX;
+            lastMidY = midY;
+            lastX = x;
+            lastY = y;
+            lastT = now;
+            lastW = w;
+          });
+
+          function endStroke () {
+            if (!drawing) return;
+            drawing = false;
+            if (hasLastMid) {
+              ctx.beginPath();
+              ctx.moveTo(lastMidX, lastMidY);
+              ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
+              ctx.stroke();
+            }
+            hasLastMid = false;
+          }
+
+          canvas.addEventListener('pointerup', endStroke);
+          canvas.addEventListener('pointercancel', endStroke);
+          canvas.addEventListener('lostpointercapture', endStroke);
+        }
+
+        setupModalFocusTrap () {
+          const modal = this.signatureModal;
+          if (!modal) return;
+          const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+          let focusableElements = [], firstFocusable = null, lastFocusable = null;
+          const handleTab = (e) => {
+            if (e.key !== 'Tab') return;
+            focusableElements = Array.from(modal.querySelectorAll(focusableSelectors));
+            if (focusableElements.length === 0) return;
+            firstFocusable = focusableElements[0];
+            lastFocusable = focusableElements[focusableElements.length - 1];
+            if (e.shiftKey && document.activeElement === firstFocusable) {
+              e.preventDefault();
+              lastFocusable.focus();
+            } else if (!e.shiftKey && document.activeElement === lastFocusable) {
+              e.preventDefault();
+              firstFocusable.focus();
+            }
+          };
+          const openModal = () => {
+            document.addEventListener('keydown', handleTab);
+            setTimeout(() => {
+              const first = modal.querySelector(focusableSelectors);
+              if (first) first.focus();
+            }, 50);
+          };
+          const closeModal = () => {
+            document.removeEventListener('keydown', handleTab);
+          };
+          const origOpen = this.openSignatureModal;
+          const origClose = this.closeSignatureModal;
+          this.openSignatureModal = (prefix) => {
+            origOpen.call(this, prefix);
+            openModal();
+          };
+          this.closeSignatureModal = (save) => {
+            origClose.call(this, save);
+            closeModal();
+          };
+        }
 
         /**
-         * Build radio button rows using DOM APIs (no innerHTML for better security/performance)
+         * Build radio button rows using DOM APIs
          */
         buildRows (container, prefix, items, binarySet = new Set()) {
           if (!container) return;
           container.innerHTML = '';
           const sectionNum = { sc: '1', ds: '2', ch: '3', pr: '4' }[prefix];
-
           items.forEach((text, idx) => {
             const n = idx + 1;
             const isBinary = binarySet.has(n);
             const row = document.createElement('div');
             row.className = 'check-row';
-
             const numSpan = document.createElement('span');
             numSpan.className = 'check-num';
             numSpan.textContent = `${sectionNum}.${n}`;
-
             const textSpan = document.createElement('span');
             textSpan.className = 'check-text';
-            textSpan.innerHTML = text; // DOMPurify.sanitize() removes <a> tags from text; // items contain safe HTML links
-
+            textSpan.innerHTML = text;
             const pillGroup = document.createElement('div');
             pillGroup.className = `pill-group${isBinary ? ' pill-group--yes-no' : ''}`;
-
             const name = `${prefix}${n}`;
             const createRadio = (value, labelText, disabled = false) => {
               const id = `${name}_${value}`;
@@ -3073,46 +3464,37 @@
               if (disabled) label.setAttribute('disabled', '');
               return { radio, label };
             };
-
-            const options = isBinary
-              ? [['yes', 'Yes'], ['no', 'No'], ['na', ' ', true]]
-              : [['yes', 'Yes'], ['no', 'No'], ['na', 'N/A']];
-            for (const [value, labelText, disabled] of options) {
-              const { radio, label } = createRadio(value, labelText, disabled);
-              pillGroup.append(radio, label);
+            if (isBinary) {
+              const yes = createRadio('yes', 'Yes');
+              const no = createRadio('no', 'No');
+              const na = createRadio('na', ' ', true);
+              pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
+            } else {
+              const yes = createRadio('yes', 'Yes');
+              const no = createRadio('no', 'No');
+              const na = createRadio('na', 'N/A');
+              pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
             }
-
             const noticeStack = document.createElement('div');
             noticeStack.className = 'row-notice-stack hidden';
             noticeStack.id = `${name}_notice_stack`;
             noticeStack.setAttribute('aria-live', 'polite');
-
             row.append(numSpan, textSpan, pillGroup, noticeStack);
             container.appendChild(row);
           });
         }
 
         attachEventListeners () {
-          this._boundHandlers ??= {
-            click: this.handleGlobalClick.bind(this),
-            change: this.handleGlobalChange.bind(this),
-            input: this.handleGlobalInput.bind(this),
-            keydown: this.handleGlobalKeydown.bind(this)
-          };
-          document.addEventListener('click', this._boundHandlers.click);
-          document.addEventListener('change', this._boundHandlers.change);
-          document.addEventListener('input', this._boundHandlers.input);
-          document.addEventListener('keydown', this._boundHandlers.keydown);
-        }
+          document.addEventListener('click', this.handleGlobalClick.bind(this));
+          document.addEventListener('change', this.handleGlobalChange.bind(this));
+          document.addEventListener('input', this.handleGlobalInput.bind(this));
+          document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
+          document.addEventListener('click', this.handleSignatureUploadTriggerClick.bind(this));
 
-        destroy () {
-          if (this._boundHandlers) {
-            document.removeEventListener('click', this._boundHandlers.click);
-            document.removeEventListener('change', this._boundHandlers.change);
-            document.removeEventListener('input', this._boundHandlers.input);
-            document.removeEventListener('keydown', this._boundHandlers.keydown);
-          }
-          clearTimeout(this.toastTimer);
+          const observer = new MutationObserver(() => this.updateProgress());
+          [this.elements.scRows, this.elements.dsRows, this.elements.chRows, this.elements.prRows].forEach(container => {
+            if (container) observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
+          });
         }
 
         handleSignatureUploadTriggerClick (e) {
@@ -3121,36 +3503,28 @@
           e.preventDefault();
           const prefix = trigger.getAttribute('data-prefix');
           if (!prefix) return;
-
           const uploadInput = document.getElementById(`${prefix}SigUpload`);
           if (uploadInput) uploadInput.click();
-          if (uploadInput && uploadInput.dataset.boundChange !== '1') {
-            uploadInput.addEventListener('change', (ev) => this.handleSignatureUpload(ev, prefix));
-            uploadInput.dataset.boundChange = '1';
-          }
-
+          uploadInput.addEventListener('change', (e) => this.handleSignatureUpload(e, prefix));
           const container = document.getElementById(`${prefix}SigContainer`);
           const uploadArea = container?.querySelector('.sig-upload-area');
-          if (uploadArea && uploadInput && uploadArea.dataset.boundDnD !== '1') {
+          if (uploadArea && uploadInput) {
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-              uploadArea.addEventListener(evt, (ev) => { ev.preventDefault(); ev.stopPropagation(); });
+              uploadArea.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
             });
-            uploadArea.addEventListener('drop', (ev) => {
-              const files = ev.dataTransfer.files;
+            uploadArea.addEventListener('drop', (e) => {
+              const files = e.dataTransfer.files;
               if (files.length > 0) {
                 uploadInput.files = files;
                 uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
               }
             });
-            uploadArea.dataset.boundDnD = '1';
           }
-
-
         }
+
         handleSignatureUpload (e, prefix) {
           const file = e.target.files?.[0];
           if (!file) return;
-
           const reader = new FileReader();
           reader.onload = (event) => {
             const dataUrl = String(event.target.result || '');
@@ -3161,39 +3535,14 @@
           reader.readAsDataURL(file);
         }
 
-        handleSectionHeadClick (e) {
-          const head = e.target.closest('.sec-head');
-          if (head && head.hasAttribute('aria-controls')) {
-            const interactive = e.target.closest('button, a, input, select, textarea, label, [role="button"]');
-            if (!interactive || interactive === head) {
-              e.preventDefault();
-              this.toggleSection(head);
-            }
+        // ---------- Event Handlers ----------
+        handleGlobalClick (e) {
+          const tabBtn = e.target.closest('.btn-sig-tab');
+          if (tabBtn) {
+            e.preventDefault();
+            this.changeSignatureTab(tabBtn);
+            return;
           }
-        }
-
-        handleRiskBtnClick (e) {
-          const rskBtn = e.target.closest('.risk-btn');
-          if (!rskBtn) return;
-          rskBtn.parentElement.previousElementSibling?.removeAttribute('style');
-          this.setRiskLevel(rskBtn.dataset.risk);
-        }
-
-        handleInputClick (e) {
-          if (e.target.matches('input') || e.target.matches('select')) {
-            this.updateProgress();
-            if (e.target.validity.valid) {
-              e.target.previousElementSibling?.removeAttribute('style');
-            }
-          }
-        }
-
-        handleSingatureClick (e) {
-          // const sigBtn = e.target.closest('.btn-sig-tab');
-          // if (sigBtn) {
-          //   e.preventDefault();
-          //   this.changeSignatureTab(sigBtn);
-          // }
           const openSigBtn = e.target.closest('.btn-open-modal');
           if (openSigBtn) {
             e.preventDefault();
@@ -3232,16 +3581,17 @@
               return;
             }
           }
-        }
-        // ---------- Event Handlers ----------
-        handleGlobalClick (e) {
-          this.handleSingatureClick(e);
-          this.handleRiskBtnClick(e);
-          this.handleSectionHeadClick(e);
-          this.handleInputClick(e);
-          this.handleSignatureUploadTriggerClick(e);
-
-          // Clear buttons
+          const head = e.target.closest('.sec-head');
+          if (head && head.hasAttribute('aria-controls')) {
+            const interactive = e.target.closest('button, a, input, select, textarea, label, [role="button"]');
+            if (!interactive || interactive === head) {
+              e.preventDefault();
+              this.toggleSection(head);
+            }
+          }
+          if (e.target.classList.contains('risk-btn')) {
+            this.setRiskLevel(e.target.dataset.risk);
+          }
           const clearActions = {
             clearWorkInfoBtn: () => this.clearSection('sec-info-body'),
             clearSec1Btn: () => this.clearSection('s1'),
@@ -3252,83 +3602,75 @@
             clearSec6Btn: () => this.clearSection('s6'),
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
-            exportDraftBtn: () => this.exportDraftJson(),
-            importDraftBtn: () => this.triggerDraftImport(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
             dismissNoticeBtn: () => this.hideGlobalNotice()
           };
-
           const id = e.target.id;
           if (id in clearActions) {
             e.stopPropagation();
             clearActions[id](e);
           }
-
-
         }
 
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
             this.updateProgress();
             const name = e.target.name;
-            if (name === 'sc11') {
-              this.updateRoleLabels(false);
+            if (name.startsWith('sc')) {
+              if (name === 'sc11') this.updateRoleLabels(false);
             }
-
             if (name.startsWith('ch')) this.syncCheckWarning();
-            if (name === 'sc_role') {
-              this.updateRoleLabels(true);
-            }
+            if (name === 'sc_role') this.updateRoleLabels(true);
             this.showRiskConsistencyNotices();
             this.syncSectionVisibility();
-
           }
           if (e.target.matches('input') || e.target.matches('select')) {
-            this.updateProgress();
             if (e.target.validity.valid) {
+              console.log(e.target);
               e.target.previousElementSibling?.removeAttribute('style');
             }
           }
-
           if (e.target.id === 'minCheckLevel') {
             this.syncDirectSupervision();
             this.syncSectionVisibility();
           }
-
-          if (e.target.matches('textarea')) {
+          if (e.target.matches('textarea, .comments-inline-editor')) {
             this.autosizeTextarea(e.target);
+            this.syncCommentsHeights();
           }
-
-          if (e.target.classList.contains('risk-btn')) {
-            this.showRiskConsistencyNotices();
-            this.syncSectionVisibility();
+          if (e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+            this.syncCommentsHeights();
           }
         }
 
         handleGlobalInput (e) {
-          // Name sync
-          if (e.target.id === 'engineer') {
-            const scName = this.elements.scName;
-            scName.value = e.target.value
-            scName.previousElementSibling?.removeAttribute('style');
-            e.target.previousElementSibling?.removeAttribute('style');
-          };
-          if (e.target.id === 'sc_name') {
-            const engineer = this.elements.engineer;
-            engineer.value = e.target.value
-            engineer.previousElementSibling?.removeAttribute('style');
-            e.target.previousElementSibling?.removeAttribute('style');
-          };
-          if (e.target.id === 'checker' && !this.elements.cardCh.classList.contains('hidden')) {
-            this.elements.chName.value = e.target.value;
-          }
-          if (e.target.id === 'ch_name' && !this.elements.cardCh.classList.contains('hidden')) {
-            this.elements.checker.value = e.target.value;
-          }
-          if (e.target.matches('textarea')) {
-            this.autosizeTextarea(e.target);
+
+          if (e.target.matches('input') || e.target.matches('select')) {
+            if (e.target.id === 'engineer' || e.target.id === 'sc_name') {
+              this.elements.scName.value = e.target.value;
+              this.elements.engineer.value = e.target.value;
+              this.elements.scName.previousElementSibling?.removeAttribute('style');
+              this.elements.engineer.previousElementSibling?.removeAttribute('style');
+            }
+            if (e.target.id === 'checker' || e.target.id === 'ch_name') {
+              if (!this.elements.cardCh.classList.contains('hidden')) {
+                this.elements.chName.value = e.target.value;
+                this.elements.checker.value = e.target.value;
+                this.elements.chName.previousElementSibling?.removeAttribute('style');
+                this.elements.checker.previousElementSibling?.removeAttribute('style');
+              }
+            }
           }
 
+          if (e.target.matches('textarea, .comments-inline-editor')) {
+            this.autosizeTextarea(e.target);
+            this.syncCommentsHeights();
+          }
+          if (e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+            this.syncCommentsHeights();
+          }
         }
 
         handleGlobalKeydown (e) {
@@ -3342,228 +3684,11 @@
             e.preventDefault();
             head.click();
           }
-        }
-
-        validateVisibleSignatures () {
-          return [...document.querySelectorAll('.signature-pad-container')].every((container) => {
-            if (!isSignaturePadShown(container)) return true;
-            const prefix = container.getAttribute('data-prefix');
-            return hasSigData(document.getElementById(`${prefix}_sig_data`)?.value);
-          });
-        }
-        getFormJsonData () {
-          this.syncQuillEditors('toHidden');
-          const form = document.getElementById('check_form');
-          const formData = new FormData(form);
-          const jsonData = {};
-          formData.forEach((value, key) => {
-            if (key in jsonData) {
-              if (!Array.isArray(jsonData[key])) jsonData[key] = [jsonData[key]];
-              jsonData[key].push(value);
-            } else {
-              jsonData[key] = value;
-            }
-          });
-
-          const riskLevel = this.getActiveRiskLevel();
-          jsonData.riskLevel = riskLevel;
-          jsonData.riskLevelLabel = riskLevel ? (CheckForm.RISK_LABELS[riskLevel] ?? String(riskLevel)) : '';
-
-          document.querySelectorAll('.signature-pad-container').forEach((container) => {
-            const prefix = container.dataset.prefix;
-            if (!prefix) return;
-            const certSelect = container.querySelector(`#${prefix}_certSelect`);
-            const certInfo = container.querySelector(`#${prefix}_certInfo`);
-            let certSelectOptionHtml = '';
-            if (certSelect instanceof HTMLSelectElement && certSelect.selectedIndex >= 0) {
-              const opt = certSelect.options[certSelect.selectedIndex];
-              certSelectOptionHtml = opt?.outerHTML ?? '';
-            }
-            jsonData[`${prefix}_certSelect`] = certSelectOptionHtml;
-            jsonData[`${prefix}_certInfo`] = certInfo?.textContent?.trim() ?? '';
-          });
-          return jsonData;
-        }
-
-        applyDraftData (data) {
-          if (!data || typeof data !== 'object') return;
-
-          let riskLevel = null;
-
-          Object.entries(data).forEach(([key, value]) => {
-            const values = Array.isArray(value) ? value : [value];
-            if (key === 'riskLevel') {
-              riskLevel = String(values[0] ?? '');
-            }
-
-            if (/_certSelect$/.test(key)) {
-              const sel = document.getElementById(key);
-              if (sel instanceof HTMLSelectElement) {
-                const raw = values[0] == null ? '' : String(values[0]);
-                const pref = key.replace(/_certSelect$/, '');
-                const btnSign = document.getElementById(`${pref}_btnSign`);
-                const btnRefreshCerts = document.getElementById(`${pref}_btnRefreshCerts`);
-
-                let matched = false;
-                const bumpSignBtn = () => {
-                  if (btnSign instanceof HTMLButtonElement) {
-                    btnSign.disabled = !sel.value;
-                    btnSign.textContent = sel.value ? 'Success' : '';
-                    btnSign.style.display = sel.value ? 'block' : 'none';
-                    btnSign.classList.toggle('success', sel.value);
-                    btnRefreshCerts.style.display = sel.value ? 'none' : 'block';
-                  }
-                };
-
-                if (/<option\b/i.test(raw)) {
-                  try {
-                    const wrapped = `<select>${raw}</select>`;
-                    const parsedDoc = new DOMParser().parseFromString(wrapped, 'text/html');
-                    const srcOpt = parsedDoc.querySelector('select option');
-                    if (srcOpt instanceof HTMLOptionElement) {
-                      const imported = /** @type {HTMLOptionElement} */ (document.importNode(srcOpt, true));
-                      const wantedVal = imported.value;
-                      matched = false;
-                      for (let i = 0; i < sel.options.length; i++) {
-                        if (sel.options[i].value === wantedVal) {
-                          sel.selectedIndex = i;
-                          matched = true;
-                          break;
-                        }
-                      }
-                      if (!matched) {
-                        sel.appendChild(imported);
-                        sel.selectedIndex = sel.options.length - 1;
-                        matched = true;
-                      }
-                      sel.disabled = false;
-                      bumpSignBtn();
-                    }
-                  } catch (_) { /* fallback below */ }
-                }
-
-                if (!matched && raw?.trim() !== '') {
-                  const s = raw.trim();
-                  for (let i = 0; i < sel.options.length; i++) {
-                    if (sel.options[i].value === s) {
-                      sel.selectedIndex = i;
-                      matched = true;
-                      break;
-                    }
-                  }
-                  if (!matched) {
-                    for (let i = 0; i < sel.options.length; i++) {
-                      if (sel.options[i].textContent.trim() === s) {
-                        sel.selectedIndex = i;
-                        matched = true;
-                        break;
-                      }
-                    }
-                  }
-                  if (matched) {
-                    sel.disabled = false;
-                  }
-                  bumpSignBtn();
-                }
-
-                if (!matched && raw?.trim() === '' && sel.options.length) {
-                  sel.selectedIndex = 0;
-                  bumpSignBtn();
-                }
-              }
-              return;
-            }
-
-            if (/_certInfo$/.test(key)) {
-              const el = document.getElementById(key);
-              if (el instanceof HTMLElement) {
-                el.textContent = values[0] == null ? '' : String(values[0]);
-              }
-              return;
-            }
-
-            const radios = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(key)}"]`);
-            if (radios.length) {
-              const v = values[0];
-              radios.forEach(r => { r.checked = r.value === v; });
-              return;
-            }
-
-            const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="${CSS.escape(key)}"]`);
-            if (checkboxes.length) {
-              const set = new Set(values.map(String));
-              checkboxes.forEach(c => { c.checked = set.has(String(c.value)); });
-              return;
-            }
-
-            const byName = document.querySelectorAll(`[name="${CSS.escape(key)}"]`);
-            if (byName.length) {
-              byName.forEach((el, idx) => {
-                const v = values[Math.min(idx, values.length - 1)];
-                if (el instanceof HTMLSelectElement) {
-                  el.value = String(v);
-                } else if (el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) {
-                  el.value = String(v);
-                }
-              });
-              return;
-            }
-
-            const byId = document.getElementById(key);
-            if (byId && (byId instanceof HTMLInputElement || byId instanceof HTMLTextAreaElement || byId instanceof HTMLSelectElement)) {
-              byId.value = String(values[0]);
-            }
-          });
-
-          if (riskLevel) {
-            this.setRiskLevel(riskLevel);
+          if (e.key === 'Enter' && e.target.className.includes('ql-editor')) {
+            e.preventDefault();
+            this.syncCommentsHeights();
           }
-
         }
-
-        downloadBlob (filename, blob) {
-          const url = URL.createObjectURL(blob);
-          const a = Object.assign(document.createElement('a'), { href: url, download: filename });
-          a.click();
-          URL.revokeObjectURL(url);
-        }
-
-        exportDraftJson () {
-          this.downloadBlob('DE_CheckForm_draft.json',
-            new Blob([JSON.stringify(this.getFormJsonData(), null, 2)], { type: 'application/json' }));
-        }
-
-        triggerDraftImport () {
-          const input = document.getElementById('draftImportInput');
-          if (!input) return;
-          input.value = '';
-          input.click();
-        }
-
-        bindDraftImport () {
-          const input = document.getElementById('draftImportInput');
-          if (!input) return;
-          input.addEventListener('change', async () => {
-            const file = input.files?.[0];
-            if (!file) return;
-            try {
-              const parsed = JSON.parse(await file.text());
-              this.applyDraftData(parsed);
-              this.syncQuillEditors('fromHidden');
-              this.refreshAllSignaturePreviews();
-              this.syncAllSectionVisibility();
-              this.showRiskConsistencyNotices();
-              this.updateProgress();
-              this.scheduleCommentsHeightSync();
-              this.updateRoleLabels(false);
-              this.toast('Draft imported', 'success');
-            } catch (err) {
-              console.error(err);
-              this.toast('Import failed (invalid JSON)', 'error');
-            }
-          });
-        }
-
 
         // ---------- UI State Updates ----------
         toggleSection (head) {
@@ -3574,13 +3699,17 @@
         }
 
         setRiskLevel (level) {
-          this.elements.riskBtns.forEach(b => {
-            const on = b.dataset.risk === level;
-            b.classList.toggle('active', on);
-            b.setAttribute('aria-pressed', String(on));
-          });
-          if (CheckForm.RISK_LABELS[level]) {
-            this.elements.minCheckLevel.value = CheckForm.RISK_LABELS[level];
+          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
+          const riskBtn = document.querySelector(`.risk-btn[data-risk="${level}"]`);
+          if (riskBtn) {
+            riskBtn.classList.add('active');
+            console.log(riskBtn.parentElement.previousElementSibling);
+            riskBtn.parentElement.previousElementSibling?.removeAttribute('style');
+          }
+          document.querySelector(`.risk-btn[data-risk="${level}"]`)?.classList.add('active');
+          const levelMap = { low: 'Self-Check', medium: 'Check', high: 'Type 1 Independent Review Required' };
+          if (levelMap[level]) {
+            this.elements.minCheckLevel.value = levelMap[level];
             this.elements.minCheckLevel.dispatchEvent(new Event('change', { bubbles: true }));
           }
           this.showRiskConsistencyNotices();
@@ -3588,47 +3717,39 @@
         }
 
         getActiveRiskLevel () {
-          return Array.from(this.elements.riskBtns).find(b => b.classList.contains('active'))?.dataset?.risk ?? null;
+          return document.querySelector('.risk-btn.active')?.dataset?.risk ?? null;
         }
 
         showRiskConsistencyNotices () {
           const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
           const level = this.getActiveRiskLevel();
           const exp = level ? CheckForm.RISK_MAP[level] : null;
-          const getVal = (n) => this.elements.scRows?.querySelector(`input[name="sc${n}"]:checked`)?.value;
-          const sc8 = getVal(8);
-          const sc9 = getVal(9);
-          const sc10 = getVal(10);
-          const sc11 = getVal(11);
-
+          const getVal = (n) => document.querySelector(`input[name="sc${n}"]:checked`)?.value;
           const blocks8 = [];
-          if (exp && sc8 && sc8 !== 'na' && sc8 !== exp.sc8) {
+          if (exp && getVal(8) && getVal(8) !== 'na' && getVal(8) !== exp.sc8) {
             blocks8.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 8, blocks8);
-
           const blocks9 = [];
-          if (sc9 === 'yes') {
+          if (getVal(9) === 'yes') {
             blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete this check form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form</strong></a>.`, type: 'warn' });
             if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 9, blocks9);
-
           const blocks10 = [];
-          if (exp && sc10 && sc10 !== 'na' && sc10 !== exp.sc10) {
+          if (exp && getVal(10) && getVal(10) !== 'na' && getVal(10) !== exp.sc10) {
             blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
           }
-          if (sc10 === 'yes') {
-            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form. A <b>Type 1 Reviewer</b> will be appointed by the <b>Team Lead</b> to complete the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
+          if (getVal(10) === 'yes') {
+            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 10, blocks10);
-
           const blocks11 = [];
-          if (isEit && sc11 === 'yes') {
+          if (isEit && getVal(11) === 'yes') {
             blocks11.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
           }
-          if (sc11 === 'no') {
-            blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/_layouts/15/WopiFrame2.aspx?sourcedoc=%7b63F4D51D-B1EC-4942-A964-4E019285F05B%7d&file=Direct%20Supervision%20Job%20Aid.docm&action=default" target="_blank"><strong>Direct Supervision</strong></a> and <b>Check</b> sections below.`, type: 'warn' });
+          if (getVal(11) === 'no') {
+            blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 11, blocks11);
         }
@@ -3637,76 +3758,62 @@
           const stack = document.getElementById(`${prefix}${n}_notice_stack`);
           if (!stack) return;
           if (!blocks?.length) {
-            stack.replaceChildren();
+            stack.innerHTML = '';
             stack.classList.add('hidden');
             return;
           }
           stack.classList.remove('hidden');
-          stack.replaceChildren(...blocks.map(({ message, type = 'warn' }) => {
-            const div = document.createElement('div');
-            div.className = `notice row-notice ${type}`;
-            const spanIcon = document.createElement('span');
-            spanIcon.className = 'material-symbols-sharp';
-            spanIcon.textContent = type === 'error' ? 'error' : 'warning';
-            const span = document.createElement('span');
-            span.innerHTML = message;
-            div.append(spanIcon, span);
-            return div;
-          }));
+          stack.innerHTML = blocks.map(({ message, type = 'warn' }) => `
+            <div class="notice row-notice ${type}">
+              <span class="material-symbols-sharp">${type === 'error' ? 'error' : 'warning'}</span>
+              <span>${message}</span>
+            </div>`).join('');
         }
 
         syncDirectSupervision () {
           const noChecked = document.getElementById('sc11_no')?.checked ?? false;
           this.elements.cardDs.classList.toggle('hidden', !noChecked);
-          this.setSectionOpen(this.elements.s2Head, this.elements.s2Body, noChecked);
+          const body = this.elements.s2Body, head = this.elements.s2Head;
+          if (body && head) {
+            head.classList.toggle('open', noChecked);
+            body.classList.toggle('open', noChecked);
+            head.setAttribute('aria-expanded', noChecked ? 'true' : 'false');
+          }
           this.updateProgress();
         }
 
         syncCheckWarning () {
-          const hasNo = !!this.elements.chRows?.querySelector('input[value="no"]:checked');
+          const hasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
           this.elements.chNotice.classList.toggle('hidden', !hasNo);
+          this.syncSectionVisibility();
         }
 
         syncSectionVisibility () {
           const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
-          const sc11AnsweredNo = document.getElementById('sc11_no')?.checked ?? false;
+          const q111No = document.getElementById('sc11_no')?.checked ?? false;
           const isHighRisk = this.getActiveRiskLevel() === 'high';
           const minLevel = this.elements.minCheckLevel.value;
-
-          // Check section
-          const showCheck = minLevel === 'Check' || sc11AnsweredNo || isHighRisk || isEit;
+          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
           this.elements.cardCh.classList.toggle('hidden', !showCheck);
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, showCheck);
           this.setCheckerRequired(showCheck);
           if (showCheck) this.syncCheckerNames();
-
-          // Peer Review section
-          const chHasNo = !!this.elements.chRows?.querySelector('input[value="no"]:checked');
+          const chHasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
           const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk;
           this.elements.cardPr.classList.toggle('hidden', !showPeer);
-          if (!showPeer) {
-            this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, false);
-          } else if (chHasNo) {
-            this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
-          }
-
-          // Comments & Final sections
+          this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, showPeer && chHasNo);
           const dsShown = !this.elements.cardDs.classList.contains('hidden');
           const chShown = !this.elements.cardCh.classList.contains('hidden');
           const prShown = !this.elements.cardPr.classList.contains('hidden');
           const commentsShown = dsShown || chShown || prShown;
           this.elements.cardComments.classList.toggle('hidden', !commentsShown);
           this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, commentsShown);
-
-          const prAnswered = (this.elements.prRows?.querySelectorAll('input[type="radio"]:checked').length ?? 0) > 0;
-          const showPrCommentCells = prShown && prAnswered;
-          this.elements.commentsCell3.classList.toggle('hidden', !showPrCommentCells);
-          this.elements.commentsCell4.classList.toggle('hidden', !showPrCommentCells);
-          this.scheduleCommentsHeightSync();
-
+          this.elements.commentsCell3.classList.toggle('hidden', !prShown);
+          this.elements.commentsCell4.classList.toggle('hidden', !prShown);
+          this.syncCommentsHeights();
           const finalShown = showPeer || isHighRisk;
           this.elements.cardFinal.classList.toggle('hidden', !finalShown);
-          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, prAnswered && finalShown);
+          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, isHighRisk && finalShown);
         }
 
         syncAllSectionVisibility () {
@@ -3757,13 +3864,11 @@
               if (sc11Yes) sc11Yes.checked = false;
             }
           }
-
           this.elements.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
           this.elements.engineer.placeholder = 'Type full name';
           this.elements.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
           this.elements.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
           this.elements.engineerResponseLabel.textContent = isEit ? 'EIT Response' : 'Engineer Response';
-
           const q111No = document.getElementById('sc11_no')?.checked ?? false;
           const usePor = q111No || isEit;
           const secondRole = usePor ? 'Professional of Record' : 'Checker';
@@ -3773,38 +3878,32 @@
           if (this.elements.chNameLabel) this.elements.chNameLabel.textContent = `Name (${secondShort})`;
           if (this.elements.chSigLabel) this.elements.chSigLabel.textContent = usePor ? 'Signature (POR)' : 'Signature (Checker)';
           if (this.elements.checkerCommentsLabel) this.elements.checkerCommentsLabel.textContent = usePor ? 'POR Comments & Corrections' : 'Checker Comments & Corrections';
-
           this.updateProgress();
           this.syncDirectSupervision();
           this.syncSectionVisibility();
         }
 
         getRadioValue (name) {
-          return document.querySelector(`input[name="${CSS.escape(name)}"]:checked`)?.value ?? null;
+          return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
         // ---------- Progress & Validation ----------
         updateProgress () {
           const counts = new Map();
           this.sectionConfig.forEach(s => {
-            const cnt = s.rows?.querySelectorAll('input[type="radio"]:checked').length ?? 0;
+            const cnt = document.querySelectorAll(`${s.rowsId} input[type="radio"]:checked`).length;
             counts.set(s.rowsId, cnt);
             if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
             if (s.num) {
               if (cnt === s.count) {
                 s.num.classList.add('complete');
-                s.num.innerHTML = `<span class="material-symbols-sharp">
-                  check
-                  </span>`;
-                s.status = true;
+                s.num.innerHTML = `<span class="material-symbols-sharp"> check </span>`;
               } else {
                 s.num.classList.remove('complete');
                 s.num.textContent = s.label;
-                s.status = false;
               }
             }
           });
-
           const prAnswered = (counts.get('#pr-rows') ?? 0) > 0;
           let total = 0, answered = 0;
           this.sectionConfig.forEach(s => {
@@ -3817,39 +3916,59 @@
               answered += counts.get(s.rowsId) ?? 0;
             }
           });
-          const printBtn = document.getElementById('saveAsPdfBtn');
-
           const pct = total ? Math.round((answered / total) * 100) : 0;
           this.elements.progressStrip.classList.toggle('completed', pct === 100);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
-
-          printBtn.classList.toggle('completed', pct === 100 && this.allRequiredFieldsValid());
-
         }
 
-        allRequiredFieldsValid (print = false) {
+        async withLoading (button, callback) {
+          if (CheckForm.activeAsyncButton) return;
+          const originalText = button.textContent;
+          button.disabled = true;
+          button.textContent = 'Processing...';
+          CheckForm.activeAsyncButton = button;
+          try {
+            await callback();
+          } finally {
+            button.disabled = false;
+            button.textContent = originalText;
+            CheckForm.activeAsyncButton = null;
+          }
+        }
+
+        allRequiredFieldsValid () {
           const required = Array.from(document.querySelectorAll('.required-field-underline'));
-
-          const requiredShown = required.filter(el => !el.closest('.hidden')
-            && !el.previousElementSibling?.disabled && !el.parentElement?.disabled);
-
-          let isValid;
-
-          return requiredShown.reduce((acc, el) => {
-            isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
-            if (print) {
-              const label = el.parentElement?.querySelector('.field-label');
-              if (label) label.style.color = isValid ? '' : '#d32f2f';
-            }
-            return acc && isValid;
-          }, true);
-
+          let firstInvalid = null;
+          let allValid = true;
+          required.forEach((el) => {
+            if (el.closest('.hidden')) return;
+            const control = el.previousElementSibling?.matches?.('input, select, textarea, button') ? el.previousElementSibling :
+              el.parentElement?.querySelector?.('input, select, textarea, button');
+            if (control?.disabled) return;
+            const isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+            console.log(el, control, isValid);
+            const label = el.parentElement?.querySelector('.field-label');
+            if (label) label.style.color = isValid ? '' : '#d32f2f';
+            if (!isValid && !firstInvalid) firstInvalid = { el, control };
+            if (!isValid) allValid = false;
+          });
+          if (firstInvalid) {
+            const { el, control } = firstInvalid;
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (control?.focus) control.focus({ preventScroll: true });
+            return false;
+          }
+          return allValid;
         }
 
         // ---------- Textarea Utilities ----------
         autosizeTextarea (el) {
           if (!el) return;
+          if (el.classList?.contains('comments-inline-editor')) {
+            this.autosizeCommentEditor(el);
+            return;
+          }
           el.style.height = 'auto';
           el.style.height = el.scrollHeight + 'px';
         }
@@ -3872,40 +3991,28 @@
           pair('reviewerComments-editor', 'engineerResponse_2-editor');
         }
 
-        scheduleCommentsHeightSync () {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => this.syncCommentsHeights());
-          });
-        }
-
         // ---------- Section Clearing ----------
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           if (!sec) return;
           sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          // Only clear mutable input types. Never clear `value` on radio/checkbox inputs,
-          // otherwise their semantic values ('yes'/'no'/'na', roles, etc.) get overwritten.
           sec.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach(i => i.value = '');
           sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
           sec.querySelectorAll('textarea').forEach(t => t.value = '');
           sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
-          sec.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'))
-          sec.querySelectorAll('.ql-editor').forEach(f => f.innerHTML = '');
-
+          sec.querySelectorAll('input[type="hidden"]').forEach(c => c.value = '');
+          sec.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'));
+          sec.querySelectorAll('.ql-editor, .comments-inline-editor').forEach(f => { f.innerHTML = '<p><br></p>'; });
+          sec.querySelectorAll('.comments-image-gallery').forEach(g => g.replaceChildren());
           this.removeCanvas(sec);
           this.updateProgress();
-          if (sectionId === 'sec-info-body') {
-            this.elements.revision.value = '0';
-            this.elements.roleRadios[0].checked = true;
-          }
           if (sectionId === 's1') {
             this.syncDirectSupervision();
             this.showRiskConsistencyNotices();
           }
           if (sectionId === 's3') this.syncCheckWarning();
-          sec.querySelectorAll('textarea').forEach(t => this.autosizeTextarea(t));
-          this.scheduleCommentsHeightSync();
-          this.syncAllSectionVisibility();
+          sec.querySelectorAll('textarea, .comments-inline-editor').forEach(t => this.autosizeTextarea(t));
+          this.syncCommentsHeights();
           this.toast('Section cleared', 'info');
         }
 
@@ -3913,7 +4020,6 @@
         hideGlobalNotice () {
           this.elements.globalNotice.classList.add('hidden');
           clearTimeout(this.toastTimer);
-
         }
 
         toast (msg, type = 'info') {
@@ -3921,304 +4027,138 @@
           this.elements.globalNotice.classList.remove('hidden', 'info', 'success', 'error', 'warn');
           this.elements.globalNotice.classList.add(type);
           clearTimeout(this.toastTimer);
-
           this.toastTimer = setTimeout(() => this.hideGlobalNotice(), 5000);
         }
 
         // ---------- Form Actions ----------
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
-          this.clearSection('sec-info-body');
-          this.clearSection('s1');
-          this.clearSection('s2');
-          this.clearSection('s3');
-          this.clearSection('s4');
-          this.clearSection('s5');
-          this.clearSection('s6');
-          this.elements.roleRadios[0].checked = true;
-          this.elements.revision.value = 0;
+          document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+          document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(i => i.value = '');
+          document.querySelectorAll('input[type="hidden"][id$="_sig_data"]').forEach(i => i.value = '');
+          document.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
+          document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+          document.querySelectorAll('textarea').forEach(t => t.value = '');
+          document.querySelectorAll('.comments-inline-editor').forEach(el => { el.innerHTML = '<p><br></p>'; });
+          document.querySelectorAll('.comments-image-gallery').forEach(g => g.replaceChildren());
+          document.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'));
+          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
+          document.getElementById('sc_role_eng').checked = true;
+          this.removeCanvas(document);
+          document.querySelectorAll('.sig-preview').forEach(p => { p.innerHTML = ''; });
+          this.updateRoleLabels(true);
+          this.syncAllSectionVisibility();
+          this.showRiskConsistencyNotices();
+          this.updateProgress();
+          this.syncCommentsHeights();
           this.toast('Form reset', 'info');
         }
 
         saveSnapshot () {
-          // Sync all Quill editors to hidden inputs before saving
-          this.syncQuillEditors('toHidden');
-
-          const clone = document.documentElement.cloneNode(true);
-          const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
-          const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
-          for (let i = 0; i < liveControls.length; i++) {
-            const live = liveControls[i], el = cloneControls[i];
-            if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
-            if (el.tagName === 'SELECT') {
-              Array.from(el.options).forEach(o => o.removeAttribute('selected'));
-              if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
-              continue;
-            }
-            const type = el.getAttribute('type')?.toLowerCase();
-            if (type === 'radio' || type === 'checkbox') {
-              if (live.checked) el.setAttribute('checked', '');
-              else el.removeAttribute('checked');
-              continue;
-            }
-            el.setAttribute('value', live.value);
-          }
-
-          const progressClone = clone.querySelector('#progressBar');
-          if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
-
-          const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
-          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-          const title = this.elements.workTitle.value?.trim() || 'DE_CheckForm';
-          const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_')?.trim().slice(0, 80);
-          const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
-          let filename = `${safe}_snapshot_${ts}.html`;
-          if (window.location.origin === 'file://') {
-            const prompted = prompt('Save snapshot as:', filename);
-            if (prompted) filename = prompted.endsWith('.html') ? prompted : `${prompted}.html`;
-          }
-          this.downloadBlob(filename, blob);
-          this.saveJsonFile();
-          this.toast('Snapshot saved', 'success');
-
+          const btn = document.getElementById('saveSnapshotBtn');
+          this.withLoading(btn, () => {
+            return new Promise((resolve) => {
+              this.syncAllQuillEditors();
+              const clone = document.documentElement.cloneNode(true);
+              const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
+              const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
+              for (let i = 0; i < liveControls.length; i++) {
+                const live = liveControls[i], el = cloneControls[i];
+                if (!el) continue;
+                if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
+                if (el.tagName === 'SELECT') {
+                  Array.from(el.options).forEach(o => o.removeAttribute('selected'));
+                  if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
+                  continue;
+                }
+                const type = el.getAttribute('type')?.toLowerCase();
+                if (type === 'radio' || type === 'checkbox') {
+                  if (live.checked) el.setAttribute('checked', '');
+                  else el.removeAttribute('checked');
+                  continue;
+                }
+                el.setAttribute('value', live.value);
+              }
+              const signatures = Array.from(document.querySelectorAll('.sig-draw-surface.has-signature'));
+              const cloneSignatures = Array.from(clone.querySelectorAll('.sig-draw-surface'));
+              signatures.forEach((surface, idx) => {
+                const cloneSig = cloneSignatures[idx];
+                if (!cloneSig) return;
+                const prefix = surface.getAttribute('data-prefix');
+                const dataInput = document.getElementById(`${prefix}_sig_data`);
+                if (dataInput?.value) {
+                  cloneSig.setAttribute('data-url', dataInput.value);
+                }
+              });
+              const progressClone = clone.querySelector('#progressBar');
+              if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
+              const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
+              const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+              const url = URL.createObjectURL(blob);
+              const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
+              const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
+              const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
+              const a = document.createElement('a');
+              if (window.location.protocol === 'file:') {
+                const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
+                const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
+                a.download = cleanFilename;
+              } else {
+                a.download = `${safe}_snapshot_${ts}.html`;
+              }
+              a.href = url;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+              //this.saveJasonFile();
+              this.toast('Snapshot saved', 'success');
+              resolve();
+            });
+          });
         }
 
-        saveJsonFile () {
-          this.downloadBlob('DE_CheckForm.json',
-            new Blob([JSON.stringify(this.getFormJsonData())], { type: 'application/json' }));
-        }
-
-        lockQuillEditors () {
-          const editors = window.deCheckForm?.quillEditors;
-          if (!editors) return;
-          Object.values(editors).forEach((q) => { if (q) q.enable(false); });
-        }
-
-        lockDataToSign (data) {
-
-          var elements = data.querySelectorAll('input, select, textarea, button');
-          if (elements) {
-            for (let element of elements) {
-              element.disabled = true;
-            }
-          }
+        saveJasonFile () {
+          this.syncAllQuillEditors();
+          const form = document.getElementById('check_form');
+          const formData = new FormData(form);
+          let jsonData = {};
+          formData.forEach((value, key) => {
+            jsonData[key] = value;
+          });
+          const jsonStr = JSON.stringify(jsonData);
+          const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
+          const jsonUrl = URL.createObjectURL(jsonBlob);
+          const jsonA = document.createElement('a');
+          jsonA.href = jsonUrl;
+          jsonA.download = `DE_CheckForm.json`;
+          document.body.appendChild(jsonA);
+          jsonA.click();
+          jsonA.remove();
+          URL.revokeObjectURL(jsonUrl);
         }
 
         printFormAsPdf (e) {
           e.preventDefault();
-          this.updateProgress();
-
-          if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value < 100) {
-            this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
-            return;
-          }
-
-          if (this.validateVisibleSignatures()) {
-            this.lockQuillEditors();
-            console.log(document.querySelectorAll('.card'));
-            document.querySelectorAll('.card').forEach(this.lockDataToSign);
-          }
-
-          window.print();
+          const btn = document.getElementById('saveAsPdfBtn');
+          this.withLoading(btn, () => {
+            return new Promise((resolve) => {
+              this.updateProgress();
+              if (!this.allRequiredFieldsValid() || this.elements.progressBar.value < 100) {
+                this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
+                resolve();
+                return;
+              }
+              window.print();
+              resolve();
+            });
+          });
         }
       }
-      let form = null;
-      window.addEventListener('DOMContentLoaded', async () => {
-        form = new CheckForm();
-        window.deCheckForm = form;
-        form.init();
-        form.bindDraftImport();
-      });
 
-      // Call on unload
-      window.addEventListener('beforeunload', () => form.destroy());
-
+      window.addEventListener('DOMContentLoaded', () => new CheckForm());
     })();
   </script>
-  <script src="https://cloudfront.notarius.com/certifio-manager.js"></script>
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
-  <script>
-    var certifioManager = null;
-    var certificates = [];
-    var lastSignatureResult = null;
-    var dataToSign = document.getElementById('check_form');
-
-    function hasSigData (raw) {
-      return Boolean(String(raw ?? '').trim());
-    }
-    /**
-     * Visible = this pad’s enclosing .card does not have .hidden.
-     */
-    function isSignaturePadShown (container) {
-      const card = container.closest('.card');
-      if (!card) return true; // fallback: treat as visible
-      return !card.classList.contains('hidden');
-    }
-    /**
-     * Returns { ok, missing: string[] } where missing is prefixes still empty.
-     */
-
-
-    function validateCard (prefix) {
-      const cardEl = document.getElementById(`card-${prefix}`);
-      if (!cardEl) return false;
-      const required = Array.from(cardEl.querySelectorAll('.required-field-underline'));
-      const requiredShown = required.filter(el => !el.closest('.hidden')
-        && !el.previousElementSibling?.disabled && !el.parentElement?.disabled);
-
-      return requiredShown.reduce((acc, el) => {
-        return acc && parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
-      }, true);
-    }
-
-    function initializeCertifioManager () {
-      try {
-        certifioManager = new CertifioManager('en'); // 'en' or 'fr'
-        return true;
-      } catch (error) {
-        console.error('Failed to initialise CertifioManager:', error);
-        return false;
-      }
-    }
-
-    function initCertifioContainer (container) {
-      var prefix = container.getAttribute('data-prefix');
-      var certSelect = container.querySelector(`#${prefix}_certSelect`);
-      var certInfo = container.querySelector(`#${prefix}_certInfo`);
-      var btnRefreshCerts = container.querySelector(`#${prefix}_btnRefreshCerts`);
-      var btnSign = container.querySelector(`#${prefix}_btnSign`);
-      var sigData = document.getElementById(`${prefix}_sig_data`);
-      var card = document.getElementById(`card-${prefix}`);
-
-      if (!certSelect || !btnRefreshCerts || !btnSign || !sigData) {
-        console.warn('Certifio container missing required elements for prefix:', prefix);
-        return;
-      }
-
-      function loadCertificates () {
-        if (!certifioManager && !initializeCertifioManager()) return;
-        certSelect.innerHTML = '<option value="">Loading certificates...</option>';
-
-        certifioManager.getCertificates(
-          function (certs) {
-            certificates = certs || [];
-            certSelect.innerHTML = '';
-
-            if (certificates.length === 0) {
-              certSelect.innerHTML = '<option value="">-- No certificates found --</option>';
-            } else {
-              for (var i = 0; i < certificates.length; i++) {
-                var cert = certificates[i];
-                var option = document.createElement('option');
-                option.value = cert.deviceId;
-                option.textContent =
-                  cert.displayName || (cert.cn || '') + (cert.org ? ' (' + cert.org + ')' : '');
-                option.setAttribute('data-index', String(i));
-                certSelect.appendChild(option);
-              }
-            }
-
-            var selectedDeviceId = certSelect.value;
-            btnSign.disabled = !selectedDeviceId;
-
-            if (selectedDeviceId) {
-              const selectedCert = certificates.find(c => c?.deviceId === selectedDeviceId);
-
-              if (selectedCert) certInfo.textContent = selectedCert.dn;
-              btnRefreshCerts.style.display = 'none';
-              btnSign.style.display = 'block';
-            }
-          },
-
-
-          function (error) {
-            console.error('Failed to load certificates:', error);
-            certSelect.innerHTML = '<option value="">-- Failed to load certificates --</option>';
-            certSelect.disabled = false;
-          }
-        );
-      }
-
-
-
-
-
-      function signOnce (request) {
-        return new Promise((resolve, reject) => {
-          certifioManager.sign(request, resolve, reject);
-        });
-      }
-      async function signTwoPayloads (deviceId, dataA, dataB) {
-        const r1 = { deviceId, type: 'ENVELOPED', data: dataA };
-        const sig1 = await signOnce(r1);
-        const r2 = { deviceId, type: 'ENVELOPED', data: dataB };
-        const sig2 = await signOnce(r2);
-        return [sig1, sig2];
-      }
-
-      async function signData () {
-        if (!certifioManager) return;
-
-        var deviceId = certSelect.value;
-
-        btnSign.disabled = true;
-        btnSign.textContent = 'Signing...';
-
-        try {
-          var signatureData = await signTwoPayloads(
-            deviceId,
-            'ENVELOPED',
-            card ? card.outerHTML : '',
-          );
-          lastSignatureResult = signatureData;
-          if (typeof signatureData === 'string') {
-            sigData.value = signatureData;
-          } else if (signatureData) {
-            sigData.value = JSON.stringify(signatureData);
-          }
-          btnSign.disabled = false;
-          btnSign.textContent = 'Success';
-          btnSign.classList.add('success');
-
-        } catch (error) {
-          console.error('Signing failed:', error);
-          lastSignatureResult = null;
-          btnSign.disabled = false;
-          btnSign.classList.add('Fail');
-          btnSign.textContent = 'Failed';
-        }
-      }
-
-      btnRefreshCerts.addEventListener('click', loadCertificates);
-
-      btnSign.addEventListener('click',
-        () => {
-          var section = window.deCheckForm?.sectionConfig.find(s => s.prefix === prefix);
-          var completed = section?.status && validateCard(prefix);
-          var infoValid = validateCard('info');
-
-          if (prefix === 'fT1') {
-            signData();
-          } else if (prefix === 'sc' && completed && infoValid) {
-            signData();
-          } else if (prefix === 'ch' && completed) {
-            signData();
-          } else if (prefix === 'pr' && completed) {
-            signData();
-          } else {
-            window.deCheckForm?.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
-          }
-
-        });
-
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('.signature-pad-container').forEach(initCertifioContainer);
-    });
-  </script>
-
 </body>
 
 </html>
