@@ -1211,7 +1211,7 @@
       word-break: break-word;
     }
 
-    .comments-inline-editor:empty::before {
+    .comments-inline-editor.is-empty::before {
       content: attr(data-placeholder);
       color: var(--text-muted);
       font-style: italic;
@@ -1856,22 +1856,28 @@
       padding: 8px;
     }
 
-    .ql-container {
+    .comments-area .ql-container {
       border: 1px solid var(--border-hard);
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
       min-height: 100px;
+      height: auto;
       overflow: hidden;
+      box-sizing: border-box;
     }
 
-    .ql-editor {
+    .comments-area .ql-editor {
       padding: 10px 12px;
       font-size: 13px;
       font-family: inherit;
       line-height: 1.6;
-      min-height: 100px;
+      min-height: 0;
+      height: auto;
+      overflow-y: hidden;
+      box-sizing: border-box;
     }
+
 
     .ql-container .ql-tooltip {
       z-index: 999 !important;
@@ -1929,6 +1935,10 @@
     .ql-toolbar.ql-snow button:focus .ql-fill,
     .ql-toolbar.ql-snow button:active .ql-fill {
       fill: var(--accent);
+    }
+
+    .ql-editor:focus-within {
+      outline: none !important;
     }
 
     .ql-container:focus-within {
@@ -2112,19 +2122,19 @@
               <div class="field-label" id="sc_sig">Signature (Engineer) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="scSigContainer" data-prefix="sc">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="scSigDrawTab" tabindex="0"
+                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="scSigDrawTab" tabindex="-1"
                     data-testid="sc-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="scSigUploadTab"
-                    tabindex="-1" data-testid="sc-sig-upload">
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="scSigUploadTab" tabindex="0"
+                    data-testid="sc-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content " id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
+                  tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="sc" data-testid="sc-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="sc" data-testid="sc-sig-open">
@@ -2138,7 +2148,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="sig-tab-content" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
+                <div class="sig-tab-content active" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
                   tabindex="0">
                   <div class="sig-upload-area">
                     <input type="file" id="scSigUpload" accept="image/*" hidden data-testid="sc-sig-file">
@@ -2219,19 +2229,19 @@
               <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="chSigDrawTab" tabindex="0"
+                  <button class="btn btn-sig-tab " data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="chSigDrawTab" tabindex="-1"
                     data-testid="ch-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="chSigUploadTab"
-                    tabindex="-1" data-testid="ch-sig-upload">
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="chSigUploadTab" tabindex="0"
+                    data-testid="ch-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content " id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
+                  tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="ch" data-testid="ch-sig-open">
@@ -2245,7 +2255,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="sig-tab-content" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
+                <div class="sig-tab-content active" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
                   tabindex="0">
                   <div class="sig-upload-area">
                     <input type="file" id="chSigUpload" accept="image/*" hidden data-testid="ch-sig-file">
@@ -2308,19 +2318,19 @@
               </div>
               <div class="signature-pad-container" id="prSigContainer" data-prefix="pr">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="prSigDrawTab" tabindex="0"
+                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="prSigDrawTab" tabindex="-1"
                     data-testid="pr-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="prSigUploadTab"
-                    tabindex="-1" data-testid="pr-sig-upload">
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="prSigUploadTab" tabindex="0"
+                    data-testid="pr-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
+                  tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="pr" data-testid="pr-sig-open">
@@ -2334,7 +2344,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="sig-tab-content" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
+                <div class="sig-tab-content active" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
                   tabindex="0">
                   <div class="sig-upload-area">
                     <input type="file" id="prSigUpload" accept="image/*" hidden data-testid="pr-sig-file">
@@ -2457,19 +2467,19 @@
               <div class="field-label" id="fT1Sig">DE TL Signature <span class="sr-only">(required)</span></div>
               <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="fT1SigDrawTab" tabindex="0"
+                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="fT1SigDrawTab" tabindex="-1"
                     data-testid="ft1-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="fT1SigUploadTab"
-                    tabindex="-1" data-testid="ft1-sig-upload">
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="fT1SigUploadTab"
+                    tabindex="0" data-testid="ft1-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content " id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
+                  tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="fT1" data-testid="ft1-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="fT1" data-testid="ft1-sig-open">
@@ -2483,8 +2493,8 @@
                     </button>
                   </div>
                 </div>
-                <div class="sig-tab-content" id="fT1SigUploadTab" role="tabpanel" aria-labelledby="fT1SigUploadBtn"
-                  tabindex="0">
+                <div class="sig-tab-content active" id="fT1SigUploadTab" role="tabpanel"
+                  aria-labelledby="fT1SigUploadBtn" tabindex="0">
                   <div class="sig-upload-area">
                     <input type="file" id="fT1SigUpload" accept="image/*" hidden data-testid="ft1-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="fT1"
@@ -2629,6 +2639,8 @@
 
         static EMPTY_EDITOR_HTML = '<p><br></p>';
 
+        static COMMENT_EDITOR_MIN_HEIGHT = 100;
+
         static activeAsyncButton = null;
 
         // ---------- Constructor ----------
@@ -2740,8 +2752,52 @@
           return !!rowsEl?.querySelector(`input[type="radio"][value="${value}"]:checked`);
         }
 
+        resolveCommentEditor (el) {
+          return el?.closest?.('.comments-inline-editor, .ql-editor, .ql-container') ?? null;
+        }
+
+        getCommentEditorNodes (el) {
+          if (!el) return { container: null, surface: null };
+          if (el.classList.contains('comments-inline-editor')) {
+            return { container: null, surface: el };
+          }
+          if (el.classList.contains('ql-editor')) {
+            return { container: el.closest('.ql-container'), surface: el };
+          }
+          if (el.classList.contains('ql-container')) {
+            return { container: el, surface: el.querySelector('.ql-editor') };
+          }
+          const container = el.closest?.('.ql-container');
+          if (container) {
+            return { container, surface: container.querySelector('.ql-editor') };
+          }
+          return { container: null, surface: el };
+        }
+
         isCommentEditor (el) {
-          return el?.matches?.('.comments-inline-editor, .ql-editor') ?? false;
+          return !!this.resolveCommentEditor(el);
+        }
+
+        htmlToPlainText (html) {
+          if (!html || html === CheckForm.EMPTY_EDITOR_HTML) return '';
+          const el = document.createElement('div');
+          el.innerHTML = html;
+          return el.textContent?.replace(/\u00a0/g, ' ').trim() ?? '';
+        }
+
+        isCommentEditorEmpty (editorOrHtml) {
+          if (typeof editorOrHtml === 'string') {
+            return !this.htmlToPlainText(editorOrHtml) && !/<img\b/i.test(editorOrHtml);
+          }
+          if (!editorOrHtml) return true;
+          const html = editorOrHtml.innerHTML ?? '';
+          if (/<img\b/i.test(html)) return false;
+          return !this.htmlToPlainText(html);
+        }
+
+        updateCommentEditorPlaceholder (editor) {
+          if (!editor?.classList?.contains('comments-inline-editor')) return;
+          editor.classList.toggle('is-empty', this.isCommentEditorEmpty(editor));
         }
 
         getCanvasCssSize (canvas) {
@@ -2772,6 +2828,7 @@
         clearEditorContent (root = document) {
           root.querySelectorAll('.ql-editor, .comments-inline-editor').forEach((el) => {
             el.innerHTML = CheckForm.EMPTY_EDITOR_HTML;
+            this.updateCommentEditorPlaceholder(el);
           });
         }
 
@@ -2784,12 +2841,13 @@
           root.querySelectorAll('.sig-draw-surface').forEach((e) => e.classList.remove('has-signature'));
           this.clearEditorContent(root);
           root.querySelectorAll('.comments-image-gallery').forEach((g) => g.replaceChildren());
+          this.syncAllComments();
         }
 
         handleCommentFieldEvent (target) {
-          if (!target) return;
-          this.autosizeTextarea(target);
-          this.scheduleSyncCommentsHeights();
+          const editor = this.resolveCommentEditor(target);
+          if (!editor) return;
+          this.autosizeTextarea(editor);
         }
 
         scheduleUpdateProgress () {
@@ -2803,8 +2861,10 @@
         scheduleSyncCommentsHeights () {
           if (this._syncCommentsRaf) return;
           this._syncCommentsRaf = requestAnimationFrame(() => {
-            this._syncCommentsRaf = 0;
-            this.syncCommentsHeights();
+            requestAnimationFrame(() => {
+              this._syncCommentsRaf = 0;
+              this.syncCommentsHeights();
+            });
           });
         }
 
@@ -2887,11 +2947,19 @@
         setCommentHtml (fieldId, html) {
           const quill = this.quillEditors?.[fieldId];
           if (quill) {
-            quill.root.innerHTML = html;
+            quill.root.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
+            const container = document.getElementById(`${fieldId}-editor`);
+            if (container) {
+              this.autosizeCommentEditor(container);
+              this.scheduleSyncCommentsHeights();
+            }
             return;
           }
           const editor = this.commentTextareas?.[fieldId];
-          if (editor) editor.innerHTML = html;
+          if (!editor) return;
+          editor.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
+          this.updateCommentEditorPlaceholder(editor);
+          this.autosizeCommentEditor(editor);
         }
 
         syncCommentField (fieldId) {
@@ -2916,9 +2984,10 @@
             this.setCommentHtml(fieldId, hidden.value);
             const editor = this.commentTextareas?.[fieldId];
             if (editor) {
-              this.autosizeCommentEditor(editor)
+              this.updateCommentEditorPlaceholder(editor);
+              this.autosizeCommentEditor(editor);
               this.scheduleSyncCommentsHeights();
-            };
+            }
           });
         }
 
@@ -2951,6 +3020,7 @@
           } else {
             editor.appendChild(block);
           }
+          this.updateCommentEditorPlaceholder(editor);
         }
 
         showCommentImageModal (dataUrl) {
@@ -2984,6 +3054,7 @@
           reader.onload = (e) => {
             this.insertCommentInlineImage(editor, e.target.result);
             this.syncCommentFieldToHidden(fieldId);
+            this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
             this.scheduleSyncCommentsHeights();
           };
@@ -3002,8 +3073,13 @@
 
           editor.addEventListener('input', () => {
             this.syncCommentFieldToHidden(fieldId);
+            this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
             this.scheduleSyncCommentsHeights();
+          });
+
+          editor.addEventListener('blur', () => {
+            this.updateCommentEditorPlaceholder(editor);
           });
 
           editor.addEventListener('paste', (e) => {
@@ -3030,10 +3106,69 @@
           editor.dataset.editorBound = '1';
         }
 
+        setCommentEditorHeight (el, heightPx) {
+          const { container, surface } = this.getCommentEditorNodes(el);
+          const minH = CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
+          const h = Math.max(minH, heightPx);
+          const px = `${h}px`;
+          if (surface) {
+            surface.style.minHeight = '0';
+            surface.style.height = px;
+          }
+          if (container) {
+            container.style.minHeight = `${minH}px`;
+            container.style.height = px;
+          }
+        }
+
+        measureCommentEditorHeight (el) {
+          const { container, surface } = this.getCommentEditorNodes(el);
+          if (!surface) return CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
+          const prevSurface = surface.style.height;
+          const prevContainer = container?.style.height;
+          surface.style.height = 'auto';
+          if (container) container.style.height = 'auto';
+          const h = Math.max(CheckForm.COMMENT_EDITOR_MIN_HEIGHT, surface.scrollHeight);
+          surface.style.height = prevSurface;
+          if (container) container.style.height = prevContainer;
+          return h;
+        }
+
         autosizeCommentEditor (el) {
           if (!el) return;
-          el.style.height = 'auto';
-          el.style.height = `${el.scrollHeight}px`;
+          this.setCommentEditorHeight(el, this.measureCommentEditorHeight(el));
+        }
+
+        bindQuillCommentEditor (container, fieldId) {
+          const quill = this.quillEditors?.[fieldId];
+          if (!quill || !container) return;
+
+          if (container._quillTextChangeHandler) {
+            quill.off('text-change', container._quillTextChangeHandler);
+          }
+          container._quillTextChangeHandler = () => {
+            this.syncCommentField(fieldId);
+            this.autosizeCommentEditor(container);
+            this.scheduleSyncCommentsHeights();
+          };
+          quill.on('text-change', container._quillTextChangeHandler);
+
+          container._quillResizeObserver?.disconnect();
+          const qlEditor = quill.root;
+          if (qlEditor) {
+            container._quillResizeObserver = new MutationObserver(() => {
+              this.autosizeCommentEditor(container);
+              this.scheduleSyncCommentsHeights();
+            });
+            container._quillResizeObserver.observe(qlEditor, {
+              childList: true,
+              subtree: true,
+              characterData: true
+            });
+          }
+
+          this.autosizeCommentEditor(container);
+          this.scheduleSyncCommentsHeights();
         }
 
         initCommentEditors () {
@@ -3078,14 +3213,15 @@
             if (!editor) {
               editor = document.createElement('div');
               editor.className = 'field-input comments-textarea comments-inline-editor';
-              editor.contentEditable = 'true';
               wrapper.insertBefore(editor, hidden);
             }
+            editor.contentEditable = 'true';
             editor.id = `${fieldId}-editor`;
             editor.innerHTML = this.buildCommentInitialHtml(initial, gallery);
 
             this.bindCommentEditor(editor, fieldId, placeholder);
             this.syncCommentFieldToHidden(fieldId);
+            this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
             this.scheduleSyncCommentsHeights();
 
@@ -3131,6 +3267,9 @@
               // Reset serialized Quill DOM from reopened snapshots so initialization is idempotent.
               container.classList.remove('ql-snow');
               container.innerHTML = '<div class="ql-editor"></div>';
+              container._quillResizeObserver?.disconnect();
+              delete container._quillResizeObserver;
+              delete container._quillTextChangeHandler;
 
               const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
               this.quillEditors[fieldId] = quill;
@@ -3139,9 +3278,10 @@
                 quill.root.innerHTML = existingHtml;
               }
 
-              quill.on('text-change', () => this.syncCommentField(fieldId));
+              this.bindQuillCommentEditor(container, fieldId);
             }
           });
+          this.scheduleSyncCommentsHeights();
         }
 
         syncAllQuillEditors () {
@@ -3181,8 +3321,11 @@
             img.removeAttribute('src');
             surface.classList.remove('has-signature');
           }
-          const tabBtn = surface.closest('.signature-pad-container')?.querySelector('.btn-sig-tab[data-tab="draw"]');
-          this.changeSignatureTab(tabBtn);
+          const container = surface.closest('.signature-pad-container');
+          const tabBtn = container?.querySelector(
+            `.btn-sig-tab[data-tab="${dataUrl ? 'draw' : 'upload'}"]`
+          );
+          if (tabBtn) this.changeSignatureTab(tabBtn);
         }
 
         openSignatureModal (prefix) {
@@ -3682,9 +3825,8 @@
             this.syncDirectSupervision();
             this.syncSectionVisibility();
           }
-          if (this.isCommentEditor(e.target)) {
-            this.handleCommentFieldEvent(e.target);
-          }
+          const commentEditor = this.resolveCommentEditor(e.target);
+          if (commentEditor) this.handleCommentFieldEvent(commentEditor);
         }
 
         handleGlobalInput (e) {
@@ -3695,7 +3837,8 @@
             this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
           }
 
-          if (this.isCommentEditor(target)) this.handleCommentFieldEvent(target);
+          const commentEditor = this.resolveCommentEditor(target);
+          if (commentEditor) this.handleCommentFieldEvent(commentEditor);
 
           if ((target.matches('input') || target.matches('select')) && target.validity.valid) {
             target.previousElementSibling?.removeAttribute('style');
@@ -3713,10 +3856,6 @@
           if (head && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();
             head.click();
-          }
-          if (e.key === 'Enter' && this.isCommentEditor(e.target)) {
-            e.preventDefault();
-            this.handleCommentFieldEvent(e.target);
           }
         }
 
@@ -3956,15 +4095,12 @@
 
         async withLoading (button, callback) {
           if (CheckForm.activeAsyncButton) return;
-          const originalText = button.textContent;
-          button.disabled = true;
-          button.textContent = 'Processing...';
+
           CheckForm.activeAsyncButton = button;
           try {
             await callback();
           } finally {
-            button.disabled = false;
-            button.textContent = originalText;
+
             CheckForm.activeAsyncButton = null;
           }
         }
@@ -3990,8 +4126,9 @@
         // ---------- Textarea Utilities ----------
         autosizeTextarea (el) {
           if (!el) return;
-          if (el.classList?.contains('comments-inline-editor')) {
-            this.autosizeCommentEditor(el);
+          const commentEditor = this.resolveCommentEditor(el);
+          if (commentEditor) {
+            this.autosizeCommentEditor(commentEditor);
             this.scheduleSyncCommentsHeights();
             return;
           }
@@ -4006,15 +4143,16 @@
             const aHidden = a?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
             const bHidden = b?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
             if (!a || !b || aHidden || bHidden) {
-              if (a && !aHidden) this.autosizeTextarea(a);
-              if (b && !bHidden) this.autosizeTextarea(b);
+              if (a && !aHidden) this.autosizeCommentEditor(a);
+              if (b && !bHidden) this.autosizeCommentEditor(b);
               return;
             }
-            a.style.height = 'auto';
-            b.style.height = 'auto';
-            const h = `${Math.max(a.scrollHeight, b.scrollHeight)}px`;
-            a.style.height = h;
-            b.style.height = h;
+            const h = Math.max(
+              this.measureCommentEditorHeight(a),
+              this.measureCommentEditorHeight(b)
+            );
+            this.setCommentEditorHeight(a, h);
+            this.setCommentEditorHeight(b, h);
           };
           CheckForm.COMMENT_PAIRS.forEach(([aId, bId]) => syncPair(aId, bId));
         }
@@ -4031,7 +4169,9 @@
             this.showRiskConsistencyNotices();
           }
           if (sectionId === 's3') this.syncCheckWarning();
-          sec.querySelectorAll('textarea, .comments-inline-editor').forEach(t => this.autosizeTextarea(t));
+          sec.querySelectorAll('textarea, .comments-inline-editor, .ql-container').forEach((t) => {
+            this.autosizeCommentEditor(t);
+          });
           this.syncCommentsHeights();
           this.toast('Section cleared', 'info');
         }
@@ -4063,6 +4203,7 @@
           this.syncAllSectionVisibility();
           this.showRiskConsistencyNotices();
           this.updateProgress();
+          this.syncAllComments();
           this.syncCommentsHeights();
           this.toast('Form reset', 'info');
         }
