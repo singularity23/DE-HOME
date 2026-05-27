@@ -2291,12 +2291,12 @@
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab " data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="chSigDrawTab" tabindex="-1"
-                    data-testid="ch-sig-draw" disabled>
+                    data-testid="ch-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="true" aria-controls="chSigUploadTab" tabindex="0"
-                    data-testid="ch-sig-upload" disabled>
+                    data-testid="ch-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
@@ -2412,12 +2412,12 @@
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="prSigDrawTab" tabindex="-1"
-                    data-testid="pr-sig-draw" disabled>
+                    data-testid="pr-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="true" aria-controls="prSigUploadTab" tabindex="0"
-                    data-testid="pr-sig-upload" disabled>
+                    data-testid="pr-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
@@ -2492,12 +2492,12 @@
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="fT1SigDrawTab" tabindex="-1"
-                    data-testid="ft1-sig-draw" disabled>
+                    data-testid="ft1-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="true" aria-controls="fT1SigUploadTab"
-                    tabindex="0" data-testid="ft1-sig-upload" disabled>
+                    tabindex="0" data-testid="ft1-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
@@ -2972,19 +2972,43 @@
         }
 
         getCommentHtml (fieldId) {
-          return this.getCommentAdapter(fieldId).getHtml();
+          const quill = this.quillEditors?.[fieldId];
+          if (quill) return quill.root.innerHTML;
+          const editor = this.commentTextareas?.[fieldId];
+          return editor?.innerHTML ?? '';
         }
 
         setCommentHtml (fieldId, html) {
-          this.comment_setHtml(fieldId, html);
+          const quill = this.quillEditors?.[fieldId];
+          if (quill) {
+            quill.root.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
+            const container = document.getElementById(`${fieldId}-editor`);
+            if (container) {
+              this.autosizeCommentEditor(container);
+              this.scheduleSyncCommentsHeights();
+            }
+            return;
+          }
+          const editor = this.commentTextareas?.[fieldId];
+          if (!editor) return;
+          editor.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
+          this.updateCommentEditorPlaceholder(editor);
+          this.autosizeCommentEditor(editor);
         }
 
         syncCommentField (fieldId) {
-          this.comment_syncHidden(fieldId);
+          const hidden = document.getElementById(fieldId);
+          if (!hidden) return;
+          hidden.value = this.getCommentHtml(fieldId);
         }
 
         syncAllComments () {
-          this.comment_syncAllHidden();
+          if (this.quillEditors) {
+            Object.keys(this.quillEditors).forEach((fieldId) => this.syncCommentField(fieldId));
+            return;
+          }
+          if (!this.commentTextareas) return;
+          Object.keys(this.commentTextareas).forEach((fieldId) => this.syncCommentField(fieldId));
         }
 
         restoreComments () {
@@ -2992,68 +3016,13 @@
             const hidden = document.getElementById(fieldId);
             if (!hidden?.value) return;
             this.setCommentHtml(fieldId, hidden.value);
-            const editorEl = this.getCommentAdapter(fieldId).getContainerEl();
-            if (!editorEl) return;
-            this.updateCommentEditorPlaceholder(editorEl);
-            this.autosizeCommentEditor(editorEl);
-            this.scheduleSyncCommentsHeights();
-          });
-        }
-
-        // ---------- CommentEditorRouter (deep seam facade) ----------
-        getCommentAdapter (fieldId) {
-          const quill = this.quillEditors?.[fieldId];
-          if (quill) {
-            return {
-              kind: 'quill',
-              getContainerEl: () => document.getElementById(`${fieldId}-editor`),
-              getHtml: () => quill.root?.innerHTML ?? '',
-              setHtml: (html) => { quill.root.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML; }
-            };
-          }
-          const fallback = this.commentTextareas?.[fieldId] || null;
-          return {
-            kind: 'fallback',
-            getContainerEl: () => fallback,
-            getHtml: () => fallback?.innerHTML ?? '',
-            setHtml: (html) => {
-              if (!fallback) return;
-              fallback.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
-              this.updateCommentEditorPlaceholder(fallback);
-              this.autosizeCommentEditor(fallback);
+            const editor = this.commentTextareas?.[fieldId];
+            if (editor) {
+              this.updateCommentEditorPlaceholder(editor);
+              this.autosizeCommentEditor(editor);
+              this.scheduleSyncCommentsHeights();
             }
-          };
-        }
-
-        comment_getHtml (fieldId) {
-          return this.getCommentAdapter(fieldId).getHtml();
-        }
-
-        comment_setHtml (fieldId, html) {
-          const ad = this.getCommentAdapter(fieldId);
-          ad.setHtml(html);
-          const container = ad.getContainerEl();
-          if (container) {
-            this.autosizeCommentEditor(container);
-            this.scheduleSyncCommentsHeights();
-          }
-        }
-
-        comment_syncHidden (fieldId) {
-          const hidden = document.getElementById(fieldId);
-          if (!hidden) return;
-          hidden.value = this.comment_getHtml(fieldId);
-        }
-
-        comment_syncAllHidden () {
-          CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => this.comment_syncHidden(fieldId));
-        }
-
-        comment_autosize (fieldIdOrEl) {
-          const el = typeof fieldIdOrEl === 'string'
-            ? document.getElementById(`${fieldIdOrEl}-editor`)
-            : fieldIdOrEl;
-          if (el) this.autosizeCommentEditor(el);
+          });
         }
 
         insertCommentInlineImage (editor, dataUrl) {
@@ -3871,7 +3840,20 @@
 
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
-            this.dispatchRadioChange(e.target);
+            console.trace();
+            this.scheduleUpdateProgress();
+            const name = e.target.name;
+            if (name.startsWith('sc')) {
+              if (name === 'sc11') this.updateRoleLabels(false);
+            }
+            if (name.startsWith('ch') && name !== 'ch_c') this.syncCheckWarning();
+            if (name === 'sc_role') this.updateRoleLabels(true);
+            this.showRiskConsistencyNotices();
+            if (name !== 'ch_c' && name !== 'pr_c') this.syncSectionVisibility();
+            if (name === 'ch_c' || name === 'pr_c') {
+              const prefix = e.target.getAttribute('data-prefix');
+              this.enableSignature(prefix);
+            }
           }
           if (e.target.matches('input') || e.target.matches('select')) {
             if (e.target.validity.valid) {
@@ -3885,39 +3867,6 @@
           }
           const commentEditor = this.resolveCommentEditor(e.target);
           if (commentEditor) this.handleCommentFieldEvent(commentEditor);
-        }
-
-        // ---------- GlobalEventRouter (deep seam) ----------
-        dispatchRadioChange (radio) {
-          this.scheduleUpdateProgress();
-          const name = radio?.name || '';
-
-          if (name.startsWith('sc') && name === 'sc11') {
-            this.updateRoleLabels(false);
-          }
-
-          if (name === 'sc_role') {
-            this.updateRoleLabels(true);
-          }
-
-          // Risk consistency notices depend on SC radios and risk selection.
-          this.showRiskConsistencyNotices();
-
-          // Signature gates are driven by the *_c radios only.
-          if (name === 'ch_c' || name === 'pr_c') {
-            const prefix = radio.getAttribute('data-prefix');
-            if (prefix) this.signatureGate_apply(prefix);
-            return;
-          }
-
-          // Checklist radios (e.g. ch1..chN) influence chNotice + section visibility.
-          if (name.startsWith('ch')) {
-            this.syncCheckWarning();
-            return;
-          }
-
-          // Default: re-run visibility state machine.
-          this.syncSectionVisibility();
         }
 
         handleGlobalInput (e) {
@@ -3935,12 +3884,6 @@
             target.previousElementSibling?.removeAttribute('style');
             this.scheduleUpdateProgress();
           }
-        }
-
-        // ---------- SignatureGate (deep seam facade) ----------
-        signatureGate_apply (prefix) {
-          // Facade for legacy implementation.
-          this.enableSignature(prefix);
         }
 
         handleGlobalKeydown (e) {
@@ -4050,67 +3993,43 @@
           this.updateProgress();
         }
 
-        // ---------- SectionVisibilityPolicy (deep seam) ----------
-        computeVisibilityState () {
-          const isEit = this.isEitRole();
-          const q111No = this.isSc11No();
-          const risk = this.getActiveRiskLevel();
-          const isHighRisk = risk === 'high';
-          const isMidRisk = risk === 'medium';
-          const minLevel = this.elements.minCheckLevel.value;
-
-          // Checklist-derived facts (scoped to .check-row so ch_c/pr_c doesn't interfere).
-          const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
-
-          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
-          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk;
-
-          // Current behavior: expand peer review when checklist has a "No" OR min level explicitly set to Peer Review.
-          const openS4 = chHasNo || minLevel === 'Peer Review';
-
-          // Current behavior: warning is tied to checklist "No" answers (not ch_c).
-          const showChNotice = chHasNo;
-
-          const finalShown = isHighRisk;
-
-          return {
-            showCheck,
-            showPeer,
-            openS4,
-            showChNotice,
-            finalShown
-          };
-        }
-
-        applyVisibilityState (state) {
-          this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
-
-          this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
-          this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
-          this.setCheckerRequired(state.showCheck);
-          if (state.showCheck) this.syncCheckerNames();
-
-          this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
-          if (state.openS4) this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
-
-          this.elements.cardFinal.classList.toggle('hidden', !state.finalShown);
-          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
-        }
-
         syncCheckWarning () {
-          // Legacy entry point; kept for locality. Visibility now owns chNotice.
+          const hasNo = this.rowHasAnswer(this.elements.chRows, 'no');
+          this.elements.chNotice.classList.toggle('hidden', !hasNo);
           this.syncSectionVisibility();
         }
 
         syncSectionVisibility () {
-          const state = this.computeVisibilityState();
-          this.applyVisibilityState(state);
+          const isEit = this.isEitRole();
+          const q111No = this.isSc11No();
+          const isHighRisk = this.getActiveRiskLevel() === 'high';
+          const isMidRisk = this.getActiveRiskLevel() === 'medium';
+          const minLevel = this.elements.minCheckLevel.value;
+          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
+          this.elements.cardCh.classList.toggle('hidden', !showCheck);
+          this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, showCheck);
+          this.setCheckerRequired(showCheck);
+          if (showCheck) this.syncCheckerNames();
+          const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
+          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk;
+          this.elements.cardPr.classList.toggle('hidden', !showPeer);
+          // Expand peer-review body only when a checklist item is "No", not for ch_c / pr_c.
+          if (chHasNo || minLevel === 'Peer Review') {
+            this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
+          }
+
+          const dsShown = !this.elements.cardDs.classList.contains('hidden');
+          const chShown = !this.elements.cardCh.classList.contains('hidden');
+          const prShown = !this.elements.cardPr.classList.contains('hidden');
+          const finalShown = isHighRisk;
+          this.elements.cardFinal.classList.toggle('hidden', !finalShown);
+          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, isHighRisk && finalShown);
         }
 
         syncAllSectionVisibility () {
           this.syncDirectSupervision();
           this.syncSectionVisibility();
-          this.syncCheckWarning(); // legacy: kept for callers that expect it
+          this.syncCheckWarning(); // applies chNotice + final section/card toggles
         }
 
         setSectionOpen (head, body, open) {
@@ -4213,39 +4132,20 @@
 
         }
 
-        // ---------- SignatureGate adapter (real seam) ----------
-        isSignatureEnabledByComments (prefix) {
-          // Only CH and PR signatures are gated by the "addressed?" radios.
-          if (prefix !== 'ch' && prefix !== 'pr') return true;
-          const yes = this.elements[`${prefix}CYes`];
-          const na = this.elements[`${prefix}CNa`];
-          return !!(yes?.checked || na?.checked);
-        }
-
-        setSignatureEnabled (prefix, enabled) {
-          const container = document.getElementById(`${prefix}SigContainer`);
-          if (!container) return;
-
-          container.classList.toggle('is-locked', !enabled);
-          container.setAttribute('aria-disabled', enabled ? 'false' : 'true');
-
-          // Disable all interactive controls inside the signature container.
-          container.querySelectorAll('button, a.btn-open-modal').forEach((el) => {
-            el.toggleAttribute('disabled', !enabled);
-          });
-
-          // If disabled, also clear any file input selection to avoid stale UI.
-          const fileInput = container.querySelector('input[type="file"]');
-          if (!enabled && fileInput) fileInput.value = '';
-        }
-
         enableSignature (prefix) {
-          // Backwards-compatible entry point used by the global router.
-          const enabled = this.isSignatureEnabledByComments(prefix);
-          this.setSignatureEnabled(prefix, enabled);
-          if (prefix === 'ch') {
-            this.elements.chSigGateNotice?.classList.toggle('hidden', enabled);
+          const enabled = this.elements[`${prefix}CNa`].checked || this.elements[`${prefix}CYes`].checked;
+          const SigPad = this.elements[`${prefix}SigPad`];
+          const SigImg = this.elements[`${prefix}SigImg`];
+          console.log(SigImg);
+          console.trace();
+          if (enabled) {
+            SigPad.removeAttribute("disabled");
+            SigImg.removeAttribute("disabled");
+          } else {
+            SigPad.setAttribute("disabled", "");
+            SigImg.setAttribute("disabled", "");
           }
+
         }
 
         async withLoading (button, callback) {
@@ -4315,7 +4215,6 @@
         // ---------- Section Clearing ----------
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
-          console.trace();
           if (!sec) return;
           this.clearFormControls(sec);
           this.removeCanvas(sec);
@@ -4324,20 +4223,10 @@
             this.syncDirectSupervision();
             this.showRiskConsistencyNotices();
           }
-          if (sectionId === 's3') {
-            this.syncCheckWarning();
-            const prefix = 'ch';
-            this.setSignatureEnabled(prefix, false);
-          }
+          if (sectionId === 's3') this.syncCheckWarning();
           sec.querySelectorAll('textarea, .comments-inline-editor, .ql-container').forEach((t) => {
             this.autosizeCommentEditor(t);
           });
-
-          if (sectionId === 's4') {
-            const prefix = 'pr';
-            this.setSignatureEnabled(prefix, false);
-          }
-
           this.syncCommentsHeights();
           this.toast('Section cleared', 'info');
         }
