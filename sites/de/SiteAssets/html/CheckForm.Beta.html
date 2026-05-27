@@ -915,6 +915,14 @@
       align-self: center;
     }
 
+    .check-comments {
+      display: flex;
+      text-align: right;
+      gap: 10px;
+      padding: 0 var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
+      background: var(--header-bg);
+    }
+
     .row-notice-stack {
       flex-basis: 100%;
       display: flex;
@@ -1172,6 +1180,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       background: var(--border-soft);
+      border-top: 1px solid var(--border-soft);
     }
 
     .comments-grid.comments-grid--single {
@@ -1179,13 +1188,13 @@
     }
 
     .comments-cell {
-      background: var(--surface);
-      padding: var(--space-cell-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
+      background: var(--header-bg);
+      padding: var(--space-row-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
     }
 
     .comments-cell:first-child,
     .comments-cell:nth-child(3) {
-      padding: var(--space-cell-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
+      padding: var(--space-row-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
     }
 
     textarea.comments-textarea,
@@ -1349,7 +1358,8 @@
       background: var(--warn-bg);
     }
 
-    .btn-action:disabled {
+    .btn-action:disabled,
+    .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -1460,6 +1470,11 @@
       /* Expand all accordion bodies for print */
       .sec-body {
         display: block !important;
+
+      }
+
+      div[id$='rows'] {
+        page-break-inside: avoid;
       }
 
       .sec-head .chevron {
@@ -1477,6 +1492,11 @@
 
       /* Improve page breaks */
       .card {
+        page-break-inside: avoid;
+      }
+
+      .comments-grid,
+      .sig-grid {
         page-break-inside: avoid;
       }
 
@@ -1857,7 +1877,7 @@
     }
 
     .comments-area .ql-container {
-      border: 1px solid var(--border-hard);
+      border: 1px solid var(--border);
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
@@ -1866,6 +1886,8 @@
       overflow: hidden;
       box-sizing: border-box;
     }
+
+
 
     .comments-area .ql-editor {
       padding: 10px 12px;
@@ -1876,6 +1898,7 @@
       height: auto;
       overflow-y: hidden;
       box-sizing: border-box;
+      background: var(--surface);
     }
 
 
@@ -1890,13 +1913,22 @@
       padding-left: 0 !important;
     }
 
+    .ql-snow.ql-toolbar button,
+    .ql-snow .ql-toolbar button {
+      padding: 0px;
+      height: 18px;
+    }
+
     .ql-editor.ql-blank::before {
       color: var(--text-muted);
       font-style: italic;
     }
 
     .ql-toolbar.ql-snow {
-      padding: var(--gap-xs);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
     }
 
     .ql-toolbar.ql-snow .ql-formats {
@@ -1943,15 +1975,11 @@
 
     .ql-container:focus-within {
       outline: 1px solid var(--color-link) !important;
-      outline-offset: 1px !important;
+      outline-offset: 0px !important;
     }
 
     .rich-text-wrapper {
       position: relative;
-    }
-
-    .comments-area .rich-text-wrapper {
-      margin-bottom: var(--gap-md);
     }
 
     .completed {
@@ -2045,7 +2073,7 @@
             <div class="meta-cell deliverable-cell">
               <label class="field-label" for="deliverable">Check / Review Deliverable or Milestone</label>
               <select class="field-input" id="deliverable" name="deliverable" required>
-                <option value="" disabled selected>Choose an item…</option>
+                <option value disabled selected>Choose an item…</option>
                 <option>Memo</option>
                 <option>Standard Form</option>
                 <option>Settings Sheet</option>
@@ -2060,7 +2088,7 @@
             <div class="meta-cell review-level-cell">
               <label class="field-label" for="minCheckLevel">Minimum Check / Review Level</label>
               <select class="field-input" id="minCheckLevel" required>
-                <option value="" disabled selected>Select level…</option>
+                <option value disabled selected>Select level…</option>
                 <option>Self-Check</option>
                 <option>Check</option>
                 <option>Peer Review</option>
@@ -2141,7 +2169,7 @@
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="sc" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2210,6 +2238,38 @@
             <span><b>Attention:</b> A "No" answer requires your <b>Team Lead</b> to complete a Peer Review for
               acceptance.</span>
           </div>
+          <div class="comments-grid" id="commentsGrid">
+            <div class="comments-cell" id="commentsCell1">
+              <label class="field-label" id="for_checkerComments">Checker Comments &amp; Corrections</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="checkerComments-editor">
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
+                  </div>
+                  <input type="hidden" name="checkerComments" id="checkerComments">
+                </div>
+                <div class="comments-image-gallery" id="checkerComments-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="comments-cell" id="commentsCell2">
+              <label class="field-label" id="for_engineerResponse">Engineer Response</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="engineerResponse-editor">
+                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
+                  </div>
+                  <input type="hidden" name="engineerResponse" id="engineerResponse">
+                </div>
+                <div class="comments-image-gallery" id="engineerResponse-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
+            <div class="pill-group"><input type="radio" name="ch_c" id="ch_c_yes" value="yes" data-prefix="ch"><label
+                for="ch_c_yes">Yes</label><input type="radio" name="ch_c" id="ch_c_no" value="no"
+                data-prefix="ch"><label for="ch_c_no">No</label><input type="radio" name="ch_c" id="ch_c_na" value="na"
+                data-prefix="ch"><label for="ch_c_na">N/A</label></div>
+          </div>
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
@@ -2244,11 +2304,11 @@
                   tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="ch" data-testid="ch-sig-open">
+                      type="button" data-prefix="ch" data-testid="ch-sig-open" id="chSigPad" disabled>
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2259,8 +2319,8 @@
                   tabindex="0">
                   <div class="sig-upload-area">
                     <input type="file" id="chSigUpload" accept="image/*" hidden data-testid="ch-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch"
-                      data-testid="ch-sig-choose">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch" id="chSigImg"
+                      data-testid="ch-sig-choose" disabled>
                       Choose Signature Image
                     </button>
                     <div id="chSigPreview" class="sig-preview"></div>
@@ -2297,6 +2357,38 @@
             </div>
           </div>
           <div id="pr-rows" data-section="pr"></div>
+          <div class="comments-grid">
+            <div class="comments-cell" id="commentsCell3">
+              <label class="field-label" id="for_reviewerComments">Reviewer Comments &amp; Corrections</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="reviewerComments-editor">
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
+                  </div>
+                  <input type="hidden" name="reviewerComments" id="reviewerComments">
+                </div>
+                <div class="comments-image-gallery" id="reviewerComments-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="comments-cell" id="commentsCell4">
+              <label class="field-label" id="for_engineerResponse_2">Engineer Response</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="engineerResponse_2-editor">
+                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
+                  </div>
+                  <input type="hidden" name="engineerResponse_2" id="engineerResponse_2">
+                </div>
+                <div class="comments-image-gallery" id="engineerResponse_2-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
+            <div class="pill-group"><input type="radio" name="pr_c" id="pr_c_yes" value="yes" data-prefix="pr"><label
+                for="pr_c_yes">Yes</label><input type="radio" name="pr_c" id="pr_c_no" value="no"
+                data-prefix="pr"><label for="pr_c_no">No</label><input type="radio" name="pr_c" id="pr_c_na" value="na"
+                data-prefix="pr"><label for="pr_c_na">N/A</label></div>
+          </div>
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
@@ -2333,11 +2425,11 @@
                   tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="pr" data-testid="pr-sig-open">
+                      type="button" data-prefix="pr" data-testid="pr-sig-open" id="prSigPad" disabled>
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2349,7 +2441,7 @@
                   <div class="sig-upload-area">
                     <input type="file" id="prSigUpload" accept="image/*" hidden data-testid="pr-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr"
-                      data-testid="pr-sig-choose">
+                      data-testid="pr-sig-choose" id="prSigImg" disabled>
                       Choose Signature Image
                     </button>
                     <div id="prSigPreview" class="sig-preview"></div>
@@ -2362,12 +2454,12 @@
         </div>
       </div>
 
-      <!-- Section 5: Comments -->
-      <div class="card hidden" id="card-comments">
+      <!-- Section 5: Final Signatures -->
+      <div class="card hidden" id="card-final">
         <div class="sec-head" id="sec5-head" tabindex="5" aria-expanded="false" aria-controls="s5">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div>
-            <span class="sec-title">Comments &amp; Corrective Actions</span>
+            <span class="sec-title">Appoint Tier 1 Reviewer &amp; Team Lead Signatures</span>
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec5Btn" data-testid="clear-sec5">Clear</button>
@@ -2378,75 +2470,6 @@
           </div>
         </div>
         <div class="sec-body" id="s5">
-          <div class="comments-grid" id="commentsGrid">
-            <div class="comments-cell" id="commentsCell1">
-              <label class="field-label" id="for_checkerComments">Checker Comments &amp; Corrections</label>
-              <div class="comments-area">
-                <div class="rich-text-wrapper">
-                  <div class="ql-container" id="checkerComments-editor">
-                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
-                  </div>
-                  <input type="hidden" name="checkerComments" id="checkerComments">
-                </div>
-                <div class="comments-image-gallery" id="checkerComments-gallery" aria-live="polite"></div>
-              </div>
-            </div>
-            <div class="comments-cell" id="commentsCell2">
-              <label class="field-label" id="for_engineerResponse">Engineer Response</label>
-              <div class="comments-area">
-                <div class="rich-text-wrapper">
-                  <div class="ql-container" id="engineerResponse-editor">
-                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
-                  </div>
-                  <input type="hidden" name="engineerResponse" id="engineerResponse">
-                </div>
-                <div class="comments-image-gallery" id="engineerResponse-gallery" aria-live="polite"></div>
-              </div>
-            </div>
-            <div class="comments-cell hidden" id="commentsCell3">
-              <label class="field-label" id="for_reviewerComments">Reviewer Comments &amp; Corrections</label>
-              <div class="comments-area">
-                <div class="rich-text-wrapper">
-                  <div class="ql-container" id="reviewerComments-editor">
-                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
-                  </div>
-                  <input type="hidden" name="reviewerComments" id="reviewerComments">
-                </div>
-                <div class="comments-image-gallery" id="reviewerComments-gallery" aria-live="polite"></div>
-              </div>
-            </div>
-            <div class="comments-cell hidden" id="commentsCell4">
-              <label class="field-label" id="for_engineerResponse_2">Engineer Response</label>
-              <div class="comments-area">
-                <div class="rich-text-wrapper">
-                  <div class="ql-container" id="engineerResponse_2-editor">
-                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
-                  </div>
-                  <input type="hidden" name="engineerResponse_2" id="engineerResponse_2">
-                </div>
-                <div class="comments-image-gallery" id="engineerResponse_2-gallery" aria-live="polite"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 6: Final Signatures -->
-      <div class="card hidden" id="card-final">
-        <div class="sec-head" id="sec6-head" tabindex="6" aria-expanded="false" aria-controls="s6">
-          <div class="sec-left">
-            <div class="sec-num" id="snum-6">6</div>
-            <span class="sec-title">Final Signatures</span>
-          </div>
-          <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
-          </div>
-        </div>
-        <div class="sec-body" id="s6">
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
@@ -2486,7 +2509,7 @@
                       Open signature pad
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="fT1" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
@@ -2542,7 +2565,8 @@
       </div>
 
       <div class="actions">
-        <div> <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
+        <div> <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset
+            Form</button>
         </div>
         <div>
           <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
@@ -2676,11 +2700,16 @@
             sc11No: get('sc11_no'),
             sc11Yes: get('sc11_yes'),
             scRoleEng: get('sc_role_eng'),
+            chCYes: get('ch_c_yes'),
+            chCNo: get('ch_c_no'),
+            chCNa: get('ch_c_na'),
+            prCYes: get('pr_c_yes'),
+            prCNo: get('pr_c_no'),
+            prCNa: get('pr_c_na'),
             // Cards
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
             cardPr: get('card-pr'),
-            cardComments: get('card-comments'),
             cardFinal: get('card-final'),
             // Notices
             chNotice: get('chNotice'),
@@ -2717,9 +2746,12 @@
             s3Body: get('s3'), s3Head: get('sec3-head'),
             s4Body: get('s4'), s4Head: get('sec4-head'),
             s5Body: get('s5'), s5Head: get('sec5-head'),
-            s6Body: get('s6'), s6Head: get('sec6-head'),
             //btns
             savePdf: get('saveAsPdfBtn'),
+            chSigImg: get('chSigImg'),
+            chSigPad: get('chSigPad'),
+            prSigImg: get('prSigImg'),
+            prSigPad: get('prSigPad')
           };
         }
 
@@ -2749,7 +2781,9 @@
         }
 
         rowHasAnswer (rowsEl, value) {
-          return !!rowsEl?.querySelector(`input[type="radio"][value="${value}"]:checked`);
+          return !!rowsEl?.querySelector(
+            `.check-row input[type="radio"][value="${value}"]:checked`
+          );
         }
 
         resolveCommentEditor (el) {
@@ -3783,6 +3817,8 @@
           if (e.target.classList.contains('risk-btn')) {
             this.setRiskLevel(e.target.dataset.risk);
           }
+
+
           const clearActions = {
             clearWorkInfoBtn: () => this.clearSection('sec-info-body'),
             clearSec1Btn: () => this.clearSection('s1'),
@@ -3790,7 +3826,6 @@
             clearSec3Btn: () => this.clearSection('s3'),
             clearSec4Btn: () => this.clearSection('s4'),
             clearSec5Btn: () => this.clearSection('s5'),
-            clearSec6Btn: () => this.clearSection('s6'),
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
@@ -3805,15 +3840,20 @@
 
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
+            console.trace();
             this.scheduleUpdateProgress();
             const name = e.target.name;
             if (name.startsWith('sc')) {
               if (name === 'sc11') this.updateRoleLabels(false);
             }
-            if (name.startsWith('ch')) this.syncCheckWarning();
+            if (name.startsWith('ch') && name !== 'ch_c') this.syncCheckWarning();
             if (name === 'sc_role') this.updateRoleLabels(true);
             this.showRiskConsistencyNotices();
-            this.syncSectionVisibility();
+            if (name !== 'ch_c' && name !== 'pr_c') this.syncSectionVisibility();
+            if (name === 'ch_c' || name === 'pr_c') {
+              const prefix = e.target.getAttribute('data-prefix');
+              this.enableSignature(prefix);
+            }
           }
           if (e.target.matches('input') || e.target.matches('select')) {
             if (e.target.validity.valid) {
@@ -3963,6 +4003,7 @@
           const isEit = this.isEitRole();
           const q111No = this.isSc11No();
           const isHighRisk = this.getActiveRiskLevel() === 'high';
+          const isMidRisk = this.getActiveRiskLevel() === 'medium';
           const minLevel = this.elements.minCheckLevel.value;
           const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
           this.elements.cardCh.classList.toggle('hidden', !showCheck);
@@ -3970,21 +4011,19 @@
           this.setCheckerRequired(showCheck);
           if (showCheck) this.syncCheckerNames();
           const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
-          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk;
+          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk;
           this.elements.cardPr.classList.toggle('hidden', !showPeer);
-          this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, showPeer && chHasNo);
+          // Expand peer-review body only when a checklist item is "No", not for ch_c / pr_c.
+          if (chHasNo || minLevel === 'Peer Review') {
+            this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
+          }
+
           const dsShown = !this.elements.cardDs.classList.contains('hidden');
           const chShown = !this.elements.cardCh.classList.contains('hidden');
           const prShown = !this.elements.cardPr.classList.contains('hidden');
-          const commentsShown = dsShown || chShown || prShown;
-          this.elements.cardComments.classList.toggle('hidden', !commentsShown);
-          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, commentsShown);
-          this.elements.commentsCell3.classList.toggle('hidden', !prShown);
-          this.elements.commentsCell4.classList.toggle('hidden', !prShown);
-          this.syncCommentsHeights();
-          const finalShown = showPeer || isHighRisk;
+          const finalShown = isHighRisk;
           this.elements.cardFinal.classList.toggle('hidden', !finalShown);
-          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, isHighRisk && finalShown);
+          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, isHighRisk && finalShown);
         }
 
         syncAllSectionVisibility () {
@@ -4090,6 +4129,22 @@
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
           this.elements.savePdf.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid());
+
+        }
+
+        enableSignature (prefix) {
+          const enabled = this.elements[`${prefix}CNa`].checked || this.elements[`${prefix}CYes`].checked;
+          const SigPad = this.elements[`${prefix}SigPad`];
+          const SigImg = this.elements[`${prefix}SigImg`];
+          console.log(SigImg);
+          console.trace();
+          if (enabled) {
+            SigPad.removeAttribute("disabled");
+            SigImg.removeAttribute("disabled");
+          } else {
+            SigPad.setAttribute("disabled", "");
+            SigImg.setAttribute("disabled", "");
+          }
 
         }
 
