@@ -131,7 +131,7 @@
 
     /* ── Page wrapper ── */
     .page {
-      max-width: 816px;
+      max-width: 1200px;
       margin: 0 auto;
       background: var(--surface-raised);
       border: 1pt solid var(--border-default);
@@ -336,7 +336,7 @@
 
     .req-grid__header {
       display: grid;
-      grid-template-columns: 25% 1fr 1fr;
+      grid-template-columns: 25% 1fr 25%;
       gap: 0;
       background: var(--header-bg);
       color: var(--color-primary);
@@ -357,7 +357,7 @@
 
     .req-grid__row {
       display: grid;
-      grid-template-columns: 25% 1fr 1fr;
+      grid-template-columns: 25% 1fr 25%;
       gap: 0;
       border-top: 1px solid var(--border-default);
     }
@@ -476,7 +476,7 @@
     }
 
 
-    /* Yes/No only variant (no N/A column) */
+    /* Yes/No only variant (no Required column) */
     .radio-group--yes-no .pill-slot-empty {
       width: 36px;
       color: transparent;
@@ -799,12 +799,14 @@
       border-radius: 0;
       font-family: inherit;
       font-size: 14px;
-      height: 100%;
+      height: auto;
+      min-height: 100px;
     }
 
     .ql-editor {
       min-height: 100px;
       padding: 10px 12px;
+      overflow-y: hidden;
       font-size: 14px;
       font-family: inherit;
       line-height: 1.6;
@@ -862,6 +864,82 @@
       border-color: var(--focus-ring);
     }
 
+    .editor-inline {
+      width: 100%;
+      min-height: 100px;
+      border: 1px solid var(--border-default);
+      border-radius: 0;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: none;
+      overflow-y: hidden;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--surface-base);
+      color: var(--color-primary);
+      display: block;
+    }
+
+    .editor-inline.is-empty::before {
+      content: attr(data-placeholder);
+      color: var(--color-info);
+      font-style: italic;
+      pointer-events: none;
+    }
+
+    .editor-inline:focus {
+      outline: none;
+      border-color: var(--focus-ring);
+    }
+
+    .rich-text-wrapper.editor-fallback .ql-container {
+      display: none;
+    }
+
+    .req-grid .editor-inline {
+      min-height: 160px;
+    }
+
+    .add-req-body .editor-inline {
+      min-height: 96px;
+    }
+
+    .editor-fallback-notice {
+      margin: 0 var(--space-5) var(--space-4);
+      padding: 10px 12px;
+      border: 1px solid var(--border-default);
+      background: var(--surface-muted, #fff8e6);
+      color: var(--color-primary);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .form-toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10000;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #fff;
+      background: var(--color-primary);
+      border: 1px solid var(--border-default);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .form-toast.is-visible {
+      opacity: 1;
+    }
+
+    .form-toast--error {
+      background: #8b1a1a;
+    }
+
     .rich-text-wrapper {
       margin-bottom: var(--space-3);
     }
@@ -871,7 +949,16 @@
     }
 
     .req-grid .rich-text-wrapper {
-      height: 100%;
+      height: auto;
+      min-height: 100%;
+    }
+
+    .editor-inline img,
+    .ql-editor img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 8px 0;
     }
 
     .req-grid .ql-editor {
@@ -1132,6 +1219,7 @@
   <div class="page">
     <div>
       <div class="stage-selector">
+        <input type="hidden" id="snapshot_review_stage" value="Unconfirmed">
         <input type="radio" name="review_stage" id="unconfirmed" value="Unconfirmed" checked>
         <label for="unconfirmed">Unconfirmed</label>
         <input type="radio" name="review_stage" id="confirmed" value="Confirmed">
@@ -1168,7 +1256,7 @@
           <thead>
             <tr>
               <th class="field-label" for="desrt_id">DESRT ID#</th>
-              <th class="field-label" for="details_assumptions">Other Details / Assumptions</th>
+              <th class="field-label" for="details_assumptions">Project Details / Assumptions</th>
             </tr>
           </thead>
           <tbody>
@@ -1211,7 +1299,7 @@
                 <option>High Likelihood</option>
                 <option>Medium Likelihood</option>
                 <option>Low Likelihood</option>
-                <option>N/A</option>
+                <option>Required</option>
               </select>
 
             </div>
@@ -1243,7 +1331,7 @@
                 <option>High Likelihood</option>
                 <option>Medium Likelihood</option>
                 <option>Low Likelihood</option>
-                <option>N/A</option>
+                <option>Required</option>
               </select>
 
             </div>
@@ -1274,7 +1362,7 @@
                 <option>High Likelihood</option>
                 <option>Medium Likelihood</option>
                 <option>Low Likelihood</option>
-                <option>N/A</option>
+                <option>Required</option>
               </select>
 
             </div>
@@ -1307,7 +1395,7 @@
                 <option>High Likelihood</option>
                 <option>Medium Likelihood</option>
                 <option>Low Likelihood</option>
-                <option>N/A</option>
+                <option>Required</option>
               </select>
 
             </div>
@@ -1364,7 +1452,7 @@
         <div class="actions">
           <button type="button" class="btn btn-reset" onclick="resetForm()">Reset Form</button>
           <button type="button" class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
-          <button type="button" class="btn btn-submit" onclick="submitForm()">Submit</button>
+          <button type="button" class="btn btn-submit" id="saveSnapshotBtn" onclick="saveSnapshot()">Save</button>
         </div>
 
       </div><!-- /main -->
@@ -1396,7 +1484,7 @@
             required for the project.</div>
           <div class="legend-item"><strong>Low Likelihood:</strong> These items are less likely to be required, but
             shouldn't be completely ruled out.</div>
-          <div class="legend-item"><strong>N/A:</strong> Not Applicable</div>
+          <div class="legend-item"><strong>Required:</strong> These items are required for the project.</div>
         </div>
 
       </div><!-- /aside -->
@@ -1411,8 +1499,21 @@
     const prBar = document.querySelector('.pub-bar');
     prBar.textContent = `Published: ${published_date} | Revision: ${revision}`;
 
-    // ── Quill Rich Text Editors Configuration ── 
-    const quillEditors = {};
+    // ── Rich text editors (Quill with contenteditable fallback) ──
+    const EMPTY_EDITOR_HTML = '<p><br></p>';
+    const EDITOR_FIELDS = [
+      ['desrt_id', 'Paste DESRT link here'],
+      ['details_assumptions', 'Project details: feeder, planning limit, customer estimated demand…'],
+      ['scope_lpd', 'Enter scope details…'],
+      ['notes_lpd', 'Enter notes…'],
+      ['scope_ftm', 'Enter scope details…'],
+      ['notes_ftm', 'Enter notes…'],
+      ['scope_scw', 'Enter scope details…'],
+      ['notes_scw', 'Enter notes…'],
+      ['scope_plm', 'Enter scope details…'],
+      ['notes_plm', 'Enter notes…'],
+      ['additional_requirements', 'Enter additional requirements…']
+    ];
     const quillConfig = {
       theme: 'snow',
       modules: {
@@ -1428,40 +1529,300 @@
       placeholder: 'Enter text here…'
     };
 
-    // Initialize Quill editors
-    document.addEventListener('DOMContentLoaded', function () {
-      const editors = [
-        ['desrt_id', "Paste DESRT link here"],
-        ['details_assumptions', "Enter any other details or assumptions…"],
-        ['scope_lpd', "Enter scope details…"],
-        ['notes_lpd', "Enter notes…"],
-        ['scope_ftm', "Enter scope details…"],
-        ['notes_ftm', "Enter notes…"],
-        ['scope_scw', "Enter scope details…"],
-        ['notes_scw', "Enter notes…"],
-        ['scope_plm', "Enter scope details…"],
-        ['notes_plm', "Enter notes…"],
-        ['additional_requirements', "Enter additional requirements…"]
-      ];
+    let quillEditors = {};
+    let fallbackEditors = {};
+    const editorAutosizeState = new WeakMap();
+    const editorSyncTimers = {};
 
-      editors.forEach(([editorId, place_holder]) => {
-        console.log('Initializing editor:', editorId);
-        const container = document.getElementById(editorId + '_editor');
-        if (container) {
-          console.log('Found container for:', place_holder);
-          const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
-          quillEditors[editorId] = quill;
+    function getEditorContainerId (fieldId) {
+      return `${fieldId}_editor`;
+    }
 
-          // Sync content to hidden input on change
-          quill.on('text-change', function () {
-            const hiddenInput = document.getElementById(editorId);
-            hiddenInput.value = quill.root.innerHTML;
-          });
-        }
+    function isEditorEmpty (editor) {
+      if (!editor) return true;
+      const html = editor.innerHTML ?? '';
+      if (/<img\b/i.test(html)) return false;
+      const text = html
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/gi, ' ')
+        .trim();
+      return !text;
+    }
+
+    function updateEditorPlaceholder (editor) {
+      if (!editor?.classList?.contains('editor-inline')) return;
+      editor.classList.toggle('is-empty', isEditorEmpty(editor));
+    }
+
+    function getEditorNodes (el) {
+      if (!el) return { container: null, surface: null };
+      if (el.classList.contains('editor-inline')) {
+        return { container: null, surface: el };
+      }
+      if (el.classList.contains('ql-editor')) {
+        return { container: el.closest('.ql-container'), surface: el };
+      }
+      if (el.classList.contains('ql-container')) {
+        return { container: el, surface: el.querySelector('.ql-editor') };
+      }
+      const container = el.closest?.('.ql-container');
+      if (container) {
+        return { container, surface: container.querySelector('.ql-editor') };
+      }
+      return { container: null, surface: el };
+    }
+
+    function getEditorMinHeight (el) {
+      const surface = getEditorNodes(el).surface || el;
+      if (surface?.closest('.add-req-body')) return 96;
+      if (surface?.closest('.req-grid')) return 160;
+      return 100;
+    }
+
+    function getAutosizeState (el) {
+      let state = editorAutosizeState.get(el);
+      if (!state) {
+        state = { rafId: 0, lastHeight: null };
+        editorAutosizeState.set(el, state);
+      }
+      return state;
+    }
+
+    function setEditorHeight (el, heightPx) {
+      const { container, surface } = getEditorNodes(el);
+      const minH = getEditorMinHeight(surface || el);
+      const h = Math.max(minH, heightPx);
+      const px = `${h}px`;
+      if (surface) {
+        surface.style.minHeight = '0';
+        surface.style.height = px;
+      }
+      if (container) {
+        container.style.minHeight = `${minH}px`;
+        container.style.height = px;
+      }
+    }
+
+    function measureEditorHeight (el) {
+      const { container, surface } = getEditorNodes(el);
+      if (!surface) return getEditorMinHeight(el);
+      const minH = getEditorMinHeight(surface);
+      const prevSurface = surface.style.height;
+      const prevContainer = container?.style.height;
+      surface.style.height = 'auto';
+      if (container) container.style.height = 'auto';
+      const h = Math.max(minH, surface.scrollHeight);
+      surface.style.height = prevSurface;
+      if (container) container.style.height = prevContainer;
+      return h;
+    }
+
+    function applyEditorHeight (el, heightPx) {
+      const state = getAutosizeState(el);
+      if (state.lastHeight === heightPx) return;
+      state.lastHeight = heightPx;
+      setEditorHeight(el, heightPx);
+    }
+
+    function flushAutosizeEditor (el) {
+      if (!el) return;
+      applyEditorHeight(el, measureEditorHeight(el));
+    }
+
+    function queueEditorAutosize (el) {
+      if (!el) return;
+      const state = getAutosizeState(el);
+      if (state.rafId) return;
+      state.rafId = requestAnimationFrame(() => {
+        state.rafId = 0;
+        flushAutosizeEditor(el);
+      });
+    }
+
+    function queueSyncEditorToHidden (fieldId) {
+      clearTimeout(editorSyncTimers[fieldId]);
+      editorSyncTimers[fieldId] = setTimeout(() => {
+        delete editorSyncTimers[fieldId];
+        syncEditorToHidden(fieldId);
+      }, 150);
+    }
+
+    function onEditorContentChange (fieldId, editorEl) {
+      queueSyncEditorToHidden(fieldId);
+      if (editorEl?.classList?.contains('editor-inline')) {
+        updateEditorPlaceholder(editorEl);
+      }
+      queueEditorAutosize(editorEl);
+    }
+
+    function syncEditorToHidden (fieldId) {
+      const hidden = document.getElementById(fieldId);
+      if (!hidden) return;
+      const quill = quillEditors[fieldId];
+      if (quill) {
+        hidden.value = quill.root?.innerHTML ?? '';
+        return;
+      }
+      const fallback = fallbackEditors[fieldId];
+      if (fallback) hidden.value = fallback.innerHTML;
+    }
+
+    function syncAllEditors () {
+      EDITOR_FIELDS.forEach(([fieldId]) => syncEditorToHidden(fieldId));
+    }
+
+    function bindFallbackEditor (editor, fieldId, placeholder) {
+      if (editor.dataset.editorBound === '1') return;
+      editor.dataset.placeholder = placeholder;
+      editor.setAttribute('role', 'textbox');
+      editor.setAttribute('aria-multiline', 'true');
+
+      editor.addEventListener('input', () => onEditorContentChange(fieldId, editor));
+
+      editor.addEventListener('blur', () => {
+        clearTimeout(editorSyncTimers[fieldId]);
+        delete editorSyncTimers[fieldId];
+        syncEditorToHidden(fieldId);
+        updateEditorPlaceholder(editor);
+        flushAutosizeEditor(editor);
       });
 
-      // Initialize URL detection for textareas
+      editor.addEventListener('load', (e) => {
+        if (e.target instanceof HTMLImageElement && editor.contains(e.target)) {
+          queueEditorAutosize(editor);
+        }
+      }, true);
+
+      editor.dataset.editorBound = '1';
+    }
+
+    function bindQuillEditor (container, fieldId) {
+      const quill = quillEditors[fieldId];
+      if (!quill || !container) return;
+
+      if (container._quillTextChangeHandler) {
+        quill.off('text-change', container._quillTextChangeHandler);
+      }
+      container._quillTextChangeHandler = () => onEditorContentChange(fieldId, container);
+      quill.on('text-change', container._quillTextChangeHandler);
+
+      const qlEditor = quill.root;
+      if (qlEditor) {
+        qlEditor.addEventListener('load', (e) => {
+          if (e.target instanceof HTMLImageElement) {
+            queueEditorAutosize(container);
+          }
+        }, true);
+      }
+
+      flushAutosizeEditor(container);
+    }
+
+    function showEditorFallbackNotice () {
+      if (document.getElementById('editor-fallback-notice')) return;
+      const main = document.querySelector('.main');
+      if (!main) return;
+      const notice = document.createElement('p');
+      notice.id = 'editor-fallback-notice';
+      notice.className = 'editor-fallback-notice';
+      notice.setAttribute('role', 'status');
+      notice.textContent = 'Rich text editor unavailable. You can still type and paste content in the text fields below.';
+      main.insertBefore(notice, main.firstChild);
+    }
+
+    function initEditorFallbacks () {
+      quillEditors = {};
+      fallbackEditors = {};
+
+      EDITOR_FIELDS.forEach(([fieldId, placeholder]) => {
+        const container = document.getElementById(getEditorContainerId(fieldId));
+        const wrapper = container?.closest('.rich-text-wrapper');
+        const hidden = document.getElementById(fieldId);
+        if (!container || !wrapper || !hidden) return;
+
+        wrapper.classList.add('editor-fallback');
+        container.removeAttribute('id');
+        container.hidden = true;
+
+        const existingEditor = container.querySelector('.ql-editor');
+        const initial = hidden.value || existingEditor?.innerHTML || '';
+
+        wrapper.querySelector('.editor-inline')?.remove();
+
+        const editor = document.createElement('div');
+        editor.className = 'editor-inline';
+        editor.contentEditable = 'true';
+        editor.id = getEditorContainerId(fieldId);
+        editor.innerHTML = initial && initial !== EMPTY_EDITOR_HTML ? initial : EMPTY_EDITOR_HTML;
+        wrapper.insertBefore(editor, hidden);
+
+        bindFallbackEditor(editor, fieldId, placeholder);
+        syncEditorToHidden(fieldId);
+        updateEditorPlaceholder(editor);
+        flushAutosizeEditor(editor);
+
+        fallbackEditors[fieldId] = editor;
+      });
+
+      showEditorFallbackNotice();
+    }
+
+    function initQuillEditors () {
+      quillEditors = {};
+      fallbackEditors = {};
+
+      EDITOR_FIELDS.forEach(([fieldId, place_holder]) => {
+        const container = document.getElementById(getEditorContainerId(fieldId));
+        if (!container) return;
+
+        const wrapper = container.closest('.rich-text-wrapper');
+        wrapper?.querySelectorAll('.ql-toolbar').forEach(toolbar => toolbar.remove());
+        wrapper?.querySelector('.editor-inline')?.remove();
+
+        const existingEditor = container.querySelector('.ql-editor');
+        const existingHtml = existingEditor ? existingEditor.innerHTML : '';
+        const hidden = document.getElementById(fieldId);
+        const initialHtml = (hidden?.value && hidden.value !== EMPTY_EDITOR_HTML)
+          ? hidden.value
+          : existingHtml;
+
+        container.classList.remove('ql-snow');
+        container.hidden = false;
+        container.innerHTML = '<div class="ql-editor"></div>';
+
+        const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
+        quillEditors[fieldId] = quill;
+
+        if (initialHtml && initialHtml !== EMPTY_EDITOR_HTML) {
+          quill.root.innerHTML = initialHtml;
+        }
+
+        bindQuillEditor(container, fieldId);
+        syncEditorToHidden(fieldId);
+      });
+    }
+
+    function initEditors () {
+      if (typeof Quill !== 'undefined') {
+        try {
+          initQuillEditors();
+          return;
+        } catch (err) {
+          console.warn('Quill editor failed; using contenteditable fallback.', err);
+        }
+      } else {
+        console.warn('Quill is not available; using contenteditable fallback.');
+      }
+      initEditorFallbacks();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      restoreReviewStage();
+      initEditors();
       initializeUrlDetection();
+      updateTitle();
     });
 
     // ── Link Detection & Auto-Hyperlinking ──
@@ -1485,7 +1846,7 @@
 
     function detectAndHyperlinkUrl (element) {
       const pasted = element.querySelector('a');
-      console.log(pasted);
+      if (!pasted?.href) return;
       if (pasted.href.includes("designhub")) {
         const number = pasted.href.match(/\d{7}/)[0];
         pasted.textContent = "DESRT: " + number;
@@ -1495,7 +1856,7 @@
     function initializeUrlDetection () {
       // Attach event listeners to text inputs (not Quill editors)
       const inputElements = document.querySelectorAll(
-        'input[type="text"]:not([type="file"]):not([type="hidden"]), .proj-table textarea, .ql-editor'
+        'input[type="text"]:not([type="file"]):not([type="hidden"]), .proj-table textarea, .ql-editor, .editor-inline'
       );
 
       inputElements.forEach(element => {
@@ -1519,7 +1880,7 @@
           element.addEventListener('blur', function () {
             detectAndHyperlinkUrl(this);
           });
-        } else if (element.classList.contains('ql-editor')) {
+        } else if (element.classList.contains('ql-editor') || element.classList.contains('editor-inline')) {
           element.addEventListener('paste', function (e) {
             setTimeout(() => {
               detectAndHyperlinkUrl(this);
@@ -1549,10 +1910,29 @@
         else el.value = '';
       });
 
-      // Reset Quill editors
-      Object.keys(quillEditors).forEach(editorId => {
-        quillEditors[editorId].setContents([]);
-        document.getElementById(editorId).value = '';
+      // Reset rich text editors
+      EDITOR_FIELDS.forEach(([fieldId]) => {
+        const hidden = document.getElementById(fieldId);
+        if (hidden) hidden.value = '';
+
+        const quill = quillEditors[fieldId];
+        if (quill) {
+          quill.setContents([]);
+          const container = document.getElementById(getEditorContainerId(fieldId));
+          if (container) {
+            getAutosizeState(container).lastHeight = null;
+            flushAutosizeEditor(container);
+          }
+          return;
+        }
+
+        const fallback = fallbackEditors[fieldId];
+        if (fallback) {
+          fallback.innerHTML = EMPTY_EDITOR_HTML;
+          updateEditorPlaceholder(fallback);
+          getAutosizeState(fallback).lastHeight = null;
+          flushAutosizeEditor(fallback);
+        }
       });
 
       document.getElementById('file-name').textContent = '';
@@ -1563,34 +1943,180 @@
       document.querySelectorAll('.link-wrapper').forEach(wrapper => wrapper.remove());
     }
 
-    function submitForm () {
-      // Sync all Quill editors to hidden inputs before submission
-      Object.keys(quillEditors).forEach(editorId => {
-        const hiddenInput = document.getElementById(editorId);
-        hiddenInput.value = quillEditors[editorId].root.innerHTML;
+    function flushPendingEditorSync () {
+      Object.keys(editorSyncTimers).forEach((fieldId) => {
+        clearTimeout(editorSyncTimers[fieldId]);
+        delete editorSyncTimers[fieldId];
       });
+      syncAllEditors();
+    }
 
-      // Collect values for demonstration
-      const data = {};
-      document.querySelectorAll('[name]:not([type="hidden"])').forEach(el => {
-        if (el.getAttribute('type') !== 'hidden') {
-          data[el.name] = el.value;
+    function findCloneControl (clone, live) {
+      if (live.id) {
+        try {
+          const byId = clone.querySelector(`#${CSS.escape(live.id)}`);
+          if (byId) return byId;
+        } catch (_) { /* invalid id */ }
+      }
+      const type = (live.getAttribute('type') || '').toLowerCase();
+      const name = live.getAttribute('name');
+      if (name && (type === 'radio' || type === 'checkbox')) {
+        try {
+          return clone.querySelector(
+            `input[type="${type}"][name="${CSS.escape(name)}"][value="${CSS.escape(live.value)}"]`
+          );
+        } catch (_) { /* */ }
+      }
+      return null;
+    }
+
+    function syncReviewStageHidden () {
+      const hidden = document.getElementById('snapshot_review_stage');
+      if (!hidden) return;
+      hidden.value = getRadioValue('review_stage') || 'Unconfirmed';
+    }
+
+    function bakeReviewStageIntoClone (clone) {
+      const value = getRadioValue('review_stage') || 'Unconfirmed';
+      clone.querySelectorAll('input[name="review_stage"]').forEach((radio) => {
+        if (radio.getAttribute('value') === value) {
+          radio.setAttribute('checked', 'checked');
+        } else {
+          radio.removeAttribute('checked');
         }
       });
+      const hidden = clone.querySelector('#snapshot_review_stage');
+      if (hidden) hidden.setAttribute('value', value);
+    }
 
-      // Also include hidden inputs with editor content
-      document.querySelectorAll('input[type="hidden"]').forEach(el => {
-        if (el.name && el.value) {
-          data[el.name] = el.value;
-        }
+    function restoreReviewStage () {
+      const hidden = document.getElementById('snapshot_review_stage');
+      const value = hidden?.value || getRadioValue('review_stage');
+      if (!value) return;
+      document.querySelectorAll('input[name="review_stage"]').forEach((radio) => {
+        radio.checked = radio.value === value;
       });
+      if (hidden) hidden.value = value;
+    }
 
-      console.log('Form data:', data);
+    function bakeEditorContentIntoClone (clone) {
+      EDITOR_FIELDS.forEach(([fieldId]) => {
+        const hidden = document.getElementById(fieldId);
+        if (!hidden?.value) return;
 
-      // Save local copy of HTML file with form data
-      saveFormAsHTML(data);
+        let cloneHidden;
+        try {
+          cloneHidden = clone.querySelector(`#${CSS.escape(fieldId)}`);
+        } catch (_) {
+          return;
+        }
+        if (cloneHidden) cloneHidden.setAttribute('value', hidden.value);
 
-      alert('Form submitted successfully!\n\nLocal copy saved to your computer.\n\nIn a live environment this would also POST to your backend.\n\nCheck console for full form data including rich text content.');
+        let cloneEditorContainer;
+        try {
+          cloneEditorContainer = clone.querySelector(`#${CSS.escape(getEditorContainerId(fieldId))}`);
+        } catch (_) {
+          return;
+        }
+        if (!cloneEditorContainer) return;
+
+        const surface = cloneEditorContainer.querySelector('.ql-editor')
+          || (cloneEditorContainer.classList.contains('editor-inline') ? cloneEditorContainer : null)
+          || cloneEditorContainer.closest('.rich-text-wrapper')?.querySelector('.editor-inline');
+        if (surface) surface.innerHTML = hidden.value;
+      });
+    }
+
+    function getSnapshotBaseName () {
+      const stage = getRadioValue('review_stage') || 'Load';
+      const desrtHidden = document.getElementById('desrt_id');
+      let desrt = '';
+      if (desrtHidden?.value) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = desrtHidden.value;
+        desrt = (tmp.textContent || '').trim();
+      }
+      const raw = desrt || `${stage}_Load_Requirements`;
+      return raw.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
+    }
+
+    let toastTimer = 0;
+
+    function showToast (message, type) {
+      let toast = document.getElementById('form-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'form-toast';
+        toast.className = 'form-toast';
+        toast.setAttribute('role', 'status');
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.classList.toggle('form-toast--error', type === 'error');
+      toast.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2500);
+    }
+
+    function saveSnapshot () {
+      const btn = document.getElementById('saveSnapshotBtn');
+      if (btn) btn.disabled = true;
+
+      try {
+        flushPendingEditorSync();
+        syncReviewStageHidden();
+
+        const clone = document.documentElement.cloneNode(true);
+
+        for (const live of document.querySelectorAll('input, textarea, select')) {
+          const el = findCloneControl(clone, live);
+          if (!el) continue;
+          if (el.tagName === 'TEXTAREA') {
+            el.textContent = live.value;
+            continue;
+          }
+          if (el.tagName === 'SELECT') {
+            Array.from(el.options).forEach(o => o.removeAttribute('selected'));
+            if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
+            continue;
+          }
+          const type = el.getAttribute('type')?.toLowerCase();
+          if (type === 'radio' || type === 'checkbox') {
+            if (live.checked) el.setAttribute('checked', '');
+            else el.removeAttribute('checked');
+            continue;
+          }
+          el.setAttribute('value', live.value);
+        }
+
+        bakeReviewStageIntoClone(clone);
+        bakeEditorContentIntoClone(clone);
+
+        const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const safe = getSnapshotBaseName();
+        const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
+        const a = document.createElement('a');
+        if (window.location.protocol === 'file:') {
+          const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
+          if (!filename) {
+            URL.revokeObjectURL(url);
+            return;
+          }
+          a.download = filename.endsWith('.html') ? filename : `${filename}.html`;
+        } else {
+          a.download = `${safe}_snapshot_${ts}.html`;
+        }
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('Snapshot saved', 'success');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
     function getRadioValue (name) {
@@ -1605,7 +2131,7 @@
       signature.style.display = isConfirmed ? 'flex' : 'none';
       titleEl.textContent = isConfirmed ? 'Confirmed' : 'Unconfirmed';
       limitation_2.innerHTML = isConfirmed
-        ? 'This confirmed load form is valid for up to <strong>2 years</strong>.'
+        ? 'This confirmed load form is valid for up to <strong>18 months</strong>.'
         : 'Once the customer confirms their detailed load information, a <strong>Confirmed Load</strong> DESRT Request is required to determine detailed system requirements.';
 
       limitation_3.innerHTML = isConfirmed
@@ -1618,56 +2144,10 @@
     }
 
     function handleGlobalChange (e) {
-      console.log(e.target.name);
       if (e.target.name === 'review_stage') {
+        syncReviewStageHidden();
         updateTitle();
       }
-    }
-
-
-    function saveFormAsHTML (data) {
-      const clone = document.documentElement.cloneNode(true);
-      const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
-      const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
-      for (let i = 0; i < liveControls.length; i++) {
-        const live = liveControls[i], el = cloneControls[i];
-        if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
-        if (el.tagName === 'SELECT') {
-          Array.from(el.options).forEach(o => o.removeAttribute('selected'));
-          if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
-          continue;
-        }
-        const type = el.getAttribute('type')?.toLowerCase();
-        if (type === 'radio' || type === 'checkbox') {
-          if (live.checked) el.setAttribute('checked', '');
-          else el.removeAttribute('checked');
-          continue;
-        }
-        el.setAttribute('value', live.value);
-      }
-
-      const progressClone = clone.querySelector('#progressBar');
-      if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
-
-      const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
-      const a = document.createElement('a');
-      // Detect if this is an already-saved snapshot file (opened locally)
-      if (window.location.protocol === 'file:') {
-        // If so, trigger a download with the same name to overwrite it
-        const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
-        const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
-        a.download = cleanFilename;
-      }
-      a.href = url;
-      a.download = `Load_Requirements_${ts}.html`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      this.toast('Snapshot saved', 'success');
     }
 
     attachEventListeners();
