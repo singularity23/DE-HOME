@@ -646,7 +646,8 @@
     }
 
     input:valid,
-    select:valid {
+    select:valid,
+    select.field-input:disabled {
       background-color: var(--valid);
     }
 
@@ -666,6 +667,7 @@
       min-height: var(--touch-min);
     }
 
+
     select.field-input {
       cursor: pointer;
       min-height: var(--touch-min);
@@ -673,6 +675,12 @@
 
     select.field-input:invalid {
       color: var(--color-tertiary);
+    }
+
+    select.field-input:disabled:has(option:checked[value=""]) {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: var(--surface);
     }
 
     select.field-input option {
@@ -698,6 +706,7 @@
     input.field-input:valid+.required-field-underline,
     input.field-input:focus+.required-field-underline,
     select.field-input:valid+.required-field-underline,
+    select.field-input:disabled+.required-field-underline,
     select.field-input:focus+.required-field-underline,
     .role-selector:has(input[type='radio']:checked)+.required-field-underline,
     .risk-row:has(.risk-btn.active)+.required-field-underline,
@@ -711,6 +720,12 @@
       opacity: 0.5;
       background-color: var(--muted-bg);
       border: 1px solid color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
+      cursor: not-allowed;
+    }
+
+    select:disabled {
+      opacity: 1;
+      cursor: not-allowed;
     }
 
     .meta-cell:has(input:disabled) {
@@ -1416,155 +1431,6 @@
     /* Signature clear button always visible */
 
 
-
-
-    /* --------------------------------
-    18. Print Styles
-    -------------------------------- */
-    @media print {
-      :root {
-        --space-1: 5px;
-        --space-2: 5px;
-        --space-3: 5px;
-        --space-4: 5px;
-        --space-5: 5px;
-        --space-6: 5px;
-      }
-
-      @page {
-        size: letter portrait;
-        margin: 0.15in;
-      }
-
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        background-clip: padding-box !important;
-      }
-
-      body {
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        max-width: 100%;
-      }
-
-      .shell {
-        max-width: 100%;
-        margin: 10px;
-      }
-
-      .sec-head {
-        padding: 5px 15px;
-      }
-
-      .check-row {
-        padding: 2px 15px;
-      }
-
-      .card,
-      .header {
-        margin-bottom: 5px;
-      }
-
-      /* Expand all accordion bodies for print */
-      .sec-body {
-        display: block !important;
-
-      }
-
-      div[id$='rows'] {
-        page-break-inside: avoid;
-      }
-
-      .sec-head .chevron {
-        display: none !important;
-      }
-
-      /* Hide non-printable elements */
-      .sec-badge,
-      .actions,
-      .progress-strip,
-      .sec-num,
-      .btn-clear {
-        display: none !important;
-      }
-
-      /* Improve page breaks */
-      .card {
-        page-break-inside: avoid;
-      }
-
-      .comments-grid,
-      .sig-grid {
-        page-break-inside: avoid;
-      }
-
-      .notice {
-        page-break-inside: avoid;
-      }
-
-      /* Remove shadows and transitions */
-      * {
-        box-shadow: none !important;
-        transition: none !important;
-      }
-
-      a {
-        color: var(--text) !important;
-        text-decoration: underline;
-      }
-
-      /* Hide unchecked radio labels */
-      input[type='radio']:not(:checked)+label,
-      input[type='checkbox']:not(:checked)+label,
-      .risk-btn:not(.active) {
-        display: none !important;
-      }
-
-      .meta-grid {
-        padding-bottom: 5px !important;
-      }
-
-      .meta-cell,
-      .sig-grid {
-        padding-bottom: 0px !important;
-      }
-
-      .field-input::placeholder {
-        color: transparent;
-      }
-
-      .meta-cell:has(input:disabled) {
-        display: none;
-      }
-
-      input:valid,
-      select:valid {
-        background-color: var(--surface) !important;
-      }
-
-      .signature-pad-tabs,
-      .btn-sig-tab {
-        display: none;
-      }
-
-
-
-      /* Disable animations */
-      @keyframes fadeUp {
-        from {
-          opacity: 1;
-          transform: none;
-        }
-
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-    }
-
     /* --------------------------------
     19. Comments Image Gallery
     -------------------------------- */
@@ -1864,20 +1730,20 @@
 
     /* Quill Rich Text Editor Styles */
     .ql-toolbar {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       border-bottom: none;
       background: var(--surface-base);
       border-radius: 0;
     }
 
     .ql-toolbar.ql-snow {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       box-sizing: border-box;
       padding: 8px;
     }
 
     .comments-area .ql-container {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
@@ -1924,11 +1790,16 @@
       font-style: italic;
     }
 
+    .ql-toolbar.ql-snow+.ql-container.ql-snow {
+      border-top: 1px solid var(--border-soft);
+    }
+
     .ql-toolbar.ql-snow {
       padding: 0;
       display: flex;
       align-items: center;
-      justify-content: space-evenly;
+      justify-content: center;
+      border-bottom: 0px;
     }
 
     .ql-toolbar.ql-snow .ql-formats {
@@ -1992,6 +1863,156 @@
       border: 1px solid var(--low-border);
       color: var(--surface-base);
       background-color: var(--low);
+    }
+
+    /* --------------------------------
+    18. Print Styles
+    -------------------------------- */
+    @media print {
+      :root {
+        --space-1: 5px;
+        --space-2: 5px;
+        --space-3: 5px;
+        --space-4: 5px;
+        --space-5: 5px;
+        --space-6: 5px;
+      }
+
+      @page {
+        size: letter portrait;
+        margin: 0.15in;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background-clip: padding-box !important;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .shell {
+        max-width: 100%;
+        margin: 10px;
+      }
+
+      .sec-head {
+        padding: 5px 15px;
+      }
+
+      .check-row {
+        padding: 2px 15px;
+      }
+
+      .card,
+      .header {
+        margin-bottom: 5px;
+      }
+
+      /* Expand all accordion bodies for print */
+      .sec-body {
+        display: block !important;
+
+      }
+
+      div[id$='rows'] {
+        page-break-inside: avoid;
+      }
+
+      .sec-head .chevron {
+        display: none !important;
+      }
+
+      /* Hide non-printable elements */
+      .sec-badge,
+      .actions,
+      .progress-strip,
+      .sec-num,
+      .btn-clear {
+        display: none !important;
+      }
+
+      /* Improve page breaks */
+      .card {
+        page-break-inside: avoid;
+      }
+
+      .comments-grid,
+      .sig-grid {
+        page-break-inside: avoid;
+      }
+
+      .notice {
+        page-break-inside: avoid;
+      }
+
+      /* Remove shadows and transitions */
+      * {
+        box-shadow: none !important;
+        transition: none !important;
+      }
+
+      a {
+        color: var(--text) !important;
+        text-decoration: underline;
+      }
+
+      /* Hide unchecked radio labels */
+      input[type='radio']:not(:checked)+label,
+      input[type='checkbox']:not(:checked)+label,
+      .risk-btn:not(.active) {
+        display: none !important;
+      }
+
+      .meta-grid {
+        padding-bottom: 5px !important;
+      }
+
+      .meta-cell,
+      .sig-grid {
+        padding-bottom: 0px !important;
+      }
+
+      .field-input::placeholder {
+        color: transparent;
+      }
+
+      .meta-cell:has(input:disabled) {
+        display: none;
+      }
+
+      input:valid,
+      select:valid {
+        background-color: var(--surface) !important;
+      }
+
+      .signature-pad-tabs,
+      .btn-sig-tab {
+        display: none;
+      }
+
+      .ql-toolbar.ql-snow {
+        display: none;
+      }
+
+
+      /* Disable animations */
+      @keyframes fadeUp {
+        from {
+          opacity: 1;
+          transform: none;
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
     }
   </style>
 
@@ -2087,8 +2108,8 @@
             </div>
             <div class="meta-cell review-level-cell">
               <label class="field-label" for="minCheckLevel">Minimum Check / Review Level</label>
-              <select class="field-input" id="minCheckLevel" required>
-                <option value disabled selected>Select level…</option>
+              <select class="field-input" id="minCheckLevel" disabled>
+                <option value selected>Select Risk Level above…</option>
                 <option>Self-Check</option>
                 <option>Check</option>
                 <option>Peer Review</option>
@@ -2114,7 +2135,7 @@
 
       <!-- Section 1: Self-Check -->
       <div class="card sc">
-        <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
+        <div class="sec-head open" id="sec1-head" tabindex="0" aria-expanded="true" aria-controls="s1">
           <div class="sec-left">
             <div class="sec-num" id="snum-1">1</div>
             <span class="sec-title">Self-Check</span>
@@ -2196,7 +2217,7 @@
 
       <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
       <div class="card hidden" id="card-ds">
-        <div class="sec-head" id="sec2-head" tabindex="2" aria-expanded="false" aria-controls="s2">
+        <div class="sec-head" id="sec2-head" tabindex="0" aria-expanded="false" aria-controls="s2">
           <div class="sec-left">
             <div class="sec-num" id="snum-2">2</div>
             <span class="sec-title">Direct Supervision</span>
@@ -2217,7 +2238,7 @@
 
       <!-- Section 3: Check -->
       <div class="card hidden" id="card-ch">
-        <div class="sec-head" id="sec3-head" tabindex="3" aria-expanded="false" aria-controls="s3">
+        <div class="sec-head" id="sec3-head" tabindex="0" aria-expanded="false" aria-controls="s3">
           <div class="sec-left">
             <div class="sec-num" id="snum-3">3</div>
             <span class="sec-title">Check</span>
@@ -2353,7 +2374,7 @@
           <div class="sec-banner">
             <div class="notice warn" id="prType1Notice" role="note">
               <span class="material-symbols-sharp"> warning </span>
-              <span><b>Note:</b> This section is <b>not</b> a Type 1 High Risk Work Independent Review.</span>
+              <span><b>Note:</b> This section is used only when PoR wants an extra review by another peer.</span>
             </div>
           </div>
           <div id="pr-rows" data-section="pr"></div>
@@ -2456,7 +2477,7 @@
 
       <!-- Section 5: Final Signatures -->
       <div class="card hidden" id="card-final">
-        <div class="sec-head" id="sec5-head" tabindex="5" aria-expanded="false" aria-controls="s5">
+        <div class="sec-head" id="sec5-head" tabindex="0" aria-expanded="false" aria-controls="s5">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div>
             <span class="sec-title">Appoint Tier 1 Reviewer &amp; Team Lead Signatures</span>
@@ -2479,10 +2500,10 @@
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
-                <label class="field-label" for="fT1">Assigned Type 1 Reviewer <span
+                <label class="field-label" for="fT1_name">Assigned Type 1 Reviewer <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1" type="text" placeholder="Full name" autocomplete="name" required
-                  aria-required="true" data-testid="ft1-name">
+                <input class="field-input" id="fT1_name" type="text" placeholder="Full name" autocomplete="name"
+                  required aria-required="true" data-testid="ft1-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2529,6 +2550,123 @@
                 </div>
               </div>
               <input type="hidden" id="fT1_sig_data" name="fT1_sig_data">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Section 6: Independent Review -->
+
+      <div class="card hidden" id="card-ir">
+        <div class="sec-head" id="sec6-head" tabindex="0" aria-expanded="false" aria-controls="s6">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-6">6</div>
+            <span class="sec-title">Independent Structural Review</span>
+            <span class="sec-badge" id="badge-6">0 / {ir_number}</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6">Clear</button>
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body" id="s6">
+
+          <div id="ir-rows" data-section="ir"></div>
+          <div class="comments-grid">
+            <div class="comments-cell" id="commentsCell5">
+              <label class="field-label" id="for_id_reviewerComments">Reviewer Comments &amp; Corrections</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="id_reviewerComments-editor">
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
+                  </div>
+                  <input type="hidden" name="id_reviewerComments" id="id_reviewerComments">
+                </div>
+                <div class="comments-image-gallery" id="id_reviewerComments-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="comments-cell" id="commentsCell6">
+              <label class="field-label" id="for_id_engineerResponse_2">Engineer Response</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="id_engineerResponse_2-editor">
+                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
+                  </div>
+                  <input type="hidden" name="id_engineerResponse_2" id="id_engineerResponse_2">
+                </div>
+                <div class="comments-image-gallery" id="id_engineerResponse_2-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
+            <div class="pill-group"><input type="radio" name="ir_c" id="ir_c_yes" value="yes" data-prefix="ir"><label
+                for="ir_c_yes">Yes</label><input type="radio" name="ir_c" id="ir_c_no" value="no"
+                data-prefix="ir"><label for="ir_c_no">No</label><input type="radio" name="ir_c" id="ir_c_na" value="na"
+                data-prefix="ir"><label for="ir_c_na">N/A</label></div>
+          </div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ir_date">Date <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="ir_date" type="date" autocomplete="off" required aria-required="true"
+                  data-testid="ir-date">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ir_name">Name (Independent Reviewer) <span
+                    class="sr-only">(required)</span></label>
+                <input class="field-input" id="ir_name" type="text" placeholder="Type full name" autocomplete="name"
+                  required aria-required="true" data-testid="ir-name">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label" id="ir_sig">Signature (Independent Reviewer) <span
+                  class="sr-only">(required)</span>
+              </div>
+              <div class="signature-pad-container" id="irSigContainer" data-prefix="ir">
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="irSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="irSigDrawTab" tabindex="-1"
+                    data-testid="ir-sig-draw" disabled>
+                    <span class="material-symbols-sharp">signature</span>
+                  </button>
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="irSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="irSigUploadTab" tabindex="0"
+                    data-testid="ir-sig-upload" disabled>
+                    <span class="material-symbols-sharp">upload</span>
+                  </button>
+                </div>
+                <div class="sig-tab-content" id="irSigDrawTab" role="tabpanel" aria-labelledby="irSigDrawBtn"
+                  tabindex="-1">
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="ir" data-testid="ir-sig-surface">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="ir" data-testid="ir-sig-open" id="irSigPad" disabled>
+                      Open signature pad
+                    </a>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="ir" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="sig-tab-content active" id="irSigUploadTab" role="tabpanel" aria-labelledby="irSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="irSigUpload" accept="image/*" hidden data-testid="ir-sig-file">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ir"
+                      data-testid="ir-sig-choose" id="irSigImg" disabled>
+                      Choose Signature Image
+                    </button>
+                    <div id="irSigPreview" class="sig-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="ir_sig_data" name="ir_sig_data">
             </div>
           </div>
         </div>
@@ -2628,6 +2766,16 @@
           "Have opportunities for innovation or cost savings been identified?"
         ];
 
+        static IR_ITEMS = [
+          "Design code loadings and serviceability limits.",
+          "Material specifications and geotechnical recommendations. ",
+          "Concept and integrity of the gravity load resisting system.",
+          "Concept and integrity of the lateral load resisting system (e.g., wind, seismic, lateral earth pressures).",
+          "Drawing completeness and continuity of load paths.",
+          "Design check of representative structural elements.",
+          "Review of representative structural details.",
+        ];
+
         static RISK_MAP = {
           low: { sc8: 'yes', sc10: 'no' },
           medium: { sc8: 'no', sc10: 'no' },
@@ -2643,15 +2791,18 @@
           ['checkerComments', 'Ctrl + V to paste screenshots...'],
           ['engineerResponse', 'Enter engineer response...'],
           ['reviewerComments', 'Ctrl + V to paste screenshots...'],
-          ['engineerResponse_2', 'Enter engineer response 2...']
+          ['engineerResponse_2', 'Enter engineer response 2...'],
+          ['id_reviewerComments', 'Ctrl + V to paste screenshots...'],
+          ['id_engineerResponse_2', 'Enter engineer response 2...']
         ];
 
         static COMMENT_PAIRS = [
           ['checkerComments-editor', 'engineerResponse-editor'],
-          ['reviewerComments-editor', 'engineerResponse_2-editor']
+          ['reviewerComments-editor', 'engineerResponse_2-editor'],
+          ['id_reviewerComments-editor', 'id_engineerResponse_2-editor']
         ];
 
-        static SIG_PREFIXES = ['sc', 'ch', 'pr', 'fT1'];
+        static SIG_PREFIXES = ['sc', 'ch', 'pr', 'fT1', 'ir'];
 
         static RISK_TO_CHECK_LEVEL = {
           low: 'Self-Check',
@@ -2659,7 +2810,7 @@
           high: 'Type 1 Independent Review Required'
         };
 
-        static SECTION_NUM = { sc: '1', ds: '2', ch: '3', pr: '4' };
+        static SECTION_NUM = { sc: '1', ds: '2', ch: '3', pr: '4', ir: '6' };
 
         static EMPTY_EDITOR_HTML = '<p><br></p>';
 
@@ -2694,6 +2845,7 @@
             // Work info
             workTitle: get('workTitle'),
             engineer: get('engineer'),
+            revision: get('revision'),
             checker: get('checker'),
             minCheckLevel: get('minCheckLevel'),
             riskBtns: document.querySelectorAll('.risk-btn'),
@@ -2706,11 +2858,15 @@
             prCYes: get('pr_c_yes'),
             prCNo: get('pr_c_no'),
             prCNa: get('pr_c_na'),
+            irCYes: get('ir_c_yes'),
+            irCNo: get('ir_c_no'),
+            irCNa: get('ir_c_na'),
             // Cards
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
             cardPr: get('card-pr'),
             cardFinal: get('card-final'),
+            cardIr: get('card-ir'),
             // Notices
             chNotice: get('chNotice'),
             globalNotice: get('globalNotice'),
@@ -2723,14 +2879,18 @@
             badge2: get('badge-2'), num2: get('snum-2'),
             badge3: get('badge-3'), num3: get('snum-3'),
             badge4: get('badge-4'), num4: get('snum-4'),
+            badge6: get('badge-6'), num6: get('snum-6'),
             // Row containers
             scRows: get('sc-rows'),
             dsRows: get('ds-rows'),
             chRows: get('ch-rows'),
             prRows: get('pr-rows'),
+            irRows: get('ir-rows'),
             // Signature fields
             scName: get('sc_name'),
             chName: get('ch_name'),
+            fT1Name: get('fT1_name'),
+            irName: get('ir_name'),
             // Dynamic labels
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
@@ -2746,12 +2906,16 @@
             s3Body: get('s3'), s3Head: get('sec3-head'),
             s4Body: get('s4'), s4Head: get('sec4-head'),
             s5Body: get('s5'), s5Head: get('sec5-head'),
+            s6Body: get('s6'), s6Head: get('sec6-head'),
+
             //btns
             savePdf: get('saveAsPdfBtn'),
             chSigImg: get('chSigImg'),
             chSigPad: get('chSigPad'),
             prSigImg: get('prSigImg'),
-            prSigPad: get('prSigPad')
+            prSigPad: get('prSigPad'),
+            irSigImg: get('irSigImg'),
+            irSigPad: get('irSigPad')
           };
         }
 
@@ -2761,7 +2925,8 @@
             { rowsId: '#sc-rows', rowsEl: this.elements.scRows, count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc', cardEl: card('card-sc') },
             { rowsId: '#ds-rows', rowsEl: this.elements.dsRows, count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds', cardEl: card('card-ds') },
             { rowsId: '#ch-rows', rowsEl: this.elements.chRows, count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch', cardEl: card('card-ch') },
-            { rowsId: '#pr-rows', rowsEl: this.elements.prRows, count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', cardEl: card('card-pr') }
+            { rowsId: '#pr-rows', rowsEl: this.elements.prRows, count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', cardEl: card('card-pr') },
+            { rowsId: '#ir-rows', rowsEl: this.elements.irRows, count: CheckForm.IR_ITEMS.length, badge: this.elements.badge6, num: this.elements.num6, label: '6', cardId: 'card-ir', cardEl: card('card-ir') }
           ];
         }
 
@@ -2876,6 +3041,7 @@
           this.clearEditorContent(root);
           root.querySelectorAll('.comments-image-gallery').forEach((g) => g.replaceChildren());
           this.syncAllComments();
+          this.syncMinCheckLevelLock();
         }
 
         handleCommentFieldEvent (target) {
@@ -2923,6 +3089,7 @@
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
           this.initCommentEditors();
+          this.syncMinCheckLevelLock();
         }
 
         buildAllRows () {
@@ -2930,6 +3097,8 @@
           this.buildRows(this.elements.dsRows, 'ds', CheckForm.DS_ITEMS);
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
+          this.buildRows(this.elements.irRows, 'ir', CheckForm.IR_ITEMS);
+
           this.cacheRowRadios();
         }
 
@@ -3308,7 +3477,6 @@
               toolbar: [
                 ['bold', 'italic', 'underline'],
                 [{ 'list': 'ordered' }],
-                [{ 'header': [1, 2, 3, false] }],
                 ['link'],
                 ['clean']
               ]
@@ -3748,6 +3916,7 @@
           document.querySelectorAll('.sig-upload-trigger').forEach((trigger) => {
             const prefix = trigger.getAttribute('data-prefix');
             if (!prefix) return;
+            console.log(prefix);
             const uploadInput = document.getElementById(`${prefix}SigUpload`);
             const container = document.getElementById(`${prefix}SigContainer`);
             const uploadArea = container?.querySelector('.sig-upload-area');
@@ -3857,6 +4026,8 @@
             clearSec3Btn: () => this.clearSection('s3'),
             clearSec4Btn: () => this.clearSection('s4'),
             clearSec5Btn: () => this.clearSection('s5'),
+            clearSec6Btn: () => this.clearSection('s6'),
+
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
@@ -3904,7 +4075,7 @@
           this.showRiskConsistencyNotices();
 
           // Signature gates are driven by the *_c radios only.
-          if (name === 'ch_c' || name === 'pr_c') {
+          if (name === 'ch_c' || name === 'pr_c' || name === 'ir_c') {
             const prefix = radio.getAttribute('data-prefix');
             if (prefix) this.signatureGate_apply(prefix);
             return;
@@ -3926,6 +4097,9 @@
             this.syncLinkedFields(target, this.elements.scName, this.elements.engineer);
           } else if ((target.id === 'checker' || target.id === 'ch_name') && !this.elements.cardCh.classList.contains('hidden')) {
             this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
+          }
+          else if ((target.id === 'fT1_name' || target.id === 'ir_name') && !this.elements.cardIr.classList.contains('hidden')) {
+            this.syncLinkedFields(target, this.elements.irName, this.elements.fT1Name);
           }
 
           const commentEditor = this.resolveCommentEditor(target);
@@ -3977,8 +4151,14 @@
             this.elements.minCheckLevel.value = checkLevel;
             this.elements.minCheckLevel.dispatchEvent(new Event('change', { bubbles: true }));
           }
+          this.syncMinCheckLevelLock();
           this.showRiskConsistencyNotices();
           this.updateProgress();
+        }
+
+        syncMinCheckLevelLock () {
+          const locked = true;
+          this.elements.minCheckLevel.disabled = locked;
         }
 
         getActiveRiskLevel () {
@@ -4068,6 +4248,8 @@
           // Current behavior: expand peer review when checklist has a "No" OR min level explicitly set to Peer Review.
           const openS4 = chHasNo || minLevel === 'Peer Review';
 
+          const openS6 = isHighRisk || minLevel === 'Type 1 Independent Review Required'; // gated behind final section for now, but may want to surface earlier
+
           // Current behavior: warning is tied to checklist "No" answers (not ch_c).
           const showChNotice = chHasNo;
 
@@ -4077,6 +4259,7 @@
             showCheck,
             showPeer,
             openS4,
+            openS6,
             showChNotice,
             finalShown
           };
@@ -4095,6 +4278,10 @@
 
           this.elements.cardFinal.classList.toggle('hidden', !state.finalShown);
           this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
+          console.log('Applying visibility state:', state);
+
+          this.elements.cardIr.classList.toggle('hidden', !state.finalShown);
+          if (state.openS6) this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, true);
         }
 
         syncCheckWarning () {
@@ -4204,6 +4391,7 @@
               answered += counts.get(s.rowsId) ?? 0;
             }
           });
+          console.log(answered, total)
           const pct = total ? Math.round((answered / total) * 100) : 0;
           const fullyComplete = pct === 100;
           this.elements.progressStrip.classList.toggle('completed', fullyComplete);
@@ -4216,7 +4404,7 @@
         // ---------- SignatureGate adapter (real seam) ----------
         isSignatureEnabledByComments (prefix) {
           // Only CH and PR signatures are gated by the "addressed?" radios.
-          if (prefix !== 'ch' && prefix !== 'pr') return true;
+          if (prefix !== 'ch' && prefix !== 'pr' && prefix !== 'ir') return true;
           const yes = this.elements[`${prefix}CYes`];
           const na = this.elements[`${prefix}CNa`];
           return !!(yes?.checked || na?.checked);
@@ -4338,7 +4526,14 @@
             this.setSignatureEnabled(prefix, false);
           }
 
+          if (sectionId === 's6') {
+            const prefix = 'ir';
+            this.setSignatureEnabled(prefix, false);
+          }
+
           this.syncCommentsHeights();
+          this.restoreDefaults();
+
           this.toast('Section cleared', 'info');
         }
 
@@ -4371,7 +4566,13 @@
           this.updateProgress();
           this.syncAllComments();
           this.syncCommentsHeights();
+          this.restoreDefaults();
           this.toast('Form reset', 'info');
+        }
+
+        restoreDefaults () {
+          this.elements.revision.value = '0';
+          this.elements.scRoleEng.checked = true;
         }
 
         saveSnapshot () {
