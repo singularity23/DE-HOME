@@ -1865,6 +1865,23 @@
       background-color: var(--low);
     }
 
+    .seal {
+      width: 80px;
+      height: 80px;
+      border: 1px dashed var(--border-soft);
+      border-radius: 50%;
+      display: flex;
+      margin: 0 auto;
+      justify-content: center;
+      align-items: center;
+      align-self: anchor-center;
+      font-size: 0.7rem;
+      text-align: center;
+      background: var(--bg);
+    }
+
+
+
     /* --------------------------------
     18. Print Styles
     -------------------------------- */
@@ -1887,6 +1904,14 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         background-clip: padding-box !important;
+      }
+
+      .seal {
+        display: none;
+      }
+
+      .card:not(:has(.open)) {
+        display: none;
       }
 
       body {
@@ -1987,13 +2012,19 @@
       }
 
       input:valid,
-      select:valid {
+      select:valid,
+      select:disabled {
         background-color: var(--surface) !important;
       }
 
       .signature-pad-tabs,
-      .btn-sig-tab {
+      .btn-sig-tab,
+      .btn-sig-upload {
         display: none;
+      }
+
+      .sig-tab-content {
+        border-left: 0px;
       }
 
       .ql-toolbar.ql-snow {
@@ -2374,7 +2405,9 @@
           <div class="sec-banner">
             <div class="notice warn" id="prType1Notice" role="note">
               <span class="material-symbols-sharp"> warning </span>
-              <span><b>Note:</b> This section is used only when PoR wants an extra review by another peer.</span>
+              <span><b>Note:</b> This section applies when the PoR requests an <b>additional</b> peer review by another
+                professional engineer, <b>at any risk level</b>. <b>NOT</b> for the Type 1 High Risk Work Independent
+                Review.</span>
             </div>
           </div>
           <div id="pr-rows" data-section="pr"></div>
@@ -2475,12 +2508,15 @@
         </div>
       </div>
 
-      <!-- Section 5: Final Signatures -->
-      <div class="card hidden" id="card-final">
+
+      <!-- Section 5: Independent Review -->
+
+      <div class="card hidden" id="card-ir">
         <div class="sec-head" id="sec5-head" tabindex="0" aria-expanded="false" aria-controls="s5">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div>
-            <span class="sec-title">Appoint Tier 1 Reviewer &amp; Team Lead Signatures</span>
+            <span class="sec-title">Independent Structural Review</span>
+            <span class="sec-badge" id="badge-5">0 / {ir_number}</span>
           </div>
           <div class="sec-right">
             <button class="btn-clear no-print" type="button" id="clearSec5Btn" data-testid="clear-sec5">Clear</button>
@@ -2491,6 +2527,85 @@
           </div>
         </div>
         <div class="sec-body" id="s5">
+
+          <div id="ir-rows" data-section="ir"></div>
+          <div class="comments-grid">
+            <div class="comments-cell" id="commentsCell5">
+              <label class="field-label" id="for_id_reviewerComments">Reviewer Comments &amp; Corrections</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="id_reviewerComments-editor">
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
+                  </div>
+                  <input type="hidden" name="id_reviewerComments" id="id_reviewerComments">
+                </div>
+                <div class="comments-image-gallery" id="id_reviewerComments-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="comments-cell" id="commentsCell6">
+              <label class="field-label" id="for_id_engineerResponse_2">Engineer Response</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="id_engineerResponse_2-editor">
+                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
+                  </div>
+                  <input type="hidden" name="id_engineerResponse_2" id="id_engineerResponse_2">
+                </div>
+                <div class="comments-image-gallery" id="id_engineerResponse_2-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
+            <div class="pill-group"><input type="radio" name="ir_c" id="ir_c_yes" value="yes" data-prefix="ir"><label
+                for="ir_c_yes">Yes</label><input type="radio" name="ir_c" id="ir_c_no" value="no"
+                data-prefix="ir"><label for="ir_c_no">No</label><input type="radio" name="ir_c" id="ir_c_na" value="na"
+                data-prefix="ir"><label for="ir_c_na">N/A</label></div>
+          </div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ir_date">Date <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="ir_date" type="date" autocomplete="off" required aria-required="true"
+                  data-testid="ir-date">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ir_name">Name (Independent Reviewer) <span
+                    class="sr-only">(required)</span></label>
+                <input class="field-input" id="ir_name" type="text" placeholder="Type full name" autocomplete="name"
+                  required aria-required="true" data-testid="ir-name">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label" id="ir_sig">Signature and Seal (Independent Reviewer) <span
+                  class="sr-only">(required)</span>
+              </div>
+              <div class="signature-pad-container" id="irSigContainer" data-prefix="ir">
+                <div class="seal">S&amp;S after converting to PDF</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Final Signatures -->
+      <div class="card hidden" id="card-final">
+        <div class="sec-head" id="sec6-head" tabindex="0" aria-expanded="false" aria-controls="s6">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-6">6</div>
+            <span class="sec-title">Appoint Tier 1 Reviewer &amp; Team Lead Signatures</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6">Clear</button>
+            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+            </svg>
+          </div>
+        </div>
+        <div class="sec-body" id="s6">
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
@@ -2550,123 +2665,6 @@
                 </div>
               </div>
               <input type="hidden" id="fT1_sig_data" name="fT1_sig_data">
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Section 6: Independent Review -->
-
-      <div class="card hidden" id="card-ir">
-        <div class="sec-head" id="sec6-head" tabindex="0" aria-expanded="false" aria-controls="s6">
-          <div class="sec-left">
-            <div class="sec-num" id="snum-6">6</div>
-            <span class="sec-title">Independent Structural Review</span>
-            <span class="sec-badge" id="badge-6">0 / {ir_number}</span>
-          </div>
-          <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
-          </div>
-        </div>
-        <div class="sec-body" id="s6">
-
-          <div id="ir-rows" data-section="ir"></div>
-          <div class="comments-grid">
-            <div class="comments-cell" id="commentsCell5">
-              <label class="field-label" id="for_id_reviewerComments">Reviewer Comments &amp; Corrections</label>
-              <div class="comments-area">
-                <div class="rich-text-wrapper">
-                  <div class="ql-container" id="id_reviewerComments-editor">
-                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
-                  </div>
-                  <input type="hidden" name="id_reviewerComments" id="id_reviewerComments">
-                </div>
-                <div class="comments-image-gallery" id="id_reviewerComments-gallery" aria-live="polite"></div>
-              </div>
-            </div>
-            <div class="comments-cell" id="commentsCell6">
-              <label class="field-label" id="for_id_engineerResponse_2">Engineer Response</label>
-              <div class="comments-area">
-                <div class="rich-text-wrapper">
-                  <div class="ql-container" id="id_engineerResponse_2-editor">
-                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
-                  </div>
-                  <input type="hidden" name="id_engineerResponse_2" id="id_engineerResponse_2">
-                </div>
-                <div class="comments-image-gallery" id="id_engineerResponse_2-gallery" aria-live="polite"></div>
-              </div>
-            </div>
-          </div>
-          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
-            <div class="pill-group"><input type="radio" name="ir_c" id="ir_c_yes" value="yes" data-prefix="ir"><label
-                for="ir_c_yes">Yes</label><input type="radio" name="ir_c" id="ir_c_no" value="no"
-                data-prefix="ir"><label for="ir_c_no">No</label><input type="radio" name="ir_c" id="ir_c_na" value="na"
-                data-prefix="ir"><label for="ir_c_na">N/A</label></div>
-          </div>
-          <div class="sig-grid">
-            <div class="sig-cell">
-              <div class="sig-cell-sub">
-                <label class="field-label" for="ir_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ir_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ir-date">
-                <div class="required-field-underline" aria-hidden="true"></div>
-              </div>
-              <div class="sig-cell-sub">
-                <label class="field-label" for="ir_name">Name (Independent Reviewer) <span
-                    class="sr-only">(required)</span></label>
-                <input class="field-input" id="ir_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="ir-name">
-                <div class="required-field-underline" aria-hidden="true"></div>
-              </div>
-            </div>
-            <div class="sig-cell">
-              <div class="field-label" id="ir_sig">Signature (Independent Reviewer) <span
-                  class="sr-only">(required)</span>
-              </div>
-              <div class="signature-pad-container" id="irSigContainer" data-prefix="ir">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="irSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="false" aria-controls="irSigDrawTab" tabindex="-1"
-                    data-testid="ir-sig-draw" disabled>
-                    <span class="material-symbols-sharp">signature</span>
-                  </button>
-                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="irSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="true" aria-controls="irSigUploadTab" tabindex="0"
-                    data-testid="ir-sig-upload" disabled>
-                    <span class="material-symbols-sharp">upload</span>
-                  </button>
-                </div>
-                <div class="sig-tab-content" id="irSigDrawTab" role="tabpanel" aria-labelledby="irSigDrawBtn"
-                  tabindex="-1">
-                  <div class="sig-draw-surface" data-mode="draw" data-prefix="ir" data-testid="ir-sig-surface">
-                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="ir" data-testid="ir-sig-open" id="irSigPad" disabled>
-                      Open signature pad
-                    </a>
-                    <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                    </div>
-                    <button class="image-thumbnail-remove" type="button" data-prefix="ir" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">cancel</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="sig-tab-content active" id="irSigUploadTab" role="tabpanel" aria-labelledby="irSigUploadBtn"
-                  tabindex="0">
-                  <div class="sig-upload-area">
-                    <input type="file" id="irSigUpload" accept="image/*" hidden data-testid="ir-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ir"
-                      data-testid="ir-sig-choose" id="irSigImg" disabled>
-                      Choose Signature Image
-                    </button>
-                    <div id="irSigPreview" class="sig-preview"></div>
-                  </div>
-                </div>
-              </div>
-              <input type="hidden" id="ir_sig_data" name="ir_sig_data">
             </div>
           </div>
         </div>
@@ -2802,7 +2800,7 @@
           ['id_reviewerComments-editor', 'id_engineerResponse_2-editor']
         ];
 
-        static SIG_PREFIXES = ['sc', 'ch', 'pr', 'fT1', 'ir'];
+        static SIG_PREFIXES = ['sc', 'ch', 'pr', 'ir', 'fT1'];
 
         static RISK_TO_CHECK_LEVEL = {
           low: 'Self-Check',
@@ -2810,7 +2808,7 @@
           high: 'Type 1 Independent Review Required'
         };
 
-        static SECTION_NUM = { sc: '1', ds: '2', ch: '3', pr: '4', ir: '6' };
+        static SECTION_NUM = { sc: '1', ds: '2', ch: '3', pr: '4', ir: '5' };
 
         static EMPTY_EDITOR_HTML = '<p><br></p>';
 
@@ -2835,6 +2833,10 @@
         }
 
         // Cache all frequently used DOM elements
+        /**
+         * Collects and returns the DOM elements used by the form.
+         * Storing these references avoids repeated document queries.
+         */
         cacheElements () {
           const get = (id) => document.getElementById(id);
           return {
@@ -2851,6 +2853,8 @@
             riskBtns: document.querySelectorAll('.risk-btn'),
             sc11No: get('sc11_no'),
             sc11Yes: get('sc11_yes'),
+            sc9No: get('sc9_no'),
+            sc9Yes: get('sc9_yes'),
             scRoleEng: get('sc_role_eng'),
             chCYes: get('ch_c_yes'),
             chCNo: get('ch_c_no'),
@@ -2879,7 +2883,7 @@
             badge2: get('badge-2'), num2: get('snum-2'),
             badge3: get('badge-3'), num3: get('snum-3'),
             badge4: get('badge-4'), num4: get('snum-4'),
-            badge6: get('badge-6'), num6: get('snum-6'),
+            badge5: get('badge-5'), num5: get('snum-5'),
             // Row containers
             scRows: get('sc-rows'),
             dsRows: get('ds-rows'),
@@ -2919,6 +2923,10 @@
           };
         }
 
+        /**
+         * Builds the section metadata used for progress tracking and visibility.
+         * Each section entry links the DOM row container with its badge and counters.
+         */
         buildSectionConfig () {
           const card = (id) => document.getElementById(id);
           return [
@@ -2926,35 +2934,69 @@
             { rowsId: '#ds-rows', rowsEl: this.elements.dsRows, count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds', cardEl: card('card-ds') },
             { rowsId: '#ch-rows', rowsEl: this.elements.chRows, count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch', cardEl: card('card-ch') },
             { rowsId: '#pr-rows', rowsEl: this.elements.prRows, count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', cardEl: card('card-pr') },
-            { rowsId: '#ir-rows', rowsEl: this.elements.irRows, count: CheckForm.IR_ITEMS.length, badge: this.elements.badge6, num: this.elements.num6, label: '6', cardId: 'card-ir', cardEl: card('card-ir') }
+            { rowsId: '#ir-rows', rowsEl: this.elements.irRows, count: CheckForm.IR_ITEMS.length, badge: this.elements.badge5, num: this.elements.num5, label: '5', cardId: 'card-ir', cardEl: card('card-ir') }
           ];
         }
 
         // ---------- Shared utilities ----------
+        /**
+         * Returns true when the selected SC role is Engineer-in-Training.
+         * Used to adjust form behavior for EIT-specific rules and labels.
+         */
         isEitRole () {
           return this.getRadioValue('sc_role') === 'Engineer-in-Training';
         }
 
+        /**
+         * Locates the dynamically generated sc11 radio buttons after rows are built.
+         * This ensures later logic can query those elements safely.
+         */
         cacheRowRadios () {
           // sc11 radios are built dynamically in #sc-rows, not present at constructor time
           this.elements.sc11No = document.getElementById('sc11_no');
           this.elements.sc11Yes = document.getElementById('sc11_yes');
+          this.elements.sc9No = document.getElementById('sc9_no');
+          this.elements.sc9Yes = document.getElementById('sc9_yes');
         }
 
+        /**
+         * Returns true when SC question 1.11 is answered No.
+         * This affects direct supervision and section visibility.
+         */
         isSc11No () {
           return this.elements.sc11No?.checked ?? false;
         }
 
+        /**
+         * Returns true when SC question 1.9 is answered Yes.
+         * This triggers additional review requirements in the form rules.
+         */
+        isSc9Yes () {
+          return this.elements.sc9Yes?.checked ?? false;
+        }
+
+        /**
+         * Returns true when any row in the given section has a radio option checked.
+         * Used to determine visibility and warning states based on checklist answers.
+         */
         rowHasAnswer (rowsEl, value) {
           return !!rowsEl?.querySelector(
             `.check-row input[type="radio"][value="${value}"]:checked`
           );
         }
 
+        /**
+         * Finds the comment editor wrapper for a DOM element.
+         * This helps unify handling of rich text and fallback comment editors.
+         */
         resolveCommentEditor (el) {
           return el?.closest?.('.comments-inline-editor, .ql-editor, .ql-container') ?? null;
         }
 
+        /**
+         * Returns the editor container and text surface nodes for a comment editor element.
+         * Supports both Quill-based editors and plain contenteditable fallbacks.
+         */
         getCommentEditorNodes (el) {
           if (!el) return { container: null, surface: null };
           if (el.classList.contains('comments-inline-editor')) {
@@ -2973,10 +3015,18 @@
           return { container: null, surface: el };
         }
 
+        /**
+         * Returns true when the element belongs to a comment editor.
+         * Useful for filtering input events that affect comment areas.
+         */
         isCommentEditor (el) {
           return !!this.resolveCommentEditor(el);
         }
 
+        /**
+         * Converts HTML markup from a comment editor into plain text.
+         * Removes non-breaking spaces and trims whitespace for empty checks.
+         */
         htmlToPlainText (html) {
           if (!html || html === CheckForm.EMPTY_EDITOR_HTML) return '';
           const el = document.createElement('div');
@@ -2984,6 +3034,10 @@
           return el.textContent?.replace(/\u00a0/g, ' ').trim() ?? '';
         }
 
+        /**
+         * Determines if a comment editor is visually empty.
+         * Treats blank HTML and comments containing no meaningful text or images as empty.
+         */
         isCommentEditorEmpty (editorOrHtml) {
           if (typeof editorOrHtml === 'string') {
             return !this.htmlToPlainText(editorOrHtml) && !/<img\b/i.test(editorOrHtml);
@@ -2994,11 +3048,19 @@
           return !this.htmlToPlainText(html);
         }
 
+        /**
+         * Updates the placeholder styling for a comment editor based on content.
+         * Adds or removes the empty state so hint text can be styled appropriately.
+         */
         updateCommentEditorPlaceholder (editor) {
           if (!editor?.classList?.contains('comments-inline-editor')) return;
           editor.classList.toggle('is-empty', this.isCommentEditorEmpty(editor));
         }
 
+        /**
+         * Returns the current CSS width and height of a canvas element.
+         * Used to resize signature canvases to the visible layout size.
+         */
         getCanvasCssSize (canvas) {
           const rect = canvas.getBoundingClientRect();
           return {
@@ -3007,14 +3069,24 @@
           };
         }
 
+        /**
+         * Returns the hidden input element that stores the signature data URL for a prefix.
+         */
         getSigDataInput (prefix) {
           return document.getElementById(`${prefix}_sig_data`);
         }
 
+        /**
+         * Returns the visual signature preview surface for a given prefix.
+         */
         getSigSurface (prefix) {
           return document.querySelector(`.sig-draw-surface[data-prefix="${prefix}"]`);
         }
 
+        /**
+         * Copies the source input value into one or more target fields.
+         * Also clears any inline validation styling on the synced fields.
+         */
         syncLinkedFields (source, ...targets) {
           const value = source.value;
           for (const field of targets) {
@@ -3024,6 +3096,10 @@
           source.previousElementSibling?.removeAttribute('style');
         }
 
+        /**
+         * Clears all rich-text and inline comment editors within a root node.
+         * Resets editors to an empty paragraph and updates placeholders.
+         */
         clearEditorContent (root = document) {
           root.querySelectorAll('.ql-editor, .comments-inline-editor').forEach((el) => {
             el.innerHTML = CheckForm.EMPTY_EDITOR_HTML;
@@ -3031,6 +3107,10 @@
           });
         }
 
+        /**
+         * Clears all form controls inside the given root node.
+         * This includes radios, text inputs, selects, textareas, risk buttons, signature markers, and comment editors.
+         */
         clearFormControls (root) {
           root.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
           root.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach((i) => { i.value = ''; });
@@ -3044,12 +3124,19 @@
           this.syncMinCheckLevelLock();
         }
 
+        /**
+         * Handles input changes in comment fields and resizes the editor as needed.
+         */
         handleCommentFieldEvent (target) {
           const editor = this.resolveCommentEditor(target);
           if (!editor) return;
           this.autosizeTextarea(editor);
         }
 
+        /**
+         * Queues a one-frame progress update via requestAnimationFrame.
+         * Prevents repeated updates during fast input events.
+         */
         scheduleUpdateProgress () {
           if (this._progressRaf) return;
           this._progressRaf = requestAnimationFrame(() => {
@@ -3058,6 +3145,10 @@
           });
         }
 
+        /**
+         * Schedules comment editor height synchronization on the next animation frame.
+         * Uses a double requestAnimationFrame to allow DOM updates to settle first.
+         */
         scheduleSyncCommentsHeights () {
           if (this._syncCommentsRaf) return;
           this._syncCommentsRaf = requestAnimationFrame(() => {
@@ -3069,6 +3160,10 @@
         }
 
         // ---------- Initialization ----------
+        /**
+         * Initializes the form when the page loads.
+         * Builds rows, attaches event listeners, restores saved state, and initializes signatures/comments.
+         */
         init () {
           const hasPersistedRows = !!this.elements.scRows?.querySelector('.check-row');
           if (!hasPersistedRows) this.buildAllRows();
@@ -3092,6 +3187,9 @@
           this.syncMinCheckLevelLock();
         }
 
+        /**
+         * Builds all checklist rows for each section using the configured item lists.
+         */
         buildAllRows () {
           this.buildRows(this.elements.scRows, 'sc', CheckForm.SC_ITEMS, CheckForm.BINARY_QUESTIONS.sc);
           this.buildRows(this.elements.dsRows, 'ds', CheckForm.DS_ITEMS);
@@ -3103,6 +3201,10 @@
         }
 
         // ---------- Signature Pad Methods ----------
+        /**
+         * Initializes signature modal and drawing canvas state.
+         * Prepares the form for drawing or uploading signatures.
+         */
         initSignaturePads () {
           this.signatureModal = document.getElementById('sigModal');
           this.signatureModalCanvas = document.getElementById('sigModalCanvas');
@@ -3115,6 +3217,9 @@
           this.setupModalFocusTrap();
         }
 
+        /**
+         * Escapes HTML special characters to prevent markup injection in fallback comment rendering.
+         */
         escapeHtml (text) {
           return String(text)
             .replace(/&/g, '&amp;')
@@ -3123,6 +3228,10 @@
             .replace(/"/g, '&quot;');
         }
 
+        /**
+         * Builds the initial HTML content for a comment editor from stored text and attached images.
+         * Ensures pasted screenshots are preserved in the fallback comment editor.
+         */
         buildCommentInitialHtml (initial, gallery) {
           let html = (initial || '').trim();
           const galleryUrls = gallery
@@ -3140,22 +3249,39 @@
           return html || CheckForm.EMPTY_EDITOR_HTML;
         }
 
+        /**
+         * Reads the current HTML content from a comment editor adapter.
+         */
         getCommentHtml (fieldId) {
           return this.getCommentAdapter(fieldId).getHtml();
         }
 
+        /**
+         * Writes HTML content into the matching comment editor.
+         */
         setCommentHtml (fieldId, html) {
           this.comment_setHtml(fieldId, html);
         }
 
+        /**
+         * Synchronizes the visible comment editor value into its hidden form field.
+         */
         syncCommentField (fieldId) {
           this.comment_syncHidden(fieldId);
         }
 
+        /**
+         * Synchronizes all comment editor contents into their hidden inputs.
+         * This is used before saving or serializing the form state.
+         */
         syncAllComments () {
           this.comment_syncAllHidden();
         }
 
+        /**
+         * Restores comment editor content from hidden form values.
+         * This is typically called on load when the form has persisted content.
+         */
         restoreComments () {
           CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => {
             const hidden = document.getElementById(fieldId);
@@ -3170,6 +3296,10 @@
         }
 
         // ---------- CommentEditorRouter (deep seam facade) ----------
+        /**
+         * Returns a generic adapter for a comment field so callers can read/write content.
+         * Supports both Quill rich text editors and fallback contenteditable elements.
+         */
         getCommentAdapter (fieldId) {
           const quill = this.quillEditors?.[fieldId];
           if (quill) {
@@ -3194,10 +3324,16 @@
           };
         }
 
+        /**
+         * Reads the current HTML from a comment field via the adapter.
+         */
         comment_getHtml (fieldId) {
           return this.getCommentAdapter(fieldId).getHtml();
         }
 
+        /**
+         * Writes HTML into the comment field adapter and updates layout state.
+         */
         comment_setHtml (fieldId, html) {
           const ad = this.getCommentAdapter(fieldId);
           ad.setHtml(html);
@@ -3208,16 +3344,25 @@
           }
         }
 
+        /**
+         * Copies the adapter HTML into the hidden form input for a comment field.
+         */
         comment_syncHidden (fieldId) {
           const hidden = document.getElementById(fieldId);
           if (!hidden) return;
           hidden.value = this.comment_getHtml(fieldId);
         }
 
+        /**
+         * Synchronizes all comment fields to hidden inputs in one pass.
+         */
         comment_syncAllHidden () {
           CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => this.comment_syncHidden(fieldId));
         }
 
+        /**
+         * Triggers autosizing for a specified comment editor by ID or element.
+         */
         comment_autosize (fieldIdOrEl) {
           const el = typeof fieldIdOrEl === 'string'
             ? document.getElementById(`${fieldIdOrEl}-editor`)
@@ -3225,6 +3370,10 @@
           if (el) this.autosizeCommentEditor(el);
         }
 
+        /**
+         * Inserts an inline image into a comment editor at the current selection.
+         * Used for pasted or uploaded screenshots in comments.
+         */
         insertCommentInlineImage (editor, dataUrl) {
           if (!editor || !dataUrl) return;
           editor.focus();
@@ -3257,6 +3406,10 @@
           this.updateCommentEditorPlaceholder(editor);
         }
 
+        /**
+         * Opens a modal preview for a comment image.
+         * Used when users click a pasted screenshot inside comment content.
+         */
         showCommentImageModal (dataUrl) {
           const modal = document.createElement('div');
           modal.className = 'comment-image-modal';
@@ -3280,6 +3433,10 @@
           document.body.appendChild(modal);
         }
 
+        /**
+         * Processes an uploaded image file and inserts it into a comment editor.
+         * Reads the image as a data URL and updates the comment field state.
+         */
         processCommentImageFile (file, fieldId) {
           if (!file?.type?.startsWith('image/')) return;
           const editor = this.commentTextareas?.[fieldId];
@@ -3295,10 +3452,17 @@
           reader.readAsDataURL(file);
         }
 
+        /**
+         * A convenience wrapper that syncs a comment editor into its hidden form input.
+         */
         syncCommentFieldToHidden (fieldId) {
           this.syncCommentField(fieldId);
         }
 
+        /**
+         * Attaches event listeners to a fallback comment editor element.
+         * Handles input, paste, blur, and image preview behavior.
+         */
         bindCommentEditor (editor, fieldId, placeholder) {
           if (editor.dataset.editorBound === '1') return;
           editor.dataset.placeholder = placeholder;
@@ -3340,6 +3504,10 @@
           editor.dataset.editorBound = '1';
         }
 
+        /**
+         * Sets the height of a comment editor container and surface.
+         * Ensures editors respect a minimum visible height.
+         */
         setCommentEditorHeight (el, heightPx) {
           const { container, surface } = this.getCommentEditorNodes(el);
           const minH = CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
@@ -3355,6 +3523,10 @@
           }
         }
 
+        /**
+         * Measures how tall a comment editor should be to fit its content.
+         * Temporarily sets height to auto to compute scrollHeight without layout locking.
+         */
         measureCommentEditorHeight (el) {
           const { container, surface } = this.getCommentEditorNodes(el);
           if (!surface) return CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
@@ -3368,11 +3540,18 @@
           return h;
         }
 
+        /**
+         * Automatically resizes a comment editor to fit its content.
+         */
         autosizeCommentEditor (el) {
           if (!el) return;
           this.setCommentEditorHeight(el, this.measureCommentEditorHeight(el));
         }
 
+        /**
+         * Attaches Quill text-change and mutation observers for rich-text comment editors.
+         * Keeps hidden inputs in sync and resizes the editor when content changes.
+         */
         bindQuillCommentEditor (container, fieldId) {
           const quill = this.quillEditors?.[fieldId];
           if (!quill || !container) return;
@@ -3405,6 +3584,10 @@
           this.scheduleSyncCommentsHeights();
         }
 
+        /**
+         * Initializes comment editor UI, preferring Quill when available.
+         * Falls back to plain contenteditable editors if Quill fails or is unavailable.
+         */
         initCommentEditors () {
           if (typeof Quill !== 'undefined') {
             try {
@@ -3422,6 +3605,10 @@
           this.toast('Rich text editor unavailable. Type and paste screenshots directly in the comment box.', 'warn');
         }
 
+        /**
+         * Initializes fallback comment editors using contenteditable divs.
+         * This allows comments to work even if the rich text editor library is unavailable.
+         */
         initCommentTextareaFallbacks () {
           this.quillEditors = null;
           this.commentTextareas = {};
@@ -3470,6 +3657,10 @@
           });
         }
 
+        /**
+         * Sets up Quill rich text editors for all comment fields.
+         * Removes stale toolbars and re-initializes editors for idempotent snapshots.
+         */
         initQuillEditors () {
           const quillConfig = {
             theme: 'snow',
@@ -3517,10 +3708,18 @@
           this.scheduleSyncCommentsHeights();
         }
 
+        /**
+         * Ensures all Quill editor contents are synced to hidden inputs.
+         * Called before snapshotting or serializing the form.
+         */
         syncAllQuillEditors () {
           this.syncAllComments();
         }
 
+        /**
+         * Changes the active signature tab within a signature section.
+         * Handles toggling between draw and upload modes.
+         */
         changeSignatureTab (tabBtn) {
           if (!tabBtn) return;
           const container = tabBtn.closest('.signature-pad-container');
@@ -3537,12 +3736,19 @@
           });
         }
 
+        /**
+         * Refreshes the inline signature preview for every signature section.
+         */
         refreshAllSignaturePreviews () {
           CheckForm.SIG_PREFIXES.forEach((prefix) => {
             this.setSignaturePreview(prefix, this.getSigDataInput(prefix)?.value || '');
           });
         }
 
+        /**
+         * Updates the signature preview image and active state for a prefix.
+         * If no signature data exists, clears the preview surface.
+         */
         setSignaturePreview (prefix, dataUrl) {
           const surface = this.getSigSurface(prefix);
           const img = surface?.querySelector('.sig-inline-preview img');
@@ -3561,6 +3767,10 @@
           if (tabBtn) this.changeSignatureTab(tabBtn);
         }
 
+        /**
+         * Opens the signature drawing modal for the specified signature prefix.
+         * Loads any existing signature into the modal canvas.
+         */
         openSignatureModal (prefix) {
           if (!this.signatureModal || !this.signatureModalCanvas) return;
           this.activeSignaturePrefix = prefix;
@@ -3574,6 +3784,9 @@
           // Focus trap setup is handled by the open event listener in setupModalFocusTrap
         }
 
+        /**
+         * Closes the signature modal and optionally saves the drawn signature.
+         */
         closeSignatureModal (save) {
           if (!this.signatureModal || !this.signatureModalCanvas) return;
           const prefix = this.activeSignaturePrefix;
@@ -3589,12 +3802,19 @@
           this.activeSignaturePrefix = null;
         }
 
+        /**
+         * Clears the current signature drawing from the modal canvas.
+         */
         clearModalSignature () {
           if (!this.signatureModalCanvas) return;
           const { width, height } = this.getCanvasCssSize(this.signatureModalCanvas);
           this.signatureModalCanvas.getContext('2d').clearRect(0, 0, width, height);
         }
 
+        /**
+         * Resizes the signature modal canvas to match its CSS size.
+         * Also configures the drawing context for smooth strokes.
+         */
         resizeModalCanvas () {
           const canvas = this.signatureModalCanvas;
           if (!canvas) return;
@@ -3608,6 +3828,10 @@
           ctx.lineWidth = 2;
         }
 
+        /**
+         * Loads an existing signature image into the modal canvas.
+         * Clears any prior drawing before rendering the loaded image.
+         */
         loadDataUrlIntoModalCanvas (dataUrl) {
           this.clearModalSignature();
           if (!dataUrl) return;
@@ -3619,6 +3843,10 @@
           img.src = dataUrl;
         }
 
+        /**
+         * Clears all canvas-based drawings and data inputs inside a section.
+         * Used when a section is reset or cleared.
+         */
         removeCanvas (section) {
           section.querySelectorAll('canvas').forEach((canvas) => {
             const { width, height } = this.getCanvasCssSize(canvas);
@@ -3629,6 +3857,10 @@
         }
 
 
+        /**
+         * Sets up pointer drawing behavior for the signature modal canvas.
+         * Handles smoothing, pressure-less width variation, and animation frame loops.
+         */
         setupModalCanvasDrawing (canvas) {
           const sigModal = this.signatureModal;
           const ctx = canvas.getContext('2d');
@@ -3669,14 +3901,23 @@
           // --------------------------
           // Helpers
           // --------------------------
+          /**
+           * Keeps a value within a specified range.
+           */
           function clamp (v, lo, hi) {
             return Math.max(lo, Math.min(hi, v));
           }
 
+          /**
+           * Computes an exponential smoothing factor for rate-based interpolation.
+           */
           function expSmoothingFactor (hz, dtSec) {
             return 1 - Math.exp(-hz * dtSec);
           }
 
+          /**
+           * Converts pointer coordinates from page space to canvas pixel space.
+           */
           function getCanvasPoint (e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -3687,12 +3928,18 @@
             };
           }
 
+          /**
+           * Ends the current drawing stroke and resets pointer state.
+           */
           function endDraw () {
             drawing = false;
             hasPointer = false;
             prevMid = null;
           }
 
+          /**
+           * Clears the signature canvas content completely.
+           */
           function clearCanvas () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
           }
@@ -3738,6 +3985,9 @@
             if (!rafId) rafId = requestAnimationFrame(frame);
           };
 
+          /**
+           * Animation frame loop that smooths brush movement and renders strokes.
+           */
           function frame (ts) {
             rafId = 0;
             if (!canvas.isConnected || !sigModal?.classList.contains('open')) {
@@ -3819,6 +4069,10 @@
           };
         }
 
+        /**
+         * Enables keyboard focus trapping while the signature modal is open.
+         * Keeps tab navigation contained inside the modal dialog.
+         */
         setupModalFocusTrap () {
           const modal = this.signatureModal;
           if (!modal) return;
@@ -3862,6 +4116,10 @@
 
         /**
          * Build radio button rows using DOM APIs
+         */
+        /**
+         * Generates checklist rows dynamically for a section.
+         * Creates labeled radio groups and optional binary-only options.
          */
         buildRows (container, prefix, items, binarySet = new Set()) {
           if (!container) return;
@@ -3907,6 +4165,10 @@
           });
         }
 
+        /**
+         * Attaches global event listeners for click, change, input, and keydown events.
+         * Also sets up signature upload drag/drop and mutation observers for row updates.
+         */
         attachEventListeners () {
           document.addEventListener('click', this._boundClick);
           document.addEventListener('change', this._boundChange);
@@ -3947,6 +4209,10 @@
           });
         }
 
+        /**
+         * Handles uploaded signature image files for a section.
+         * Reads the file and updates the signature preview/input value.
+         */
         handleSignatureUpload (e, prefix) {
           const file = e.target.files?.[0];
           if (!file) return;
@@ -3961,6 +4227,10 @@
         }
 
         // ---------- Event Handlers ----------
+        /**
+         * Global click handler for UI controls across the form.
+         * Dispatches signature tab changes, modal actions, section toggles, and button clicks.
+         */
         handleGlobalClick (e) {
           const tabBtn = e.target.closest('.btn-sig-tab');
           if (tabBtn) {
@@ -4040,6 +4310,10 @@
           }
         }
 
+        /**
+         * Global change handler for input and select changes.
+         * Updates progress, visibility, and syncs comment editor changes.
+         */
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
             this.dispatchRadioChange(e.target);
@@ -4059,6 +4333,10 @@
         }
 
         // ---------- GlobalEventRouter (deep seam) ----------
+        /**
+         * Central router for radio button state changes.
+         * Handles risk level, role changes, signature gating, and section visibility.
+         */
         dispatchRadioChange (radio) {
           this.scheduleUpdateProgress();
           const name = radio?.name || '';
@@ -4091,15 +4369,16 @@
           this.syncSectionVisibility();
         }
 
+        /**
+         * Global input handler for field typing.
+         * Synchronizes linked fields, comment editors, and progress updates.
+         */
         handleGlobalInput (e) {
           const { target } = e;
           if (target.id === 'engineer' || target.id === 'sc_name') {
             this.syncLinkedFields(target, this.elements.scName, this.elements.engineer);
           } else if ((target.id === 'checker' || target.id === 'ch_name') && !this.elements.cardCh.classList.contains('hidden')) {
             this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
-          }
-          else if ((target.id === 'fT1_name' || target.id === 'ir_name') && !this.elements.cardIr.classList.contains('hidden')) {
-            this.syncLinkedFields(target, this.elements.irName, this.elements.fT1Name);
           }
 
           const commentEditor = this.resolveCommentEditor(target);
@@ -4112,11 +4391,19 @@
         }
 
         // ---------- SignatureGate (deep seam facade) ----------
+        /**
+         * Applies signature gating logic for a prefix.
+         * This is a compatibility facade for legacy signature gate usage.
+         */
         signatureGate_apply (prefix) {
           // Facade for legacy implementation.
           this.enableSignature(prefix);
         }
 
+        /**
+         * Handles keyboard shortcuts such as Escape to close the signature modal.
+         * Also makes section headers keyboard-accessible via Enter/Space.
+         */
         handleGlobalKeydown (e) {
           if (e.key === 'Escape' && this.signatureModal?.classList.contains('open')) {
             e.preventDefault();
@@ -4131,6 +4418,9 @@
         }
 
         // ---------- UI State Updates ----------
+        /**
+         * Toggles a collapsible section header and its associated body.
+         */
         toggleSection (head) {
           head.classList.toggle('open');
           const body = document.getElementById(head.getAttribute('aria-controls'));
@@ -4138,6 +4428,10 @@
           head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
         }
 
+        /**
+         * Sets the selected risk level and updates related form state.
+         * Also synchronizes the minimum check level and consistency notices.
+         */
         setRiskLevel (level) {
           let activeBtn = null;
           this.elements.riskBtns.forEach((b) => {
@@ -4156,11 +4450,18 @@
           this.updateProgress();
         }
 
+        /**
+         * Locks the minimum check level dropdown so it cannot be edited directly.
+         * The value is instead derived from risk level and role settings.
+         */
         syncMinCheckLevelLock () {
           const locked = true;
           this.elements.minCheckLevel.disabled = locked;
         }
 
+        /**
+         * Returns the currently active risk level button value.
+         */
         getActiveRiskLevel () {
           for (const btn of this.elements.riskBtns) {
             if (btn.classList.contains('active')) return btn.dataset.risk ?? null;
@@ -4168,6 +4469,10 @@
           return null;
         }
 
+        /**
+         * Generates and displays notices when risk-related answers conflict with selected risk level.
+         * Includes warnings for incorrect high-risk, EIT, and project requirements.
+         */
         showRiskConsistencyNotices () {
           const isEit = this.isEitRole();
           const level = this.getActiveRiskLevel();
@@ -4180,7 +4485,7 @@
           this.renderNoticeStack('sc', 8, blocks8);
           const blocks9 = [];
           if (getVal(9) === 'yes') {
-            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete this check form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form</strong></a>.`, type: 'warn' });
+            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete the <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn' });
             if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 9, blocks9);
@@ -4202,6 +4507,10 @@
           this.renderNoticeStack('sc', 11, blocks11);
         }
 
+        /**
+         * Renders one notice stack for a single checklist item.
+         * Displays warnings or errors beneath the question row.
+         */
         renderNoticeStack (prefix, n, blocks) {
           const stack = document.getElementById(`${prefix}${n}_notice_stack`);
           if (!stack) return;
@@ -4218,6 +4527,9 @@
             </div>`).join('');
         }
 
+        /**
+         * Shows or hides the direct supervision section based on SC question 1.11.
+         */
         syncDirectSupervision () {
           const noChecked = this.isSc11No();
           this.elements.cardDs.classList.toggle('hidden', !noChecked);
@@ -4231,12 +4543,18 @@
         }
 
         // ---------- SectionVisibilityPolicy (deep seam) ----------
+        /**
+         * Computes the current section visibility state from risk and checklist facts.
+         * Returns an object used to show/hide and expand sections.
+         */
         computeVisibilityState () {
           const isEit = this.isEitRole();
           const q111No = this.isSc11No();
+          const q9Yes = this.isSc9Yes();
           const risk = this.getActiveRiskLevel();
           const isHighRisk = risk === 'high';
           const isMidRisk = risk === 'medium';
+          const isLowRisk = risk === 'low';
           const minLevel = this.elements.minCheckLevel.value;
 
           // Checklist-derived facts (scoped to .check-row so ch_c/pr_c doesn't interfere).
@@ -4248,7 +4566,7 @@
           // Current behavior: expand peer review when checklist has a "No" OR min level explicitly set to Peer Review.
           const openS4 = chHasNo || minLevel === 'Peer Review';
 
-          const openS6 = isHighRisk || minLevel === 'Type 1 Independent Review Required'; // gated behind final section for now, but may want to surface earlier
+          const openS5 = !isLowRisk && q9Yes; // gated behind final section for now, but may want to surface earlier
 
           // Current behavior: warning is tied to checklist "No" answers (not ch_c).
           const showChNotice = chHasNo;
@@ -4259,12 +4577,15 @@
             showCheck,
             showPeer,
             openS4,
-            openS6,
+            openS5,
             showChNotice,
             finalShown
           };
         }
 
+        /**
+         * Applies the computed visibility state to the form UI.
+         */
         applyVisibilityState (state) {
           this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
 
@@ -4277,29 +4598,42 @@
           if (state.openS4) this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
 
           this.elements.cardFinal.classList.toggle('hidden', !state.finalShown);
-          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
+          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
           console.log('Applying visibility state:', state);
 
-          this.elements.cardIr.classList.toggle('hidden', !state.finalShown);
-          if (state.openS6) this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, true);
+          this.elements.cardIr.classList.toggle('hidden', !state.openS5);
+          if (state.openS5) this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, true);
         }
 
+        /**
+         * Legacy entry point preserved for backwards compatibility.
+         * Triggers a section visibility recalculation.
+         */
         syncCheckWarning () {
           // Legacy entry point; kept for locality. Visibility now owns chNotice.
           this.syncSectionVisibility();
         }
 
+        /**
+         * Recalculates and applies section visibility for the current form state.
+         */
         syncSectionVisibility () {
           const state = this.computeVisibilityState();
           this.applyVisibilityState(state);
         }
 
+        /**
+         * Synchronizes all section visibility rules at once.
+         */
         syncAllSectionVisibility () {
           this.syncDirectSupervision();
           this.syncSectionVisibility();
           this.syncCheckWarning(); // legacy: kept for callers that expect it
         }
 
+        /**
+         * Opens or closes a section header and body programmatically.
+         */
         setSectionOpen (head, body, open) {
           if (!head || !body) return;
           head.classList.toggle('open', open);
@@ -4307,6 +4641,9 @@
           head.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
 
+        /**
+         * Toggles the required state of the checker name input.
+         */
         setCheckerRequired (required) {
           const checker = this.elements.checker;
           if (required) {
@@ -4318,6 +4655,9 @@
           }
         }
 
+        /**
+         * Synchronizes checker name fields between the visible and hidden checker inputs.
+         */
         syncCheckerNames () {
           if (this.syncingNames) return;
           this.syncingNames = true;
@@ -4329,6 +4669,9 @@
           this.syncingNames = false;
         }
 
+        /**
+         * Updates labels and placeholders throughout the form based on the selected SC role.
+         */
         updateRoleLabels (resetSc11 = true) {
           const isEit = this.isEitRole();
           const { sc11No, sc11Yes } = this.elements;
@@ -4359,11 +4702,17 @@
           this.syncSectionVisibility();
         }
 
+        /**
+         * Returns the selected value for a named radio group.
+         */
         getRadioValue (name) {
           return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
         // ---------- Progress & Validation ----------
+        /**
+         * Recomputes overall checklist completion progress and updates the UI.
+         */
         updateProgress () {
           const counts = new Map();
           this.sectionConfig.forEach(s => {
@@ -4397,19 +4746,42 @@
           this.elements.progressStrip.classList.toggle('completed', fullyComplete);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
-          this.elements.savePdf.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid());
+          this.elements.savePdf.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid() && this.allOpenSignatureEnabled());
 
         }
 
         // ---------- SignatureGate adapter (real seam) ----------
+        /**
+         * Returns whether a signature section is enabled based on comment gating rules.
+         */
         isSignatureEnabledByComments (prefix) {
           // Only CH and PR signatures are gated by the "addressed?" radios.
           if (prefix !== 'ch' && prefix !== 'pr' && prefix !== 'ir') return true;
+
           const yes = this.elements[`${prefix}CYes`];
           const na = this.elements[`${prefix}CNa`];
           return !!(yes?.checked || na?.checked);
         }
 
+        /**
+         * Returns true when all currently open signature sections are enabled.
+         */
+        allOpenSignatureEnabled () {
+          const prefixes = ["ch", "pr", "ir"];
+          for (const prefix of prefixes) {
+            const card = document.getElementById(`card-${prefix}`);
+            const body = card.querySelector('.sec-body');
+            const bodyOpen = body.classList.contains('open') === true;
+            if (bodyOpen && !this.isSignatureEnabledByComments(prefix)) return false;
+          }
+          return true;
+
+        }
+
+        /**
+         * Enables or disables the signature controls for a section.
+         * Disables interactive buttons and clears file inputs when locked.
+         */
         setSignatureEnabled (prefix, enabled) {
           const container = document.getElementById(`${prefix}SigContainer`);
           if (!container) return;
@@ -4427,8 +4799,13 @@
           if (!enabled && fileInput) fileInput.value = '';
         }
 
+        /**
+         * Applies signature enablement logic for a section.
+         * This method is called by the signature gating facade.
+         */
         enableSignature (prefix) {
           // Backwards-compatible entry point used by the global router.
+
           const enabled = this.isSignatureEnabledByComments(prefix);
           this.setSignatureEnabled(prefix, enabled);
           if (prefix === 'ch') {
@@ -4436,6 +4813,10 @@
           }
         }
 
+        /**
+         * Executes an async callback while showing a loading state on a button.
+         * Prevents multiple simultaneous async actions.
+         */
         async withLoading (button, callback) {
           if (CheckForm.activeAsyncButton) return;
 
@@ -4448,6 +4829,10 @@
           }
         }
 
+        /**
+         * Validates that all required visible fields are filled correctly.
+         * Optionally highlights invalid labels when printing.
+         */
         allRequiredFieldsValid (print = false) {
           const required = Array.from(document.querySelectorAll('.required-field-underline'));
 
@@ -4467,6 +4852,9 @@
         }
 
         // ---------- Textarea Utilities ----------
+        /**
+         * Autosizes a textarea or comment editor based on its content.
+         */
         autosizeTextarea (el) {
           if (!el) return;
           const commentEditor = this.resolveCommentEditor(el);
@@ -4479,6 +4867,10 @@
           el.style.height = el.scrollHeight + 'px';
         }
 
+        /**
+         * Synchronizes heights for paired comment editor cells.
+         * Ensures side-by-side comments remain aligned.
+         */
         syncCommentsHeights () {
           const syncPair = (aId, bId) => {
             const a = document.getElementById(aId);
@@ -4501,6 +4893,9 @@
         }
 
         // ---------- Section Clearing ----------
+        /**
+         * Clears all content for a single section, including controls and signature canvases.
+         */
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           console.trace();
@@ -4538,11 +4933,17 @@
         }
 
         // ---------- Global Notice (Toast) ----------
+        /**
+         * Hides the global notice toast message.
+         */
         hideGlobalNotice () {
           this.elements.globalNotice.classList.add('hidden');
           clearTimeout(this.toastTimer);
         }
 
+        /**
+         * Displays a temporary toast message at the top of the form.
+         */
         toast (msg, type = 'info') {
           this.elements.globalNoticeText.innerHTML = msg;
           this.elements.globalNotice.classList.remove('hidden', 'info', 'success', 'error', 'warn');
@@ -4552,6 +4953,9 @@
         }
 
         // ---------- Form Actions ----------
+        /**
+         * Resets the entire form to its initial state after confirmation.
+         */
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
           this.clearFormControls(document);
@@ -4570,11 +4974,18 @@
           this.toast('Form reset', 'info');
         }
 
+        /**
+         * Restores the default static form values after a reset.
+         */
         restoreDefaults () {
           this.elements.revision.value = '0';
           this.elements.scRoleEng.checked = true;
         }
 
+        /**
+         * Saves a snapshot of the current form state as a standalone HTML file.
+         * Clones the document and preserves form values and signature data.
+         */
         saveSnapshot () {
           const btn = document.getElementById('saveSnapshotBtn');
           this.withLoading(btn, () => {
@@ -4656,6 +5067,9 @@
           });
         }
 
+        /**
+         * Triggers print view for PDF export after validating required fields.
+         */
         printFormAsPdf (e) {
           e.preventDefault();
           const btn = document.getElementById('saveAsPdfBtn');
