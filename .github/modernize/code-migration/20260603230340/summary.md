@@ -37,8 +37,8 @@
 ## Repository / Version Control Notes
 - Git is available in the repository.
 - Current git status includes an existing modified file: `sites/de/SiteAssets/html/CheckForm.Beta.html`.
-- The upgraded package files are not tracked by git because `package.json` and `package-lock.json` are ignored in the top-level `.gitignore`.
-- The progress folder `.github/modernize/code-migration/` is also ignored by the local `.gitignore` under `.github/modernize/code-migration/.gitignore`.
+- Upgraded package files are now tracked in git.
+- New ignore-rule updates were committed for `.gitignore` and `.github/modernize/code-migration/.gitignore`.
 
 ## Outcome
 - Upgrade workflow completed successfully for the identified package groups.
