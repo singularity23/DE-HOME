@@ -28,21 +28,6 @@ from dataclasses import dataclass
 from urllib.parse import urlencode, quote
 
 
-def get_chrome():
-    chrome_paths = [
-        "C:/Program Files/Google/Chrome/Application/chrome.exe",
-        "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
-        os.path.expanduser(
-            "~\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
-        ),
-    ]
-    for path in chrome_paths:
-        if os.path.exists(path):
-            webbrowser.register("chrome", None, webbrowser.BackgroundBrowser(path))
-
-    return webbrowser.get("chrome")
-
-
 @dataclass
 class StudyParameters:
     """Data class to hold study parameters"""
@@ -226,10 +211,9 @@ class EmissionStudy:
             raise RuntimeError("Study must be run before generating report")
 
         report_url = self.PATH + "&".join(self._variables)
-        browser = get_chrome()
-        browser.open_new("google.com")
+        webbrowser.open("google.com", new=2)
         time.sleep(2)
-        browser.open(report_url, new=0)
+        webbrowser.open(report_url, new=2)
 
         self._write_report(output_file, report_url)
 
@@ -342,8 +326,7 @@ def FaultForm(LLL, LLG, LL, LG, PreFaultVolts, R1, X1, R0, X0):
     query_string = urlencode(_params, quote_via=quote)
 
     link = f"{_PATH}?{query_string}"
-    browser = get_chrome()
-    browser.open_new(link)
+    webbrowser.open(link, new=2)
 
 
 ############################################################################################################################################################

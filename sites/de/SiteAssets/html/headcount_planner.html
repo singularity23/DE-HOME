@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headcount Planning Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ============================================================
+        HEADCOUNT PLANNING DASHBOARD
+        StudioBlank design system — minimal, flat, accessible
+        ============================================================ */
+
+        /* CSS Custom Properties */
+        :root {
+            --color-primary: rgb(50, 50, 50);
+            --color-secondary: rgb(250, 250, 250);
+            --color-tertiary: #d4d4d8;
+            --surface: #ffffff;
+            --surface-base: rgb(250, 250, 250);
+            --color-info: rgb(113, 113, 122);
+            --color-link: #00B5DF;
+            --color-success: #51B848;
+            --color-error: #FA4616;
+            --color-warning: #9ADBE8;
+            --color-regional: var(--color-link);
+            --color-project: var(--color-success);
+            --color-program: var(--color-warning);
+            --color-civil: #C67F0B;
+
+            --text: color-mix(in srgb, var(--color-primary) 80%, var(--surface-base));
+            --text-muted: var(--color-info);
+            --border: var(--color-tertiary);
+            --muted-bg: color-mix(in srgb, var(--color-tertiary) 10%, var(--surface));
+            --accent: var(--color-primary);
+            --success-bg: color-mix(in srgb, var(--color-success) 14%, var(--surface-base));
+            --error-bg: color-mix(in srgb, var(--color-error) 10%, var(--surface-base));
+            --warn-bg: color-mix(in srgb, var(--color-warning) 25%, var(--surface-base));
+
+            --radius: 0;
+            --font-sans: 'Roboto', system-ui, sans-serif;
+            --font-size-base: 16px;
+            --font-size-sm: 0.75rem;
+            --space-base: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--surface-base);
+            color: var(--text);
+            line-height: 1.5;
+            padding: var(--space-base);
+            font-size: var(--font-size-base);
+            font-weight: 400;
+            width: 820px;
+            margin: 0 auto;
+        }
+
+        :focus-visible {
+            outline: 1px solid var(--color-link) !important;
+            outline-offset: 0px !important;
+        }
+
+        .header {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            padding: var(--space-base);
+            margin-bottom: calc(var(--space-base) * 2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-base);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .toolbar-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background-color: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: var(--font-sans);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .toolbar-btn:hover {
+            background-color: var(--muted-bg);
+            border-color: var(--accent);
+        }
+
+        #load-file {
+            display: none;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: var(--space-base);
+            border-bottom: 1px solid var(--border);
+            background-color: var(--surface);
+            margin-left: calc(var(--space-base) * -1);
+            margin-right: calc(var(--space-base) * -1);
+            padding-left: var(--space-base);
+            padding-right: var(--space-base);
+        }
+
+        .tab-button {
+            padding: 12px var(--space-base);
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            position: relative;
+            font-family: var(--font-sans);
+        }
+
+        .tab-button:hover {
+            color: var(--text);
+            background-color: var(--muted-bg);
+        }
+
+        .tab-button.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .section {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            padding: var(--space-base);
+            margin-bottom: calc(var(--space-base) * 2);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: var(--space-base);
+            color: var(--accent);
+        }
+
+        .org-chart {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-base);
+            margin-bottom: var(--space-base);
+        }
+
+        .org-unit {
+            border: 1px solid var(--border);
+            border-top-width: 4px;
+            border-top-style: solid;
+            padding: var(--space-base);
+            background-color: var(--surface-base);
+            transition: all 0.2s ease;
+        }
+
+        .org-unit:hover {
+            border-color: var(--accent);
+            background-color: var(--surface);
+        }
+
+        .unit-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            display: block;
+            border-bottom: 2px solid;
+            padding-bottom: 8px;
+        }
+
+        .unit-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .metric-title {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 0 10px 0 calc(30px + 0.5rem + 10px);
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            padding: 10px;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            gap: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            min-width: 30px;
+            flex-shrink: 0;
+        }
+
+        .metric-values {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .metric-original {
+            font-weight: 700;
+            color: var(--text);
+            min-width: 2.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .metric-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background-color: var(--surface-base);
+            padding: 4px;
+        }
+
+        .metric-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border);
+            background-color: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
+            font-size: 1rem;
+        }
+
+        .metric-btn:hover {
+            background-color: var(--muted-bg);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .metric-btn:active {
+            background-color: var(--border);
+        }
+
+        .metric-potential {
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 2.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .metric-potential.has-change {
+            font-weight: 700;
+        }
+
+        .metric-potential.increase {
+            color: var(--color-success);
+        }
+
+        .metric-potential.decrease {
+            color: var(--color-error);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-base);
+            margin-bottom: calc(var(--space-base) * 2);
+        }
+
+        .stat-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            position: relative;
+        }
+
+        .stat-pending {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 4px;
+            position: absolute;
+            bottom: -12px;
+            right: 0;
+            left: 0;
+        }
+
+        .stat-pending.positive {
+            color: var(--color-success);
+        }
+
+        .stat-pending.negative {
+            color: var(--color-error);
+        }
+
+        .log-to-increase {
+            color: var(--color-success);
+            font-weight: 700;
+        }
+
+        .log-to-decrease {
+            color: var(--color-error);
+            font-weight: 700;
+        }
+
+        .change-log-section {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            padding: var(--space-base);
+        }
+
+        .change-log-entry {
+            border-left: 3px solid var(--color-info);
+            padding: 12px;
+            margin-bottom: 12px;
+            background-color: var(--surface-base);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-base);
+        }
+
+        .change-log-entry.proposed {
+            border-left-color: var(--dept-color, var(--color-link));
+        }
+
+        .change-log-entry.completed {
+            opacity: 0.7;
+            border-left-color: var(--color-success);
+        }
+
+        .change-log-content {
+            flex: 1;
+        }
+
+        .change-log-header {
+            display: inline-flex;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .change-log-details {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .change-log-reason {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .change-log-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .log-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--color-success);
+            border: 1px solid var(--color-success);
+            border-radius: 0px;
+            appearance: none;
+            text-decoration-color: var(--color-success);
+        }
+
+        .log-action-btn {
+            width: 20px;
+            height: 20px;
+            padding: 6px 6px;
+            border: 1px solid var(--border);
+            background-color: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
+            display: flex;
+            margin: 0 auto;
+            justify-content: center;
+            align-items: center;
+            align-self: anchor-center;
+        }
+
+        .log-action-btn:hover {
+            background-color: var(--muted-bg);
+            border-color: var(--accent);
+        }
+
+        .log-action-btn.delete {
+            border-color: var(--color-error);
+            color: var(--color-error);
+        }
+
+        .log-action-btn.delete:hover {
+            background-color: var(--error-bg);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-base);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: var(--space-base);
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--accent);
+            background-color: var(--surface-base);
+        }
+
+        .modal-body {
+            padding: var(--space-base);
+        }
+
+        .modal-form-group {
+            margin-bottom: var(--space-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .modal-input,
+        .modal-textarea {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            color: var(--text);
+            background-color: var(--surface);
+        }
+
+        .modal-input:focus,
+        .modal-textarea:focus {
+            outline: none;
+            border-color: var(--color-link);
+            background-color: var(--surface);
+        }
+
+        .modal-textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.4;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            padding: var(--space-base);
+            border-top: 1px solid var(--border);
+            background-color: var(--surface-base);
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            background-color: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
+        }
+
+        .modal-btn:hover {
+            background-color: var(--muted-bg);
+        }
+
+        .modal-btn.primary {
+            background-color: var(--accent);
+            color: var(--surface);
+            border-color: var(--accent);
+        }
+
+        .modal-btn.primary:hover {
+            background-color: color-mix(in srgb, var(--accent) 80%, black);
+        }
+
+        .modal-btn.secondary {
+            background-color: var(--surface-base);
+        }
+
+        small {
+            display: block;
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .org-chart {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tab-button {
+                padding: 12px 12px;
+                font-size: 0.8rem;
+            }
+
+            .change-log-entry {
+                flex-direction: column;
+            }
+
+            .change-log-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        .modal-amount-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        #modal-amount {
+            flex: 1;
+        }
+
+        #modal-preview {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            width: 15%;
+
+        }
+
+        .metric-number {
+            display: none;
+        }
+
+        .deleting {
+            transition: all 0.3s ease;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+        .Programs {
+            padding-left: 6px;
+            color: var(--color-program);
+        }
+
+        .Project.A,
+        .Project.B {
+            padding-left: 6px;
+            color: var(--color-project);
+        }
+
+        .VI.Regional,
+        .LMN.Regional,
+        .LMS.VI.Regional,
+        .INT.Regional {
+            padding-left: 6px;
+            color: var(--color-regional);
+        }
+
+        .Civil.Engineering {
+            padding-left: 6px;
+            color: var(--color-civil);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div>
+            <h1>Headcount Planning Dashboard</h1>
+            <p>Distribution Engineering</p>
+        </div>
+        <div class="header-actions">
+            <button id="save-btn" type="button" class="toolbar-btn">Save</button>
+            <label for="load-file" class="toolbar-btn">Load</label>
+            <input type="file" id="load-file" accept=".json">
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- EXISTING TAB -->
+        <div id="existing" class="tab-content active">
+            <div class="section">
+                <div class="org-chart">
+                    <!-- Generated dynamically from allocationData -->
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Current Totals</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total FTR</div>
+                        <div class="stat-value">
+                            <span id="stat-ftr-actual">45</span>
+                            <span id="stat-ftr-pending" class="stat-pending"></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total P4</div>
+                        <div class="stat-value">
+                            <span id="stat-p4-actual">11</span>
+                            <span id="stat-p4-pending" class="stat-pending"></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Resources</div>
+                        <div class="stat-value">
+                            <span id="stat-total-actual">56</span>
+                            <span id="stat-total-pending" class="stat-pending"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Change Log</div>
+                <div id="change-log-container" class="change-log">
+                    <div class="empty-state">No changes recorded yet</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Adjustment Reason Modal -->
+    <div id="adjustment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Record Change</div>
+            <div class="modal-body">
+                <div class="modal-form-group">
+                    <label class="modal-label" for="modal-department">Team</label>
+                    <input type="text" id="modal-department" class="modal-input" readonly>
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="modal-change">Current Value</label>
+                    <input type="text" id="modal-change" class="modal-input" readonly>
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="modal-amount">Adjustment Amount</label>
+                    <div class="modal-amount-row">
+                        <input type="number" id="modal-amount" class="modal-input" value="1"
+                            onchange="updateAmountPreview()" oninput="updateAmountPreview()">
+                        <span id="modal-preview">→ </span>
+                    </div>
+                    <small>Enter the amount to increase (+) or decrease (-)</small>
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="modal-transferred">Transferred to/From</label>
+                    <select id="modal-transferred" class="modal-input">
+                        <option value="Not Applicable">Not Applicable</option>
+                    </select>
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="modal-type">Type of Change</label>
+                    <select id="modal-type" class="modal-input">
+                        <option value="Proposed">Proposed</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                <div class="modal-form-group">
+                    <label class="modal-label" for="modal-reason">Reason for Change</label>
+                    <textarea id="modal-reason" class="modal-textarea"
+                        placeholder="Enter reason for this change..."></textarea>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" type="button" onclick="closeAdjustmentModal()">Cancel</button>
+                <button class="modal-btn primary" type="button" onclick="confirmAdjustment()">Record Change</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Allocation data
+        const allocationData = [
+            { name: 'Civil Engineering', ftr: 11, p4: 2, color: 'var(--color-civil)' },
+            { name: 'VI Regional', ftr: 4, p4: 0, color: 'var(--color-regional)' },
+            { name: 'INT Regional', ftr: 5, p4: 1, color: 'var(--color-regional)' },
+            { name: 'LMN Regional', ftr: 7, p4: 2, color: 'var(--color-regional)' },
+            { name: 'LMS Regional', ftr: 6, p4: 0, color: 'var(--color-regional)' },
+            { name: 'Project A', ftr: 8, p4: 2, color: 'var(--color-project)' },
+            { name: 'Project B', ftr: 7, p4: 1, color: 'var(--color-project)' },
+            { name: 'Programs', ftr: 5, p4: 3, color: 'var(--color-program)' }
+        ];
+
+        // Function to generate Current Allocation HTML
+        function generateCurrentAllocation () {
+            const orgChart = document.querySelector('#existing .org-chart');
+
+            // Clear existing content using removeChild
+            while (orgChart.firstChild) {
+                orgChart.removeChild(orgChart.firstChild);
+            }
+
+            // Generate units from data
+            allocationData.forEach(dept => {
+                const unit = document.createElement('div');
+                unit.className = 'org-unit';
+                unit.style.borderTopColor = dept.color;
+
+                const unitName = document.createElement('div');
+                unitName.className = 'unit-name';
+                unitName.textContent = dept.name;
+                unitName.style.color = dept.color;
+                unit.appendChild(unitName);
+
+                const metrics = document.createElement('div');
+                metrics.className = 'unit-metrics';
+
+                const metricTitle = document.createElement('div');
+                metricTitle.className = 'metric-title';
+                const currentSpan = document.createElement('span');
+                currentSpan.textContent = 'Current';
+                const potentialSpan = document.createElement('span');
+                potentialSpan.textContent = 'Potential';
+                metricTitle.appendChild(currentSpan);
+                metricTitle.appendChild(potentialSpan);
+                metrics.appendChild(metricTitle);
+
+                // Create FTR metric
+                createMetric(metrics, 'FTR', dept.ftr, 'ftr');
+
+                // Create P4 metric
+                createMetric(metrics, 'P4', dept.p4, 'p4');
+
+                unit.appendChild(metrics);
+                orgChart.appendChild(unit);
+            });
+
+            // Update potential numbers after generating
+            updatePotentialNumbers();
+        }
+
+        // Helper function to create a metric row
+        function createMetric (container, label, value, type) {
+            const metric = document.createElement('div');
+            metric.className = 'metric';
+
+            // Label
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'metric-label';
+            labelSpan.textContent = label;
+            metric.appendChild(labelSpan);
+
+            // Values container
+            const valuesDiv = document.createElement('div');
+            valuesDiv.className = 'metric-values';
+
+            // Original value
+            const originalSpan = document.createElement('span');
+            originalSpan.className = 'metric-original';
+            originalSpan.textContent = value;
+            valuesDiv.appendChild(originalSpan);
+
+            // Controls
+            const controlsDiv = document.createElement('div');
+            controlsDiv.className = 'metric-controls';
+
+            // Decrease button
+            const decreaseBtn = document.createElement('button');
+            decreaseBtn.className = 'metric-btn';
+            decreaseBtn.textContent = '−';
+            decreaseBtn.title = 'Decrease by 1';
+            decreaseBtn.addEventListener('click', function () {
+                adjustValue(this, -1);
+            });
+            controlsDiv.appendChild(decreaseBtn);
+
+            // Metric number (hidden)
+            const numberSpan = document.createElement('span');
+            numberSpan.className = 'metric-number';
+            numberSpan.setAttribute('data-type', type);
+            numberSpan.textContent = value;
+            controlsDiv.appendChild(numberSpan);
+
+            // Increase button
+            const increaseBtn = document.createElement('button');
+            increaseBtn.className = 'metric-btn';
+            increaseBtn.textContent = '+';
+            increaseBtn.title = 'Increase by 1';
+            increaseBtn.addEventListener('click', function () {
+                adjustValue(this, 1);
+            });
+            controlsDiv.appendChild(increaseBtn);
+
+            valuesDiv.appendChild(controlsDiv);
+
+            // Potential value
+            const potentialSpan = document.createElement('span');
+            potentialSpan.className = 'metric-potential';
+            potentialSpan.setAttribute('data-type', type);
+            potentialSpan.textContent = value;
+            valuesDiv.appendChild(potentialSpan);
+
+            metric.appendChild(valuesDiv);
+            container.appendChild(metric);
+        }
+        // Calculate and update totals
+        function updateTotals () {
+            let totalFTR = 0;
+            let totalP4 = 0;
+            let proposedFTRChange = 0;
+            let proposedP4Change = 0;
+
+            // Calculate base totals from the current metric numbers
+            const baseData = {};
+            allocationData.forEach(dept => {
+                if (!baseData[dept.name]) {
+                    baseData[dept.name] = { ftr: dept.ftr, p4: dept.p4 };
+                }
+            });
+
+            // Get all metric numbers and calculate totals
+            document.querySelectorAll('.metric-number').forEach(element => {
+                const value = parseInt(element.textContent);
+                const type = element.getAttribute('data-type');
+
+                if (type === 'ftr') {
+                    totalFTR += value;
+                } else if (type === 'p4') {
+                    totalP4 += value;
+                }
+            });
+
+            // Calculate pending changes from proposed entries (excluding transfers)
+            changeLog.forEach(entry => {
+                if (entry.changeType === 'Proposed' && !entry.completed &&
+                    (!entry.transferredTo || entry.transferredTo === 'Not Applicable')) {
+                    const change = entry.to - entry.from;
+                    if (entry.type === 'FTR') {
+                        proposedFTRChange += change;
+                    } else if (entry.type === 'P4') {
+                        proposedP4Change += change;
+                    }
+                }
+            });
+
+            // Update the stat cards
+            const ftrActual = document.getElementById('stat-ftr-actual');
+            const p4Actual = document.getElementById('stat-p4-actual');
+            const totalActual = document.getElementById('stat-total-actual');
+
+            const ftrPending = document.getElementById('stat-ftr-pending');
+            const p4Pending = document.getElementById('stat-p4-pending');
+            const totalPending = document.getElementById('stat-total-pending');
+
+            if (ftrActual) ftrActual.textContent = totalFTR;
+            if (p4Actual) p4Actual.textContent = totalP4;
+            if (totalActual) totalActual.textContent = totalFTR + totalP4;
+
+            // Update pending changes display
+            if (ftrPending) {
+                if (proposedFTRChange !== 0) {
+                    ftrPending.textContent = `${proposedFTRChange >= 0 ? '+' : ''}${proposedFTRChange}`;
+                    ftrPending.className = `stat-pending ${proposedFTRChange >= 0 ? 'positive' : 'negative'}`;
+                } else {
+                    ftrPending.textContent = '';
+                    ftrPending.className = 'stat-pending';
+                }
+            }
+
+            if (p4Pending) {
+                if (proposedP4Change !== 0) {
+                    p4Pending.textContent = `${proposedP4Change >= 0 ? '+' : ''}${proposedP4Change}`;
+                    p4Pending.className = `stat-pending ${proposedP4Change >= 0 ? 'positive' : 'negative'}`;
+                } else {
+                    p4Pending.textContent = '';
+                    p4Pending.className = 'stat-pending';
+                }
+            }
+
+            if (totalPending) {
+                const totalProposedChange = proposedFTRChange + proposedP4Change;
+                if (totalProposedChange !== 0) {
+                    totalPending.textContent = `${totalProposedChange >= 0 ? '+' : ''}${totalProposedChange}`;
+                    totalPending.className = `stat-pending ${totalProposedChange >= 0 ? 'positive' : 'negative'}`;
+                } else {
+                    totalPending.textContent = '';
+                    totalPending.className = 'stat-pending';
+                }
+            }
+        }
+
+        // Adjust metric value
+        // Change log data
+        let changeLog = [];
+
+        // Adjustment modal state
+        let pendingAdjustment = null;
+
+        function adjustValue (button, change) {
+            // Find the metric element first (parent of metric-values)
+            const metric = button.closest('.metric');
+            if (!metric) {
+                console.error('Could not find .metric element');
+                return;
+            }
+
+            // Find the metric-number within the metric element
+            const metricNumber = metric.querySelector('.metric-number');
+            if (!metricNumber) {
+                console.error('Could not find .metric-number element');
+                return;
+            }
+
+            const metricLabel = metric.querySelector('.metric-label').textContent;
+            const orgUnit = button.closest('.org-unit');
+            const departmentName = orgUnit.querySelector('.unit-name').textContent;
+
+            let currentValue = parseInt(metricNumber.textContent);
+
+            // Store pending adjustment and show modal
+            pendingAdjustment = {
+                button: button,
+                currentValue: currentValue,
+                change: change,
+                type: metricLabel,
+                department: departmentName,
+                element: metricNumber
+            };
+
+            // Determine the label based on adjustment direction
+            const transferLabel = change < 0 ? 'Transferred to' : 'Transferred from';
+
+            // Populate modal
+            document.getElementById('modal-department').value = departmentName;
+            document.getElementById('modal-change').value = `${metricLabel}: ${currentValue}`;
+            document.getElementById('modal-amount').value = change;
+            document.getElementById('modal-reason').value = '';
+            document.getElementById('modal-type').value = 'Proposed';
+            document.getElementById('modal-transferred').value = 'Not Applicable';
+
+            // Update the transferred label
+            document.querySelector('label[for="modal-transferred"]').textContent = transferLabel;
+
+            // Populate "Transferred to/From" dropdown with other departments
+            const transferredSelect = document.getElementById('modal-transferred');
+
+            // Clear existing options
+            while (transferredSelect.firstChild) {
+                transferredSelect.removeChild(transferredSelect.firstChild);
+            }
+
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = 'Not Applicable';
+            defaultOption.textContent = 'Not Applicable';
+            transferredSelect.appendChild(defaultOption);
+
+            allocationData.forEach(dept => {
+                if (dept.name !== departmentName) {
+                    const option = document.createElement('option');
+                    option.value = dept.name;
+                    option.textContent = dept.name;
+                    transferredSelect.appendChild(option);
+                }
+            });
+
+            // Update preview
+            updateAmountPreview();
+
+            // Show modal
+            document.getElementById('adjustment-modal').classList.add('active');
+        }
+
+        function updatePotentialNumbers () {
+            // The "potential" number is the current value in the DOM
+            // (since changes are applied immediately)
+            const orgUnits = document.querySelectorAll('.org-unit');
+
+            orgUnits.forEach(unit => {
+                const metrics = unit.querySelectorAll('.metric');
+
+                metrics.forEach(metric => {
+                    const metricNumber = metric.querySelector('.metric-number');
+                    const potentialElement = metric.querySelector('.metric-potential');
+                    const originalElement = metric.querySelector('.metric-original');
+
+                    if (metricNumber && potentialElement && originalElement) {
+                        const currentValue = parseInt(metricNumber.textContent);
+                        const originalValue = parseInt(originalElement.textContent);
+                        potentialElement.textContent = currentValue;
+
+                        if (currentValue > originalValue) {
+                            potentialElement.classList.add('has-change', 'increase');
+                            potentialElement.classList.remove('decrease');
+                        } else if (currentValue < originalValue) {
+                            potentialElement.classList.add('has-change', 'decrease');
+                            potentialElement.classList.remove('increase');
+                        } else {
+                            potentialElement.classList.remove('has-change', 'increase', 'decrease');
+                        }
+                    }
+                });
+            });
+        }
+
+        function updateAmountPreview () {
+            if (!pendingAdjustment) return;
+
+            const amount = parseInt(document.getElementById('modal-amount').value) || 0;
+            const newValue = Math.max(0, pendingAdjustment.currentValue + amount);
+            const previewText = `${pendingAdjustment.currentValue} ${amount >= 0 ? '+' : ''} ${amount} → ${newValue}`;
+            document.getElementById('modal-preview').textContent = previewText;
+        }
+
+        function closeAdjustmentModal () {
+            document.getElementById('adjustment-modal').classList.remove('active');
+            pendingAdjustment = null;
+        }
+
+        function confirmAdjustment () {
+            if (!pendingAdjustment) return;
+
+            const customAmount = parseInt(document.getElementById('modal-amount').value) || 0;
+            const reason = document.getElementById('modal-reason').value;
+            const type = document.getElementById('modal-type').value;
+            const transferredTo = document.getElementById('modal-transferred').value;
+
+            if (!reason.trim()) {
+                alert('Please enter a reason for the change');
+                return;
+            }
+
+            // Validate adjustment amount based on direction
+            if (customAmount === 0) {
+                alert('Adjustment amount cannot be 0');
+                return;
+            }
+
+            if (pendingAdjustment.change < 0 && customAmount > 0) {
+                alert('When decreasing headcount, adjustment must be negative');
+                return;
+            }
+
+            if (pendingAdjustment.change > 0 && customAmount < 0) {
+                alert('When increasing headcount, adjustment must be positive');
+                return;
+            }
+
+            // If editing an existing entry
+            if (pendingAdjustment.editingId) {
+                const entry = changeLog.find(e => e.id === pendingAdjustment.editingId);
+                if (entry) {
+                    // If the transfer destination changed, we need to revert the old transfer
+                    if (entry.transferredTo && entry.transferredTo !== 'Not Applicable' && entry.transferredTo !== transferredTo) {
+                        // Revert the old transfer (negate it)
+                        revertTransfer(entry.transferredTo, entry.type, -(entry.to - entry.from));
+                    }
+
+                    entry.reason = reason;
+                    entry.changeType = type;
+                    entry.transferredTo = transferredTo;
+                    entry.completed = false;
+
+                    // Apply new transfer if different
+                    if (transferredTo && transferredTo !== 'Not Applicable' && (!entry.transferredTo || entry.transferredTo !== transferredTo)) {
+                        applyTransfer(transferredTo, entry.type, -(entry.to - entry.from));
+                    }
+
+                    renderChangeLog();
+                    closeAdjustmentModal();
+                    updateTotals();
+                    return;
+                }
+            }
+
+            // Calculate new value
+            const newValue = Math.max(0, pendingAdjustment.currentValue + customAmount);
+
+            // Update the value in the source department
+            pendingAdjustment.element.textContent = newValue;
+
+            // If transferred to another department, update that department too
+            if (transferredTo && transferredTo !== 'Not Applicable') {
+                // Apply the opposite change to the receiving department
+                applyTransfer(transferredTo, pendingAdjustment.type, -customAmount);
+            }
+
+            // Add to change log
+            const logEntry = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleString(),
+                department: pendingAdjustment.department,
+                type: pendingAdjustment.type,
+                from: pendingAdjustment.currentValue,
+                to: newValue,
+                changeType: type,
+                reason: reason,
+                transferredTo: transferredTo,
+                completed: false
+            };
+
+            changeLog.push(logEntry);
+
+            // Update UI
+            updateTotals();
+            renderChangeLog();
+            closeAdjustmentModal();
+            pendingAdjustment = null;
+        }
+
+        function applyTransfer (departmentName, metricType, amount) {
+            // Find the metric element for the transferred-to department
+            const orgUnits = document.querySelectorAll('.org-unit');
+
+            orgUnits.forEach(unit => {
+                const unitName = unit.querySelector('.unit-name').textContent;
+                if (unitName === departmentName) {
+                    // Find the correct metric (FTR or P4)
+                    const metrics = unit.querySelectorAll('.metric');
+                    metrics.forEach(metric => {
+                        const label = metric.querySelector('.metric-label').textContent;
+                        if (label === metricType) {
+                            const numberElement = metric.querySelector('.metric-number');
+                            const currentValue = parseInt(numberElement.textContent);
+                            const newValue = Math.max(0, currentValue + amount);
+                            numberElement.textContent = newValue;
+                        }
+                    });
+                }
+            });
+        }
+
+        function revertTransfer (departmentName, metricType, amount) {
+            // Reverse the transfer
+            const orgUnits = document.querySelectorAll('.org-unit');
+
+            orgUnits.forEach(unit => {
+                const unitName = unit.querySelector('.unit-name').textContent;
+                if (unitName === departmentName) {
+                    const metrics = unit.querySelectorAll('.metric');
+                    metrics.forEach(metric => {
+                        const label = metric.querySelector('.metric-label').textContent;
+                        if (label === metricType) {
+                            const numberElement = metric.querySelector('.metric-number');
+                            const currentValue = parseInt(numberElement.textContent);
+                            const newValue = Math.max(0, currentValue - amount);
+                            numberElement.textContent = newValue;
+                        }
+                    });
+                }
+            });
+        }
+
+        function renderChangeLog () {
+            const container = document.getElementById('change-log-container');
+
+            // Clear existing content
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            if (changeLog.length === 0) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'empty-state';
+                emptyDiv.textContent = 'No changes recorded yet';
+                container.appendChild(emptyDiv);
+            } else {
+                changeLog.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.className = 'change-log-entry ' + entry.changeType.toLowerCase();
+                    if (entry.completed) {
+                        entryDiv.classList.add('completed');
+                    }
+                    const dept = allocationData.find(d => d.name === entry.department);
+                    if (dept) entryDiv.style.setProperty('--dept-color', dept.color);
+
+                    // Content section
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'change-log-content';
+                    //postive
+                    let transfer = '', transferTo = '';
+                    if (entry.transferredTo && entry.transferredTo !== 'Not Applicable') {
+                        transfer = entry.from - entry.to < 0 ? ' Transfered from:' : ' Transfered to:';
+                        transferTo = ` <div class="${entry.transferredTo}"> ${entry.transferredTo}</div>`;
+                    } else if (entry.transferredFrom && entry.transferredFrom === 'Not Applicable') {
+                        transferTo = '';
+                    }
+
+                    // Details
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.className = 'change-log-details';
+
+                    const timestampText = document.createTextNode(`${entry.timestamp} | `);
+                    detailsDiv.appendChild(timestampText);
+
+                    const typeStrong = document.createElement('strong');
+                    typeStrong.textContent = entry.changeType;
+                    detailsDiv.appendChild(typeStrong);
+                    contentDiv.appendChild(detailsDiv);
+                    // Header
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'change-log-header';
+                    const toClass = entry.to > entry.from ? 'log-to-increase' : entry.to < entry.from ? 'log-to-decrease' : '';
+                    headerDiv.innerHTML = `${entry.department} - ${entry.type}: ${entry.from} → <span class="${toClass}">${entry.to}</span>, ${transfer || ''}  ${transferTo || ''}, Reason: ${entry.reason}`;
+                    contentDiv.appendChild(headerDiv);
+
+                    entryDiv.appendChild(contentDiv);
+
+                    // Actions section
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'change-log-actions';
+
+                    // Checkbox (only for Proposed)
+                    if (entry.changeType === 'Proposed') {
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'log-checkbox';
+                        checkbox.checked = entry.completed;
+                        checkbox.addEventListener('change', function () {
+                            toggleCompleted(entry.id);
+                        });
+                        actionsDiv.appendChild(checkbox);
+                    }
+
+                    // Edit button
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'log-action-btn';
+                    editBtn.textContent = 'E';
+                    editBtn.type = 'button';
+                    editBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        editLogEntry(entry.id);
+                    });
+                    actionsDiv.appendChild(editBtn);
+
+                    // Delete button
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'log-action-btn delete';
+                    deleteBtn.textContent = 'D';
+                    deleteBtn.type = 'button';
+                    deleteBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        deleteLogEntry(entry.id);
+                    });
+                    actionsDiv.appendChild(deleteBtn);
+
+                    entryDiv.appendChild(actionsDiv);
+                    container.appendChild(entryDiv);
+                });
+            }
+
+            // Update potential numbers
+            updatePotentialNumbers();
+        }
+
+        function toggleCompleted (id) {
+            const entry = changeLog.find(e => e.id === id);
+            if (entry) {
+                entry.completed = !entry.completed;
+                renderChangeLog();
+                updateTotals();
+            }
+        }
+
+        function deleteLogEntry (id) {
+            if (confirm('Are you sure you want to delete this change log entry?')) {
+                const index = changeLog.findIndex(e => e.id === id);
+                if (index > -1) {
+                    changeLog.splice(index, 1);
+                    renderChangeLog();
+                    updateTotals();
+                }
+            }
+        }
+
+        function editLogEntry (id) {
+            const entry = changeLog.find(e => e.id === id);
+            if (!entry) return;
+
+            // Populate modal with existing data
+            document.getElementById('modal-department').value = entry.department;
+            document.getElementById('modal-change').value = `${entry.type}: ${entry.from} → ${entry.to}`;
+            document.getElementById('modal-reason').value = entry.reason;
+            document.getElementById('modal-type').value = entry.changeType;
+
+            // Determine the label based on the change direction
+            const changeAmount = entry.to - entry.from;
+            const transferLabel = changeAmount < 0 ? 'Transferred to' : 'Transferred from';
+            document.querySelector('label[for="modal-transferred"]').textContent = transferLabel;
+
+            // Populate "Transferred to/From" dropdown
+            const transferredSelect = document.getElementById('modal-transferred');
+
+            // Clear existing options
+            while (transferredSelect.firstChild) {
+                transferredSelect.removeChild(transferredSelect.firstChild);
+            }
+
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = 'Not Applicable';
+            defaultOption.textContent = 'Not Applicable';
+            transferredSelect.appendChild(defaultOption);
+
+            allocationData.forEach(dept => {
+                if (dept.name !== entry.department) {
+                    const option = document.createElement('option');
+                    option.value = dept.name;
+                    option.textContent = dept.name;
+                    transferredSelect.appendChild(option);
+                }
+            });
+
+            // Set the transferred value
+            transferredSelect.value = entry.transferredTo || 'Not Applicable';
+
+            // Show modal for editing
+            pendingAdjustment = { editingId: id };
+            document.getElementById('adjustment-modal').classList.add('active');
+        }
+
+        // Edit change item
+        function editChange (element) {
+            // Check if already in edit mode
+            if (element.classList.contains('edit-mode')) {
+                return;
+            }
+
+            element.classList.add('edit-mode');
+
+            // Get current data
+            const action = element.getAttribute('data-action') || 'add';
+            const resourceType = element.getAttribute('data-type') || 'ftr';
+            const changeText = element.querySelector('.change-text');
+
+            // Clone the original children for restoration
+            const originalChildren = Array.from(changeText.childNodes).map(node => node.cloneNode(true));
+
+            // Get all text lines except the first one (which is change-label)
+            const textLines = Array.from(changeText.querySelectorAll('div')).slice(1).map(div => div.textContent);
+
+            // Create edit form
+            const editForm = document.createElement('div');
+            editForm.className = 'edit-form';
+
+            // Create first row with dropdowns
+            const firstRow = document.createElement('div');
+            firstRow.className = 'form-row';
+
+            // Action dropdown
+            const actionGroup = document.createElement('div');
+            actionGroup.className = 'form-group';
+            const actionLabel = document.createElement('label');
+            actionLabel.className = 'form-label';
+            actionLabel.textContent = 'Action';
+            const actionSelect = document.createElement('select');
+            actionSelect.className = 'form-select';
+
+            const addOption = document.createElement('option');
+            addOption.value = 'add';
+            addOption.textContent = 'Add';
+            if (action === 'add') addOption.selected = true;
+            actionSelect.appendChild(addOption);
+
+            const removeOption = document.createElement('option');
+            removeOption.value = 'remove';
+            removeOption.textContent = 'Remove';
+            if (action === 'remove') removeOption.selected = true;
+            actionSelect.appendChild(removeOption);
+
+            actionGroup.appendChild(actionLabel);
+            actionGroup.appendChild(actionSelect);
+            firstRow.appendChild(actionGroup);
+
+            // Resource type dropdown
+            const typeGroup = document.createElement('div');
+            typeGroup.className = 'form-group';
+            const typeLabel = document.createElement('label');
+            typeLabel.className = 'form-label';
+            typeLabel.textContent = 'Type';
+            const typeSelect = document.createElement('select');
+            typeSelect.className = 'form-select';
+
+            const ftrOption = document.createElement('option');
+            ftrOption.value = 'ftr';
+            ftrOption.textContent = 'FTR';
+            if (resourceType === 'ftr') ftrOption.selected = true;
+            typeSelect.appendChild(ftrOption);
+
+            const p4Option = document.createElement('option');
+            p4Option.value = 'p4';
+            p4Option.textContent = 'P4';
+            if (resourceType === 'p4') p4Option.selected = true;
+            typeSelect.appendChild(p4Option);
+
+            typeGroup.appendChild(typeLabel);
+            typeGroup.appendChild(typeSelect);
+            firstRow.appendChild(typeGroup);
+
+            editForm.appendChild(firstRow);
+
+            // Description input
+            const descGroup = document.createElement('div');
+            descGroup.className = 'form-group';
+            const descLabel = document.createElement('label');
+            descLabel.className = 'form-label';
+            descLabel.textContent = 'Description';
+            const descInput = document.createElement('input');
+            descInput.type = 'text';
+            descInput.className = 'edit-input';
+            descInput.value = textLines.join(', ');
+            descInput.placeholder = 'e.g., CLRA Triage, Admin';
+            descGroup.appendChild(descLabel);
+            descGroup.appendChild(descInput);
+            editForm.appendChild(descGroup);
+
+            // Create buttons container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'edit-buttons';
+
+            const saveBtn = document.createElement('button');
+            saveBtn.type = 'button';
+            saveBtn.className = 'edit-btn save';
+            saveBtn.textContent = 'Save';
+            saveBtn.onclick = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                saveChange(element, actionSelect.value, typeSelect.value, descInput.value);
+            };
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'edit-btn cancel';
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.onclick = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                cancelEdit(element, originalChildren);
+            };
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'edit-btn delete';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                deleteChange(element);
+            };
+
+            buttonContainer.appendChild(saveBtn);
+            buttonContainer.appendChild(cancelBtn);
+            buttonContainer.appendChild(deleteBtn);
+            editForm.appendChild(buttonContainer);
+
+            // Replace content with form
+            while (changeText.firstChild) {
+                changeText.removeChild(changeText.firstChild);
+            }
+            changeText.appendChild(editForm);
+
+            // Focus description input
+            descInput.focus();
+        }
+
+        function saveChange (element, action, resourceType, description) {
+            const changeText = element.querySelector('.change-text');
+
+            // Update data attributes
+            element.setAttribute('data-action', action);
+            element.setAttribute('data-type', resourceType);
+
+            // Update styling based on action
+            element.classList.remove('positive', 'negative', 'neutral');
+            if (action === 'add') {
+                element.classList.add('positive');
+            } else if (action === 'remove') {
+                element.classList.add('negative');
+            } else {
+                element.classList.add('neutral');
+            }
+
+            // Build new content
+            while (changeText.firstChild) {
+                changeText.removeChild(changeText.firstChild);
+            }
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'change-label';
+            labelDiv.textContent = `${action === 'add' ? '+' : '-'} ${resourceType.toUpperCase()}`;
+            changeText.appendChild(labelDiv);
+
+            if (description.trim()) {
+                const descDiv = document.createElement('div');
+                descDiv.textContent = description;
+                changeText.appendChild(descDiv);
+            }
+
+            element.classList.remove('edit-mode');
+        }
+
+        function cancelEdit (element, originalChildren) {
+            const changeText = element.querySelector('.change-text');
+
+            // Clear current content
+            while (changeText.firstChild) {
+                changeText.removeChild(changeText.firstChild);
+            }
+
+            // Restore original children
+            originalChildren.forEach(child => {
+                changeText.appendChild(child.cloneNode(true));
+            });
+
+            element.classList.remove('edit-mode');
+        }
+
+        function deleteChange (element) {
+            if (confirm('Are you sure you want to delete this change item?')) {
+                element.classList.add('deleting');
+                setTimeout(() => {
+                    element.remove();
+                }, 300);
+            }
+        }
+
+        function addChangeItem (unitElement) {
+            const changesContainer = unitElement.querySelector('.changes');
+
+            // Create new change item
+            const newChangeItem = document.createElement('div');
+            newChangeItem.className = 'change-item neutral';
+            newChangeItem.setAttribute('data-action', 'add');
+            newChangeItem.setAttribute('data-type', 'ftr');
+            newChangeItem.onclick = function (e) {
+                e.stopPropagation();
+                editChange(this);
+            };
+
+            // Build content using DOM methods
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'change-content';
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'change-text';
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'change-label';
+            labelDiv.textContent = '+ New Change';
+            textDiv.appendChild(labelDiv);
+
+            const instructionDiv = document.createElement('div');
+            instructionDiv.textContent = 'Click to edit';
+            textDiv.appendChild(instructionDiv);
+
+            contentDiv.appendChild(textDiv);
+
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'change-edit-icon';
+            iconSpan.textContent = '✎';
+            contentDiv.appendChild(iconSpan);
+
+            newChangeItem.appendChild(contentDiv);
+
+            changesContainer.appendChild(newChangeItem);
+
+            // Automatically enter edit mode
+            setTimeout(() => {
+                editChange(newChangeItem);
+            }, 50);
+        }
+
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        function saveData () {
+            const currentValues = {};
+            document.querySelectorAll('.org-unit').forEach(unit => {
+                const name = unit.querySelector('.unit-name').textContent;
+                currentValues[name] = {};
+                unit.querySelectorAll('.metric').forEach(metric => {
+                    const label = metric.querySelector('.metric-label').textContent.toLowerCase();
+                    const metricNumber = metric.querySelector('.metric-number');
+                    if (metricNumber) currentValues[name][label] = parseInt(metricNumber.textContent);
+                });
+            });
+
+            const data = {
+                savedAt: new Date().toISOString(),
+                allocationData,
+                currentValues,
+                changeLog
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `headcount-plan-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadData (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+
+                    allocationData.length = 0;
+                    data.allocationData.forEach(d => allocationData.push(d));
+
+                    changeLog.length = 0;
+                    data.changeLog.forEach(entry => changeLog.push(entry));
+
+                    generateCurrentAllocation();
+
+                    if (data.currentValues) {
+                        document.querySelectorAll('.org-unit').forEach(unit => {
+                            const name = unit.querySelector('.unit-name').textContent;
+                            if (data.currentValues[name]) {
+                                unit.querySelectorAll('.metric').forEach(metric => {
+                                    const label = metric.querySelector('.metric-label').textContent.toLowerCase();
+                                    const metricNumber = metric.querySelector('.metric-number');
+                                    if (metricNumber && data.currentValues[name][label] !== undefined) {
+                                        metricNumber.textContent = data.currentValues[name][label];
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    updatePotentialNumbers();
+                    updateTotals();
+                    renderChangeLog();
+                } catch (err) {
+                    alert('Failed to load save file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        document.getElementById('save-btn').addEventListener('click', saveData);
+        document.getElementById('load-file').addEventListener('change', function () {
+            if (this.files[0]) {
+                loadData(this.files[0]);
+                this.value = '';
+            }
+        });
+
+        // Initialize totals on page load
+        generateCurrentAllocation();
+        updateTotals();
+    </script>
+</body>
+
+</html>
