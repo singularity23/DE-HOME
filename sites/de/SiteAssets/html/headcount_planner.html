@@ -237,6 +237,70 @@
             gap: 12px;
         }
 
+        .unit-titles {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .unit-titles-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .unit-titles-sublabel {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            color: var(--unit-color, var(--color-link));
+            margin: 6px 0 2px;
+        }
+
+        .unit-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 0;
+            gap: 8px;
+        }
+
+        .unit-title-name {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unit-title-bar-wrap {
+            flex: 1;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .unit-title-bar {
+            height: 100%;
+            border-radius: 2px;
+            background: var(--unit-color, var(--color-link));
+            opacity: 0.5;
+        }
+
+        .unit-title-count {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text);
+            min-width: 16px;
+            text-align: right;
+        }
+
         .metric-title {
             display: flex;
             justify-content: space-between;
@@ -1038,10 +1102,99 @@
             { name: 'INT Regional', ftr: 5, p4: 1, color: 'var(--color-regional)' },
             { name: 'LMN Regional', ftr: 7, p4: 2, color: 'var(--color-regional)' },
             { name: 'LMS Regional', ftr: 6, p4: 0, color: 'var(--color-regional)' },
-            { name: 'Project A', ftr: 8, p4: 2, color: 'var(--color-project)' },
-            { name: 'Project B', ftr: 7, p4: 1, color: 'var(--color-project)' },
+            { name: 'Projects A', ftr: 8, p4: 2, color: 'var(--color-project)' },
+            { name: 'Projects B', ftr: 7, p4: 1, color: 'var(--color-project)' },
             { name: 'Programs', ftr: 5, p4: 3, color: 'var(--color-program)' }
         ];
+
+        function buildTitleBreakdown (deptName) {
+            const section = document.createElement('div');
+            section.className = 'unit-titles';
+
+            const allRows = rosterData.filter(r => r.dept === deptName && r.title && r.title.toLowerCase() !== 'team lead');
+            if (allRows.length === 0) return section;
+
+            const isSpecialist  = r => r.title.toLowerCase().includes('specialist engineer');
+            const hasNote       = (r, val) => (r.notes || '').toLowerCase().includes(val.toLowerCase());
+
+            const vacancyRows = allRows.filter(r => r.employment === 'Vacancy');
+            const rotInRows   = allRows.filter(r => r.employment !== 'Vacancy' && hasNote(r, 'rot in'));
+            const rotOutRows  = allRows.filter(r => r.employment !== 'Vacancy' && !hasNote(r, 'rot in') && hasNote(r, 'rot out'));
+
+            const remaining   = allRows.filter(r =>
+                r.employment !== 'Vacancy' && !hasNote(r, 'rot in') && !hasNote(r, 'rot out')
+            );
+            const p4Rows      = remaining.filter(r => isSpecialist(r));
+            const fttRows     = remaining.filter(r => !isSpecialist(r) && r.employment === 'FTT');
+            const ftrRows     = remaining.filter(r => !isSpecialist(r) && r.employment !== 'FTT');
+
+            const label = document.createElement('div');
+            label.className = 'unit-titles-label';
+            label.textContent = 'Roster';
+            section.appendChild(label);
+
+            function renderGroup (groupName, rows) {
+                if (rows.length === 0) return;
+
+                const counts = {};
+                rows.forEach(r => {
+                    const status = (r.notes && r.notes.trim()) ? r.notes.trim() : r.employment;
+                    const key = `${r.title} (${status})`;
+                    counts[key] = (counts[key] || 0) + 1;
+                });
+
+                const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+                const max = sorted[0][1];
+
+                const sublabel = document.createElement('div');
+                sublabel.className = 'unit-titles-sublabel';
+                sublabel.textContent = groupName;
+                section.appendChild(sublabel);
+
+                sorted.forEach(([key, count]) => {
+                    const row = document.createElement('div');
+                    row.className = 'unit-title-row';
+
+                    const name = document.createElement('span');
+                    name.className = 'unit-title-name';
+                    name.textContent = key;
+                    row.appendChild(name);
+
+                    const barWrap = document.createElement('div');
+                    barWrap.className = 'unit-title-bar-wrap';
+                    const bar = document.createElement('div');
+                    bar.className = 'unit-title-bar';
+                    bar.style.width = `${(count / max) * 100}%`;
+                    barWrap.appendChild(bar);
+                    row.appendChild(barWrap);
+
+                    const cnt = document.createElement('span');
+                    cnt.className = 'unit-title-count';
+                    cnt.textContent = count;
+                    row.appendChild(cnt);
+
+                    section.appendChild(row);
+                });
+            }
+
+            renderGroup('FTR', ftrRows);
+            renderGroup('FTT', fttRows);
+            renderGroup('P4', p4Rows);
+            renderGroup('Rot In', rotInRows);
+            renderGroup('Rot Out', rotOutRows);
+            renderGroup('Vacancy', vacancyRows);
+
+            return section;
+        }
+
+        function updateTitleBreakdowns () {
+            document.querySelectorAll('.org-unit[data-dept]').forEach(unit => {
+                const existing = unit.querySelector('.unit-titles');
+                const fresh = buildTitleBreakdown(unit.dataset.dept);
+                if (existing) existing.replaceWith(fresh);
+                else unit.appendChild(fresh);
+            });
+        }
 
         // Function to generate Current Allocation HTML
         function generateCurrentAllocation () {
@@ -1057,6 +1210,8 @@
                 const unit = document.createElement('div');
                 unit.className = 'org-unit';
                 unit.style.borderTopColor = dept.color;
+                unit.dataset.dept = dept.name;
+                unit.style.setProperty('--unit-color', dept.color);
 
                 const unitName = document.createElement('div');
                 unitName.className = 'unit-name';
@@ -1084,6 +1239,7 @@
                 createMetric(metrics, 'P4', dept.p4, 'p4');
 
                 unit.appendChild(metrics);
+                unit.appendChild(buildTitleBreakdown(dept.name));
                 orgChart.appendChild(unit);
             });
 
@@ -2459,6 +2615,7 @@
 
                 tbody.appendChild(makeRosterRow(row, index));
             });
+            updateTitleBreakdowns();
         }
 
         document.getElementById('roster-search').addEventListener('input', function () {
