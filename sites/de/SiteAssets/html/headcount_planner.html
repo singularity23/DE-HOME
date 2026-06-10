@@ -10,6 +10,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=delete">
     <style>
         /* ============================================================
         HEADCOUNT PLANNING DASHBOARD
@@ -36,7 +38,7 @@
             --text: color-mix(in srgb, var(--color-primary) 80%, var(--surface-base));
             --text-muted: var(--color-info);
             --border: var(--color-tertiary);
-            --muted-bg: color-mix(in srgb, var(--color-tertiary) 10%, var(--surface));
+            --muted-bg: color-mix(in srgb, var(--color-info) 10%, var(--surface));
             --accent: var(--color-primary);
             --success-bg: color-mix(in srgb, var(--color-success) 14%, var(--surface-base));
             --error-bg: color-mix(in srgb, var(--color-error) 10%, var(--surface-base));
@@ -63,7 +65,7 @@
             padding: var(--space-base);
             font-size: var(--font-size-base);
             font-weight: 400;
-            width: 820px;
+            width: 1200px;
             margin: 0 auto;
         }
 
@@ -126,7 +128,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 0;
         }
@@ -134,13 +136,11 @@
         .tabs {
             display: flex;
             gap: 0;
-            margin-bottom: var(--space-base);
-            border-bottom: 1px solid var(--border);
+            border: 1px solid var(--border);
             background-color: var(--surface);
-            margin-left: calc(var(--space-base) * -1);
-            margin-right: calc(var(--space-base) * -1);
             padding-left: var(--space-base);
             padding-right: var(--space-base);
+            border-bottom: 0px;
         }
 
         .tab-button {
@@ -165,6 +165,7 @@
         .tab-button.active {
             color: var(--color-primary);
             border-bottom-color: var(--color-primary);
+            border-width: 3px;
         }
 
         .tab-content {
@@ -287,7 +288,8 @@
             padding: 4px;
         }
 
-        .metric-btn {
+        .metric-btn,
+        .roster-add-btn {
             width: 28px;
             height: 28px;
             border: 1px solid var(--border);
@@ -303,7 +305,8 @@
             font-size: 1rem;
         }
 
-        .metric-btn:hover {
+        .metric-btn:hover,
+        .roster-add-btn:hover {
             background-color: var(--muted-bg);
             border-color: var(--accent);
             color: var(--accent);
@@ -421,6 +424,10 @@
             border-left-color: var(--color-success);
         }
 
+        .change-log-entry.roster.proposed {
+            border-left-color: var(--dept-color, var(--color-link));
+        }
+
         .change-log-content {
             flex: 1;
         }
@@ -453,7 +460,7 @@
             flex-shrink: 0;
         }
 
-        .log-checkbox {
+        input[type="checkbox"] {
             width: 20px;
             height: 20px;
             cursor: pointer;
@@ -468,9 +475,9 @@
             width: 20px;
             height: 20px;
             padding: 6px 6px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--color-success);
             background-color: var(--surface);
-            color: var(--text);
+            color: var(--color-success);
             cursor: pointer;
             font-size: 0.75rem;
             font-weight: 600;
@@ -703,6 +710,184 @@
             padding-left: 6px;
             color: var(--color-civil);
         }
+
+        /* ---- Roster Tab ---- */
+        .roster-controls {
+            margin-bottom: var(--space-base);
+            display: flex;
+            gap: 8px;
+        }
+
+        .roster-search {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            background-color: var(--surface);
+            color: var(--text);
+        }
+
+        .roster-search:focus {
+            outline: none;
+            border-color: var(--color-link);
+        }
+
+        .roster-table-wrap {
+            overflow-x: auto;
+        }
+
+        .roster-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .roster-table th {
+            text-align: left;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border);
+            background-color: var(--surface-base);
+            white-space: nowrap;
+        }
+
+        .roster-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .roster-table tbody tr {
+            cursor: pointer;
+        }
+
+        .roster-table tbody tr:hover td {
+            background-color: var(--muted-bg);
+        }
+
+        .roster-table tbody tr.editing td {
+            background-color: color-mix(in srgb, var(--color-link) 6%, var(--surface));
+        }
+
+        .roster-table tbody tr.editing {
+            cursor: default;
+        }
+
+        .roster-dept-row {
+            cursor: default !important;
+        }
+
+        .roster-dept-header {
+            display: flex;
+        }
+
+        .roster-dept-row td:first-child {
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            color: var(--dept-color, var(--text-muted));
+            background-color: var(--muted-bg);
+            border-left: 4px solid var(--dept-color, var(--border));
+            background: var(--muted-bg);
+        }
+
+        .roster-dept-row .roster-add-cell {
+            background: var(--muted-bg);
+            border-right: 4px solid var(--dept-color, var(--border));
+            vertical-align: middle;
+            padding: 4px 8px;
+            align-content: center;
+            text-align: center;
+            justify-items: self-end;
+        }
+
+        .roster-add-btn:hover {
+            background: var(--dept-color, var(--border));
+            color: #fff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+
+        .badge-ftr {
+            background-color: var(--success-bg);
+            color: var(--color-success);
+        }
+
+        .badge-ftt {
+            background-color: var(--warn-bg);
+            color: var(--color-primary);
+        }
+
+        .badge-vacancy {
+            background-color: var(--error-bg);
+            color: var(--color-error);
+        }
+
+        .badge-proposed {
+            background-color: color-mix(in srgb, var(--color-warning) 20%, transparent);
+            color: var(--color-civil);
+        }
+
+        .badge-completed {
+            background-color: var(--success-bg);
+            color: var(--color-success);
+        }
+
+        .roster-complete-checkbox {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            accent-color: var(--color-success);
+        }
+
+        .roster-cell-input {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid var(--border);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            color: var(--text);
+            background-color: var(--surface);
+        }
+
+        .roster-cell-input:focus {
+            outline: none;
+            border-color: var(--color-link);
+        }
+
+        .roster-table td .log-action-btn {
+            padding: 4px 10px;
+            font-size: var(--font-size-sm);
+        }
+
+        .roster-table tbody tr.dragging {
+            opacity: 0.35;
+        }
+
+        .roster-table tbody tr.drag-over td,
+        .roster-table tr.roster-dept-row.drag-over td {
+            border-top: 2px solid var(--color-link);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
     </style>
 </head>
 
@@ -720,6 +905,11 @@
     </div>
 
     <div class="container">
+
+        <div class="tabs">
+            <button class="tab-button active" type="button" data-tab="existing">Current Allocation</button>
+            <button class="tab-button" type="button" data-tab="roster">Roster</button>
+        </div>
 
         <!-- EXISTING TAB -->
         <div id="existing" class="tab-content active">
@@ -760,6 +950,32 @@
                 <div class="section-title">Change Log</div>
                 <div id="change-log-container" class="change-log">
                     <div class="empty-state">No changes recorded yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROSTER TAB -->
+        <div id="roster" class="tab-content">
+            <div class="section">
+                <div class="roster-controls">
+                    <input type="search" class="roster-search" id="roster-search"
+                        placeholder="Search by name, title, area…">
+                </div>
+                <div class="roster-table-wrap">
+                    <table class="roster-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Title</th>
+                                <th>Reports To</th>
+                                <th>Employment</th>
+                                <th>Notes</th>
+                                <th>Area</th>
+                                <th>Change</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roster-tbody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1302,6 +1518,61 @@
                 container.appendChild(emptyDiv);
             } else {
                 changeLog.forEach(entry => {
+                    if (entry.isRosterChange) {
+                        const statusClass = entry.completed ? 'completed' : 'proposed';
+                        const entryDiv = document.createElement('div');
+                        entryDiv.className = `change-log-entry roster ${statusClass}`;
+                        entryDiv.style.setProperty('--dept-color', deptColors[entry.dept] || 'var(--text-muted)');
+
+                        const contentDiv = document.createElement('div');
+                        contentDiv.className = 'change-log-content';
+
+                        const detailsDiv = document.createElement('div');
+                        detailsDiv.className = 'change-log-details';
+                        detailsDiv.textContent = `${entry.timestamp} | Roster · ${entry.source}`;
+                        contentDiv.appendChild(detailsDiv);
+
+                        const headerDiv = document.createElement('div');
+                        headerDiv.className = 'change-log-header';
+                        headerDiv.textContent = entry.personName;
+                        contentDiv.appendChild(headerDiv);
+
+                        entry.changes.forEach(c => {
+                            const lineDiv = document.createElement('div');
+                            lineDiv.className = 'change-log-reason';
+                            lineDiv.textContent = `${c.field}: ${c.from} → ${c.to}`;
+                            contentDiv.appendChild(lineDiv);
+                        });
+
+                        entryDiv.appendChild(contentDiv);
+
+                        const actionsDiv = document.createElement('div');
+                        actionsDiv.className = 'change-log-actions';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'roster-complete-checkbox';
+                        checkbox.checked = !!entry.completed;
+                        checkbox.title = 'Mark as completed';
+                        checkbox.addEventListener('change', () => {
+                            entry.completed = checkbox.checked;
+                            renderChangeLog();
+                            generateRoster(document.getElementById('roster-search').value);
+                        });
+                        actionsDiv.appendChild(checkbox);
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'log-action-btn delete';
+                        deleteBtn.textContent = 'D';
+                        deleteBtn.type = 'button';
+                        deleteBtn.addEventListener('click', (e) => { e.preventDefault(); deleteLogEntry(entry.id); });
+                        actionsDiv.appendChild(deleteBtn);
+
+                        entryDiv.appendChild(actionsDiv);
+                        container.appendChild(entryDiv);
+                        return;
+                    }
+
                     const entryDiv = document.createElement('div');
                     entryDiv.className = 'change-log-entry ' + entry.changeType.toLowerCase();
                     if (entry.completed) {
@@ -1801,8 +2072,402 @@
             }
         });
 
+        // ---- Roster Data ----
+        const rosterData = [
+            { name: 'Mike Kwok', title: 'Division Manager', dept: 'Distribution Engineering', reportsTo: 'Samira', employment: 'FTR', notes: '', area: '' },
+            { name: 'Windy Kwok', title: 'Lead Admin', dept: 'Distribution Engineering', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Paul Therrien', title: 'Principal Engineer', dept: 'Distribution Engineering', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Joshua Wilson', title: 'Eng Services Clerk', dept: 'Distribution Engineering', reportsTo: 'Mike Kwok', employment: 'FTT', notes: '', area: '' },
+            { name: 'Vivian Polanczyk', title: 'Eng Services Clerk', dept: 'Distribution Engineering', reportsTo: 'Mike Kwok', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Edward T Mah', title: 'Team Lead', dept: 'Civil Engineering', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Gavin Lee', title: 'Specialist Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Jesse Liu', title: 'Specialist Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Syed Abbas', title: 'Sr.Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Meraj Afshord', title: 'Sr.Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Ramy Awad', title: 'Sr.Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Declan Baker', title: 'Sr.Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Samer Bawab', title: 'Sr.Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Oliver Gao', title: 'Sr.Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Gregory Hustler', title: 'Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Kirsten Krajnc', title: 'EIT', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Cynthia Lee', title: 'EIT', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Albert Setiapoetra', title: 'EIT', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: 'Rot in', area: '' },
+            { name: 'Lawrence Siu', title: 'Sr.Engineer', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTR', notes: '', area: '' },
+            { name: 'Saman Hashemi', title: 'Consultant', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTT', notes: '', area: '' },
+            { name: 'Hassan Pashnesaz', title: 'Consultant', dept: 'Civil Engineering', reportsTo: 'Edward T Mah', employment: 'FTT', notes: '', area: '' },
+            { name: 'Mary Congdon', title: 'Team Lead', dept: 'VI Regional', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Chase Bistretzan', title: 'Co-op', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTT', notes: 'Co-op', area: '' },
+            { name: 'Ricky Duggal', title: 'Sr.Engineer', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTR', notes: '', area: 'Central VI' },
+            { name: 'Bill Kiedaisch', title: 'Sr.Engineer', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTR', notes: '', area: 'Northern VI' },
+            { name: 'Marjan Mehrabi', title: 'Sr.Engineer', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTR', notes: '', area: 'Southern VI' },
+            { name: 'Geir Opdahl', title: 'Sr.Engineer', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTR', notes: '', area: 'Southern VI' },
+            { name: 'Irem Algan', title: 'Consultant', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTT', notes: '', area: '' },
+            { name: 'Harun Buyukkocabas', title: 'Consultant', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTT', notes: '', area: '' },
+            { name: 'Sherif Elbassiouny', title: 'Consultant', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTT', notes: '', area: '' },
+            { name: 'Sina Golkhatmi', title: 'Consultant', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTT', notes: '', area: '' },
+            { name: 'Ryan Kelly', title: 'Consultant', dept: 'VI Regional', reportsTo: 'Mary Congdon', employment: 'FTT', notes: '', area: '' },
+            { name: 'Greg Wasyliw', title: 'Team Lead', dept: 'INT Regional', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Hristin Stoichev', title: 'Specialist Engineer', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: '', area: '' },
+            { name: 'Akhil Jacob', title: 'EIT', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Frank (Hua) Chen', title: 'EIT', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Gursharanjit Dhunna', title: 'Sr.Engineer', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: '', area: 'Northern Interior' },
+            { name: 'Brian Hofer', title: 'Sr.Engineer', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: '', area: 'Northern Interior' },
+            { name: 'Cam Huston', title: 'Engineer', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: '', area: 'Southern Interior' },
+            { name: 'Josh Patton', title: 'Sr.Engineer', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: '', area: 'Southern Interior' },
+            { name: 'Jag Sandu', title: 'EIT', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Jovan Santiago', title: 'EIT', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Drew Seguin', title: 'EIT', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Aleksa Vujicic', title: 'EIT', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTR', notes: '', area: '' },
+            { name: 'David Chicotte', title: 'Consultant', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTT', notes: '', area: '' },
+            { name: 'Tyler Ferguson', title: 'Consultant', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTT', notes: '', area: '' },
+            { name: 'Alvaro Ramirez', title: 'Consultant', dept: 'INT Regional', reportsTo: 'Greg Wasyliw', employment: 'FTT', notes: '', area: '' },
+            { name: 'Kan Tang', title: 'Team Lead', dept: 'LMN Regional', reportsTo: 'Mike Kwok', employment: 'FTR', notes: 'Rot in', area: '' },
+            { name: 'Vacancy', title: 'Team Lead', dept: 'LMN Regional', reportsTo: 'Mike Kwok', employment: 'Vacancy', notes: '', area: '' },
+            { name: 'Tianyu Ding', title: 'Specialist Engineer', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTR', notes: '', area: '' },
+            { name: 'Kan Tang', title: 'Specialist Engineer', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTR', notes: 'Rot out', area: '' },
+            { name: 'Alex Corbett', title: 'Sr.Engineer', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTR', notes: '', area: 'North Shore/Costal' },
+            { name: 'Liang Liu', title: 'Sr.Engineer', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTR', notes: '', area: 'Vancouver' },
+            { name: 'Wei Liu', title: 'Sr.Engineer', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTR', notes: '', area: 'Vancouver' },
+            { name: 'Pauline Pham', title: 'Sr.Engineer', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTR', notes: '', area: 'Burnaby' },
+            { name: 'Harpreet Pinglia', title: 'Sr.Engineer', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTR', notes: '', area: 'Coquitlam/Maple Ridge' },
+            { name: 'Jaydeep Janjuha', title: 'Consultant', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTT', notes: '', area: '' },
+            { name: 'Fabian Ocampo', title: 'Consultant', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTT', notes: '', area: '' },
+            { name: 'Ammar Zaidi', title: 'Consultant', dept: 'LMN Regional', reportsTo: 'Kan Tang', employment: 'FTT', notes: '', area: '' },
+            { name: 'Bradley Vrecko', title: 'Team Lead', dept: 'LMS Regional', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Ijaz Abbasi', title: 'Sr.Engineer', dept: 'LMS Regional', reportsTo: 'Bradley Vrecko', employment: 'FTR', notes: '', area: 'Surrey' },
+            { name: 'Tien Huynh', title: 'Sr.Engineer', dept: 'LMS Regional', reportsTo: 'Bradley Vrecko', employment: 'FTR', notes: '', area: 'Richmond/Delta' },
+            { name: 'Anthony Litvin', title: 'EIT', dept: 'LMS Regional', reportsTo: 'Bradley Vrecko', employment: 'FTR', notes: '', area: '' },
+            { name: 'William Ma', title: 'Sr.Engineer', dept: 'LMS Regional', reportsTo: 'Bradley Vrecko', employment: 'FTR', notes: '', area: 'Abbotsford/Chilliwack' },
+            { name: 'Brandon Magnus', title: 'EIT', dept: 'LMS Regional', reportsTo: 'Bradley Vrecko', employment: 'FTR', notes: '', area: '' },
+            { name: 'Michael Zhang', title: 'Sr.Engineer', dept: 'LMS Regional', reportsTo: 'Bradley Vrecko', employment: 'FTR', notes: '', area: 'Langley/White Rock' },
+            { name: 'Sergiy Goncharuk', title: 'Consultant', dept: 'LMS Regional', reportsTo: 'Bradley Vrecko', employment: 'FTT', notes: '', area: '' },
+            { name: 'Aidin Houshmand', title: 'Team Lead', dept: 'Projects A', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Joanne Kwok', title: 'Specialist Engineer', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Stefano Ghirardello', title: 'Specialist Engineer', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Edgar Cave', title: 'Sr.Engineer', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Catherine Marti', title: 'Engineer', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Milly Martin', title: 'Engineer', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Zach McQuaid', title: 'EIT', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Mike Nagra', title: 'Engineer', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Billy Su', title: 'Engineer', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTR', notes: '', area: '' },
+            { name: 'Gabor Paroczai', title: 'Consultant', dept: 'Projects A', reportsTo: 'Aidin Houshmand', employment: 'FTT', notes: '', area: '' },
+            { name: 'Mohammad Nazer', title: 'Team Lead', dept: 'Projects B', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Shawn Crockett', title: 'Specialist Engineer', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTR', notes: '', area: '' },
+            { name: 'Haley Dittmann', title: 'Engineer', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTR', notes: '', area: '' },
+            { name: 'Ilia Kalmanson', title: 'Sr.Engineer', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTR', notes: '', area: '' },
+            { name: 'Roein Manafi', title: 'Engineer', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTR', notes: '', area: '' },
+            { name: 'Hamidreza Mirzaeian', title: 'Sr.Engineer', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTR', notes: '', area: '' },
+            { name: 'Mohammed Shaban', title: 'Sr.Engineer', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTR', notes: '', area: '' },
+            { name: 'Shane Yargeau', title: 'EIT', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTR', notes: '', area: '' },
+            { name: 'Nikhil Ahir', title: 'Consultant', dept: 'Projects B', reportsTo: 'Mohammad Nazer', employment: 'FTT', notes: '', area: '' },
+            { name: 'Matthew McGrath', title: 'Team Lead', dept: 'Programs', reportsTo: 'Mike Kwok', employment: 'FTR', notes: '', area: '' },
+            { name: 'Sam D Jones', title: 'Specialist Engineer', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'FTR', notes: '', area: '' },
+            { name: 'Vacancy', title: 'Specialist Engineer', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'Vacancy', notes: '', area: '' },
+            { name: 'Akhil Jacob', title: 'EIT', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'FTR', notes: 'Rot in', area: '' },
+            { name: 'Elmar Flaris', title: 'Technologist', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'FTR', notes: '', area: '' },
+            { name: 'Gokhan Cetin', title: 'Consultant', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'FTT', notes: '', area: '' },
+            { name: 'Shahrukh Mumtaz', title: 'Consultant', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'FTT', notes: '', area: '' },
+            { name: 'Falah Numan', title: 'Consultant', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'FTT', notes: '', area: '' },
+            { name: 'Hua Ying', title: 'Consultant', dept: 'Programs', reportsTo: 'Matthew McGrath', employment: 'FTT', notes: '', area: '' },
+            { name: 'Hamid Gharachamani', title: 'Estimating Specialist Engineer', dept: 'Estimating', reportsTo: 'Matthew McGrath', employment: 'FTR', notes: '', area: '' },
+            { name: 'Satinder Sahai', title: 'Project Technologist', dept: 'Estimating', reportsTo: 'Matthew McGrath', employment: 'FTR', notes: '', area: '' },
+        ];
+
+        const deptColors = {
+            'Distribution Engineering': 'var(--color-primary)',
+            'Civil Engineering': 'var(--color-civil)',
+            'VI Regional': 'var(--color-regional)',
+            'INT Regional': 'var(--color-regional)',
+            'LMN Regional': 'var(--color-regional)',
+            'LMS Regional': 'var(--color-regional)',
+            'Projects A': 'var(--color-project)',
+            'Projects B': 'var(--color-project)',
+            'Programs': 'var(--color-program)',
+            'Estimating': 'var(--color-program)',
+        };
+
+        let currentEditCancel = null;
+        let dragSrcIndex = null;
+
+        document.addEventListener('mousedown', function (e) {
+            if (currentEditCancel && !e.target.closest('tr.editing')) {
+                currentEditCancel();
+            }
+        });
+
+        function clearDragOver () {
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        }
+
+        function getRosterChangeStatus (personName) {
+            const entries = changeLog.filter(e => e.isRosterChange && e.personName === personName);
+            if (entries.length === 0) return '';
+            if (entries.every(e => e.completed)) return 'completed';
+            return 'proposed';
+        }
+
+        function findTeamLead (deptName) {
+            return rosterData.find(r => r.dept === deptName &&
+                (r.title === 'Team Lead' || r.title === 'Division Manager'));
+        }
+
+        function logRosterChange (personName, dept, changes, source) {
+            changeLog.push({
+                id: Date.now(),
+                timestamp: new Date().toLocaleString(),
+                isRosterChange: true,
+                personName,
+                dept,
+                changes,
+                source,
+            });
+            renderChangeLog();
+            updateTotals();
+        }
+
+        function applyDrop (srcRow, targetDept, insertBefore) {
+            const changes = [];
+            if (srcRow.dept !== targetDept) {
+                changes.push({ field: 'dept', from: srcRow.dept, to: targetDept });
+                srcRow.dept = targetDept;
+                const lead = findTeamLead(targetDept);
+                if (lead && lead !== srcRow) {
+                    changes.push({ field: 'reportsTo', from: srcRow.reportsTo, to: lead.name });
+                    srcRow.reportsTo = lead.name;
+                }
+            }
+            rosterData.splice(dragSrcIndex, 1);
+            const pos = insertBefore != null
+                ? rosterData.indexOf(insertBefore)
+                : rosterData.reduce((acc, r, i) => r.dept === targetDept ? i + 1 : acc, 0);
+            rosterData.splice(pos, 0, srcRow);
+            dragSrcIndex = null;
+            if (changes.length > 0) logRosterChange(srcRow.name, srcRow.dept, changes, 'Transfer');
+            generateRoster(document.getElementById('roster-search').value);
+        }
+
+        function makeRosterRow (row, index) {
+            const empKey = row.employment.toLowerCase();
+            const tr = document.createElement('tr');
+            tr.dataset.index = index;
+            tr.draggable = true;
+
+            const cells = [row.name, row.title, row.reportsTo, null, row.notes, row.area];
+            cells.forEach((val, i) => {
+                const td = document.createElement('td');
+                if (i === 3) {
+                    const badge = document.createElement('span');
+                    badge.className = `badge badge-${empKey}`;
+                    badge.textContent = row.employment;
+                    td.appendChild(badge);
+                } else {
+                    td.textContent = val;
+                }
+                tr.appendChild(td);
+            });
+
+            const changeTd = document.createElement('td');
+            const changeStatus = getRosterChangeStatus(row.name);
+            if (changeStatus) {
+                const badge = document.createElement('span');
+                badge.className = `badge badge-${changeStatus}`;
+                badge.textContent = changeStatus === 'proposed' ? 'Proposed' : 'Completed';
+                changeTd.appendChild(badge);
+            }
+            tr.appendChild(changeTd);
+
+            tr.addEventListener('click', () => {
+                if (!tr.classList.contains('editing')) editRosterRow(tr, index);
+            });
+
+            tr.addEventListener('dragstart', (e) => {
+                if (tr.classList.contains('editing')) { e.preventDefault(); return; }
+                dragSrcIndex = index;
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => tr.classList.add('dragging'), 0);
+            });
+
+            tr.addEventListener('dragend', () => {
+                tr.classList.remove('dragging');
+                clearDragOver();
+                dragSrcIndex = null;
+            });
+
+            tr.addEventListener('dragover', (e) => {
+                if (dragSrcIndex === null || dragSrcIndex === index) return;
+                e.preventDefault();
+                clearDragOver();
+                tr.classList.add('drag-over');
+            });
+
+            tr.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (dragSrcIndex === null || dragSrcIndex === index) return;
+                clearDragOver();
+                applyDrop(rosterData[dragSrcIndex], row.dept, row);
+            });
+
+            return tr;
+        }
+
+        function deleteRosterRow (index) {
+            const row = rosterData[index];
+            logRosterChange(
+                row.name || '(unnamed)',
+                row.dept,
+                [{ field: 'Action', from: 'Active', to: 'Deleted' }],
+                'Deleted'
+            );
+            rosterData.splice(index, 1);
+            generateRoster(document.getElementById('roster-search').value);
+        }
+
+        function editRosterRow (tr, index) {
+            if (currentEditCancel) currentEditCancel();
+
+            tr.classList.add('editing');
+            const row = rosterData[index];
+            const tds = tr.querySelectorAll('td');
+            const inputs = {};
+
+            [
+                { key: 'name', tdIndex: 0 },
+                { key: 'title', tdIndex: 1 },
+                { key: 'reportsTo', tdIndex: 2 },
+                { key: 'notes', tdIndex: 4 },
+                { key: 'area', tdIndex: 5 },
+            ].forEach(({ key, tdIndex }) => {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'roster-cell-input';
+                input.value = row[key];
+                tds[tdIndex].textContent = '';
+                tds[tdIndex].appendChild(input);
+                inputs[key] = input;
+            });
+
+            const sel = document.createElement('select');
+            sel.className = 'roster-cell-input';
+            ['FTR', 'FTT', 'Vacancy'].forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt;
+                o.textContent = opt;
+                if (opt === row.employment) o.selected = true;
+                sel.appendChild(o);
+            });
+            tds[3].textContent = '';
+            tds[3].appendChild(sel);
+            inputs.employment = sel;
+
+            const saveBtn = document.createElement('button');
+            saveBtn.type = 'button';
+            saveBtn.className = 'log-action-btn';
+            saveBtn.innerHTML = '✔';
+            saveBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const changes = [];
+                Object.keys(inputs).forEach(k => {
+                    const newVal = inputs[k].value;
+                    if (newVal !== String(row[k])) changes.push({ field: k, from: row[k], to: newVal });
+                    rosterData[index][k] = newVal;
+                });
+                if (changes.length > 0) logRosterChange(rosterData[index].name, rosterData[index].dept, changes, 'Manual Edit');
+                currentEditCancel = null;
+                tr.replaceWith(makeRosterRow(rosterData[index], index));
+            });
+            tds[6].textContent = '';
+            tds[6].appendChild(saveBtn);
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'log-action-btn delete';
+            delBtn.textContent = '✖';
+            delBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteRosterRow(index); });
+            tds[6].appendChild(delBtn);
+
+            currentEditCancel = () => {
+                currentEditCancel = null;
+                tr.replaceWith(makeRosterRow(rosterData[index], index));
+            };
+
+            inputs.name.focus();
+        }
+
+        function addRosterRow (dept) {
+            const lead = findTeamLead(dept);
+            const insertAt = rosterData.reduce((acc, r, i) => r.dept === dept ? i + 1 : acc, 0);
+            rosterData.splice(insertAt, 0, {
+                name: '', title: '', dept,
+                reportsTo: lead ? lead.name : '',
+                employment: 'FTR', notes: '', area: ''
+            });
+            const searchEl = document.getElementById('roster-search');
+            searchEl.value = '';
+            generateRoster('');
+            const tr = document.getElementById('roster-tbody').querySelector(`tr[data-index="${insertAt}"]`);
+            if (tr) editRosterRow(tr, insertAt);
+        }
+
+        function generateRoster (filter) {
+            const tbody = document.getElementById('roster-tbody');
+            tbody.innerHTML = '';
+            const lc = (filter || '').toLowerCase();
+            let currentDept = null;
+
+            rosterData.forEach((row, index) => {
+                if (lc && !['name', 'title', 'dept', 'reportsTo', 'employment', 'notes', 'area']
+                    .some(k => (row[k] || '').toLowerCase().includes(lc))) return;
+
+                if (row.dept !== currentDept) {
+                    currentDept = row.dept;
+                    const deptRow = document.createElement('tr');
+                    deptRow.className = 'roster-dept-row';
+                    deptRow.style.setProperty('--dept-color', deptColors[row.dept] || 'var(--text-muted)');
+
+                    const td = document.createElement('td');
+                    td.colSpan = 6;
+                    td.textContent = row.dept;
+                    deptRow.appendChild(td);
+
+                    const addTd = document.createElement('td');
+                    addTd.className = 'roster-add-cell';
+                    const addBtn = document.createElement('button');
+                    addBtn.type = 'button';
+                    addBtn.className = 'roster-add-btn';
+                    addBtn.textContent = '+';
+                    addBtn.title = `Add person to ${row.dept}`;
+                    addBtn.addEventListener('click', (e) => { e.stopPropagation(); addRosterRow(row.dept); });
+                    addTd.appendChild(addBtn);
+                    deptRow.appendChild(addTd);
+
+
+                    const dept = row.dept;
+                    deptRow.addEventListener('dragover', (e) => {
+                        if (dragSrcIndex === null) return;
+                        e.preventDefault();
+                        clearDragOver();
+                        deptRow.classList.add('drag-over');
+                    });
+                    deptRow.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        if (dragSrcIndex === null) return;
+                        clearDragOver();
+                        applyDrop(rosterData[dragSrcIndex], dept, null);
+                    });
+
+                    tbody.appendChild(deptRow);
+                }
+
+                tbody.appendChild(makeRosterRow(row, index));
+            });
+        }
+
+        document.getElementById('roster-search').addEventListener('input', function () {
+            generateRoster(this.value);
+        });
+
         // Initialize totals on page load
         generateCurrentAllocation();
+        generateRoster();
         updateTotals();
     </script>
 </body>
