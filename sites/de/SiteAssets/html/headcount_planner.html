@@ -203,9 +203,13 @@
 
         .org-chart {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: var(--space-base);
             margin-bottom: var(--space-base);
+        }
+
+        .org-chart .org-unit:first-child {
+            grid-column: 1 / -1;
         }
 
         .org-unit {
@@ -261,44 +265,38 @@
             margin: 6px 0 2px;
         }
 
-        .unit-title-row {
+        .unit-titles-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .unit-title-card {
+            border: 1px solid var(--border);
+            padding: 5px 6px 4px;
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            padding: 3px 0;
-            gap: 8px;
+            min-height: 52px;
+            background: var(--surface);
         }
 
-        .unit-title-name {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .unit-title-card-name {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text);
+            line-height: 1.3;
+            word-break: break-word;
         }
 
-        .unit-title-bar-wrap {
-            flex: 1;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .unit-title-bar {
-            height: 100%;
-            border-radius: 2px;
-            background: var(--unit-color, var(--color-link));
-            opacity: 0.5;
-        }
-
-        .unit-title-count {
-            font-size: 0.78rem;
+        .unit-title-card-count {
+            font-size: 1rem;
             font-weight: 700;
             color: var(--text);
-            min-width: 16px;
             text-align: right;
+            margin-top: 4px;
         }
 
         .metric-title {
@@ -702,6 +700,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .org-chart .org-unit:first-child {
+                grid-column: 1;
+            }
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -1097,6 +1099,7 @@
     <script>
         // Allocation data
         const allocationData = [
+            { name: 'Distribution Engineering', ftr: 0, p4: 0, color: 'var(--color-primary)' },
             { name: 'Civil Engineering', ftr: 11, p4: 2, color: 'var(--color-civil)' },
             { name: 'VI Regional', ftr: 4, p4: 0, color: 'var(--color-regional)' },
             { name: 'INT Regional', ftr: 5, p4: 1, color: 'var(--color-regional)' },
@@ -1144,37 +1147,33 @@
                 });
 
                 const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-                const max = sorted[0][1];
 
                 const sublabel = document.createElement('div');
                 sublabel.className = 'unit-titles-sublabel';
                 sublabel.textContent = groupName;
                 section.appendChild(sublabel);
 
+                const grid = document.createElement('div');
+                grid.className = 'unit-titles-group';
+
                 sorted.forEach(([key, count]) => {
-                    const row = document.createElement('div');
-                    row.className = 'unit-title-row';
+                    const card = document.createElement('div');
+                    card.className = 'unit-title-card';
 
-                    const name = document.createElement('span');
-                    name.className = 'unit-title-name';
+                    const name = document.createElement('div');
+                    name.className = 'unit-title-card-name';
                     name.textContent = key;
-                    row.appendChild(name);
+                    card.appendChild(name);
 
-                    const barWrap = document.createElement('div');
-                    barWrap.className = 'unit-title-bar-wrap';
-                    const bar = document.createElement('div');
-                    bar.className = 'unit-title-bar';
-                    bar.style.width = `${(count / max) * 100}%`;
-                    barWrap.appendChild(bar);
-                    row.appendChild(barWrap);
-
-                    const cnt = document.createElement('span');
-                    cnt.className = 'unit-title-count';
+                    const cnt = document.createElement('div');
+                    cnt.className = 'unit-title-card-count';
                     cnt.textContent = count;
-                    row.appendChild(cnt);
+                    card.appendChild(cnt);
 
-                    section.appendChild(row);
+                    grid.appendChild(card);
                 });
+
+                section.appendChild(grid);
             }
 
             renderGroup('FTR', ftrRows);
@@ -1194,6 +1193,25 @@
                 if (existing) existing.replaceWith(fresh);
                 else unit.appendChild(fresh);
             });
+        }
+
+        function computeFTRCount (deptName) {
+            const notExcluded = r =>
+                r.employment === 'FTR' &&
+                r.title.toLowerCase() !== 'eit' &&
+                !(r.notes || '').toLowerCase().includes('rot out') &&
+                !(r.notes || '').toLowerCase().includes('rot in');
+
+            if (deptName === 'Distribution Engineering') {
+                return rosterData.filter(r =>
+                    notExcluded(r) &&
+                    (r.dept === deptName || r.title.toLowerCase() === 'team lead')
+                ).length;
+            }
+            return rosterData.filter(r =>
+                r.dept === deptName &&
+                notExcluded(r)
+            ).length;
         }
 
         // Function to generate Current Allocation HTML
@@ -1233,10 +1251,12 @@
                 metrics.appendChild(metricTitle);
 
                 // Create FTR metric
-                createMetric(metrics, 'FTR', dept.ftr, 'ftr');
+                const ftrCount = computeFTRCount(dept.name);
+                createMetric(metrics, 'FTR', ftrCount, 'ftr');
 
                 // Create P4 metric
-                createMetric(metrics, 'P4', dept.p4, 'p4');
+                const p4Count = rosterData.filter(r => r.dept === dept.name && r.title && r.title.toLowerCase().includes('specialist engineer')).length;
+                createMetric(metrics, 'P4', p4Count, 'p4');
 
                 unit.appendChild(metrics);
                 unit.appendChild(buildTitleBreakdown(dept.name));
@@ -2167,7 +2187,8 @@
                 savedAt: new Date().toISOString(),
                 allocationData,
                 currentValues,
-                changeLog
+                changeLog,
+                rosterData
             };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2193,6 +2214,11 @@
                     changeLog.length = 0;
                     data.changeLog.forEach(entry => changeLog.push(entry));
 
+                    if (data.rosterData) {
+                        rosterData.length = 0;
+                        data.rosterData.forEach(r => rosterData.push(r));
+                    }
+
                     generateCurrentAllocation();
 
                     if (data.currentValues) {
@@ -2213,6 +2239,7 @@
                     updatePotentialNumbers();
                     updateTotals();
                     renderChangeLog();
+                    generateRoster(document.getElementById('roster-search').value);
                 } catch (err) {
                     alert('Failed to load save file: ' + err.message);
                 }
@@ -2616,6 +2643,29 @@
                 tbody.appendChild(makeRosterRow(row, index));
             });
             updateTitleBreakdowns();
+            updateMetricOriginals();
+        }
+
+        function updateMetricOriginals () {
+            document.querySelectorAll('.org-unit[data-dept]').forEach(unit => {
+                const deptName = unit.dataset.dept;
+                const ftrCount = computeFTRCount(deptName);
+                const p4Count  = rosterData.filter(r => r.dept === deptName && r.title && r.title.toLowerCase().includes('specialist engineer')).length;
+
+                unit.querySelectorAll('.metric').forEach(metric => {
+                    const label    = metric.querySelector('.metric-label').textContent;
+                    const original = metric.querySelector('.metric-original');
+                    const number   = metric.querySelector('.metric-number');
+                    if (label === 'FTR' && original && number) {
+                        original.textContent = ftrCount;
+                        number.textContent   = ftrCount;
+                    } else if (label === 'P4' && original && number) {
+                        original.textContent = p4Count;
+                        number.textContent   = p4Count;
+                    }
+                });
+            });
+            updatePotentialNumbers();
         }
 
         document.getElementById('roster-search').addEventListener('input', function () {

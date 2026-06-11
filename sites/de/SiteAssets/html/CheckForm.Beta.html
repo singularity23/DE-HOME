@@ -124,7 +124,7 @@
       direction: ltr;
       -webkit-font-smoothing: antialiased;
       pointer-events: none;
-      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20;
     }
 
     /* --------------------------------
@@ -347,7 +347,7 @@
       font-weight: 600;
       color: var(--color-primary);
       font-family: 'Roboto', system-ui, sans-serif;
-      min-width: 48px;
+      min-width: 24px;
       text-align: right;
       font-size: 14px;
     }
@@ -418,6 +418,7 @@
       cursor: pointer;
       border-bottom: 1px solid var(--border-soft);
       user-select: none;
+      -webkit-user-select: none;
       gap: var(--gap-md);
       background: var(--header-bg);
     }
@@ -461,6 +462,11 @@
       border: 1px solid var(--border);
     }
 
+    .sec-num .material-symbols-sharp {
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+    }
+
     .sec-num.complete {
       background: var(--success);
       color: var(--color-secondary);
@@ -492,7 +498,7 @@
     .sec-right {
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 12px;
       width: 50%;
       justify-content: flex-end;
     }
@@ -1028,6 +1034,7 @@
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
+      -webkit-user-select: none;
     }
 
 
@@ -1880,6 +1887,10 @@
       background: var(--bg);
     }
 
+    .button-text {
+      margin-left: 5px;
+    }
+
 
 
     /* --------------------------------
@@ -2075,18 +2086,19 @@
       </div>
 
       <!-- Document Information -->
-      <div class="card info">
-        <div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
+      <div class="card info" id="card-info" data-prefix="info" role="tablist">
+        <div class="sec-head open" id="sec-info-head" aria-controls="sec-info-body" aria-expanded="true" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-info"><span class="material-symbols-sharp"> info_i </span></div>
             <span class="sec-title">Work Information</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn"><span class="material-symbols-sharp">
+                delete_history
+              </span><span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body open" id="sec-info-body">
@@ -2105,7 +2117,7 @@
             </div>
             <div class="meta-cell role-cell">
               <div class="field-label" id="roleLabel">Your Role</div>
-              <div class="role-selector">
+              <div class="role-selector" role="radiogroup" aria-labelledby="roleLabel">
                 <input type="radio" name="sc_role" id="sc_role_eng" value="Engineer" checked>
                 <label for="sc_role_eng">Engineer</label>
                 <input type="radio" name="sc_role" id="sc_role_eit" value="Engineer-in-Training">
@@ -2114,7 +2126,7 @@
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell risk-level-cell">
-              <div class="field-label">Risk Level</div>
+              <div class="field-label" id="riskLevelLabel">Risk Level</div>
               <div class="risk-row" id="riskButtons"><button class="risk-btn" type="button" data-risk="low"
                   aria-describedby="riskLevelLabel" aria-pressed="false">Low</button><button class="risk-btn"
                   type="button" data-risk="medium" aria-describedby="riskLevelLabel"
@@ -2165,19 +2177,21 @@
       </div>
 
       <!-- Section 1: Self-Check -->
-      <div class="card sc">
-        <div class="sec-head open" id="sec1-head" tabindex="0" aria-expanded="true" aria-controls="s1">
+      <div class="card sc" id="card-sc" data-prefix="sc" role="tablist">
+        <div class="sec-head open" id="sec1-head" aria-expanded="true" aria-controls="s1" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-1">1</div>
             <span class="sec-title">Self-Check</span>
-            <span class="sec-badge" id="badge-1">0 / {sc_number}</span>
+            <span class="sec-badge" id="badge-1">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec1Btn" data-testid="clear-sec1">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec1Btn" data-testid="clear-sec1"><span
+                class="material-symbols-sharp">
+                delete_history
+              </span><span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body open" id="s1">
@@ -2187,20 +2201,21 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="sc-date">
+                <input class="field-input" id="sc_date" name="sc_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="sc-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_name">Name (Engineer) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="sc-name">
+                <input class="field-input" id="sc_name" name="sc_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="sc-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="sc_sig">Signature (Engineer) <span class="sr-only">(required)</span></div>
-              <div class="signature-pad-container" id="scSigContainer" data-prefix="sc">
+              <div class="signature-pad-container" id="scSigContainer" data-prefix="sc" role="group"
+                aria-labelledby="sc_sig">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="scSigDrawTab" tabindex="-1"
@@ -2218,7 +2233,8 @@
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="sc" data-testid="sc-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="sc" data-testid="sc-sig-open">
-                      Open signature pad
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
@@ -2231,10 +2247,14 @@
                 <div class="sig-tab-content active" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
                   tabindex="0">
                   <div class="sig-upload-area">
-                    <input type="file" id="scSigUpload" accept="image/*" hidden data-testid="sc-sig-file">
+                    <input type="file" id="scSigUpload" accept="image/*" hidden
+                      aria-label="Upload Engineer signature image" data-testid="sc-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="sc"
                       data-testid="sc-sig-choose">
-                      Choose Signature Image
+                      <span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
                     </button>
                     <div id="scSigPreview" class="sig-preview"></div>
                   </div>
@@ -2247,19 +2267,21 @@
       </div>
 
       <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
-      <div class="card hidden" id="card-ds">
-        <div class="sec-head" id="sec2-head" tabindex="0" aria-expanded="false" aria-controls="s2">
+      <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
+        <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-2">2</div>
             <span class="sec-title">Direct Supervision</span>
-            <span class="sec-badge" id="badge-2">0 / {ds_number}</span>
+            <span class="sec-badge" id="badge-2">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2"><span
+                class="material-symbols-sharp">
+                delete_history
+              </span><span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s2">
@@ -2268,19 +2290,20 @@
       </div>
 
       <!-- Section 3: Check -->
-      <div class="card hidden" id="card-ch">
-        <div class="sec-head" id="sec3-head" tabindex="0" aria-expanded="false" aria-controls="s3">
+      <div class="card hidden" id="card-ch" data-prefix="ch" role="tablist">
+        <div class="sec-head" id="sec3-head" aria-expanded="false" aria-controls="s3" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-3">3</div>
             <span class="sec-title">Check</span>
-            <span class="sec-badge" id="badge-3">0 / {ch_number}</span>
+            <span class="sec-badge" id="badge-3">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec3Btn" data-testid="clear-sec3">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec3Btn" data-testid="clear-sec3">
+              <span class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s3">
@@ -2326,20 +2349,21 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ch-date">
+                <input class="field-input" id="ch_date" name="ch_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ch-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="ch_name">Name (Checker) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="ch-name">
+                <input class="field-input" id="ch_name" name="ch_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="ch-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
-              <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
+              <div class="signature-pad-container" id="chSigContainer" data-prefix="ch" role="group"
+                aria-labelledby="ch_sig">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab " data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="chSigDrawTab" tabindex="-1"
@@ -2357,7 +2381,8 @@
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="ch" data-testid="ch-sig-open" id="chSigPad" disabled>
-                      Open signature pad
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
@@ -2370,10 +2395,14 @@
                 <div class="sig-tab-content active" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
                   tabindex="0">
                   <div class="sig-upload-area">
-                    <input type="file" id="chSigUpload" accept="image/*" hidden data-testid="ch-sig-file">
+                    <input type="file" id="chSigUpload" accept="image/*" hidden
+                      aria-label="Upload Checker signature image" data-testid="ch-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch" id="chSigImg"
                       data-testid="ch-sig-choose" disabled>
-                      Choose Signature Image
+                      <span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
                     </button>
                     <div id="chSigPreview" class="sig-preview"></div>
                   </div>
@@ -2386,19 +2415,20 @@
       </div>
 
       <!-- Section 4: Peer Review -->
-      <div class="card hidden" id="card-pr">
-        <div class="sec-head" id="sec4-head" tabindex="4" aria-expanded="false" aria-controls="s4">
+      <div class="card hidden" id="card-pr" data-prefix="pr" role="tablist">
+        <div class="sec-head" id="sec4-head" aria-expanded="false" aria-controls="s4" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-4">4</div>
             <span class="sec-title">Peer Review</span>
-            <span class="sec-badge" id="badge-4">0 / {pr_number}</span>
+            <span class="sec-badge" id="badge-4">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec4Btn" data-testid="clear-sec4">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec4Btn" data-testid="clear-sec4"><span
+                class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s4">
@@ -2447,22 +2477,23 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="pr-date">
+                <input class="field-input" id="pr_date" name="pr_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="pr-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="pr_name">Name (Peer Reviewer) <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="pr-name">
+                <input class="field-input" id="pr_name" name="pr_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="pr-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="pr_sig">Signature (Peer Reviewer) <span class="sr-only">(required)</span>
               </div>
-              <div class="signature-pad-container" id="prSigContainer" data-prefix="pr">
+              <div class="signature-pad-container" id="prSigContainer" data-prefix="pr" role="group"
+                aria-labelledby="pr_sig">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="prSigDrawTab" tabindex="-1"
@@ -2480,7 +2511,8 @@
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="pr" data-testid="pr-sig-open" id="prSigPad" disabled>
-                      Open signature pad
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
@@ -2493,10 +2525,14 @@
                 <div class="sig-tab-content active" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
                   tabindex="0">
                   <div class="sig-upload-area">
-                    <input type="file" id="prSigUpload" accept="image/*" hidden data-testid="pr-sig-file">
+                    <input type="file" id="prSigUpload" accept="image/*" hidden
+                      aria-label="Upload Peer Reviewer signature image" data-testid="pr-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr"
                       data-testid="pr-sig-choose" id="prSigImg" disabled>
-                      Choose Signature Image
+                      <span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
                     </button>
                     <div id="prSigPreview" class="sig-preview"></div>
                   </div>
@@ -2511,19 +2547,20 @@
 
       <!-- Section 5: Independent Review -->
 
-      <div class="card hidden" id="card-ir">
-        <div class="sec-head" id="sec5-head" tabindex="0" aria-expanded="false" aria-controls="s5">
+      <div class="card hidden" id="card-ir" data-prefix="ir" role="tablist">
+        <div class="sec-head" id="sec5-head" aria-expanded="false" aria-controls="s5" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div>
             <span class="sec-title">Independent Structural Review</span>
-            <span class="sec-badge" id="badge-5">0 / {ir_number}</span>
+            <span class="sec-badge" id="badge-5">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec5Btn" data-testid="clear-sec5">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec5Btn" data-testid="clear-sec5"><span
+                class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s5">
@@ -2565,15 +2602,15 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="ir_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ir_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ir-date">
+                <input class="field-input" id="ir_date" name="ir_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ir-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="ir_name">Name (Independent Reviewer) <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="ir_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="ir-name">
+                <input class="field-input" id="ir_name" name="ir_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="ir-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
@@ -2581,7 +2618,8 @@
               <div class="field-label" id="ir_sig">Signature and Seal (Independent Reviewer) <span
                   class="sr-only">(required)</span>
               </div>
-              <div class="signature-pad-container" id="irSigContainer" data-prefix="ir">
+              <div class="signature-pad-container" id="irSigContainer" data-prefix="ir" role="group"
+                aria-labelledby="ir_sig">
                 <div class="seal">S&amp;S after converting to PDF</div>
 
               </div>
@@ -2591,40 +2629,42 @@
       </div>
 
       <!-- Section 6: Final Signatures -->
-      <div class="card hidden" id="card-final">
-        <div class="sec-head" id="sec6-head" tabindex="0" aria-expanded="false" aria-controls="s6">
+      <div class="card hidden" id="card-final" data-prefix="fT1" role="tablist">
+        <div class="sec-head" id="sec6-head" aria-expanded="false" aria-controls="s6" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-6">6</div>
             <span class="sec-title">Appoint Tier 1 Reviewer &amp; Team Lead Signatures</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6"><span
+                class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s6">
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
-                <label class="field-label" for="fT1Date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1Date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ft1-date">
+                <label class="field-label" for="fT1_date">Date <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="fT1_date" name="fT1_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ft1-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="fT1_name">Assigned Type 1 Reviewer <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1_name" type="text" placeholder="Full name" autocomplete="name"
-                  required aria-required="true" data-testid="ft1-name">
+                <input class="field-input" id="fT1_name" name="fT1_name" type="text" placeholder="Full name"
+                  autocomplete="name" required aria-required="true" data-testid="ft1-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="fT1Sig">DE TL Signature <span class="sr-only">(required)</span></div>
-              <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1">
+              <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1" role="group"
+                aria-labelledby="fT1Sig">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="fT1SigDrawTab" tabindex="-1"
@@ -2642,7 +2682,8 @@
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="fT1" data-testid="ft1-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="fT1" data-testid="ft1-sig-open">
-                      Open signature pad
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
                       <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
@@ -2655,10 +2696,13 @@
                 <div class="sig-tab-content active" id="fT1SigUploadTab" role="tabpanel"
                   aria-labelledby="fT1SigUploadBtn" tabindex="0">
                   <div class="sig-upload-area">
-                    <input type="file" id="fT1SigUpload" accept="image/*" hidden data-testid="ft1-sig-file">
+                    <input type="file" id="fT1SigUpload" accept="image/*" hidden
+                      aria-label="Upload Team Lead signature image" data-testid="ft1-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="fT1"
-                      data-testid="ft1-sig-choose">
-                      Choose Signature Image
+                      data-testid="ft1-sig-choose"><span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
                     </button>
                     <div id="fT1SigPreview" class="sig-preview"></div>
                   </div>
@@ -2701,12 +2745,17 @@
       </div>
 
       <div class="actions">
-        <div> <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset
-            Form</button>
+        <div> <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form"><span
+              class="material-symbols-sharp">
+              restart_alt
+            </span>
+            <span class="button-text">Reset Form</span></button>
         </div>
         <div>
-          <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
-          <button class="btn btn-primary" type="button" id="saveSnapshotBtn" data-testid="save-snapshot">Save</button>
+          <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf"><span
+              class="material-symbols-sharp">print</span><span class="button-text">Print / PDF</span></button>
+          <button class="btn btn-primary" type="button" id="saveSnapshotBtn" data-testid="save-snapshot"><span
+              class="material-symbols-sharp">save</span><span class="button-text">Save</span></button>
         </div>
       </div>
     </main>
@@ -4178,7 +4227,6 @@
           document.querySelectorAll('.sig-upload-trigger').forEach((trigger) => {
             const prefix = trigger.getAttribute('data-prefix');
             if (!prefix) return;
-            console.log(prefix);
             const uploadInput = document.getElementById(`${prefix}SigUpload`);
             const container = document.getElementById(`${prefix}SigContainer`);
             const uploadArea = container?.querySelector('.sig-upload-area');
@@ -4561,7 +4609,7 @@
           const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
 
           const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
-          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk;
+          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
 
           // Current behavior: expand peer review when checklist has a "No" OR min level explicitly set to Peer Review.
           const openS4 = chHasNo || minLevel === 'Peer Review';
@@ -4591,17 +4639,19 @@
 
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
-          this.setCheckerRequired(state.showCheck);
+          this.setRequired(this.elements.cardCh, state.showCheck);
           if (state.showCheck) this.syncCheckerNames();
 
           this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
+          this.setRequired(this.elements.cardPr, state.openS4);
           if (state.openS4) this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
 
           this.elements.cardFinal.classList.toggle('hidden', !state.finalShown);
+          this.setRequired(this.elements.cardFinal, state.finalShown && (this.getActiveRiskLevel() === 'high'));
           this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
-          console.log('Applying visibility state:', state);
 
           this.elements.cardIr.classList.toggle('hidden', !state.openS5);
+          this.setRequired(this.elements.cardIr, state.openS5);
           if (state.openS5) this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, true);
         }
 
@@ -4653,6 +4703,19 @@
             checker.removeAttribute('required');
             checker.setAttribute('disabled', '');
           }
+        }
+
+        setRequired (element, required) {
+          const inputFields = element.querySelectorAll(`input[id$='_date'], input[id$='_name']`);
+          inputFields.forEach(input => {
+            if (required) {
+              input.setAttribute('required', '');
+              input.removeAttribute('disabled');
+            } else {
+              input.removeAttribute('required');
+              input.setAttribute('disabled', '');
+            }
+          })
         }
 
         /**
@@ -4740,7 +4803,6 @@
               answered += counts.get(s.rowsId) ?? 0;
             }
           });
-          console.log(answered, total)
           const pct = total ? Math.round((answered / total) * 100) : 0;
           const fullyComplete = pct === 100;
           this.elements.progressStrip.classList.toggle('completed', fullyComplete);
