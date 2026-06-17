@@ -34,6 +34,65 @@
     ]
   },
   {
+    "name": "Workplace Culture",
+    "subheaders": [
+      {
+        "links": [
+          {
+            "name": "Culture Moment",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/Workplace%20Culture%20Change/AllItems.aspx",
+            "info": "Share our DE culture stories"
+          },
+          {
+            "name": "Corporate Strategic Action Plan",
+            "url": "https://hw.bchydro.bc.ca/Documents/BC%20Hydro%20Strategic%20Action%20Plan.pdf",
+            "info": "Energizing our economy - 2025/26 - 2027/28"
+          },
+          {
+            "name": "Integrated Planning Action Plan F27",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Integrated%20Planning%20-%20F27%20Action%20Plan.pdf",
+            "info": "Integrated Planning F27 Performance Measures and Targets"
+          },
+          {
+            "name": "F26 Action Plan Placement",
+            "url": "https://hw.bchydro.bc.ca/Documents/F26%20Action%20Plan%20Placemat.pdf",
+            "info": "Accerlerating our work"
+          },
+          {
+            "name": "Manager Coaching Card",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Culture_Coaching_1pager.docx?d=waeabd686ef9c44f9a9cbf75f75165869",
+            "info": "Prompts for Managers coach day-to-day adoption of OWF"
+          },
+          {
+            "name": "Culture Change - Our Way Forward",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Culture-DE-Teams-2026-04-23.pptx?d=wb19045dccd684fc889477a51b4a9db76",
+            "info": "Slide Deck for Culture Change - Our Way Forward"
+          },
+          {
+            "name": "Workplace Culture Champions",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Mindtrap%20Guide.pdf",
+            "info": "Mindtrap Guide"
+          },
+          {
+            "name": "LIBRA one pager",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/LIBRA%20one%20pager.pdf",
+            "info": "Understand how to shape workplace culture"
+          },
+          {
+            "name": "Risk Framework Case Studies",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Risk%20Management%20Case%20Studies.pdf",
+            "info": "Risk tolerance framework & risk best practices"
+          },
+          {
+            "name": "Value of Authentic Culture",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/zz%20pwc-value-of-authentic-culture.pdf",
+            "info": "Reference materials from pwc"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "name": "Organization & Teams",
     "subheaders": [
       {
@@ -713,7 +772,7 @@
       {
         "title": "Technical Tools & Resources",
         "links": [
-		    {
+          {
             "name": "ASPEN Relay Database™",
             "url": "http://kdcssweb1/aspen/rdbweb.exe",
             "info": "Database for relay settings and configurations",
@@ -724,7 +783,7 @@
               }
             ]
           },
-		    {
+          {
             "name": "Fuse Selector",
             "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/webapp/index.html",
             "info": "Quickly get standard fuse size for standard transformers and its impedances"
@@ -738,7 +797,7 @@
                 "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29",
                 "name": "Short circuit python script"
               },
-			     {
+              {
                 "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook%2FCYME.one%7C24cd4d78-abf8-4647-8e9b-be28f3c88939%2FEmission%20Study%7C086dacb2-4881-442f-a317-38b7f955b1bd%2F%29&wdorigin=703",
                 "name": "Short circuit with Emission Study python script"
               },
@@ -748,7 +807,7 @@
               }
             ]
           },
-  		{
+          {
             "name": "Conductor Slap",
             "url": "",
             "info": "",
@@ -765,7 +824,6 @@
           }
         ]
       }
-
     ]
   },
   {

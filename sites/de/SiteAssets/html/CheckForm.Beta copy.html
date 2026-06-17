@@ -2628,6 +2628,16 @@
           "Have opportunities for innovation or cost savings been identified?"
         ];
 
+        static IR_ITEMS = [
+          "Design code loadings and serviceability limits.",
+          "Material specifications and geotechnical recommendations. ",
+          "Concept and integrity of the gravity load resisting system.",
+          "Concept and integrity of the lateral load resisting system (e.g., wind, seismic, lateral earth pressures).",
+          "Drawing completeness and continuity of load paths.",
+          "Design check of representative structural elements.",
+          "Review of representative structural details.",
+        ];
+
         static RISK_MAP = {
           low: { sc8: 'yes', sc10: 'no' },
           medium: { sc8: 'no', sc10: 'no' },
@@ -2643,15 +2653,18 @@
           ['checkerComments', 'Ctrl + V to paste screenshots...'],
           ['engineerResponse', 'Enter engineer response...'],
           ['reviewerComments', 'Ctrl + V to paste screenshots...'],
-          ['engineerResponse_2', 'Enter engineer response 2...']
+          ['engineerResponse_2', 'Enter engineer response 2...'],
+          ['id_reviewerComments', 'Ctrl + V to paste screenshots...'],
+          ['id_engineerResponse_2', 'Enter engineer response 2...']
         ];
 
         static COMMENT_PAIRS = [
           ['checkerComments-editor', 'engineerResponse-editor'],
-          ['reviewerComments-editor', 'engineerResponse_2-editor']
+          ['reviewerComments-editor', 'engineerResponse_2-editor'],
+          ['id_reviewerComments-editor', 'id_engineerResponse_2-editor']
         ];
 
-        static SIG_PREFIXES = ['sc', 'ch', 'pr', 'fT1'];
+        static SIG_PREFIXES = ['sc', 'ch', 'pr', 'ir', 'fT1'];
 
         static RISK_TO_CHECK_LEVEL = {
           low: 'Self-Check',
@@ -2659,7 +2672,7 @@
           high: 'Type 1 Independent Review Required'
         };
 
-        static SECTION_NUM = { sc: '1', ds: '2', ch: '3', pr: '4' };
+        static SECTION_NUM = { sc: '1', ds: '2', ch: '3', pr: '4', ir: '5' };
 
         static EMPTY_EDITOR_HTML = '<p><br></p>';
 
@@ -2687,18 +2700,19 @@
         cacheElements () {
           const get = (id) => document.getElementById(id);
           return {
-            // Progress
             progressStrip: get('progressStrip'),
             progressBar: get('progressBar'),
             progressPct: get('progressPct'),
-            // Work info
             workTitle: get('workTitle'),
             engineer: get('engineer'),
+            revision: get('revision'),
             checker: get('checker'),
             minCheckLevel: get('minCheckLevel'),
             riskBtns: document.querySelectorAll('.risk-btn'),
             sc11No: get('sc11_no'),
             sc11Yes: get('sc11_yes'),
+            sc9No: get('sc9_no'),
+            sc9Yes: get('sc9_yes'),
             scRoleEng: get('sc_role_eng'),
             chCYes: get('ch_c_yes'),
             chCNo: get('ch_c_no'),
@@ -2706,32 +2720,33 @@
             prCYes: get('pr_c_yes'),
             prCNo: get('pr_c_no'),
             prCNa: get('pr_c_na'),
-            // Cards
+            irCYes: get('ir_c_yes'),
+            irCNo: get('ir_c_no'),
+            irCNa: get('ir_c_na'),
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
             cardPr: get('card-pr'),
             cardFinal: get('card-final'),
-            // Notices
+            cardIr: get('card-ir'),
             chNotice: get('chNotice'),
             globalNotice: get('globalNotice'),
             globalNoticeText: get('globalNoticeText'),
-            // Comments cells
             commentsCell3: get('commentsCell3'),
             commentsCell4: get('commentsCell4'),
-            // Section badges and nums
             badge1: get('badge-1'), num1: get('snum-1'),
             badge2: get('badge-2'), num2: get('snum-2'),
             badge3: get('badge-3'), num3: get('snum-3'),
             badge4: get('badge-4'), num4: get('snum-4'),
-            // Row containers
+            badge5: get('badge-5'), num5: get('snum-5'),
             scRows: get('sc-rows'),
             dsRows: get('ds-rows'),
             chRows: get('ch-rows'),
             prRows: get('pr-rows'),
-            // Signature fields
+            irRows: get('ir-rows'),
             scName: get('sc_name'),
             chName: get('ch_name'),
-            // Dynamic labels
+            fT1Name: get('fT1_name'),
+            irName: get('ir_name'),
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
             scSigLabel: document.querySelector('#sc_sig'),
@@ -2741,17 +2756,18 @@
             chSigLabel: document.querySelector('#ch_sig'),
             checkerCommentsLabel: document.querySelector('label[id="for_checkerComments"]'),
             engineerResponseLabel: document.querySelector('label[id="for_engineerResponse"]'),
-            // Section bodies
             s2Body: get('s2'), s2Head: get('sec2-head'),
             s3Body: get('s3'), s3Head: get('sec3-head'),
             s4Body: get('s4'), s4Head: get('sec4-head'),
             s5Body: get('s5'), s5Head: get('sec5-head'),
-            //btns
+            s6Body: get('s6'), s6Head: get('sec6-head'),
             savePdf: get('saveAsPdfBtn'),
             chSigImg: get('chSigImg'),
             chSigPad: get('chSigPad'),
             prSigImg: get('prSigImg'),
-            prSigPad: get('prSigPad')
+            prSigPad: get('prSigPad'),
+            irSigImg: get('irSigImg'),
+            irSigPad: get('irSigPad')
           };
         }
 
@@ -2761,23 +2777,28 @@
             { rowsId: '#sc-rows', rowsEl: this.elements.scRows, count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc', cardEl: card('card-sc') },
             { rowsId: '#ds-rows', rowsEl: this.elements.dsRows, count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds', cardEl: card('card-ds') },
             { rowsId: '#ch-rows', rowsEl: this.elements.chRows, count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch', cardEl: card('card-ch') },
-            { rowsId: '#pr-rows', rowsEl: this.elements.prRows, count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', cardEl: card('card-pr') }
+            { rowsId: '#pr-rows', rowsEl: this.elements.prRows, count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', cardEl: card('card-pr') },
+            { rowsId: '#ir-rows', rowsEl: this.elements.irRows, count: CheckForm.IR_ITEMS.length, badge: this.elements.badge5, num: this.elements.num5, label: '5', cardId: 'card-ir', cardEl: card('card-ir') }
           ];
         }
 
-        // ---------- Shared utilities ----------
         isEitRole () {
           return this.getRadioValue('sc_role') === 'Engineer-in-Training';
         }
 
         cacheRowRadios () {
-          // sc11 radios are built dynamically in #sc-rows, not present at constructor time
           this.elements.sc11No = document.getElementById('sc11_no');
           this.elements.sc11Yes = document.getElementById('sc11_yes');
+          this.elements.sc9No = document.getElementById('sc9_no');
+          this.elements.sc9Yes = document.getElementById('sc9_yes');
         }
 
         isSc11No () {
           return this.elements.sc11No?.checked ?? false;
+        }
+
+        isSc9Yes () {
+          return this.elements.sc9Yes?.checked ?? false;
         }
 
         rowHasAnswer (rowsEl, value) {
@@ -2876,6 +2897,7 @@
           this.clearEditorContent(root);
           root.querySelectorAll('.comments-image-gallery').forEach((g) => g.replaceChildren());
           this.syncAllComments();
+          this.syncMinCheckLevelLock();
         }
 
         handleCommentFieldEvent (target) {
@@ -2902,7 +2924,6 @@
           });
         }
 
-        // ---------- Initialization ----------
         init () {
           const hasPersistedRows = !!this.elements.scRows?.querySelector('.check-row');
           if (!hasPersistedRows) this.buildAllRows();
@@ -2923,6 +2944,9 @@
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
           this.initCommentEditors();
+          this.syncMinCheckLevelLock();
+          // Initialize signature gates for gated sections
+          ['ch', 'pr', 'ir'].forEach(prefix => this.enableSignature(prefix));
         }
 
         buildAllRows () {
@@ -2930,6 +2954,7 @@
           this.buildRows(this.elements.dsRows, 'ds', CheckForm.DS_ITEMS);
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
+          this.buildRows(this.elements.irRows, 'ir', CheckForm.IR_ITEMS);
           this.cacheRowRadios();
         }
 
@@ -2972,43 +2997,19 @@
         }
 
         getCommentHtml (fieldId) {
-          const quill = this.quillEditors?.[fieldId];
-          if (quill) return quill.root.innerHTML;
-          const editor = this.commentTextareas?.[fieldId];
-          return editor?.innerHTML ?? '';
+          return this.getCommentAdapter(fieldId).getHtml();
         }
 
         setCommentHtml (fieldId, html) {
-          const quill = this.quillEditors?.[fieldId];
-          if (quill) {
-            quill.root.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
-            const container = document.getElementById(`${fieldId}-editor`);
-            if (container) {
-              this.autosizeCommentEditor(container);
-              this.scheduleSyncCommentsHeights();
-            }
-            return;
-          }
-          const editor = this.commentTextareas?.[fieldId];
-          if (!editor) return;
-          editor.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
-          this.updateCommentEditorPlaceholder(editor);
-          this.autosizeCommentEditor(editor);
+          this.comment_setHtml(fieldId, html);
         }
 
         syncCommentField (fieldId) {
-          const hidden = document.getElementById(fieldId);
-          if (!hidden) return;
-          hidden.value = this.getCommentHtml(fieldId);
+          this.comment_syncHidden(fieldId);
         }
 
         syncAllComments () {
-          if (this.quillEditors) {
-            Object.keys(this.quillEditors).forEach((fieldId) => this.syncCommentField(fieldId));
-            return;
-          }
-          if (!this.commentTextareas) return;
-          Object.keys(this.commentTextareas).forEach((fieldId) => this.syncCommentField(fieldId));
+          this.comment_syncAllHidden();
         }
 
         restoreComments () {
@@ -3016,13 +3017,67 @@
             const hidden = document.getElementById(fieldId);
             if (!hidden?.value) return;
             this.setCommentHtml(fieldId, hidden.value);
-            const editor = this.commentTextareas?.[fieldId];
-            if (editor) {
-              this.updateCommentEditorPlaceholder(editor);
-              this.autosizeCommentEditor(editor);
-              this.scheduleSyncCommentsHeights();
-            }
+            const editorEl = this.getCommentAdapter(fieldId).getContainerEl();
+            if (!editorEl) return;
+            this.updateCommentEditorPlaceholder(editorEl);
+            this.autosizeCommentEditor(editorEl);
+            this.scheduleSyncCommentsHeights();
           });
+        }
+
+        getCommentAdapter (fieldId) {
+          const quill = this.quillEditors?.[fieldId];
+          if (quill) {
+            return {
+              kind: 'quill',
+              getContainerEl: () => document.getElementById(`${fieldId}-editor`),
+              getHtml: () => quill.root?.innerHTML ?? '',
+              setHtml: (html) => { quill.root.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML; }
+            };
+          }
+          const fallback = this.commentTextareas?.[fieldId] || null;
+          return {
+            kind: 'fallback',
+            getContainerEl: () => fallback,
+            getHtml: () => fallback?.innerHTML ?? '',
+            setHtml: (html) => {
+              if (!fallback) return;
+              fallback.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
+              this.updateCommentEditorPlaceholder(fallback);
+              this.autosizeCommentEditor(fallback);
+            }
+          };
+        }
+
+        comment_getHtml (fieldId) {
+          return this.getCommentAdapter(fieldId).getHtml();
+        }
+
+        comment_setHtml (fieldId, html) {
+          const ad = this.getCommentAdapter(fieldId);
+          ad.setHtml(html);
+          const container = ad.getContainerEl();
+          if (container) {
+            this.autosizeCommentEditor(container);
+            this.scheduleSyncCommentsHeights();
+          }
+        }
+
+        comment_syncHidden (fieldId) {
+          const hidden = document.getElementById(fieldId);
+          if (!hidden) return;
+          hidden.value = this.comment_getHtml(fieldId);
+        }
+
+        comment_syncAllHidden () {
+          CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => this.comment_syncHidden(fieldId));
+        }
+
+        comment_autosize (fieldIdOrEl) {
+          const el = typeof fieldIdOrEl === 'string'
+            ? document.getElementById(`${fieldIdOrEl}-editor`)
+            : fieldIdOrEl;
+          if (el) this.autosizeCommentEditor(el);
         }
 
         insertCommentInlineImage (editor, dataUrl) {
@@ -3277,7 +3332,6 @@
               toolbar: [
                 ['bold', 'italic', 'underline'],
                 [{ 'list': 'ordered' }],
-                [{ 'header': [1, 2, 3, false] }],
                 ['link'],
                 ['clean']
               ]
@@ -3298,7 +3352,6 @@
               const existingEditor = container.querySelector('.ql-editor');
               const existingHtml = existingEditor ? existingEditor.innerHTML : '';
 
-              // Reset serialized Quill DOM from reopened snapshots so initialization is idempotent.
               container.classList.remove('ql-snow');
               container.innerHTML = '<div class="ql-editor"></div>';
               container._quillResizeObserver?.disconnect();
@@ -3371,8 +3424,6 @@
           this.resizeModalCanvas();
           this.loadDataUrlIntoModalCanvas(this.getSigDataInput(prefix)?.value || '');
           this.signatureModal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
-
-          // Focus trap setup is handled by the open event listener in setupModalFocusTrap
         }
 
         closeSignatureModal (save) {
@@ -3429,55 +3480,32 @@
           });
         }
 
-
         setupModalCanvasDrawing (canvas) {
           const sigModal = this.signatureModal;
           const ctx = canvas.getContext('2d');
-          // --------------------------
-          // Tuned for responsive 60Hz feel
-          // --------------------------
           const TARGET_DT_MS = 1000 / 60;
-
-          // Lazy brush
-          const lazyRadius = 6;   // lower = more responsive
-          const friction = 0.02;   // lower = less lag
-
-          // Smoothing rates
+          const lazyRadius = 6;
+          const friction = 0.02;
           const posSmoothingHz = 26;
           const widthSmoothingHz = 20;
-
-          // Speed-based line width
           const minWidth = 5.0;
           const maxWidth = 12.0;
-          const speedForMinWidth = 1100; // px/s where width reaches min
-
-          // --------------------------
-          // State
-          // --------------------------
+          const speedForMinWidth = 1100;
           let drawing = false;
           let hasPointer = false;
-
           let pointer = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
           let brush = { ...pointer };
           let prevBrush = { ...brush };
-
           let currentWidth = maxWidth;
           let lastTs = performance.now();
-
-          // For quadratic smoothing
           let prevMid = null;
 
-          // --------------------------
-          // Helpers
-          // --------------------------
           function clamp (v, lo, hi) {
             return Math.max(lo, Math.min(hi, v));
           }
-
           function expSmoothingFactor (hz, dtSec) {
             return 1 - Math.exp(-hz * dtSec);
           }
-
           function getCanvasPoint (e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -3487,25 +3515,19 @@
               y: (e.clientY - rect.top) * scaleY
             };
           }
-
           function endDraw () {
             drawing = false;
             hasPointer = false;
             prevMid = null;
           }
-
           function clearCanvas () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
           }
 
-          // --------------------------
-          // Pointer events
-          // --------------------------
           canvas.addEventListener("pointerdown", (e) => {
             canvas.setPointerCapture(e.pointerId);
             hasPointer = true;
             drawing = true;
-
             pointer = getCanvasPoint(e);
             brush = { ...pointer };
             prevBrush = { ...pointer };
@@ -3521,13 +3543,8 @@
 
           canvas.addEventListener("pointerup", endDraw);
           canvas.addEventListener("pointercancel", endDraw);
-
-          // Double click to clear
           canvas.addEventListener("dblclick", clearCanvas);
 
-          // --------------------------
-          // Main RAF loop (runs only while modal is open)
-          // --------------------------
           let rafId = 0;
           const stopFrame = () => {
             if (rafId) {
@@ -3546,65 +3563,50 @@
               return;
             }
             const dtMsRaw = ts - lastTs || TARGET_DT_MS;
-            const dtMs = Math.min(33, Math.max(1, dtMsRaw)); // clamp stalls
+            const dtMs = Math.min(33, Math.max(1, dtMsRaw));
             const dtSec = dtMs / 1000;
             lastTs = ts;
 
             if (hasPointer) {
-              // Lazy brush position update
               const dx = pointer.x - brush.x;
               const dy = pointer.y - brush.y;
               const dist = Math.hypot(dx, dy);
-
               if (dist > lazyRadius) {
                 const pull = dist - lazyRadius;
                 const tx = brush.x + (dx / dist) * pull;
                 const ty = brush.y + (dy / dist) * pull;
-
                 const posAlpha = expSmoothingFactor(posSmoothingHz, dtSec) * (1 - friction);
                 brush.x += (tx - brush.x) * posAlpha;
                 brush.y += (ty - brush.y) * posAlpha;
               }
-
-              // Speed -> width (px/sec for frame-rate stability)
               const vx = brush.x - prevBrush.x;
               const vy = brush.y - prevBrush.y;
               const speed = Math.hypot(vx, vy) / dtSec;
-
               const t = clamp(speed / speedForMinWidth, 0, 1);
               const targetWidth = maxWidth - (maxWidth - minWidth) * t;
-
               const widthAlpha = expSmoothingFactor(widthSmoothingHz, dtSec);
               currentWidth += (targetWidth - currentWidth) * widthAlpha;
 
-              // Quadratic curve stroke
               if (drawing) {
                 const midX = (prevBrush.x + brush.x) * 0.5;
                 const midY = (prevBrush.y + brush.y) * 0.5;
-
                 ctx.strokeStyle = "#111";
                 ctx.lineCap = "round";
                 ctx.lineJoin = "round";
                 ctx.lineWidth = currentWidth;
-
                 ctx.beginPath();
                 if (!prevMid) {
                   ctx.moveTo(prevBrush.x, prevBrush.y);
                 } else {
                   ctx.moveTo(prevMid.x, prevMid.y);
                 }
-
-                // Control point at previous brush, end at midpoint
                 ctx.quadraticCurveTo(prevBrush.x, prevBrush.y, midX, midY);
                 ctx.stroke();
-
                 prevMid = { x: midX, y: midY };
               }
-
               prevBrush.x = brush.x;
               prevBrush.y = brush.y;
             }
-
             if (hasPointer) scheduleFrame();
           }
 
@@ -3661,9 +3663,6 @@
           };
         }
 
-        /**
-         * Build radio button rows using DOM APIs
-         */
         buildRows (container, prefix, items, binarySet = new Set()) {
           if (!container) return;
           container.innerHTML = '';
@@ -3760,7 +3759,6 @@
           reader.readAsDataURL(file);
         }
 
-        // ---------- Event Handlers ----------
         handleGlobalClick (e) {
           const tabBtn = e.target.closest('.btn-sig-tab');
           if (tabBtn) {
@@ -3818,7 +3816,6 @@
             this.setRiskLevel(e.target.dataset.risk);
           }
 
-
           const clearActions = {
             clearWorkInfoBtn: () => this.clearSection('sec-info-body'),
             clearSec1Btn: () => this.clearSection('s1'),
@@ -3826,6 +3823,7 @@
             clearSec3Btn: () => this.clearSection('s3'),
             clearSec4Btn: () => this.clearSection('s4'),
             clearSec5Btn: () => this.clearSection('s5'),
+            clearSec6Btn: () => this.clearSection('s6'),
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
@@ -3840,20 +3838,7 @@
 
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
-            console.trace();
-            this.scheduleUpdateProgress();
-            const name = e.target.name;
-            if (name.startsWith('sc')) {
-              if (name === 'sc11') this.updateRoleLabels(false);
-            }
-            if (name.startsWith('ch') && name !== 'ch_c') this.syncCheckWarning();
-            if (name === 'sc_role') this.updateRoleLabels(true);
-            this.showRiskConsistencyNotices();
-            if (name !== 'ch_c' && name !== 'pr_c') this.syncSectionVisibility();
-            if (name === 'ch_c' || name === 'pr_c') {
-              const prefix = e.target.getAttribute('data-prefix');
-              this.enableSignature(prefix);
-            }
+            this.dispatchRadioChange(e.target);
           }
           if (e.target.matches('input') || e.target.matches('select')) {
             if (e.target.validity.valid) {
@@ -3867,6 +3852,34 @@
           }
           const commentEditor = this.resolveCommentEditor(e.target);
           if (commentEditor) this.handleCommentFieldEvent(commentEditor);
+        }
+
+        dispatchRadioChange (radio) {
+          this.scheduleUpdateProgress();
+          const name = radio?.name || '';
+
+          if (name.startsWith('sc') && name === 'sc11') {
+            this.updateRoleLabels(false);
+          }
+
+          if (name === 'sc_role') {
+            this.updateRoleLabels(true);
+          }
+
+          this.showRiskConsistencyNotices();
+
+          if (name === 'ch_c' || name === 'pr_c' || name === 'ir_c') {
+            const prefix = radio.getAttribute('data-prefix');
+            if (prefix) this.enableSignature(prefix);
+            return;
+          }
+
+          if (name.startsWith('ch')) {
+            this.syncCheckWarning();
+            return;
+          }
+
+          this.syncSectionVisibility();
         }
 
         handleGlobalInput (e) {
@@ -3886,6 +3899,14 @@
           }
         }
 
+        enableSignature (prefix) {
+          const enabled = this.isSignatureEnabledByComments(prefix);
+          this.setSignatureEnabled(prefix, enabled);
+          if (prefix === 'ch') {
+            this.elements.chSigGateNotice?.classList.toggle('hidden', enabled);
+          }
+        }
+
         handleGlobalKeydown (e) {
           if (e.key === 'Escape' && this.signatureModal?.classList.contains('open')) {
             e.preventDefault();
@@ -3899,7 +3920,6 @@
           }
         }
 
-        // ---------- UI State Updates ----------
         toggleSection (head) {
           head.classList.toggle('open');
           const body = document.getElementById(head.getAttribute('aria-controls'));
@@ -3920,8 +3940,14 @@
             this.elements.minCheckLevel.value = checkLevel;
             this.elements.minCheckLevel.dispatchEvent(new Event('change', { bubbles: true }));
           }
+          this.syncMinCheckLevelLock();
           this.showRiskConsistencyNotices();
           this.updateProgress();
+        }
+
+        syncMinCheckLevelLock () {
+          const locked = true;
+          this.elements.minCheckLevel.disabled = locked;
         }
 
         getActiveRiskLevel () {
@@ -3943,7 +3969,7 @@
           this.renderNoticeStack('sc', 8, blocks8);
           const blocks9 = [];
           if (getVal(9) === 'yes') {
-            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete this check form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form</strong></a>.`, type: 'warn' });
+            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete the <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn' });
             if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 9, blocks9);
@@ -3993,43 +4019,68 @@
           this.updateProgress();
         }
 
+        computeVisibilityState () {
+          const isEit = this.isEitRole();
+          const q111No = this.isSc11No();
+          const q9Yes = this.isSc9Yes();
+          const risk = this.getActiveRiskLevel();
+          const isHighRisk = risk === 'high';
+          const isMidRisk = risk === 'medium';
+          const isLowRisk = risk === 'low';
+          const minLevel = this.elements.minCheckLevel.value;
+
+          const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
+
+          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
+          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
+          const openS4 = chHasNo || minLevel === 'Peer Review';
+          const openS5 = !isLowRisk && q9Yes;
+          const showChNotice = chHasNo;
+          const finalShown = isHighRisk;
+
+          return {
+            showCheck,
+            showPeer,
+            openS4,
+            openS5,
+            showChNotice,
+            finalShown
+          };
+        }
+
+        applyVisibilityState (state) {
+          this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
+
+          this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
+          this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
+          this.setRequired(this.elements.cardCh, state.showCheck);
+          if (state.showCheck) this.syncCheckerNames();
+
+          this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
+          this.setRequired(this.elements.cardPr, state.openS4);
+          if (state.openS4) this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
+
+          this.elements.cardFinal.classList.toggle('hidden', !state.finalShown);
+          this.setRequired(this.elements.cardFinal, state.finalShown && (this.getActiveRiskLevel() === 'high'));
+          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
+
+          this.elements.cardIr.classList.toggle('hidden', !state.openS5);
+          this.setRequired(this.elements.cardIr, state.openS5);
+          if (state.openS5) this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, true);
+        }
+
         syncCheckWarning () {
-          const hasNo = this.rowHasAnswer(this.elements.chRows, 'no');
-          this.elements.chNotice.classList.toggle('hidden', !hasNo);
           this.syncSectionVisibility();
         }
 
         syncSectionVisibility () {
-          const isEit = this.isEitRole();
-          const q111No = this.isSc11No();
-          const isHighRisk = this.getActiveRiskLevel() === 'high';
-          const isMidRisk = this.getActiveRiskLevel() === 'medium';
-          const minLevel = this.elements.minCheckLevel.value;
-          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
-          this.elements.cardCh.classList.toggle('hidden', !showCheck);
-          this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, showCheck);
-          this.setCheckerRequired(showCheck);
-          if (showCheck) this.syncCheckerNames();
-          const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
-          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk;
-          this.elements.cardPr.classList.toggle('hidden', !showPeer);
-          // Expand peer-review body only when a checklist item is "No", not for ch_c / pr_c.
-          if (chHasNo || minLevel === 'Peer Review') {
-            this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
-          }
-
-          const dsShown = !this.elements.cardDs.classList.contains('hidden');
-          const chShown = !this.elements.cardCh.classList.contains('hidden');
-          const prShown = !this.elements.cardPr.classList.contains('hidden');
-          const finalShown = isHighRisk;
-          this.elements.cardFinal.classList.toggle('hidden', !finalShown);
-          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, isHighRisk && finalShown);
+          const state = this.computeVisibilityState();
+          this.applyVisibilityState(state);
         }
 
         syncAllSectionVisibility () {
           this.syncDirectSupervision();
           this.syncSectionVisibility();
-          this.syncCheckWarning(); // applies chNotice + final section/card toggles
         }
 
         setSectionOpen (head, body, open) {
@@ -4048,6 +4099,21 @@
             checker.removeAttribute('required');
             checker.setAttribute('disabled', '');
           }
+        }
+
+        setRequired (element, required) {
+          // This method is intentionally left for non‑gated sections.
+          // For gated sections (ch, pr, ir) the required state is handled by enableSignature.
+          const inputFields = element.querySelectorAll(`input[id$='_date'], input[id$='_name']`);
+          inputFields.forEach(input => {
+            if (required) {
+              input.setAttribute('required', '');
+              input.removeAttribute('disabled');
+            } else {
+              input.removeAttribute('required');
+              input.setAttribute('disabled', '');
+            }
+          });
         }
 
         syncCheckerNames () {
@@ -4095,7 +4161,6 @@
           return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
-        // ---------- Progress & Validation ----------
         updateProgress () {
           const counts = new Map();
           this.sectionConfig.forEach(s => {
@@ -4128,46 +4193,75 @@
           this.elements.progressStrip.classList.toggle('completed', fullyComplete);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
-          this.elements.savePdf.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid());
-
+          this.elements.savePdf.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid() && this.allOpenSignatureEnabled());
         }
 
-        enableSignature (prefix) {
-          const enabled = this.elements[`${prefix}CNa`].checked || this.elements[`${prefix}CYes`].checked;
-          const SigPad = this.elements[`${prefix}SigPad`];
-          const SigImg = this.elements[`${prefix}SigImg`];
-          console.log(SigImg);
-          console.trace();
-          if (enabled) {
-            SigPad.removeAttribute("disabled");
-            SigImg.removeAttribute("disabled");
-          } else {
-            SigPad.setAttribute("disabled", "");
-            SigImg.setAttribute("disabled", "");
-          }
+        isSignatureEnabledByComments (prefix) {
+          if (prefix !== 'ch' && prefix !== 'pr' && prefix !== 'ir') return true;
+          const yes = this.elements[`${prefix}CYes`];
+          const na = this.elements[`${prefix}CNa`];
+          return !!(yes?.checked || na?.checked);
+        }
 
+        allOpenSignatureEnabled () {
+          const prefixes = ["ch", "pr", "ir"];
+          for (const prefix of prefixes) {
+            const card = document.getElementById(`card-${prefix}`);
+            const body = card.querySelector('.sec-body');
+            const bodyOpen = body.classList.contains('open') === true;
+            if (bodyOpen && !this.isSignatureEnabledByComments(prefix)) return false;
+          }
+          return true;
+        }
+
+        setSignatureEnabled (prefix, enabled) {
+          const container = document.getElementById(`${prefix}SigContainer`);
+          if (!container) return;
+
+          container.classList.toggle('is-locked', !enabled);
+          container.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+
+          container.querySelectorAll('button, a.btn-open-modal').forEach((el) => {
+            el.toggleAttribute('disabled', !enabled);
+          });
+
+          const fileInput = container.querySelector('input[type="file"]');
+          if (!enabled && fileInput) fileInput.value = '';
+
+          // Manage date and name fields for gated sections
+          const dateInput = document.getElementById(`${prefix}_date`);
+          const nameInput = document.getElementById(`${prefix}_name`);
+          if (dateInput && nameInput) {
+            if (enabled) {
+              dateInput.removeAttribute('disabled');
+              dateInput.setAttribute('required', '');
+              nameInput.removeAttribute('disabled');
+              nameInput.setAttribute('required', '');
+            } else {
+              dateInput.setAttribute('disabled', '');
+              dateInput.removeAttribute('required');
+              nameInput.setAttribute('disabled', '');
+              nameInput.removeAttribute('required');
+            }
+          }
         }
 
         async withLoading (button, callback) {
           if (CheckForm.activeAsyncButton) return;
-
           CheckForm.activeAsyncButton = button;
           try {
             await callback();
           } finally {
-
             CheckForm.activeAsyncButton = null;
           }
         }
 
         allRequiredFieldsValid (print = false) {
           const required = Array.from(document.querySelectorAll('.required-field-underline'));
-
           const requiredShown = required.filter(el => !el.closest('.hidden')
             && !el.previousElementSibling?.disabled && !el.parentElement?.disabled);
 
           let isValid;
-
           return requiredShown.reduce((acc, el) => {
             isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
             if (print) {
@@ -4178,7 +4272,6 @@
           }, true);
         }
 
-        // ---------- Textarea Utilities ----------
         autosizeTextarea (el) {
           if (!el) return;
           const commentEditor = this.resolveCommentEditor(el);
@@ -4212,7 +4305,6 @@
           CheckForm.COMMENT_PAIRS.forEach(([aId, bId]) => syncPair(aId, bId));
         }
 
-        // ---------- Section Clearing ----------
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           if (!sec) return;
@@ -4223,15 +4315,21 @@
             this.syncDirectSupervision();
             this.showRiskConsistencyNotices();
           }
-          if (sectionId === 's3') this.syncCheckWarning();
+          if (sectionId === 's3') {
+            this.syncCheckWarning();
+            this.enableSignature('ch');
+          }
           sec.querySelectorAll('textarea, .comments-inline-editor, .ql-container').forEach((t) => {
             this.autosizeCommentEditor(t);
           });
+          if (sectionId === 's4') this.enableSignature('pr');
+          if (sectionId === 's5') this.enableSignature('ir');
+          if (sectionId === 's6') this.enableSignature('ir');
           this.syncCommentsHeights();
+          this.restoreDefaults();
           this.toast('Section cleared', 'info');
         }
 
-        // ---------- Global Notice (Toast) ----------
         hideGlobalNotice () {
           this.elements.globalNotice.classList.add('hidden');
           clearTimeout(this.toastTimer);
@@ -4245,7 +4343,6 @@
           this.toastTimer = setTimeout(() => this.hideGlobalNotice(), 5000);
         }
 
-        // ---------- Form Actions ----------
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
           this.clearFormControls(document);
@@ -4260,7 +4357,13 @@
           this.updateProgress();
           this.syncAllComments();
           this.syncCommentsHeights();
+          this.restoreDefaults();
           this.toast('Form reset', 'info');
+        }
+
+        restoreDefaults () {
+          this.elements.revision.value = '0';
+          this.elements.scRoleEng.checked = true;
         }
 
         saveSnapshot () {
@@ -4269,13 +4372,12 @@
             return new Promise((resolve) => {
               this.syncAllQuillEditors();
               const clone = document.documentElement.cloneNode(true);
-
               const findCloneControl = (live) => {
                 if (live.id) {
                   try {
                     const byId = clone.querySelector(`#${CSS.escape(live.id)}`);
                     if (byId) return byId;
-                  } catch (_) { /* invalid id */ }
+                  } catch (_) { }
                 }
                 const type = (live.getAttribute('type') || '').toLowerCase();
                 const name = live.getAttribute('name');
@@ -4284,11 +4386,10 @@
                     return clone.querySelector(
                       `input[type="${type}"][name="${CSS.escape(name)}"][value="${CSS.escape(live.value)}"]`
                     );
-                  } catch (_) { /* */ }
+                  } catch (_) { }
                 }
                 return null;
               };
-
               for (const live of document.querySelectorAll('input, textarea, select')) {
                 const el = findCloneControl(live);
                 if (!el) continue;
@@ -4344,10 +4445,10 @@
           });
         }
 
-        printFormAsPdf (e) {
+        async printFormAsPdf (e) {
           e.preventDefault();
           const btn = document.getElementById('saveAsPdfBtn');
-          this.withLoading(btn, () => {
+          await this.withLoading(btn, () => {
             return new Promise((resolve) => {
               this.updateProgress();
               if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100) {

@@ -2750,10 +2750,9 @@
               restart_alt
             </span>
             <span class="button-text">Reset Form</span></button>
-          <button type="submit" style="display: none;">hidden</button>
         </div>
         <div>
-          <button class="btn btn-ghost" type="button" id="saveAsPdfBtn" data-testid="save-pdf"><span
+          <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf"><span
               class="material-symbols-sharp">print</span><span class="button-text">Print / PDF</span></button>
           <button class="btn btn-primary" type="button" id="saveSnapshotBtn" data-testid="save-snapshot"><span
               class="material-symbols-sharp">save</span><span class="button-text">Save</span></button>
@@ -2883,18 +2882,12 @@
         }
 
         // Cache all frequently used DOM elements
-        /**
-         * Collects and returns the DOM elements used by the form.
-         * Storing these references avoids repeated document queries.
-         */
         cacheElements () {
           const get = (id) => document.getElementById(id);
           return {
-            // Progress
             progressStrip: get('progressStrip'),
             progressBar: get('progressBar'),
             progressPct: get('progressPct'),
-            // Work info
             workTitle: get('workTitle'),
             engineer: get('engineer'),
             revision: get('revision'),
@@ -2915,37 +2908,30 @@
             irCYes: get('ir_c_yes'),
             irCNo: get('ir_c_no'),
             irCNa: get('ir_c_na'),
-            // Cards
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
             cardPr: get('card-pr'),
             cardFinal: get('card-final'),
             cardIr: get('card-ir'),
-            // Notices
             chNotice: get('chNotice'),
             globalNotice: get('globalNotice'),
             globalNoticeText: get('globalNoticeText'),
-            // Comments cells
             commentsCell3: get('commentsCell3'),
             commentsCell4: get('commentsCell4'),
-            // Section badges and nums
             badge1: get('badge-1'), num1: get('snum-1'),
             badge2: get('badge-2'), num2: get('snum-2'),
             badge3: get('badge-3'), num3: get('snum-3'),
             badge4: get('badge-4'), num4: get('snum-4'),
             badge5: get('badge-5'), num5: get('snum-5'),
-            // Row containers
             scRows: get('sc-rows'),
             dsRows: get('ds-rows'),
             chRows: get('ch-rows'),
             prRows: get('pr-rows'),
             irRows: get('ir-rows'),
-            // Signature fields
             scName: get('sc_name'),
             chName: get('ch_name'),
             fT1Name: get('fT1_name'),
             irName: get('ir_name'),
-            // Dynamic labels
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
             scSigLabel: document.querySelector('#sc_sig'),
@@ -2955,14 +2941,11 @@
             chSigLabel: document.querySelector('#ch_sig'),
             checkerCommentsLabel: document.querySelector('label[id="for_checkerComments"]'),
             engineerResponseLabel: document.querySelector('label[id="for_engineerResponse"]'),
-            // Section bodies
             s2Body: get('s2'), s2Head: get('sec2-head'),
             s3Body: get('s3'), s3Head: get('sec3-head'),
             s4Body: get('s4'), s4Head: get('sec4-head'),
             s5Body: get('s5'), s5Head: get('sec5-head'),
             s6Body: get('s6'), s6Head: get('sec6-head'),
-
-            //btns
             savePdf: get('saveAsPdfBtn'),
             chSigImg: get('chSigImg'),
             chSigPad: get('chSigPad'),
@@ -2973,10 +2956,6 @@
           };
         }
 
-        /**
-         * Builds the section metadata used for progress tracking and visibility.
-         * Each section entry links the DOM row container with its badge and counters.
-         */
         buildSectionConfig () {
           const card = (id) => document.getElementById(id);
           return [
@@ -2988,65 +2967,35 @@
           ];
         }
 
-        // ---------- Shared utilities ----------
-        /**
-         * Returns true when the selected SC role is Engineer-in-Training.
-         * Used to adjust form behavior for EIT-specific rules and labels.
-         */
         isEitRole () {
           return this.getRadioValue('sc_role') === 'Engineer-in-Training';
         }
 
-        /**
-         * Locates the dynamically generated sc11 radio buttons after rows are built.
-         * This ensures later logic can query those elements safely.
-         */
         cacheRowRadios () {
-          // sc11 radios are built dynamically in #sc-rows, not present at constructor time
           this.elements.sc11No = document.getElementById('sc11_no');
           this.elements.sc11Yes = document.getElementById('sc11_yes');
           this.elements.sc9No = document.getElementById('sc9_no');
           this.elements.sc9Yes = document.getElementById('sc9_yes');
         }
 
-        /**
-         * Returns true when SC question 1.11 is answered No.
-         * This affects direct supervision and section visibility.
-         */
         isSc11No () {
           return this.elements.sc11No?.checked ?? false;
         }
 
-        /**
-         * Returns true when SC question 1.9 is answered Yes.
-         * This triggers additional review requirements in the form rules.
-         */
         isSc9Yes () {
           return this.elements.sc9Yes?.checked ?? false;
         }
 
-        /**
-         * Returns true when any row in the given section has a radio option checked.
-         * Used to determine visibility and warning states based on checklist answers.
-         */
         rowHasAnswer (rowsEl, value) {
           return !!rowsEl?.querySelector(
             `.check-row input[type="radio"][value="${value}"]:checked`
           );
         }
 
-        /**
-         * Finds the comment editor wrapper for a DOM element.
-         * This helps unify handling of rich text and fallback comment editors.
-         */
         resolveCommentEditor (el) {
           return el?.closest?.('.comments-inline-editor, .ql-editor, .ql-container') ?? null;
         }
 
-        /**
-         * Returns the editor container and text surface nodes for a comment editor element.
-         * Supports both Quill-based editors and plain contenteditable fallbacks.
-         */
         getCommentEditorNodes (el) {
           if (!el) return { container: null, surface: null };
           if (el.classList.contains('comments-inline-editor')) {
@@ -3065,18 +3014,10 @@
           return { container: null, surface: el };
         }
 
-        /**
-         * Returns true when the element belongs to a comment editor.
-         * Useful for filtering input events that affect comment areas.
-         */
         isCommentEditor (el) {
           return !!this.resolveCommentEditor(el);
         }
 
-        /**
-         * Converts HTML markup from a comment editor into plain text.
-         * Removes non-breaking spaces and trims whitespace for empty checks.
-         */
         htmlToPlainText (html) {
           if (!html || html === CheckForm.EMPTY_EDITOR_HTML) return '';
           const el = document.createElement('div');
@@ -3084,10 +3025,6 @@
           return el.textContent?.replace(/\u00a0/g, ' ').trim() ?? '';
         }
 
-        /**
-         * Determines if a comment editor is visually empty.
-         * Treats blank HTML and comments containing no meaningful text or images as empty.
-         */
         isCommentEditorEmpty (editorOrHtml) {
           if (typeof editorOrHtml === 'string') {
             return !this.htmlToPlainText(editorOrHtml) && !/<img\b/i.test(editorOrHtml);
@@ -3098,19 +3035,11 @@
           return !this.htmlToPlainText(html);
         }
 
-        /**
-         * Updates the placeholder styling for a comment editor based on content.
-         * Adds or removes the empty state so hint text can be styled appropriately.
-         */
         updateCommentEditorPlaceholder (editor) {
           if (!editor?.classList?.contains('comments-inline-editor')) return;
           editor.classList.toggle('is-empty', this.isCommentEditorEmpty(editor));
         }
 
-        /**
-         * Returns the current CSS width and height of a canvas element.
-         * Used to resize signature canvases to the visible layout size.
-         */
         getCanvasCssSize (canvas) {
           const rect = canvas.getBoundingClientRect();
           return {
@@ -3119,24 +3048,14 @@
           };
         }
 
-        /**
-         * Returns the hidden input element that stores the signature data URL for a prefix.
-         */
         getSigDataInput (prefix) {
           return document.getElementById(`${prefix}_sig_data`);
         }
 
-        /**
-         * Returns the visual signature preview surface for a given prefix.
-         */
         getSigSurface (prefix) {
           return document.querySelector(`.sig-draw-surface[data-prefix="${prefix}"]`);
         }
 
-        /**
-         * Copies the source input value into one or more target fields.
-         * Also clears any inline validation styling on the synced fields.
-         */
         syncLinkedFields (source, ...targets) {
           const value = source.value;
           for (const field of targets) {
@@ -3146,10 +3065,6 @@
           source.previousElementSibling?.removeAttribute('style');
         }
 
-        /**
-         * Clears all rich-text and inline comment editors within a root node.
-         * Resets editors to an empty paragraph and updates placeholders.
-         */
         clearEditorContent (root = document) {
           root.querySelectorAll('.ql-editor, .comments-inline-editor').forEach((el) => {
             el.innerHTML = CheckForm.EMPTY_EDITOR_HTML;
@@ -3157,10 +3072,6 @@
           });
         }
 
-        /**
-         * Clears all form controls inside the given root node.
-         * This includes radios, text inputs, selects, textareas, risk buttons, signature markers, and comment editors.
-         */
         clearFormControls (root) {
           root.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
           root.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach((i) => { i.value = ''; });
@@ -3174,19 +3085,12 @@
           this.syncMinCheckLevelLock();
         }
 
-        /**
-         * Handles input changes in comment fields and resizes the editor as needed.
-         */
         handleCommentFieldEvent (target) {
           const editor = this.resolveCommentEditor(target);
           if (!editor) return;
           this.autosizeTextarea(editor);
         }
 
-        /**
-         * Queues a one-frame progress update via requestAnimationFrame.
-         * Prevents repeated updates during fast input events.
-         */
         scheduleUpdateProgress () {
           if (this._progressRaf) return;
           this._progressRaf = requestAnimationFrame(() => {
@@ -3195,10 +3099,6 @@
           });
         }
 
-        /**
-         * Schedules comment editor height synchronization on the next animation frame.
-         * Uses a double requestAnimationFrame to allow DOM updates to settle first.
-         */
         scheduleSyncCommentsHeights () {
           if (this._syncCommentsRaf) return;
           this._syncCommentsRaf = requestAnimationFrame(() => {
@@ -3209,11 +3109,6 @@
           });
         }
 
-        // ---------- Initialization ----------
-        /**
-         * Initializes the form when the page loads.
-         * Builds rows, attaches event listeners, restores saved state, and initializes signatures/comments.
-         */
         init () {
           const hasPersistedRows = !!this.elements.scRows?.querySelector('.check-row');
           if (!hasPersistedRows) this.buildAllRows();
@@ -3235,26 +3130,20 @@
           this.refreshAllSignaturePreviews();
           this.initCommentEditors();
           this.syncMinCheckLevelLock();
+          // Initialize signature gates for gated sections
+          ['ch', 'pr', 'ir', 'fT1'].forEach(prefix => this.enableSignature(prefix));
         }
 
-        /**
-         * Builds all checklist rows for each section using the configured item lists.
-         */
         buildAllRows () {
           this.buildRows(this.elements.scRows, 'sc', CheckForm.SC_ITEMS, CheckForm.BINARY_QUESTIONS.sc);
           this.buildRows(this.elements.dsRows, 'ds', CheckForm.DS_ITEMS);
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
           this.buildRows(this.elements.irRows, 'ir', CheckForm.IR_ITEMS);
-
           this.cacheRowRadios();
         }
 
         // ---------- Signature Pad Methods ----------
-        /**
-         * Initializes signature modal and drawing canvas state.
-         * Prepares the form for drawing or uploading signatures.
-         */
         initSignaturePads () {
           this.signatureModal = document.getElementById('sigModal');
           this.signatureModalCanvas = document.getElementById('sigModalCanvas');
@@ -3267,9 +3156,6 @@
           this.setupModalFocusTrap();
         }
 
-        /**
-         * Escapes HTML special characters to prevent markup injection in fallback comment rendering.
-         */
         escapeHtml (text) {
           return String(text)
             .replace(/&/g, '&amp;')
@@ -3278,10 +3164,6 @@
             .replace(/"/g, '&quot;');
         }
 
-        /**
-         * Builds the initial HTML content for a comment editor from stored text and attached images.
-         * Ensures pasted screenshots are preserved in the fallback comment editor.
-         */
         buildCommentInitialHtml (initial, gallery) {
           let html = (initial || '').trim();
           const galleryUrls = gallery
@@ -3299,39 +3181,22 @@
           return html || CheckForm.EMPTY_EDITOR_HTML;
         }
 
-        /**
-         * Reads the current HTML content from a comment editor adapter.
-         */
         getCommentHtml (fieldId) {
           return this.getCommentAdapter(fieldId).getHtml();
         }
 
-        /**
-         * Writes HTML content into the matching comment editor.
-         */
         setCommentHtml (fieldId, html) {
           this.comment_setHtml(fieldId, html);
         }
 
-        /**
-         * Synchronizes the visible comment editor value into its hidden form field.
-         */
         syncCommentField (fieldId) {
           this.comment_syncHidden(fieldId);
         }
 
-        /**
-         * Synchronizes all comment editor contents into their hidden inputs.
-         * This is used before saving or serializing the form state.
-         */
         syncAllComments () {
           this.comment_syncAllHidden();
         }
 
-        /**
-         * Restores comment editor content from hidden form values.
-         * This is typically called on load when the form has persisted content.
-         */
         restoreComments () {
           CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => {
             const hidden = document.getElementById(fieldId);
@@ -3345,11 +3210,6 @@
           });
         }
 
-        // ---------- CommentEditorRouter (deep seam facade) ----------
-        /**
-         * Returns a generic adapter for a comment field so callers can read/write content.
-         * Supports both Quill rich text editors and fallback contenteditable elements.
-         */
         getCommentAdapter (fieldId) {
           const quill = this.quillEditors?.[fieldId];
           if (quill) {
@@ -3374,16 +3234,10 @@
           };
         }
 
-        /**
-         * Reads the current HTML from a comment field via the adapter.
-         */
         comment_getHtml (fieldId) {
           return this.getCommentAdapter(fieldId).getHtml();
         }
 
-        /**
-         * Writes HTML into the comment field adapter and updates layout state.
-         */
         comment_setHtml (fieldId, html) {
           const ad = this.getCommentAdapter(fieldId);
           ad.setHtml(html);
@@ -3394,25 +3248,16 @@
           }
         }
 
-        /**
-         * Copies the adapter HTML into the hidden form input for a comment field.
-         */
         comment_syncHidden (fieldId) {
           const hidden = document.getElementById(fieldId);
           if (!hidden) return;
           hidden.value = this.comment_getHtml(fieldId);
         }
 
-        /**
-         * Synchronizes all comment fields to hidden inputs in one pass.
-         */
         comment_syncAllHidden () {
           CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => this.comment_syncHidden(fieldId));
         }
 
-        /**
-         * Triggers autosizing for a specified comment editor by ID or element.
-         */
         comment_autosize (fieldIdOrEl) {
           const el = typeof fieldIdOrEl === 'string'
             ? document.getElementById(`${fieldIdOrEl}-editor`)
@@ -3420,10 +3265,6 @@
           if (el) this.autosizeCommentEditor(el);
         }
 
-        /**
-         * Inserts an inline image into a comment editor at the current selection.
-         * Used for pasted or uploaded screenshots in comments.
-         */
         insertCommentInlineImage (editor, dataUrl) {
           if (!editor || !dataUrl) return;
           editor.focus();
@@ -3456,10 +3297,6 @@
           this.updateCommentEditorPlaceholder(editor);
         }
 
-        /**
-         * Opens a modal preview for a comment image.
-         * Used when users click a pasted screenshot inside comment content.
-         */
         showCommentImageModal (dataUrl) {
           const modal = document.createElement('div');
           modal.className = 'comment-image-modal';
@@ -3483,10 +3320,6 @@
           document.body.appendChild(modal);
         }
 
-        /**
-         * Processes an uploaded image file and inserts it into a comment editor.
-         * Reads the image as a data URL and updates the comment field state.
-         */
         processCommentImageFile (file, fieldId) {
           if (!file?.type?.startsWith('image/')) return;
           const editor = this.commentTextareas?.[fieldId];
@@ -3502,17 +3335,10 @@
           reader.readAsDataURL(file);
         }
 
-        /**
-         * A convenience wrapper that syncs a comment editor into its hidden form input.
-         */
         syncCommentFieldToHidden (fieldId) {
           this.syncCommentField(fieldId);
         }
 
-        /**
-         * Attaches event listeners to a fallback comment editor element.
-         * Handles input, paste, blur, and image preview behavior.
-         */
         bindCommentEditor (editor, fieldId, placeholder) {
           if (editor.dataset.editorBound === '1') return;
           editor.dataset.placeholder = placeholder;
@@ -3554,10 +3380,6 @@
           editor.dataset.editorBound = '1';
         }
 
-        /**
-         * Sets the height of a comment editor container and surface.
-         * Ensures editors respect a minimum visible height.
-         */
         setCommentEditorHeight (el, heightPx) {
           const { container, surface } = this.getCommentEditorNodes(el);
           const minH = CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
@@ -3573,10 +3395,6 @@
           }
         }
 
-        /**
-         * Measures how tall a comment editor should be to fit its content.
-         * Temporarily sets height to auto to compute scrollHeight without layout locking.
-         */
         measureCommentEditorHeight (el) {
           const { container, surface } = this.getCommentEditorNodes(el);
           if (!surface) return CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
@@ -3590,18 +3408,11 @@
           return h;
         }
 
-        /**
-         * Automatically resizes a comment editor to fit its content.
-         */
         autosizeCommentEditor (el) {
           if (!el) return;
           this.setCommentEditorHeight(el, this.measureCommentEditorHeight(el));
         }
 
-        /**
-         * Attaches Quill text-change and mutation observers for rich-text comment editors.
-         * Keeps hidden inputs in sync and resizes the editor when content changes.
-         */
         bindQuillCommentEditor (container, fieldId) {
           const quill = this.quillEditors?.[fieldId];
           if (!quill || !container) return;
@@ -3634,10 +3445,6 @@
           this.scheduleSyncCommentsHeights();
         }
 
-        /**
-         * Initializes comment editor UI, preferring Quill when available.
-         * Falls back to plain contenteditable editors if Quill fails or is unavailable.
-         */
         initCommentEditors () {
           if (typeof Quill !== 'undefined') {
             try {
@@ -3655,10 +3462,6 @@
           this.toast('Rich text editor unavailable. Type and paste screenshots directly in the comment box.', 'warn');
         }
 
-        /**
-         * Initializes fallback comment editors using contenteditable divs.
-         * This allows comments to work even if the rich text editor library is unavailable.
-         */
         initCommentTextareaFallbacks () {
           this.quillEditors = null;
           this.commentTextareas = {};
@@ -3707,10 +3510,6 @@
           });
         }
 
-        /**
-         * Sets up Quill rich text editors for all comment fields.
-         * Removes stale toolbars and re-initializes editors for idempotent snapshots.
-         */
         initQuillEditors () {
           const quillConfig = {
             theme: 'snow',
@@ -3738,7 +3537,6 @@
               const existingEditor = container.querySelector('.ql-editor');
               const existingHtml = existingEditor ? existingEditor.innerHTML : '';
 
-              // Reset serialized Quill DOM from reopened snapshots so initialization is idempotent.
               container.classList.remove('ql-snow');
               container.innerHTML = '<div class="ql-editor"></div>';
               container._quillResizeObserver?.disconnect();
@@ -3758,18 +3556,10 @@
           this.scheduleSyncCommentsHeights();
         }
 
-        /**
-         * Ensures all Quill editor contents are synced to hidden inputs.
-         * Called before snapshotting or serializing the form.
-         */
         syncAllQuillEditors () {
           this.syncAllComments();
         }
 
-        /**
-         * Changes the active signature tab within a signature section.
-         * Handles toggling between draw and upload modes.
-         */
         changeSignatureTab (tabBtn) {
           if (!tabBtn) return;
           const container = tabBtn.closest('.signature-pad-container');
@@ -3786,19 +3576,12 @@
           });
         }
 
-        /**
-         * Refreshes the inline signature preview for every signature section.
-         */
         refreshAllSignaturePreviews () {
           CheckForm.SIG_PREFIXES.forEach((prefix) => {
             this.setSignaturePreview(prefix, this.getSigDataInput(prefix)?.value || '');
           });
         }
 
-        /**
-         * Updates the signature preview image and active state for a prefix.
-         * If no signature data exists, clears the preview surface.
-         */
         setSignaturePreview (prefix, dataUrl) {
           const surface = this.getSigSurface(prefix);
           const img = surface?.querySelector('.sig-inline-preview img');
@@ -3817,10 +3600,6 @@
           if (tabBtn) this.changeSignatureTab(tabBtn);
         }
 
-        /**
-         * Opens the signature drawing modal for the specified signature prefix.
-         * Loads any existing signature into the modal canvas.
-         */
         openSignatureModal (prefix) {
           if (!this.signatureModal || !this.signatureModalCanvas) return;
           this.activeSignaturePrefix = prefix;
@@ -3830,13 +3609,8 @@
           this.resizeModalCanvas();
           this.loadDataUrlIntoModalCanvas(this.getSigDataInput(prefix)?.value || '');
           this.signatureModal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
-
-          // Focus trap setup is handled by the open event listener in setupModalFocusTrap
         }
 
-        /**
-         * Closes the signature modal and optionally saves the drawn signature.
-         */
         closeSignatureModal (save) {
           if (!this.signatureModal || !this.signatureModalCanvas) return;
           const prefix = this.activeSignaturePrefix;
@@ -3852,19 +3626,12 @@
           this.activeSignaturePrefix = null;
         }
 
-        /**
-         * Clears the current signature drawing from the modal canvas.
-         */
         clearModalSignature () {
           if (!this.signatureModalCanvas) return;
           const { width, height } = this.getCanvasCssSize(this.signatureModalCanvas);
           this.signatureModalCanvas.getContext('2d').clearRect(0, 0, width, height);
         }
 
-        /**
-         * Resizes the signature modal canvas to match its CSS size.
-         * Also configures the drawing context for smooth strokes.
-         */
         resizeModalCanvas () {
           const canvas = this.signatureModalCanvas;
           if (!canvas) return;
@@ -3878,10 +3645,6 @@
           ctx.lineWidth = 2;
         }
 
-        /**
-         * Loads an existing signature image into the modal canvas.
-         * Clears any prior drawing before rendering the loaded image.
-         */
         loadDataUrlIntoModalCanvas (dataUrl) {
           this.clearModalSignature();
           if (!dataUrl) return;
@@ -3893,10 +3656,6 @@
           img.src = dataUrl;
         }
 
-        /**
-         * Clears all canvas-based drawings and data inputs inside a section.
-         * Used when a section is reset or cleared.
-         */
         removeCanvas (section) {
           section.querySelectorAll('canvas').forEach((canvas) => {
             const { width, height } = this.getCanvasCssSize(canvas);
@@ -3906,68 +3665,32 @@
           });
         }
 
-
-        /**
-         * Sets up pointer drawing behavior for the signature modal canvas.
-         * Handles smoothing, pressure-less width variation, and animation frame loops.
-         */
         setupModalCanvasDrawing (canvas) {
           const sigModal = this.signatureModal;
           const ctx = canvas.getContext('2d');
-          // --------------------------
-          // Tuned for responsive 60Hz feel
-          // --------------------------
           const TARGET_DT_MS = 1000 / 60;
-
-          // Lazy brush
-          const lazyRadius = 6;   // lower = more responsive
-          const friction = 0.02;   // lower = less lag
-
-          // Smoothing rates
+          const lazyRadius = 6;
+          const friction = 0.02;
           const posSmoothingHz = 26;
           const widthSmoothingHz = 20;
-
-          // Speed-based line width
           const minWidth = 5.0;
           const maxWidth = 12.0;
-          const speedForMinWidth = 1100; // px/s where width reaches min
-
-          // --------------------------
-          // State
-          // --------------------------
+          const speedForMinWidth = 1100;
           let drawing = false;
           let hasPointer = false;
-
           let pointer = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
           let brush = { ...pointer };
           let prevBrush = { ...brush };
-
           let currentWidth = maxWidth;
           let lastTs = performance.now();
-
-          // For quadratic smoothing
           let prevMid = null;
 
-          // --------------------------
-          // Helpers
-          // --------------------------
-          /**
-           * Keeps a value within a specified range.
-           */
           function clamp (v, lo, hi) {
             return Math.max(lo, Math.min(hi, v));
           }
-
-          /**
-           * Computes an exponential smoothing factor for rate-based interpolation.
-           */
           function expSmoothingFactor (hz, dtSec) {
             return 1 - Math.exp(-hz * dtSec);
           }
-
-          /**
-           * Converts pointer coordinates from page space to canvas pixel space.
-           */
           function getCanvasPoint (e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -3977,31 +3700,19 @@
               y: (e.clientY - rect.top) * scaleY
             };
           }
-
-          /**
-           * Ends the current drawing stroke and resets pointer state.
-           */
           function endDraw () {
             drawing = false;
             hasPointer = false;
             prevMid = null;
           }
-
-          /**
-           * Clears the signature canvas content completely.
-           */
           function clearCanvas () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
           }
 
-          // --------------------------
-          // Pointer events
-          // --------------------------
           canvas.addEventListener("pointerdown", (e) => {
             canvas.setPointerCapture(e.pointerId);
             hasPointer = true;
             drawing = true;
-
             pointer = getCanvasPoint(e);
             brush = { ...pointer };
             prevBrush = { ...pointer };
@@ -4017,13 +3728,8 @@
 
           canvas.addEventListener("pointerup", endDraw);
           canvas.addEventListener("pointercancel", endDraw);
-
-          // Double click to clear
           canvas.addEventListener("dblclick", clearCanvas);
 
-          // --------------------------
-          // Main RAF loop (runs only while modal is open)
-          // --------------------------
           let rafId = 0;
           const stopFrame = () => {
             if (rafId) {
@@ -4035,9 +3741,6 @@
             if (!rafId) rafId = requestAnimationFrame(frame);
           };
 
-          /**
-           * Animation frame loop that smooths brush movement and renders strokes.
-           */
           function frame (ts) {
             rafId = 0;
             if (!canvas.isConnected || !sigModal?.classList.contains('open')) {
@@ -4045,65 +3748,50 @@
               return;
             }
             const dtMsRaw = ts - lastTs || TARGET_DT_MS;
-            const dtMs = Math.min(33, Math.max(1, dtMsRaw)); // clamp stalls
+            const dtMs = Math.min(33, Math.max(1, dtMsRaw));
             const dtSec = dtMs / 1000;
             lastTs = ts;
 
             if (hasPointer) {
-              // Lazy brush position update
               const dx = pointer.x - brush.x;
               const dy = pointer.y - brush.y;
               const dist = Math.hypot(dx, dy);
-
               if (dist > lazyRadius) {
                 const pull = dist - lazyRadius;
                 const tx = brush.x + (dx / dist) * pull;
                 const ty = brush.y + (dy / dist) * pull;
-
                 const posAlpha = expSmoothingFactor(posSmoothingHz, dtSec) * (1 - friction);
                 brush.x += (tx - brush.x) * posAlpha;
                 brush.y += (ty - brush.y) * posAlpha;
               }
-
-              // Speed -> width (px/sec for frame-rate stability)
               const vx = brush.x - prevBrush.x;
               const vy = brush.y - prevBrush.y;
               const speed = Math.hypot(vx, vy) / dtSec;
-
               const t = clamp(speed / speedForMinWidth, 0, 1);
               const targetWidth = maxWidth - (maxWidth - minWidth) * t;
-
               const widthAlpha = expSmoothingFactor(widthSmoothingHz, dtSec);
               currentWidth += (targetWidth - currentWidth) * widthAlpha;
 
-              // Quadratic curve stroke
               if (drawing) {
                 const midX = (prevBrush.x + brush.x) * 0.5;
                 const midY = (prevBrush.y + brush.y) * 0.5;
-
                 ctx.strokeStyle = "#111";
                 ctx.lineCap = "round";
                 ctx.lineJoin = "round";
                 ctx.lineWidth = currentWidth;
-
                 ctx.beginPath();
                 if (!prevMid) {
                   ctx.moveTo(prevBrush.x, prevBrush.y);
                 } else {
                   ctx.moveTo(prevMid.x, prevMid.y);
                 }
-
-                // Control point at previous brush, end at midpoint
                 ctx.quadraticCurveTo(prevBrush.x, prevBrush.y, midX, midY);
                 ctx.stroke();
-
                 prevMid = { x: midX, y: midY };
               }
-
               prevBrush.x = brush.x;
               prevBrush.y = brush.y;
             }
-
             if (hasPointer) scheduleFrame();
           }
 
@@ -4119,10 +3807,6 @@
           };
         }
 
-        /**
-         * Enables keyboard focus trapping while the signature modal is open.
-         * Keeps tab navigation contained inside the modal dialog.
-         */
         setupModalFocusTrap () {
           const modal = this.signatureModal;
           if (!modal) return;
@@ -4164,13 +3848,6 @@
           };
         }
 
-        /**
-         * Build radio button rows using DOM APIs
-         */
-        /**
-         * Generates checklist rows dynamically for a section.
-         * Creates labeled radio groups and optional binary-only options.
-         */
         buildRows (container, prefix, items, binarySet = new Set()) {
           if (!container) return;
           container.innerHTML = '';
@@ -4215,10 +3892,6 @@
           });
         }
 
-        /**
-         * Attaches global event listeners for click, change, input, and keydown events.
-         * Also sets up signature upload drag/drop and mutation observers for row updates.
-         */
         attachEventListeners () {
           document.addEventListener('click', this._boundClick);
           document.addEventListener('change', this._boundChange);
@@ -4258,10 +3931,6 @@
           });
         }
 
-        /**
-         * Handles uploaded signature image files for a section.
-         * Reads the file and updates the signature preview/input value.
-         */
         handleSignatureUpload (e, prefix) {
           const file = e.target.files?.[0];
           if (!file) return;
@@ -4275,11 +3944,6 @@
           reader.readAsDataURL(file);
         }
 
-        // ---------- Event Handlers ----------
-        /**
-         * Global click handler for UI controls across the form.
-         * Dispatches signature tab changes, modal actions, section toggles, and button clicks.
-         */
         handleGlobalClick (e) {
           const tabBtn = e.target.closest('.btn-sig-tab');
           if (tabBtn) {
@@ -4337,8 +4001,6 @@
             this.setRiskLevel(e.target.dataset.risk);
           }
 
-          const clickedButton = e.target.closest('button');
-
           const clearActions = {
             clearWorkInfoBtn: () => this.clearSection('sec-info-body'),
             clearSec1Btn: () => this.clearSection('s1'),
@@ -4347,23 +4009,18 @@
             clearSec4Btn: () => this.clearSection('s4'),
             clearSec5Btn: () => this.clearSection('s5'),
             clearSec6Btn: () => this.clearSection('s6'),
-
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
             dismissNoticeBtn: () => this.hideGlobalNotice()
           };
-          if (clickedButton && clickedButton.id in clearActions) {
+          const id = e.target.id;
+          if (id in clearActions) {
             e.stopPropagation();
-            clearActions[clickedButton.id](e);
+            clearActions[id](e);
           }
-
         }
 
-        /**
-         * Global change handler for input and select changes.
-         * Updates progress, visibility, and syncs comment editor changes.
-         */
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
             this.dispatchRadioChange(e.target);
@@ -4382,11 +4039,6 @@
           if (commentEditor) this.handleCommentFieldEvent(commentEditor);
         }
 
-        // ---------- GlobalEventRouter (deep seam) ----------
-        /**
-         * Central router for radio button state changes.
-         * Handles risk level, role changes, signature gating, and section visibility.
-         */
         dispatchRadioChange (radio) {
           this.scheduleUpdateProgress();
           const name = radio?.name || '';
@@ -4399,30 +4051,22 @@
             this.updateRoleLabels(true);
           }
 
-          // Risk consistency notices depend on SC radios and risk selection.
           this.showRiskConsistencyNotices();
 
-          // Signature gates are driven by the *_c radios only.
           if (name === 'ch_c' || name === 'pr_c' || name === 'ir_c') {
             const prefix = radio.getAttribute('data-prefix');
-            if (prefix) this.signatureGate_apply(prefix);
+            if (prefix) this.enableSignature(prefix);
             return;
           }
 
-          // Checklist radios (e.g. ch1..chN) influence chNotice + section visibility.
           if (name.startsWith('ch')) {
             this.syncCheckWarning();
             return;
           }
 
-          // Default: re-run visibility state machine.
           this.syncSectionVisibility();
         }
 
-        /**
-         * Global input handler for field typing.
-         * Synchronizes linked fields, comment editors, and progress updates.
-         */
         handleGlobalInput (e) {
           const { target } = e;
           if (target.id === 'engineer' || target.id === 'sc_name') {
@@ -4440,20 +4084,14 @@
           }
         }
 
-        // ---------- SignatureGate (deep seam facade) ----------
-        /**
-         * Applies signature gating logic for a prefix.
-         * This is a compatibility facade for legacy signature gate usage.
-         */
-        signatureGate_apply (prefix) {
-          // Facade for legacy implementation.
-          this.enableSignature(prefix);
+        enableSignature (prefix) {
+          const enabled = this.isSignatureEnabledByComments(prefix);
+          this.setSignatureEnabled(prefix, enabled);
+          if (prefix === 'ch') {
+            this.elements.chSigGateNotice?.classList.toggle('hidden', enabled);
+          }
         }
 
-        /**
-         * Handles keyboard shortcuts such as Escape to close the signature modal.
-         * Also makes section headers keyboard-accessible via Enter/Space.
-         */
         handleGlobalKeydown (e) {
           if (e.key === 'Escape' && this.signatureModal?.classList.contains('open')) {
             e.preventDefault();
@@ -4467,10 +4105,6 @@
           }
         }
 
-        // ---------- UI State Updates ----------
-        /**
-         * Toggles a collapsible section header and its associated body.
-         */
         toggleSection (head) {
           head.classList.toggle('open');
           const body = document.getElementById(head.getAttribute('aria-controls'));
@@ -4478,10 +4112,6 @@
           head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
         }
 
-        /**
-         * Sets the selected risk level and updates related form state.
-         * Also synchronizes the minimum check level and consistency notices.
-         */
         setRiskLevel (level) {
           let activeBtn = null;
           this.elements.riskBtns.forEach((b) => {
@@ -4500,18 +4130,11 @@
           this.updateProgress();
         }
 
-        /**
-         * Locks the minimum check level dropdown so it cannot be edited directly.
-         * The value is instead derived from risk level and role settings.
-         */
         syncMinCheckLevelLock () {
           const locked = true;
           this.elements.minCheckLevel.disabled = locked;
         }
 
-        /**
-         * Returns the currently active risk level button value.
-         */
         getActiveRiskLevel () {
           for (const btn of this.elements.riskBtns) {
             if (btn.classList.contains('active')) return btn.dataset.risk ?? null;
@@ -4519,10 +4142,6 @@
           return null;
         }
 
-        /**
-         * Generates and displays notices when risk-related answers conflict with selected risk level.
-         * Includes warnings for incorrect high-risk, EIT, and project requirements.
-         */
         showRiskConsistencyNotices () {
           const isEit = this.isEitRole();
           const level = this.getActiveRiskLevel();
@@ -4557,10 +4176,6 @@
           this.renderNoticeStack('sc', 11, blocks11);
         }
 
-        /**
-         * Renders one notice stack for a single checklist item.
-         * Displays warnings or errors beneath the question row.
-         */
         renderNoticeStack (prefix, n, blocks) {
           const stack = document.getElementById(`${prefix}${n}_notice_stack`);
           if (!stack) return;
@@ -4577,9 +4192,6 @@
             </div>`).join('');
         }
 
-        /**
-         * Shows or hides the direct supervision section based on SC question 1.11.
-         */
         syncDirectSupervision () {
           const noChecked = this.isSc11No();
           this.elements.cardDs.classList.toggle('hidden', !noChecked);
@@ -4592,11 +4204,6 @@
           this.updateProgress();
         }
 
-        // ---------- SectionVisibilityPolicy (deep seam) ----------
-        /**
-         * Computes the current section visibility state from risk and checklist facts.
-         * Returns an object used to show/hide and expand sections.
-         */
         computeVisibilityState () {
           const isEit = this.isEitRole();
           const q111No = this.isSc11No();
@@ -4607,20 +4214,13 @@
           const isLowRisk = risk === 'low';
           const minLevel = this.elements.minCheckLevel.value;
 
-          // Checklist-derived facts (scoped to .check-row so ch_c/pr_c doesn't interfere).
           const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
 
           const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
           const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
-
-          // Current behavior: expand peer review when checklist has a "No" OR min level explicitly set to Peer Review.
           const openS4 = chHasNo || minLevel === 'Peer Review';
-
-          const openS5 = !isLowRisk && q9Yes; // gated behind final section for now, but may want to surface earlier
-
-          // Current behavior: warning is tied to checklist "No" answers (not ch_c).
+          const openS5 = !isLowRisk && q9Yes;
           const showChNotice = chHasNo;
-
           const finalShown = isHighRisk;
 
           return {
@@ -4633,59 +4233,41 @@
           };
         }
 
-        /**
-         * Applies the computed visibility state to the form UI.
-         */
         applyVisibilityState (state) {
           this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
 
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
-          this.setRequired(this.elements.cardCh, state.showCheck);
+          // Do NOT call setRequired for gated sections – signature gate manages required status
           if (state.showCheck) this.syncCheckerNames();
 
           this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
-          this.setRequired(this.elements.cardPr, state.openS4);
           if (state.openS4) this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
 
           this.elements.cardFinal.classList.toggle('hidden', !state.finalShown);
-          this.setRequired(this.elements.cardFinal, state.finalShown && (this.getActiveRiskLevel() === 'high'));
           this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
-
+          // Independent review section
           this.elements.cardIr.classList.toggle('hidden', !state.openS5);
-          this.setRequired(this.elements.cardIr, state.openS5);
           if (state.openS5) this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, true);
+
+          // Re-apply gate after visibility change to ensure date/name fields are correctly enabled/disabled
+          ['ch', 'pr', 'ir', 'fT1'].forEach(prefix => this.enableSignature(prefix));
         }
 
-        /**
-         * Legacy entry point preserved for backwards compatibility.
-         * Triggers a section visibility recalculation.
-         */
         syncCheckWarning () {
-          // Legacy entry point; kept for locality. Visibility now owns chNotice.
           this.syncSectionVisibility();
         }
 
-        /**
-         * Recalculates and applies section visibility for the current form state.
-         */
         syncSectionVisibility () {
           const state = this.computeVisibilityState();
           this.applyVisibilityState(state);
         }
 
-        /**
-         * Synchronizes all section visibility rules at once.
-         */
         syncAllSectionVisibility () {
           this.syncDirectSupervision();
           this.syncSectionVisibility();
-          this.syncCheckWarning(); // legacy: kept for callers that expect it
         }
 
-        /**
-         * Opens or closes a section header and body programmatically.
-         */
         setSectionOpen (head, body, open) {
           if (!head || !body) return;
           head.classList.toggle('open', open);
@@ -4693,9 +4275,6 @@
           head.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
 
-        /**
-         * Toggles the required state of the checker name input.
-         */
         setCheckerRequired (required) {
           const checker = this.elements.checker;
           if (required) {
@@ -4708,6 +4287,8 @@
         }
 
         setRequired (element, required) {
+          // This method is intentionally left for non‑gated sections.
+          // For gated sections (ch, pr, ir) the required state is handled by enableSignature.
           const inputFields = element.querySelectorAll(`input[id$='_date'], input[id$='_name']`);
           inputFields.forEach(input => {
             if (required) {
@@ -4717,12 +4298,9 @@
               input.removeAttribute('required');
               input.setAttribute('disabled', '');
             }
-          })
+          });
         }
 
-        /**
-         * Synchronizes checker name fields between the visible and hidden checker inputs.
-         */
         syncCheckerNames () {
           if (this.syncingNames) return;
           this.syncingNames = true;
@@ -4734,9 +4312,6 @@
           this.syncingNames = false;
         }
 
-        /**
-         * Updates labels and placeholders throughout the form based on the selected SC role.
-         */
         updateRoleLabels (resetSc11 = true) {
           const isEit = this.isEitRole();
           const { sc11No, sc11Yes } = this.elements;
@@ -4767,17 +4342,10 @@
           this.syncSectionVisibility();
         }
 
-        /**
-         * Returns the selected value for a named radio group.
-         */
         getRadioValue (name) {
           return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
-        // ---------- Progress & Validation ----------
-        /**
-         * Recomputes overall checklist completion progress and updates the UI.
-         */
         updateProgress () {
           const counts = new Map();
           this.sectionConfig.forEach(s => {
@@ -4811,25 +4379,15 @@
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
           this.elements.savePdf.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid() && this.allOpenSignatureEnabled());
-
         }
 
-        // ---------- SignatureGate adapter (real seam) ----------
-        /**
-         * Returns whether a signature section is enabled based on comment gating rules.
-         */
         isSignatureEnabledByComments (prefix) {
-          // Only CH and PR signatures are gated by the "addressed?" radios.
           if (prefix !== 'ch' && prefix !== 'pr' && prefix !== 'ir') return true;
-
           const yes = this.elements[`${prefix}CYes`];
           const na = this.elements[`${prefix}CNa`];
           return !!(yes?.checked || na?.checked);
         }
 
-        /**
-         * Returns true when all currently open signature sections are enabled.
-         */
         allOpenSignatureEnabled () {
           const prefixes = ["ch", "pr", "ir"];
           for (const prefix of prefixes) {
@@ -4839,13 +4397,8 @@
             if (bodyOpen && !this.isSignatureEnabledByComments(prefix)) return false;
           }
           return true;
-
         }
 
-        /**
-         * Enables or disables the signature controls for a section.
-         * Disables interactive buttons and clears file inputs when locked.
-         */
         setSignatureEnabled (prefix, enabled) {
           const container = document.getElementById(`${prefix}SigContainer`);
           if (!container) return;
@@ -4853,42 +4406,47 @@
           container.classList.toggle('is-locked', !enabled);
           container.setAttribute('aria-disabled', enabled ? 'false' : 'true');
 
-          // Disable all interactive controls inside the signature container.
           container.querySelectorAll('button, a.btn-open-modal').forEach((el) => {
             el.toggleAttribute('disabled', !enabled);
           });
 
-          // If disabled, also clear any file input selection to avoid stale UI.
           const fileInput = container.querySelector('input[type="file"]');
           if (!enabled && fileInput) fileInput.value = '';
-        }
 
-        /**
-         * Applies signature enablement logic for a section.
-         * This method is called by the signature gating facade.
-         */
-        enableSignature (prefix) {
-          // Backwards-compatible entry point used by the global router.
-
-          const enabled = this.isSignatureEnabledByComments(prefix);
-          this.setSignatureEnabled(prefix, enabled);
-          if (prefix === 'ch') {
-            this.elements.chSigGateNotice?.classList.toggle('hidden', enabled);
+          // Manage date and name fields for gated sections
+          const dateInput = document.getElementById(`${prefix}_date`);
+          const nameInput = document.getElementById(`${prefix}_name`);
+          if (dateInput && nameInput) {
+            if (enabled) {
+              dateInput.removeAttribute('disabled');
+              dateInput.setAttribute('required', '');
+              nameInput.removeAttribute('disabled');
+              nameInput.setAttribute('required', '');
+            } else {
+              dateInput.setAttribute('disabled', '');
+              dateInput.removeAttribute('required');
+              nameInput.setAttribute('disabled', '');
+              nameInput.removeAttribute('required');
+            }
           }
         }
 
-        /**
-         * Validates that all required visible fields are filled correctly.
-         * Optionally highlights invalid labels when printing.
-         */
+        async withLoading (button, callback) {
+          if (CheckForm.activeAsyncButton) return;
+          CheckForm.activeAsyncButton = button;
+          try {
+            await callback();
+          } finally {
+            CheckForm.activeAsyncButton = null;
+          }
+        }
+
         allRequiredFieldsValid (print = false) {
           const required = Array.from(document.querySelectorAll('.required-field-underline'));
-
           const requiredShown = required.filter(el => !el.closest('.hidden')
             && !el.previousElementSibling?.disabled && !el.parentElement?.disabled);
 
           let isValid;
-
           return requiredShown.reduce((acc, el) => {
             isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
             if (print) {
@@ -4899,10 +4457,6 @@
           }, true);
         }
 
-        // ---------- Textarea Utilities ----------
-        /**
-         * Autosizes a textarea or comment editor based on its content.
-         */
         autosizeTextarea (el) {
           if (!el) return;
           const commentEditor = this.resolveCommentEditor(el);
@@ -4915,10 +4469,6 @@
           el.style.height = el.scrollHeight + 'px';
         }
 
-        /**
-         * Synchronizes heights for paired comment editor cells.
-         * Ensures side-by-side comments remain aligned.
-         */
         syncCommentsHeights () {
           const syncPair = (aId, bId) => {
             const a = document.getElementById(aId);
@@ -4940,13 +4490,8 @@
           CheckForm.COMMENT_PAIRS.forEach(([aId, bId]) => syncPair(aId, bId));
         }
 
-        // ---------- Section Clearing ----------
-        /**
-         * Clears all content for a single section, including controls and signature canvases.
-         */
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
-          console.trace();
           if (!sec) return;
           this.clearFormControls(sec);
           this.removeCanvas(sec);
@@ -4957,41 +4502,24 @@
           }
           if (sectionId === 's3') {
             this.syncCheckWarning();
-            const prefix = 'ch';
-            this.setSignatureEnabled(prefix, false);
+            this.enableSignature('ch');
           }
           sec.querySelectorAll('textarea, .comments-inline-editor, .ql-container').forEach((t) => {
             this.autosizeCommentEditor(t);
           });
-
-          if (sectionId === 's4') {
-            const prefix = 'pr';
-            this.setSignatureEnabled(prefix, false);
-          }
-
-          if (sectionId === 's6') {
-            const prefix = 'ir';
-            this.setSignatureEnabled(prefix, false);
-          }
-
+          if (sectionId === 's4') this.enableSignature('pr');
+          if (sectionId === 's5') this.enableSignature('ir');
+          if (sectionId === 's6') this.enableSignature('fT1');
           this.syncCommentsHeights();
           this.restoreDefaults();
-
           this.toast('Section cleared', 'info');
         }
 
-        // ---------- Global Notice (Toast) ----------
-        /**
-         * Hides the global notice toast message.
-         */
         hideGlobalNotice () {
           this.elements.globalNotice.classList.add('hidden');
           clearTimeout(this.toastTimer);
         }
 
-        /**
-         * Displays a temporary toast message at the top of the form.
-         */
         toast (msg, type = 'info') {
           this.elements.globalNoticeText.innerHTML = msg;
           this.elements.globalNotice.classList.remove('hidden', 'info', 'success', 'error', 'warn');
@@ -5000,10 +4528,6 @@
           this.toastTimer = setTimeout(() => this.hideGlobalNotice(), 5000);
         }
 
-        // ---------- Form Actions ----------
-        /**
-         * Resets the entire form to its initial state after confirmation.
-         */
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
           this.clearFormControls(document);
@@ -5022,107 +4546,105 @@
           this.toast('Form reset', 'info');
         }
 
-        /**
-         * Restores the default static form values after a reset.
-         */
         restoreDefaults () {
           this.elements.revision.value = '0';
           this.elements.scRoleEng.checked = true;
         }
 
-        /**
-         * Saves a snapshot of the current form state as a standalone HTML file.
-         * Clones the document and preserves form values and signature data.
-         */
         saveSnapshot () {
           const btn = document.getElementById('saveSnapshotBtn');
-
-          this.syncAllQuillEditors();
-          const clone = document.documentElement.cloneNode(true);
-
-          const findCloneControl = (live) => {
-            if (live.id) {
-              try {
-                const byId = clone.querySelector(`#${CSS.escape(live.id)}`);
-                if (byId) return byId;
-              } catch (_) { /* invalid id */ }
-            }
-            const type = (live.getAttribute('type') || '').toLowerCase();
-            const name = live.getAttribute('name');
-            if (name && (type === 'radio' || type === 'checkbox')) {
-              try {
-                return clone.querySelector(
-                  `input[type="${type}"][name="${CSS.escape(name)}"][value="${CSS.escape(live.value)}"]`
-                );
-              } catch (_) { /* */ }
-            }
-            return null;
-          };
-
-          for (const live of document.querySelectorAll('input, textarea, select')) {
-            const el = findCloneControl(live);
-            if (!el) continue;
-            if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
-            if (el.tagName === 'SELECT') {
-              Array.from(el.options).forEach(o => o.removeAttribute('selected'));
-              if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
-              continue;
-            }
-            const type = el.getAttribute('type')?.toLowerCase();
-            if (type === 'radio' || type === 'checkbox') {
-              if (live.checked) el.setAttribute('checked', '');
-              else el.removeAttribute('checked');
-              continue;
-            }
-            el.setAttribute('value', live.value);
-          }
-          const signatures = Array.from(document.querySelectorAll('.sig-draw-surface.has-signature'));
-          const cloneSignatures = Array.from(clone.querySelectorAll('.sig-draw-surface'));
-          signatures.forEach((surface, idx) => {
-            const cloneSig = cloneSignatures[idx];
-            if (!cloneSig) return;
-            const prefix = surface.getAttribute('data-prefix');
-            const dataInput = document.getElementById(`${prefix}_sig_data`);
-            if (dataInput?.value) {
-              cloneSig.setAttribute('data-url', dataInput.value);
-            }
+          this.withLoading(btn, () => {
+            return new Promise((resolve) => {
+              this.syncAllQuillEditors();
+              const clone = document.documentElement.cloneNode(true);
+              const findCloneControl = (live) => {
+                if (live.id) {
+                  try {
+                    const byId = clone.querySelector(`#${CSS.escape(live.id)}`);
+                    if (byId) return byId;
+                  } catch (_) { }
+                }
+                const type = (live.getAttribute('type') || '').toLowerCase();
+                const name = live.getAttribute('name');
+                if (name && (type === 'radio' || type === 'checkbox')) {
+                  try {
+                    return clone.querySelector(
+                      `input[type="${type}"][name="${CSS.escape(name)}"][value="${CSS.escape(live.value)}"]`
+                    );
+                  } catch (_) { }
+                }
+                return null;
+              };
+              for (const live of document.querySelectorAll('input, textarea, select')) {
+                const el = findCloneControl(live);
+                if (!el) continue;
+                if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
+                if (el.tagName === 'SELECT') {
+                  Array.from(el.options).forEach(o => o.removeAttribute('selected'));
+                  if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
+                  continue;
+                }
+                const type = el.getAttribute('type')?.toLowerCase();
+                if (type === 'radio' || type === 'checkbox') {
+                  if (live.checked) el.setAttribute('checked', '');
+                  else el.removeAttribute('checked');
+                  continue;
+                }
+                el.setAttribute('value', live.value);
+              }
+              const signatures = Array.from(document.querySelectorAll('.sig-draw-surface.has-signature'));
+              const cloneSignatures = Array.from(clone.querySelectorAll('.sig-draw-surface'));
+              signatures.forEach((surface, idx) => {
+                const cloneSig = cloneSignatures[idx];
+                if (!cloneSig) return;
+                const prefix = surface.getAttribute('data-prefix');
+                const dataInput = document.getElementById(`${prefix}_sig_data`);
+                if (dataInput?.value) {
+                  cloneSig.setAttribute('data-url', dataInput.value);
+                }
+              });
+              const progressClone = clone.querySelector('#progressBar');
+              if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
+              const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
+              const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+              const url = URL.createObjectURL(blob);
+              const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
+              const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
+              const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
+              const a = document.createElement('a');
+              if (window.location.protocol === 'file:') {
+                const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
+                const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
+                a.download = cleanFilename;
+              } else {
+                a.download = `${safe}_snapshot_${ts}.html`;
+              }
+              a.href = url;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+              this.toast('Snapshot saved', 'success');
+              resolve();
+            });
           });
-          const progressClone = clone.querySelector('#progressBar');
-          if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
-          const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
-          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-          const url = URL.createObjectURL(blob);
-          const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
-          const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
-          const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
-          const a = document.createElement('a');
-          if (window.location.protocol === 'file:') {
-            const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
-            const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
-            a.download = cleanFilename;
-          } else {
-            a.download = `${safe}_snapshot_${ts}.html`;
-          }
-          a.href = url;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-          this.toast('Snapshot saved', 'success');
         }
 
-        /**
-         * Triggers print view for PDF export after validating required fields.
-         */
         async printFormAsPdf (e) {
           e.preventDefault();
           const btn = document.getElementById('saveAsPdfBtn');
-          this.updateProgress();
-          if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100) {
-            this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
-            return;
-          }
-          window.print();
+          await this.withLoading(btn, () => {
+            return new Promise((resolve) => {
+              this.updateProgress();
+              if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100) {
+                this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
+                resolve();
+                return;
+              }
+              window.print();
+              resolve();
+            });
+          });
         }
       }
 
