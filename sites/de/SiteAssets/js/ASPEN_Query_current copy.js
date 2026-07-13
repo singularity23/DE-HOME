@@ -26,7 +26,7 @@ javascript: (function () {
 
   const CONFIG = Object.freeze({
     version: '2.6.1',
-    debug: false,
+    debug: true,
 
     selectors: Object.freeze({
       searchContainer: 'aspen-search-container',
@@ -442,10 +442,7 @@ javascript: (function () {
             S.REQUESTID,
             S.ROWNUMBER,
             TO_NUMBER(
-              COALESCE(
-                REGEXP_SUBSTR(T.SETTINGNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1),
-                REGEXP_SUBSTR(S.GROUPNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1)
-              )
+              REGEXP_SUBSTR(T.SETTINGNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1)
             ) AS SUBSET_NUM
           FROM TRELAY R
             INNER JOIN TREQUEST Q ON R.ID = Q.RELAYID
@@ -455,11 +452,11 @@ javascript: (function () {
           WHERE R.S01 LIKE '${inputCode}%'
             AND R.RELAYTYPE LIKE 'AREVA%'
             AND UPPER(Q.S02) = '${status}'
-            AND S.GROUPNAME LIKE 'PARAMETER%'
+            AND S.GROUPNAME = 'PARAMETERS'
             AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}, 1)) != 'BLOCKED'
             AND (
-              T.SETTINGNAME LIKE '%IDMT%'
-              OR T.SETTINGNAME LIKE '%DTOC%'
+              T.SETTINGNAME LIKE '%/IDMT1%'
+              OR T.SETTINGNAME LIKE '%/DTOC%'
             )
           ),`;
 
@@ -469,18 +466,15 @@ javascript: (function () {
               TE.ROWNUMBER,
               SE.SETTING AS ENABLE_VALUE,
               TO_NUMBER(
-                COALESCE(
-                  REGEXP_SUBSTR(TE.SETTINGNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1),
-                  REGEXP_SUBSTR(SE.GROUPNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1)
-                )
+                REGEXP_SUBSTR(TE.SETTINGNAME, 'SUBSET (\\d+)', 1, 1, NULL, 1)
               ) AS SUBSET_NUM
             FROM TSETTING1 SE
               INNER JOIN TSETTYPE1 TE ON TE.ROWNUMBER = SE.ROWNUMBER
               INNER JOIN TREQUEST QE ON QE.ID = SE.REQUESTID
               AND TE.RELAYTYPE = QE.RELAYTYPE
               INNER JOIN TRELAY RE ON RE.ID = QE.RELAYID
-            WHERE SE.GROUPNAME LIKE 'PARAMETER%'
-              AND TE.SETTINGNAME LIKE '%F<>_ENABLE%'
+            WHERE SE.GROUPNAME = 'PARAMETERS'
+              AND TE.SETTINGNAME LIKE '%SUBSET _/F<>/ENABLE%'
               AND RE.S01 LIKE '${inputCode}%'
               AND RE.RELAYTYPE LIKE 'AREVA%'
               AND UPPER(QE.S02) = '${status}'
@@ -532,10 +526,10 @@ javascript: (function () {
           LEFT JOIN enable_settings e ON e.REQUESTID = b.REQUESTID
           AND e.SUBSET_NUM = b.SUBSET_NUM
         WHERE UPPER(DBMS_LOB.SUBSTR(e.ENABLE_VALUE, ${lobLen}, 1)) = 'YES'
-          AND b.ELEMENT NOT LIKE '%PULS.PROL.IN>%'
-          AND b.ELEMENT NOT LIKE '%HOLD-T. TIN>%'
-          AND b.ELEMENT NOT LIKE '%EVALUATION IN%'
-          AND b.ELEMENT NOT LIKE '%EVAL. IN%'
+          AND b.ELEMENT NOT LIKE '%/PULS.PROL.IN>%'
+          AND b.ELEMENT NOT LIKE '%/HOLD-T. TIN>%'
+          AND b.ELEMENT NOT LIKE '%/EVALUATION IN%'
+          AND b.ELEMENT NOT LIKE '%/EVAL. IN%'
         UNION ALL
         SELECT R.S01 AS DEVICE,
           Q.RELAYTYPE AS RELAY,
@@ -550,7 +544,8 @@ javascript: (function () {
         WHERE R.S01 LIKE '${inputCode}%'
           AND R.RELAYTYPE LIKE 'AREVA%'
           AND UPPER(Q.S02) = '${status}'
-          AND (T.SETTINGNAME LIKE '%INOM C.T. PRIM.%' OR T.SETTINGNAME LIKE '%LOGIC_FCT.ASSIGNM. OUTP. 1%')
+          AND S.GROUPNAME = 'PARAMETERS'
+          AND T.SETTINGNAME LIKE '%/GLOBAL/MAIN/INOM C.T. PRIM.%'
           AND UPPER(DBMS_LOB.SUBSTR(S.SETTING, ${lobLen}, 1)) != 'BLOCKED'`;
 
         const selMain = `
@@ -609,7 +604,7 @@ javascript: (function () {
                   SELECT val
                   FROM sel_tr
                 )
-                OR T.SETTINGNAME IN ('51P1TC', '51PTC')
+                OR T.SETTINGNAME IN ('51P1TC', '51PTC', 'TR')
               )
             )
           )`;
@@ -1737,16 +1732,13 @@ javascript: (function () {
 
         if (relayType === CONFIG.relayTypes.AREVA) {
           const result = AREVADecoder.preDecode(rowArray[2], rowArray[3]);
-          MyConsole.debug('PreDecode result:', result);
           if (result[1] != null) ctPrimary = result[1];
           rowArray[2] = result[0];
           rowArray[3] = result[1];
         }
-        MyConsole.debug('After PreDecode:', rowArray);
-
         return rowArray;
       });
-      MyConsole.debug('After PreDecode:', tableRows);
+      MyConsole.debug(tableRows);
 
       // Decode and normalize each row in a single pass.
       tableRows = tableRows.map((row) => {
@@ -1765,45 +1757,6 @@ javascript: (function () {
         }
         return row;
       });
-
-      // Filter out matching IDMT/DTOC rows based on trip equation components, and remove trip equation row
-      if (relayType === CONFIG.relayTypes.AREVA) {
-        const tripEquationRow = tableRows.find(row =>
-          Array.isArray(row) && row[2] === '_Trip Equation'
-        );
-
-        if (tripEquationRow) {
-          const tripEquationValue = tripEquationRow[3];
-          MyConsole.debug('Found trip equation row with value:', tripEquationValue);
-          const decodedComponents = tripEquationValue.split(';')
-            .map(comp => AREVADecoder._decodeTripEquationComponent(comp))
-            .filter(Boolean);
-
-          MyConsole.debug('Decoded trip equation components:', decodedComponents);
-
-          // Remove rows with TIMED OVERCURRENT or DEFINITE TIME that match decoded trip equation, and remove trip equation row
-          tableRows = tableRows.filter(row => {
-            if (!Array.isArray(row) || row.length < 3) return true;
-            const settingName = String(row[2] || '').toUpperCase();
-            MyConsole.debug('Evaluating row for filtering:', settingName);
-            // Keep non-IDMT/DTOC rows
-            if (settingName.includes('_')) {
-              return true;
-            }
-
-            // Remove rows that match any decoded trip equation component
-            const matches = decodedComponents.filter(comp => {
-              return settingName.includes(comp.toUpperCase())
-            });
-            MyConsole.debug(`Matches: ${matches}`);
-
-            if (matches.length === 0) {
-              MyConsole.debug('Filtering out non-matching trip equation element:', settingName);
-            }
-            return matches.length > 0;  // Keep only if it MATCHES decoded trip equation
-          });
-        }
-      }
 
       MyConsole.debug('_rearrangeTableData:');
       MyConsole.table(headerRow);
@@ -2085,12 +2038,11 @@ javascript: (function () {
   const AREVADecoder = {
     // Phase mapping
     phasePatterns: Object.freeze([
-      { type: 'PHS', pattern: /P(\.|\s+|\.?\s)?PS1$/ },
-      { type: 'GND', pattern: /N(\.|\s+|\.?\s)?PS1$/ },
-      { type: 'NEG', pattern: /NEG(\.|\s+|\.?\s)?PS1$/ },
+      { type: 'PHS', pattern: /P(\.|\s|\.?\s)?PS1$/ },
+      { type: 'GND', pattern: /N(\.|\s|\.?\s)?PS1$/ },
+      { type: 'NEG', pattern: /NEG(\.|\s|\.?\s)?PS1$/ },
     ]),
     phaseText: Object.freeze({ I: 'PHS', IN: 'GND', INEG: 'NEG', }),
-    phaseIDMT: Object.freeze({ N: 'GND', NEG: 'NEG', P: 'PHS' }),
     // Suffix descriptions
     OCSuffix: Object.freeze([
       { text: 'IREF', desc: 'Pick Up (A)', },
@@ -2103,9 +2055,9 @@ javascript: (function () {
     ]),
 
     DTSuffix: Object.freeze([
-      { pattern: /\W(I(?:NEG)?N?)(>+)\s/, desc: 'Pick Up (A)' },
-      { pattern: /\WT(I(?:NEG)?N?)(>+)\s/, desc: 'Delay (s)' },
-      { pattern: /\W(ENABLE)/, desc: '_Enabled' },
+      { pattern: /\/(I(?:NEG)?N?)(>+)\s/, desc: 'Pick Up (A)' },
+      { pattern: /\/T(I(?:NEG)?N?)(>+)\s/, desc: 'Delay (s)' },
+      { pattern: /\/(ENABLE)/, desc: '_Enabled' },
     ]),
 
     // Overcurrent setting type
@@ -2113,12 +2065,7 @@ javascript: (function () {
     definiteTimeType: 'Definite Time',
 
     preDecode (settingName, settingValue) {
-      MyConsole.debug('settingName:', settingName);
-      MyConsole.debug('settingValue:', settingValue);
-
-      if (typeof settingName !== 'string' || (!settingName.toUpperCase().includes('INOM') && !settingName.toUpperCase().includes('LOGIC'))) return [settingName, settingValue];
-
-      if (settingName.toUpperCase().includes('LOGIC')) return ['_Trip Equation', settingValue];
+      if (typeof settingName !== 'string' || !settingName.includes('INOM')) return [settingName, settingValue];
 
       const ctPrimary = this._parseLeadingNumber(settingValue);
       MyConsole.debug('CT PRIMARY:', ctPrimary);
@@ -2135,9 +2082,8 @@ javascript: (function () {
 
       try {
         if (settingName === '_CT PRIMARY (A)') return [settingName, settingValue];
-        if (settingName === '_Trip Equation') return [settingName, this._extractTripEquation(settingValue)];
 
-        if (settingName.includes('IDMT')) return this._decodeOverCurrent(settingName, settingValue, ctPrimary);
+        if (settingName.includes('IDMT1')) return this._decodeOverCurrent(settingName, settingValue, ctPrimary);
         if (settingName.includes('DTOC')) return this._decodeDefiniteTime(settingName, settingValue, ctPrimary);
 
       } catch (error) {
@@ -2146,68 +2092,6 @@ javascript: (function () {
       return ['', ''];
     },
 
-    _extractTripEquation (settingValue) {
-      const tripEquation = String(settingValue ?? '');
-      const extracted = tripEquation
-        .split(/\s+OR\s+/)
-        .map(condition => {
-          // Extract relay type (IDMT1|DTOC) and setting (t followed by identifier with > chars)
-          const match = condition.match(/(IDMT1|DTOC)\s+t([A-Za-z,]+>*)/);
-          if (match) {
-            const relayType = match[1].replace('1', '');    // IDMT1 → IDMT
-            const setting = match[2];
-
-            // For IDMT: strip trailing >, for DTOC: keep it
-            const cleaned = relayType === 'IDMT'
-              ? setting.replace(/>+$/, '')
-              : setting;
-
-            return `${relayType} ${cleaned}`;
-          }
-          return null;
-        })
-        .filter(Boolean);
-
-      return extracted.join(';');
-    },
-
-    /*
-     * Decodes trip equation component (output of _extractTripEquation)
-     * @param {string} component - e.g., "IDMT Iref,N", "DTOC I>>>", "DTOC IN>>"
-     * @returns {string} e.g., "GND TIMED OVERCURRENT", "PHS DEFINITE TIME STAGE 3"
-     * @private
-     */
-    _decodeTripEquationComponent (component) {
-      if (!component || typeof component !== 'string') return '';
-
-      const [relayType, ...settingParts] = component.split(/\s+/);
-      const setting = settingParts.join(' ');
-
-      if (relayType === 'IDMT') {
-        // Parse "Iref,N" format → extract phase after comma
-        const phaseMatch = setting.match(/,(\w+)$/);
-        if (!phaseMatch) return '';
-
-        const phaseCode = phaseMatch[1].toUpperCase();
-        const phase = this.phaseIDMT[phaseCode] || '';
-
-        return `${phase} ${this.overCurrentType}`.trim();
-      }
-
-      if (relayType === 'DTOC') {
-        // Parse "I>>>", "IN>>", etc. → extract phase and count >
-        const phaseMatch = setting.match(/^([A-Z]*)>+$/);
-        if (!phaseMatch) return '';
-
-        const phaseCode = phaseMatch[1] || 'I';
-        const stageCount = setting.match(/>/g).length;
-        const phase = this.phaseText[phaseCode] || '';
-
-        return `${phase} ${this.definiteTimeType} STAGE ${stageCount}`.trim();
-      }
-
-      return '';
-    },
     /*
      * Validates input parameters
      * @private
@@ -2259,7 +2143,6 @@ javascript: (function () {
 
     _decodeDefiniteTime (name, val, ctPrimary) {
       const [phase, suffix] = this._getDTSuffix(name);
-      MyConsole.debug('Decoded name:', name, 'suffix:', suffix);
       const desc = [phase, this.definiteTimeType, suffix].filter(Boolean).join(' ').toUpperCase();
       MyConsole.debug('description:', desc, 'value:', val);
       return [desc, this._parseSettingValue(val, ctPrimary)];
@@ -2644,19 +2527,6 @@ javascript: (function () {
      * Decodes AREVA relay setting name
      */
     decodeAREVASettingName: (code, setting, ctPrimary = 0) => AREVADecoder.decode(code, setting, ctPrimary),
-
-    /*
-     * Decodes trip equation component
-     */
-    decodeTripEquationComponent: (component) => AREVADecoder._decodeTripEquationComponent(component),
-
-    /*
-     * Extracts and decodes full trip equation
-     */
-    extractAndDecodeTripEquation: (settingValue) => {
-      const extracted = AREVADecoder._extractTripEquation(settingValue);
-      return extracted.map(comp => AREVADecoder._decodeTripEquationComponent(comp));
-    },
 
     /*
      * Processes current query results

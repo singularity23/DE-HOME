@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unconfirmed Load Requirements Form – BC Hydro Distribution Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* ── BC Hydro flat design tokens ── */
+      --bg: #f0f0f0;
+      --card: #ffffff;
+      --border: #e3e3e3;
+      --field-border: #cdcdcd;
+      --field-border-hover: #9a9a9a;
+      --grid-line: #e0e0e0;
+
+      --ink: #3a3a3a;
+      --ink-strong: #1f2933;
+      --muted: #767676;
+      --placeholder: #9b9b9b;
+
+      --teal: #00a0c6;
+      --navy: #005a8c;
+      --navy-deep: #00466e;
+      --red: #e4002b;
+      --green: #5ba82e;
+
+      --row-head: #f3f3f3;
+      --req-cell: #fafafa;
+
+      --radius: 0px;
+      --font: 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+    }
+
+    .card-head .material-symbols-sharp {
+      font-size: 20px;
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+
+    .card-body .material-symbols-sharp {
+      font-size: 16px;
+    }
+
+
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      font-weight: 400;
+      padding: 36px 18px 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 30px 34px 26px;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      line-height: 1.12;
+      font-weight: 700;
+      color: var(--ink-strong);
+      letter-spacing: -0.01em;
+    }
+
+    .header .sub {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .header-logo {
+      width: 168px;
+      height: auto;
+      flex-shrink: 0;
+    }
+
+    .rule {
+      height: 3px;
+      background: var(--teal);
+      border: none;
+    }
+
+    /* ── Meta / publish bar with stage toggle ── */
+    .meta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 14px 34px;
+      font-size: 13px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .meta-bar .meta-info {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .meta-bar .meta-info svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .meta-bar .internal {
+      color: var(--red);
+      font-weight: 500;
+    }
+
+    /* segmented stage toggle */
+    .stage-toggle {
+      display: inline-flex;
+      border: 1px solid var(--navy);
+    }
+
+    .stage-toggle input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .stage-toggle label {
+      padding: 7px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--navy);
+      background: var(--card);
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s, color .15s;
+    }
+
+    .stage-toggle label+input+label {
+      border-left: 1px solid var(--navy);
+    }
+
+    .stage-toggle input:checked+label {
+      background: var(--navy);
+      color: #fff;
+    }
+
+    /* ── Body / content area ── */
+    .content {
+      padding: 22px 34px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* ── Card ── */
+    .card {
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--teal);
+      background: var(--card);
+    }
+
+    .card--red {
+      border-top-color: var(--red);
+    }
+
+    .card--green {
+      border-top-color: var(--green);
+    }
+
+    .card--teal {
+      border-top-color: var(--teal);
+    }
+
+    .card-head {
+      padding: 15px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--teal);
+    }
+
+    .title-text {
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+      color: var(--navy-deep);
+    }
+
+    .card--red .card-title {
+      color: var(--red);
+    }
+
+    .card--green .card-title {
+      color: var(--green);
+    }
+
+    .card--teal .card-title {
+      color: var(--teal);
+    }
+
+    .card-title svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      padding: 20px 22px;
+    }
+
+    .body-text {
+      line-height: 1;
+    }
+
+    .limitations {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Top info row (two cards side by side) ── */
+    .info-row {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    /* Use & Limitations */
+    .lim-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .lim-list li {
+      position: relative;
+      padding-left: 28px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+
+    .lim-list li svg {
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 16px;
+      height: 16px;
+      stroke: var(--red);
+    }
+
+    .lim-list strong {
+      font-weight: 700;
+      color: var(--ink-strong);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 16px;
+      padding: 6px 12px;
+      background: #fdecef;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--red);
+    }
+
+    .lim-extra-note {
+      margin-top: 16px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+
+    .lim-extra-note strong {
+      font-weight: 700;
+      color: var(--ink-strong);
+    }
+
+    /* Likelihood key */
+    .key-item {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 11px;
+      color: var(--muted);
+    }
+
+    .key-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .key-item strong {
+      color: var(--ink-strong);
+      font-weight: 700;
+    }
+
+    /* ── Field primitives ── */
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-strong);
+      margin-bottom: 7px;
+    }
+
+    .field-hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--field-border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--placeholder);
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+      border-color: var(--field-border-hover);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 1px var(--teal);
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5' > <path d='M6 9l6 6 6-6' /> </svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+    }
+
+    textarea {
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    /* input with leading icon */
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      stroke: var(--placeholder);
+      pointer-events: none;
+    }
+
+    .input-icon input {
+      padding-left: 34px;
+    }
+
+    /* ── Project details grid ── */
+    .pd-grid {
+      display: grid;
+      gap: 18px 20px;
+      margin-bottom: 18px;
+    }
+
+    .pd-grid--top {
+      grid-template-columns: 1fr 2fr;
+    }
+
+    .pd-grid--mid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* ── Requirements assessment grid ── */
+    .req-intro {
+      font-size: 13.5px;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .req-intro strong {
+      font-weight: 700;
+      color: var(--ink-strong);
+    }
+
+    .req-grid {
+      border: 1px solid var(--grid-line);
+    }
+
+    .req-grid__head,
+    .req-grid__row {
+      display: grid;
+      grid-template-columns: 23% 38.5% 38.5%;
+    }
+
+    .req-grid__head {
+      background: var(--row-head);
+    }
+
+    .req-grid__head>div {
+      padding: 11px 16px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-right: 1px solid var(--grid-line);
+    }
+
+    .req-grid__head>div:last-child {
+      border-right: none;
+    }
+
+    .req-grid__row {
+      border-top: 1px solid var(--grid-line);
+    }
+
+    .req-cell {
+      padding: 16px;
+      border-right: 1px solid var(--grid-line);
+      min-width: 0;
+    }
+
+    .req-cell:last-child {
+      border-right: none;
+    }
+
+    .req-cell--name {
+      background: var(--req-cell);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .req-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink-strong);
+      line-height: 1.35;
+    }
+
+    .req-eg {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 4px 0 14px;
+      line-height: 1.4;
+    }
+
+    .req-cell--name select {
+      margin-top: auto;
+    }
+
+    .req-cell textarea {
+      min-height: 150px;
+    }
+
+    .add-req-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-strong);
+      margin: 18px 0 8px;
+    }
+
+    .add-req-body textarea {
+      min-height: 96px;
+    }
+
+    /* ── Sign-off ── */
+    .signoff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 20px;
+    }
+
+    #signature {
+      display: none;
+      grid-column: 1 / -1;
+    }
+
+    /* ── Actions ── */
+    .actions {
+      display: flex;
+      gap: 14px;
+      justify-content: flex-end;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+
+    .btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+    }
+
+    .btn-reset {
+      background: transparent;
+      color: var(--muted);
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .btn-reset svg {
+      stroke: var(--muted);
+    }
+
+    .btn-reset:hover {
+      color: var(--ink-strong);
+    }
+
+    .btn-reset:hover svg {
+      stroke: var(--ink-strong);
+    }
+
+    .btn-print {
+      background: var(--card);
+      color: var(--navy);
+      border-color: var(--navy);
+    }
+
+    .btn-print svg {
+      stroke: var(--navy);
+    }
+
+    .btn-print:hover {
+      background: #f1f7fb;
+    }
+
+    .btn-submit {
+      background: var(--navy-deep);
+      color: #fff;
+      border-color: var(--navy-deep);
+    }
+
+    .btn-submit svg {
+      stroke: #fff;
+    }
+
+    .btn-submit:hover {
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+
+    .btn-submit:disabled {
+      opacity: .6;
+      cursor: default;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      max-width: 1180px;
+      margin: 16px auto 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 4px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .footer img {
+      width: 92px;
+      height: auto;
+      opacity: .85;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      z-index: 9999;
+      padding: 11px 16px;
+      font-size: 13px;
+      color: #fff;
+      background: var(--navy-deep);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .toast.err {
+      background: #8b1a1a;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 880px) {
+      .info-row {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-grid--top {
+        grid-template-columns: 1fr;
+      }
+
+      .pd-grid--mid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .header {
+        flex-direction: column;
+      }
+
+      .header-logo {
+        width: 150px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      body {
+        padding: 14px 10px;
+      }
+
+      .header,
+      .meta-bar,
+      .content {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .pd-grid--mid {
+        grid-template-columns: 1fr;
+      }
+
+      .signoff-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .req-grid__head {
+        display: none;
+      }
+
+      .req-grid__row {
+        grid-template-columns: 1fr;
+      }
+
+      .req-cell {
+        border-right: none;
+        border-top: 1px solid var(--grid-line);
+      }
+
+      .req-cell:first-child {
+        border-top: none;
+      }
+
+      .req-cell[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+    }
+
+    /* ── Print ── */
+    @media print {
+      @page {
+        size: letter portrait;
+        margin: 0.4in;
+      }
+
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .page {
+        border: none;
+        max-width: 100%;
+      }
+
+      .actions,
+      .stage-toggle {
+        display: none !important;
+      }
+
+      .card,
+      .req-grid__row,
+      .req-grid {
+        page-break-inside: avoid;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <h1><span id="title">Unconfirmed</span> Load Requirements Form</h1>
+        <p class="sub">Distribution Engineering · Document the preliminary system requirements for a connection request.
+        </p>
+      </div>
+      <img class="header-logo"
+        src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-bw-rgb.svg"
+        alt="BC Hydro – Power smart">
+    </header>
+    <hr class="rule">
+
+    <!-- Meta bar with stage toggle -->
+    <div class="meta-bar">
+      <div class="meta-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="1" />
+          <path d="M16 2v4M8 2v4M3 10h18" />
+        </svg>
+        <span>Published <strong id="pub-date">2026-04-24</strong> · Revision <strong id="pub-rev">1.0</strong> · <span
+            class="internal">Internal use only</span></span>
+      </div>
+      <div class="stage-toggle" role="radiogroup" aria-label="Review stage">
+        <input type="hidden" id="snapshot_review_stage" value="Unconfirmed">
+        <input type="radio" name="review_stage" id="unconfirmed" value="Unconfirmed" checked>
+        <label for="unconfirmed">Unconfirmed</label>
+        <input type="radio" name="review_stage" id="confirmed" value="Confirmed">
+        <label for="confirmed">Confirmed</label>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Top info row -->
+      <div class="info-row">
+
+        <!-- Use & Limitations -->
+        <section class="card card--red">
+          <div class="card-head">
+            <div class="card-title">
+              <span class="material-symbols-sharp">
+                notification_important
+              </span>
+              <span class="title-text">Use &amp; Limitations</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="limitations">
+              <span class="material-symbols-sharp">
+                do_not_disturb_on
+              </span>
+              <span class="body-text">This review and preliminary scope assessment <strong>does not reserve</strong>
+                circuit capacity.</span>
+            </div>
+            <div class="lim-list">
+              <ul class="limitations-list">
+                <li id="limitations_1">This review and preliminary scope assessment <strong>does not reserve</strong>
+                  circuit capacity.</li>
+                <li id="limitations_2">Once the customer confirms their detailed load information, a <strong>Confirmed
+                    Load</strong> DESRT
+                  Request is required to determine detailed system requirements.</li>
+                <li id="limitations_3">For <strong>Internal Use Only</strong></li>
+              </ul>
+            </div>
+            <div id="limitations_extra">
+              <span class="badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="11" width="16" height="10" rx="1" />
+                  <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                </svg>
+                Internal use only
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Likelihood key -->
+        <section class="card card--green">
+          <div class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18" />
+              </svg>
+              Likelihood Key
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="key-item"><strong>High</strong> — very likely to be required.</div>
+            <div class="key-item"><strong>Medium</strong> — moderate chance of being required.</div>
+            <div class="key-item"><strong>Low</strong> — unlikely, but not ruled out.</div>
+            <div class="key-item"><strong>Required</strong> — confirmed for this project.</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Project details -->
+      <section class="card card--teal">
+        <div class="card-head">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+              <path d="M14 3v6h6M8 13h8M8 17h6" />
+            </svg>
+            Project Details
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="pd-grid pd-grid--top">
+            <div>
+              <label class="field-label" for="desrt_id">DESRT ID #</label>
+              <div class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 15l6-6M10.5 7.5l1-1a3.5 3.5 0 0 1 5 5l-1 1M13.5 16.5l-1 1a3.5 3.5 0 0 1-5-5l1-1" />
+                </svg>
+                <input type="text" id="desrt_id" name="desrt_id" placeholder="DESRT-00000">
+              </div>
+            </div>
+            <div>
+              <label class="field-label" for="project_name">Project name</label>
+              <input type="text" id="project_name" name="project_name" placeholder="Project or customer name">
+            </div>
+          </div>
+
+          <div class="pd-grid pd-grid--mid">
+            <div>
+              <label class="field-label" for="feeder">Feeder</label>
+              <div class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2 4 14h7l-1 8 9-12h-7z" />
+                </svg>
+                <input type="text" id="feeder" name="feeder" placeholder="e.g. 25L-12">
+              </div>
+            </div>
+            <div>
+              <label class="field-label" for="planning_region">Planning region</label>
+              <select id="planning_region" name="planning_region">
+                <option value="">— Select —</option>
+                <option>Lower Mainland North</option>
+                <option>Lower Mainland South</option>
+                <option>Fraser Valley</option>
+                <option>Vancouver Island</option>
+                <option>Southern Interior</option>
+                <option>Northern</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="estimated_demand">Customer estimated demand</label>
+              <input type="number" id="estimated_demand" name="estimated_demand" min="0" placeholder="0">
+              <div class="field-hint">kVA at the point of connection</div>
+            </div>
+            <div>
+              <label class="field-label" for="in_service_date">Target in-service date</label>
+              <input type="date" id="in_service_date" name="in_service_date">
+            </div>
+          </div>
+
+          <div>
+            <label class="field-label" for="details_assumptions">Project details / assumptions</label>
+            <textarea id="details_assumptions" name="details_assumptions" rows="4"
+              placeholder="Feeder, planning limit, customer estimated demand, key assumptions…"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- High-level requirements assessment -->
+      <section class="card card--teal">
+        <div class="card-head">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6l3 3 4-4M3 14l3 3 4-4M14 7h7M14 16h7" />
+            </svg>
+            High-Level Requirements Assessment
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="req-intro">Rate the likelihood of each requirement and outline potential scope. This assessment
+            <strong>does not reserve circuit capacity.</strong>
+          </p>
+
+          <div class="req-grid">
+            <div class="req-grid__head" aria-hidden="true">
+              <div>Requirement</div>
+              <div>Potential Scope</div>
+              <div>Notes or Dependencies</div>
+            </div>
+
+            <!-- Local Protection Device -->
+            <div class="req-grid__row">
+              <div class="req-cell req-cell--name" data-label="Requirement">
+                <span class="req-name">Local Protection Device</span>
+                <span class="req-eg">e.g. fuse, recloser, vista switch</span>
+                <select name="likelihood_lpd" aria-label="Likelihood – Local Protection Device">
+                  <option value="">— Select —</option>
+                  <option>High Likelihood</option>
+                  <option>Medium Likelihood</option>
+                  <option>Low Likelihood</option>
+                  <option>Required</option>
+                </select>
+              </div>
+              <div class="req-cell" data-label="Potential Scope">
+                <textarea name="scope_lpd" placeholder="Describe potential scope…"></textarea>
+              </div>
+              <div class="req-cell" data-label="Notes or Dependencies">
+                <textarea name="notes_lpd" placeholder="Notes or dependencies…"></textarea>
+              </div>
+            </div>
+
+            <!-- Feeder Topology Modifications -->
+            <div class="req-grid__row">
+              <div class="req-cell req-cell--name" data-label="Requirement">
+                <span class="req-name">Feeder Topology Modifications</span>
+                <span class="req-eg">e.g. new feeders, load transfers</span>
+                <select name="likelihood_ftm" aria-label="Likelihood – Feeder Topology Modifications">
+                  <option value="">— Select —</option>
+                  <option>High Likelihood</option>
+                  <option>Medium Likelihood</option>
+                  <option>Low Likelihood</option>
+                  <option>Required</option>
+                </select>
+              </div>
+              <div class="req-cell" data-label="Potential Scope">
+                <textarea name="scope_ftm" placeholder="Describe potential scope…"></textarea>
+              </div>
+              <div class="req-cell" data-label="Notes or Dependencies">
+                <textarea name="notes_ftm" placeholder="Notes or dependencies…"></textarea>
+              </div>
+            </div>
+
+            <!-- System Civil Works -->
+            <div class="req-grid__row">
+              <div class="req-cell req-cell--name" data-label="Requirement">
+                <span class="req-name">System Civil Works</span>
+                <span class="req-eg">e.g. feeder ducts, maintenance holes</span>
+                <select name="likelihood_scw" aria-label="Likelihood – System Civil Works">
+                  <option value="">— Select —</option>
+                  <option>High Likelihood</option>
+                  <option>Medium Likelihood</option>
+                  <option>Low Likelihood</option>
+                  <option>Required</option>
+                </select>
+              </div>
+              <div class="req-cell" data-label="Potential Scope">
+                <textarea name="scope_scw" placeholder="Describe potential scope…"></textarea>
+              </div>
+              <div class="req-cell" data-label="Notes or Dependencies">
+                <textarea name="notes_scw" placeholder="Notes or dependencies…"></textarea>
+              </div>
+            </div>
+
+            <!-- Primary Line Modifications -->
+            <div class="req-grid__row">
+              <div class="req-cell req-cell--name" data-label="Requirement">
+                <span class="req-name">Primary Line Modifications</span>
+                <span class="req-eg">e.g. voltage regulators, reconductoring, 3-phasing</span>
+                <select name="likelihood_plm" aria-label="Likelihood – Primary Line Modifications">
+                  <option value="">— Select —</option>
+                  <option>High Likelihood</option>
+                  <option>Medium Likelihood</option>
+                  <option>Low Likelihood</option>
+                  <option>Required</option>
+                </select>
+              </div>
+              <div class="req-cell" data-label="Potential Scope">
+                <textarea name="scope_plm" placeholder="Describe potential scope…"></textarea>
+              </div>
+              <div class="req-cell" data-label="Notes or Dependencies">
+                <textarea name="notes_plm" placeholder="Notes or dependencies…"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <label class="add-req-label" for="additional_requirements">Additional requirements not noted above</label>
+          <div class="add-req-body">
+            <textarea id="additional_requirements" name="additional_requirements"
+              placeholder="Describe any additional requirements not captured in the grid above…"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sign-off -->
+      <section class="card card--teal">
+        <div class="card-head">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 17c3-1 4-5 6-5s2 3 4 3 2-4 4-4M3 21h18" />
+            </svg>
+            Sign-off
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="signoff-grid">
+            <div>
+              <label class="field-label" for="completed_date">Completed date</label>
+              <input type="date" id="completed_date" name="completed_date">
+            </div>
+            <div>
+              <label class="field-label" for="completed_by">Completed by</label>
+              <div class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 21a8 8 0 0 1 16 0" />
+                </svg>
+                <input type="text" id="completed_by" name="completed_by" placeholder="Full name">
+              </div>
+            </div>
+            <div id="signature">
+              <label class="field-label" for="sig">Signature</label>
+              <textarea id="sig" name="signature" rows="4" placeholder="Signature"></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button type="button" class="btn btn-reset" onclick="resetForm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          Reset form
+        </button>
+        <button type="button" class="btn btn-print" onclick="window.print()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="7" />
+          </svg>
+          Print / Save PDF
+        </button>
+        <button type="button" class="btn btn-submit" id="saveSnapshotBtn" onclick="saveSnapshot()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <path d="M17 21v-8H7v8M7 3v5h8" />
+          </svg>
+          Save snapshot
+        </button>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /page -->
+
+  <footer class="footer">
+    <img src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-bw-rgb.svg"
+      alt="BC Hydro">
+    <span>Maintained by Distribution Engineering · Powered by water.</span>
+  </footer>
+
+  <script>
+    /* ── Publish metadata ── */
+    const PUBLISHED_DATE = '2026-04-24';
+    const REVISION = '1.0';
+    document.getElementById('pub-date').textContent = PUBLISHED_DATE;
+    document.getElementById('pub-rev').textContent = REVISION;
+
+    /* ── Helpers (no innerHTML for UI construction) ── */
+    function getRadioValue (name) {
+      return document.querySelector('input[name="' + name + '"]:checked')?.value ?? null;
+    }
+
+    // Build a node from segments: strings, or { strong: 'text' }
+    function buildRich (target, segments) {
+      while (target.firstChild) target.removeChild(target.firstChild);
+      segments.forEach(seg => {
+        if (typeof seg === 'string') {
+          target.appendChild(document.createTextNode(seg));
+        } else if (seg instanceof Node) {
+          target.appendChild(seg);
+        } else if (seg && seg.strong) {
+          const s = document.createElement('strong');
+          s.textContent = seg.strong;
+          target.appendChild(s);
+        }
+      });
+    }
+
+    function makeBulletIcon () {
+      const ns = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke-width', '2');
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', '12'); c.setAttribute('cy', '12'); c.setAttribute('r', '9');
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', 'M8 12h8');
+      svg.appendChild(c); svg.appendChild(p);
+      return svg;
+    }
+
+    function makeLockBadge () {
+      const ns = 'http://www.w3.org/2000/svg';
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      const r = document.createElementNS(ns, 'rect');
+      r.setAttribute('x', '4'); r.setAttribute('y', '11');
+      r.setAttribute('width', '16'); r.setAttribute('height', '10'); r.setAttribute('rx', '1');
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', 'M8 11V7a4 4 0 0 1 8 0v4');
+      svg.appendChild(r); svg.appendChild(p);
+      badge.appendChild(svg);
+      badge.appendChild(document.createTextNode('Internal use only'));
+      return badge;
+    }
+
+    /* ── Stage toggle: rewrites title + limitations ── */
+    function updateStage () {
+      const isConfirmed = getRadioValue('review_stage') === 'Confirmed';
+
+      document.getElementById('snapshot_review_stage').value = isConfirmed ? 'Confirmed' : 'Unconfirmed';
+      document.getElementById('title').textContent = isConfirmed ? 'Confirmed' : 'Unconfirmed';
+
+      // Limitation 2 keeps its bullet icon; rebuild text after it.
+      const lim2 = document.getElementById('limitations_2');
+      const icon2 = lim2.querySelector('svg') || makeBulletIcon();
+      if (isConfirmed) {
+        buildRich(lim2, [icon2, 'This confirmed load form is valid for up to ', { strong: '18 months' }, '.']);
+      } else {
+        buildRich(lim2, [icon2, 'Once the customer confirms their detailed load information, a ', { strong: 'Confirmed Load' }, ' DESRT request is required to determine detailed system requirements.']);
+      }
+
+      // Extra block: badge (unconfirmed) vs design-scope caveat (confirmed)
+      const extra = document.getElementById('limitations_extra');
+      while (extra.firstChild) extra.removeChild(extra.firstChild);
+      if (isConfirmed) {
+        const note = document.createElement('p');
+        note.className = 'lim-extra-note';
+        buildRich(note, [
+          'This form is intended for high-level load assessment and ',
+          { strong: 'not' },
+          ' for use as a baseline for design scope. Design scope ',
+          { strong: 'might change' },
+          ' during detailed design.'
+        ]);
+        extra.appendChild(note);
+      } else {
+        extra.appendChild(makeLockBadge());
+      }
+
+      document.getElementById('signature').style.display = isConfirmed ? 'block' : 'none';
+    }
+
+    document.addEventListener('change', function (e) {
+      if (e.target.name === 'review_stage') updateStage();
+    });
+
+    /* ── Reset ── */
+    function resetForm () {
+      if (!confirm('Reset all form fields?')) return;
+      document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(el => { el.value = ''; });
+      document.querySelectorAll('select').forEach(el => { el.selectedIndex = 0; });
+      document.getElementById('unconfirmed').checked = true;
+      updateStage();
+    }
+
+    /* ── Toast ── */
+    let toastTimer = 0;
+    function showToast (msg, type) {
+      let t = document.getElementById('toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.className = 'toast';
+        t.setAttribute('role', 'status');
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.classList.toggle('err', type === 'error');
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    /* ── Snapshot: self-contained HTML with current values baked in ── */
+    function snapshotBaseName () {
+      const desrt = (document.getElementById('desrt_id').value || '').trim();
+      const stage = getRadioValue('review_stage') || 'Load';
+      const raw = desrt || (stage + '_Load_Requirements');
+      return raw.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').slice(0, 80);
+    }
+
+    function saveSnapshot () {
+      const btn = document.getElementById('saveSnapshotBtn');
+      btn.disabled = true;
+      try {
+        updateStage(); // make sure DOM text reflects current stage
+        const clone = document.documentElement.cloneNode(true);
+
+        // Bake live control values into the clone as attributes
+        const live = document.querySelectorAll('input, select, textarea');
+        const copy = clone.querySelectorAll('input, select, textarea');
+        live.forEach((el, i) => {
+          const c = copy[i];
+          if (!c) return;
+          if (c.tagName === 'TEXTAREA') {
+            c.textContent = el.value;
+          } else if (c.tagName === 'SELECT') {
+            Array.from(c.options).forEach(o => o.removeAttribute('selected'));
+            if (el.selectedIndex >= 0) c.options[el.selectedIndex]?.setAttribute('selected', '');
+          } else {
+            const type = (c.getAttribute('type') || '').toLowerCase();
+            if (type === 'radio' || type === 'checkbox') {
+              if (el.checked) c.setAttribute('checked', ''); else c.removeAttribute('checked');
+            } else {
+              c.setAttribute('value', el.value);
+            }
+          }
+        });
+
+        // Remove the toast node if present in clone
+        const t = clone.querySelector('#toast');
+        if (t) t.remove();
+
+        const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const ts = new Date().toISOString().slice(0, 10);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = snapshotBaseName() + '_snapshot_' + ts + '.html';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('Snapshot saved', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Could not save snapshot', 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    /* ── Init ── */
+    updateStage();
+  </script>
+
+</body>
+
+</html>

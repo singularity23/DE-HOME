@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Load Requirements Form — BC Hydro Distribution Engineering</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet">
+  <style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: 400;
+      font-style: normal;
+      line-height: 1;
+    }
+
+    /* Fonts */
+    @font-face {
+      font-family: 'brand-font-light';
+      src: url('../fonts/GT-Haptik-Light-Web/GT-Haptik-Light.woff') format('woff');
+      font-weight: 300;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-regular';
+      src: url('../fonts/GT-Haptik-Regular-Web/GT-Haptik-Regular.woff') format('woff');
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-medium';
+      src: url('../fonts/GT-Haptik-Medium-Web/GT-Haptik-Medium.woff') format('woff');
+      font-weight: 500;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-bold';
+      src: url('../fonts/GT-Haptik-Bold-Web/GT-Haptik-Bold.woff') format('woff');
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'brand-font-black';
+      src: url('../fonts/GT-Haptik-Black-Web/GT-Haptik-Black.woff') format('woff');
+      font-weight: 900;
+      font-display: swap;
+    }
+
+    :root {
+      --bch-jay: #0074a4;
+      --bch-sea: #05a1c6;
+      --bch-spruce: #004f6c;
+      --bch-hemlock: #046a38;
+      --bch-grass: #48a739;
+      --bch-arbutus: #fa4616;
+      --bch-granite: #3e3935;
+      --bch-stone: #9c948d;
+
+      --surface-page: #f5f3f2;
+      --surface-card: #ffffff;
+      --surface-sunken: #f5f4f3;
+
+      --text-strong: #3e3935;
+      --text-body: #3e3935;
+      --text-muted: #6c6661;
+      --text-subtle: #9c948d;
+
+      --border-subtle: #e4ded9;
+      --border-default: #cbc4bc;
+
+      --action-primary: #0074a4;
+      --action-primary-hover: #004f6c;
+      --action-accent: #fa4616;
+      --action-accent-hover: #d8390f;
+
+      --status-success-surface: #e7f1ea;
+      --status-danger-surface: #fde8e1;
+
+      --font-display: 'GT Haptik', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-body: Arial, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+      --shadow-sm: 0 2px 6px -2px rgba(0, 0, 0, .14), 0 2px 4px -1px rgba(0, 0, 0, .15);
+      --duration-base: 0.3s;
+      --duration-fast: 0.15s;
+      --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+      --form-accent: var(--bch-sea);
+      --status-info-surface: #e4f4f9;
+      --bch-sand: #cbc4bc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--surface-page);
+      font-family: var(--font-body);
+      color: var(--text-body);
+      padding: 28px 20px 64px;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    input,
+    select,
+    textarea {
+      font-family: var(--font-body);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-subtle);
+    }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-strong);
+      margin-bottom: 6px;
+      letter-spacing: 0.075em;
+    }
+
+    .field-input,
+    .field-select,
+    .field-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 12px;
+      font-size: 14px;
+      color: var(--text-body);
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-default);
+      border-radius: 0;
+      outline: none;
+      transition: border-color .3s ease, box-shadow .3s ease;
+    }
+
+    .field-icon-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .field-icon-wrap .material-symbols-outlined {
+      position: absolute;
+      left: 12px;
+      font-size: 20px;
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    .field-icon-wrap a {
+      position: absolute;
+      cursor: pointer;
+    }
+
+
+    .field-icon-wrap .field-input {
+      padding-left: 40px;
+    }
+
+    .field-select {
+      cursor: pointer;
+      height: 40px;
+      padding: 11px 14px;
+    }
+
+    .field-textarea {
+      resize: vertical;
+    }
+
+    .field-input:focus,
+    .field-select:focus,
+    .field-textarea:focus {
+      border-color: var(--action-primary);
+      box-shadow: 0 0 0 3px rgba(0, 79, 108, 0.12);
+    }
+
+
+
+    .rich-field {
+      position: relative;
+    }
+
+    .editor-inline {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 90px;
+      padding: 11px 12px;
+      font-size: 14px;
+      line-height: 1.1;
+      color: var(--text-body);
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-default);
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      transition: border-color .3s ease, box-shadow .3s ease;
+      overflow-wrap: anywhere;
+    }
+
+    .editor-inline:focus {
+      border-color: var(--action-primary);
+      box-shadow: 0 0 0 3px rgba(0, 79, 108, 0.12);
+    }
+
+    .editor-inline.is-empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    .editor-inline.req-input {
+      padding-left: 40px;
+      min-height: 40px;
+
+    }
+
+
+    .editor-inline img {
+      max-width: 220px;
+      max-height: 220px;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 4px 8px 4px 0;
+      border: 1.5px solid var(--border-default);
+    }
+
+    .editor-inline.req-textarea {
+      min-height: 150px;
+      white-space: pre-wrap;
+    }
+
+    .req-row .editor-inline {
+      box-sizing: border-box;
+    }
+
+    .field-hint-paste,
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-subtle);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-accent-top {
+      border-top: 6px solid var(--form-accent);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-head-icon {
+      flex: none;
+      font-size: 20px;
+      color: var(--form-accent, var(--bch-sea));
+    }
+
+    .card-head-icon--accent {
+      color: var(--bch-arbutus);
+    }
+
+    .card-head-icon--grass {
+      color: var(--bch-grass);
+    }
+
+    .card-head-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.125em;
+      text-transform: uppercase;
+      color: var(--bch-spruce);
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      min-height: 44px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      border-radius: 0;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--duration-base) var(--ease-standard),
+        transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-base) var(--ease-standard);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--action-primary);
+      color: var(--text-on-brand, #fff);
+      border: 1.5px solid transparent;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background: var(--action-primary-hover);
+    }
+
+    .btn-accent {
+      background: var(--action-accent);
+      color: #fff;
+      border: 1.5px solid transparent;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-accent:hover {
+      background: var(--action-accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface-card);
+      color: var(--action-primary);
+      border: 1.5px solid var(--action-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--status-info-surface);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-link, var(--bch-spruce));
+      border: 1.5px solid transparent;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(0, 79, 108, 0.08);
+    }
+
+    .seg {
+      display: inline-flex;
+      gap: 2px;
+      padding: 3px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      border-radius: 0;
+    }
+
+    .seg button {
+      padding: 6px 16px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .seg button.active {
+      background: var(--bch-spruce);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .alert {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 14px 18px;
+      border-left: 6px solid;
+      font-size: 13.5px;
+    }
+
+    .alert-success {
+      background: var(--status-success-surface);
+      border-color: var(--bch-hemlock);
+      color: var(--text-body);
+    }
+
+    .req-grid {
+      border: 1px solid var(--border-subtle);
+    }
+
+    .req-head-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1.35fr 1fr;
+      background: var(--surface-sunken);
+    }
+
+    .req-head-cell {
+      padding: 11px 14px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .req-head-cell:last-child {
+      border-right: none;
+    }
+
+    .req-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1.35fr 1fr;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .req-row.alt {
+      background: var(--surface-sunken);
+    }
+
+    .req-cell {
+      padding: 14px;
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .req-cell:last-child {
+      border-right: none;
+    }
+
+    .req-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-strong);
+      letter-spacing: 0.08em;
+    }
+
+    .req-sub {
+      font-size: 12px;
+      color: var(--text-subtle);
+      margin: 3px 0 10px;
+    }
+
+    .req-textarea {
+      min-height: 150px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--status-danger-surface);
+      color: var(--bch-arbutus);
+    }
+
+
+
+
+    .page-header {
+      border-radius: 0;
+      padding: 22px 28px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .page-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 30px;
+      letter-spacing: -0.01em;
+      color: var(--text-strong);
+      line-height: 1.05;
+    }
+
+    .page-subtitle {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .page-header-meta {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-subtle);
+      border-top: none;
+      padding: 10px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .meta-copy {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meta-icon {
+      font-size: 16px;
+      color: var(--bch-stone);
+    }
+
+    .meta-emphasis {
+      color: var(--bch-arbutus);
+      font-weight: 700;
+    }
+
+    .page-body {
+      border-top: none;
+      border-radius: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .use-panel {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .use-panel-card {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .use-panel-card--primary {
+      flex: 2;
+      min-width: 280px;
+      border-top: 6px solid var(--bch-arbutus);
+    }
+
+    .use-panel-card--secondary {
+      border-top: 6px solid var(--bch-grass);
+    }
+
+    .use-limitations-body {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    .use-limitations-item {
+      display: flex;
+      gap: 8px;
+    }
+
+    .use-limitations-icon {
+      font-size: 16px;
+      color: var(--bch-arbutus);
+      flex: none;
+      margin-top: 1px;
+    }
+
+    .use-limitations-strong {
+      color: var(--text-strong);
+    }
+
+    .use-limitations-spacer {
+      margin-top: 2px;
+    }
+
+    .saved-alert {
+      display: none;
+      margin-bottom: 22px;
+    }
+
+    .section-card {
+      margin-bottom: 22px;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .project-grid-wide {
+      grid-column: span 3;
+    }
+
+    .form-block-spaced {
+      margin-top: 16px;
+    }
+
+    .req-card-body {
+      padding: 16px 20px 20px;
+    }
+
+    .req-intro {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .additional-textarea {
+      min-height: 88px;
+    }
+
+    .signoff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .signoff-confirmed-body {
+      display: none;
+      gap: 16px;
+    }
+
+    .signoff-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .signoff-column--wide {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .signoff-textarea {
+      flex: 1;
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .btn .material-symbols-outlined {
+      font-size: 18px;
+    }
+
+    .badge .material-symbols-outlined {
+      font-size: 13px;
+    }
+
+    .page-header-logo {
+      height: 48px;
+      width: auto;
+      flex: none;
+      margin-top: 4px;
+    }
+
+    .footer-bar {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--text-subtle);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-logo {
+      height: 15px;
+      opacity: 0.7;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+
+    @media (max-width: 720px) {
+      body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .page-body {
+        page-break-inside: avoid;
+        padding: 0px;
+        border: 0px;
+      }
+
+      .page-header {
+        padding: 5px;
+      }
+
+      .project-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .project-grid-wide {
+        grid-column: span 1;
+      }
+
+      .section-card {
+        page-break-inside: avoid;
+        margin-bottom: 5px;
+      }
+
+      .form-block-spaced {
+        page-break-inside: avoid;
+        margin-top: 5px;
+      }
+
+      .req-row {
+        grid-template-columns: 1fr;
+        page-break-inside: avoid;
+      }
+
+      .use-panel {
+        margin-bottom: 5px;
+      }
+    }
+
+    @media print {
+      [data-no-print] {
+        display: none !important;
+      }
+
+      @page {
+        background: #fff;
+
+        size: letter portrait;
+        margin: 0.1in;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .card {
+        box-shadow: none;
+      }
+
+      .page-body {
+        padding: 0px;
+        border: 0px;
+      }
+
+      .page-header {
+        padding: 5px;
+      }
+
+      .project-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .project-grid-wide {
+        grid-column: span 1;
+      }
+
+      .section-card {
+        page-break-inside: avoid;
+        margin-bottom: 5px;
+      }
+
+      .form-block-spaced {
+        page-break-inside: avoid;
+        margin-top: 5px;
+      }
+
+      .req-row {
+        grid-template-columns: 1fr;
+        page-break-inside: avoid;
+      }
+
+      .use-panel {
+        margin-bottom: 5px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- HEADER BAR -->
+    <div class="card card-accent-top page-header">
+      <div>
+        <h1 id="formTitle" class="page-title">
+          Unconfirmed Load Requirements Form</h1>
+        <p class="page-subtitle">Distribution Engineering · Document the
+          preliminary system requirements for a connection request.</p>
+      </div>
+      <img
+        src="data:image/png;base64,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"
+        alt="BC Hydro" class="page-header-logo">
+    </div>
+
+    <!-- META / STAGE BAR -->
+    <div class="page-header-meta">
+      <div data-no-print class="meta-copy">
+        <span class="material-symbols-outlined meta-icon">event</span>
+        Published 2026-04-24 · Revision 1.0 · <span class="meta-emphasis">Internal use
+          only</span>
+      </div>
+      <div data-no-print class="seg" id="stageToggle">
+        <button type="button" class="active" data-stage="Unconfirmed">Unconfirmed</button>
+        <button type="button" data-stage="Confirmed">Confirmed</button>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="card page-body">
+
+      <form id="reqForm" novalidate>
+
+        <div id="usePanel" class="use-panel">
+          <div class="card use-panel-card use-panel-card--primary">
+            <div class="card-head">
+              <span
+                class="material-symbols-outlined card-head-icon card-head-icon--accent">notification_important</span>
+              <span class="card-head-title">Use &amp; Limitations</span>
+            </div>
+            <div id="useLimitationsBody" class="use-limitations-body">
+              <div class="use-limitations-item"><span
+                  class="material-symbols-outlined use-limitations-icon">remove_circle</span><span>This
+                  review and preliminary scope assessment <strong class="use-limitations-strong">does not
+                    reserve</strong> circuit capacity.</span></div>
+              <div class="use-limitations-item"><span
+                  class="material-symbols-outlined use-limitations-icon">fact_check</span><span>Once
+                  load is confirmed, a <strong class="use-limitations-strong">Confirmed Load</strong> DESRT request is
+                  required for detailed requirements.</span></div>
+              <div class="use-limitations-spacer"><span class="badge"><span
+                    class="material-symbols-outlined">lock</span>Internal use only</span></div>
+            </div>
+          </div>
+          <div class="card use-panel-card use-panel-card--secondary">
+            <div class="card-head">
+              <span class="material-symbols-outlined card-head-icon card-head-icon--grass">asterisk</span>
+              <span class="card-head-title">Likelihood Key</span>
+            </div>
+            <div class="use-limitations-body">
+              <div><strong class="use-limitations-strong">High</strong> — very likely to be required.</div>
+              <div><strong class="use-limitations-strong">Medium</strong> — moderate chance of being required.</div>
+              <div><strong class="use-limitations-strong">Low</strong> — unlikely, but not ruled out.</div>
+              <div><strong class="use-limitations-strong">Required</strong> — confirmed for this project.</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="savedAlert" class="alert alert-success saved-alert">
+          <strong>Snapshot saved.</strong>&nbsp;Your entries are stored in this browser and will be restored if you
+          return to this form.
+        </div>
+
+        <!-- PROJECT DETAILS -->
+        <div class="card card-accent-top section-card">
+          <div class="card-head">
+            <span class="material-symbols-outlined card-head-icon">description</span>
+            <span class="card-head-title">Project Details</span>
+          </div>
+          <div class="card-body">
+            <div class="project-grid">
+              <div>
+                <label class="field-label" for="desrt_id">DESRT ID #</label>
+                <div class="field-icon-wrap"><span class="material-symbols-outlined">link</span>
+                  <input type="text" class="field-input hidden" id="desrt_id" name="desrt_id" rows="1" value="">
+                  <div class="editor-inline req-input" id="desrt_id_editor" contenteditable="true"></div>
+
+                </div>
+
+              </div>
+              <div class="project-grid-wide">
+                <label class="field-label" for="project_name">Project name</label>
+                <input class="field-input" type="text" id="project_name" name="project_name"
+                  placeholder="Project or customer name">
+              </div>
+              <div>
+                <label class="field-label" for="feeder">Feeder</label>
+                <div class="field-icon-wrap"><span class="material-symbols-outlined">bolt</span>
+                  <input class="field-input" type="text" id="feeder" name="feeder" placeholder="e.g. 25L-12">
+                </div>
+              </div>
+              <div>
+                <label class="field-label" for="region">Planning region</label>
+                <select class="field-select" id="region" name="region">
+                  <option value="">— Select —</option>
+                  <option>Lower Mainland North</option>
+                  <option>Lower Mainland South</option>
+                  <option>Interior &amp; NIA</option>
+                  <option>Vancouver Island</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="demand">Customer estimated demand</label>
+                <input class="field-input" type="number" id="demand" name="demand" placeholder="0">
+                <div class="field-hint">kVA at the point of connection</div>
+              </div>
+              <div>
+                <label class="field-label" for="in_service_date">Target in-service date</label>
+                <input class="field-input" type="date" id="in_service_date" name="in_service_date">
+              </div>
+            </div>
+            <div class="form-block-spaced">
+              <label class="field-label" for="details_assumptions">Project details / assumptions</label>
+              <textarea class="field-textarea" id="details_assumptions" name="details_assumptions"
+                placeholder="Feeder, planning limit, customer estimated demand, key assumptions…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- REQUIREMENTS ASSESSMENT -->
+        <div class="card card-accent-top section-card">
+          <div class="card-head">
+            <span class="material-symbols-outlined card-head-icon">checklist</span>
+            <span class="card-head-title">High-Level Requirements Assessment</span>
+          </div>
+          <div class="req-card-body">
+            <p class="req-intro">Rate the likelihood of each requirement
+              and outline potential scope. This assessment <strong>does not reserve circuit capacity.</strong></p>
+            <div class="req-grid">
+              <div class="req-head-row" data-no-print>
+                <div class="req-head-cell">Requirement</div>
+                <div class="req-head-cell">Potential scope</div>
+                <div class="req-head-cell">Notes or dependencies</div>
+              </div>
+
+              <div class="req-row">
+                <div class="req-cell">
+                  <div class="req-name">Local Protection Device</div>
+                  <div class="req-sub">e.g. fuse, recloser, vista switch</div>
+                  <select class="field-select" name="likelihood_lpd" aria-label="Likelihood — Local Protection Device">
+                    <option value="">— Select —</option>
+                    <option>High likelihood</option>
+                    <option>Medium likelihood</option>
+                    <option>Low likelihood</option>
+                    <option>Required</option>
+                  </select>
+                </div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="scope_lpd"
+                    placeholder="Describe potential scope…"></textarea></div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="notes_lpd"
+                    placeholder="Notes or dependencies…"></textarea></div>
+              </div>
+
+              <div class="req-row alt">
+                <div class="req-cell">
+                  <div class="req-name">Feeder Topology Modifications</div>
+                  <div class="req-sub">e.g. new feeders, load transfers</div>
+                  <select class="field-select" name="likelihood_ftm"
+                    aria-label="Likelihood — Feeder Topology Modifications">
+                    <option value="">— Select —</option>
+                    <option>High likelihood</option>
+                    <option>Medium likelihood</option>
+                    <option>Low likelihood</option>
+                    <option>Required</option>
+                  </select>
+                </div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="scope_ftm"
+                    placeholder="Describe potential scope…"></textarea></div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="notes_ftm"
+                    placeholder="Notes or dependencies…"></textarea></div>
+              </div>
+
+              <div class="req-row">
+                <div class="req-cell">
+                  <div class="req-name">System Civil Works</div>
+                  <div class="req-sub">e.g. feeder ducts, maintenance holes</div>
+                  <select class="field-select" name="likelihood_scw" aria-label="Likelihood — System Civil Works">
+                    <option value="">— Select —</option>
+                    <option>High likelihood</option>
+                    <option>Medium likelihood</option>
+                    <option>Low likelihood</option>
+                    <option>Required</option>
+                  </select>
+                </div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="scope_scw"
+                    placeholder="Describe potential scope…"></textarea></div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="notes_scw"
+                    placeholder="Notes or dependencies…"></textarea></div>
+              </div>
+
+              <div class="req-row alt">
+                <div class="req-cell">
+                  <div class="req-name">Primary Line Modifications</div>
+                  <div class="req-sub">e.g. voltage regulators, reconductoring, 3-phasing</div>
+                  <select class="field-select" name="likelihood_plm"
+                    aria-label="Likelihood — Primary Line Modifications">
+                    <option value="">— Select —</option>
+                    <option>High likelihood</option>
+                    <option>Medium likelihood</option>
+                    <option>Low likelihood</option>
+                    <option>Required</option>
+                  </select>
+                </div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="scope_plm"
+                    placeholder="Describe potential scope…"></textarea></div>
+                <div class="req-cell"><textarea class="field-textarea req-textarea" name="notes_plm"
+                    placeholder="Notes or dependencies…"></textarea></div>
+              </div>
+            </div>
+
+            <div class="form-block-spaced">
+              <label class="field-label" for="additional_requirements">Additional requirements not noted above</label>
+              <textarea class="field-textarea additional-textarea" id="additional_requirements"
+                name="additional_requirements"
+                placeholder="Describe any additional requirements not captured in the grid above…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIGN-OFF -->
+        <div class="card card-accent-top section-card">
+          <div class="card-head">
+            <span class="material-symbols-outlined card-head-icon">draw</span>
+            <span class="card-head-title">Sign-off</span>
+          </div>
+          <div class="card-body signoff-grid" id="signOffBody">
+            <div>
+              <label class="field-label" for="completed_date">Completed date</label>
+              <input class="field-input" id="completed_date" name="completed_date" type="date">
+            </div>
+            <div>
+              <label class="field-label" for="completed_by">Completed by</label>
+              <div class="field-icon-wrap"><span class="material-symbols-outlined">badge</span><input
+                  class="field-input" id="completed_by" type="text" name="completed_by" placeholder="Full name"></div>
+            </div>
+          </div>
+          <div class="card-body signoff-confirmed-body" id="signOffBodyConfirmed">
+            <div class="signoff-column">
+              <div>
+                <label class="field-label" for="completed_date_c">Completed date</label>
+                <input class="field-input" id="completed_date_c" data-mirror="completed_date" type="date">
+              </div>
+              <div>
+                <label class="field-label" for="completed_by_c">Completed by</label>
+                <div class="field-icon-wrap"><span class="material-symbols-outlined">badge</span><input
+                    class="field-input" type="text" id="completed_by_c" data-mirror="completed_by"
+                    placeholder="Full name"></div>
+              </div>
+            </div>
+            <div class="signoff-column--wide">
+              <label class="field-label" for="signature">Signature</label>
+              <textarea class="field-textarea signoff-textarea" id="signature" name="signature"
+                placeholder="Signature"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div data-no-print class="actions-bar">
+          <div class="actions-bar-left"> <button type="submit" class="btn btn-primary hidden" id="btnSubmit"
+              hidden><span class="material-symbols-outlined" hidden>send</span>Submit</button>
+            <button type="button" class="btn btn-ghost" id="btnReset"><span
+                class="material-symbols-outlined">restart_alt</span>Reset form</button>
+          </div>
+          <div class="actions-bar-right"> <button type="button" class="btn btn-accent" id="btnDownload"><span
+                class="material-symbols-outlined">download</span>Download filled form</button>
+            <button type="button" class="btn btn-secondary" id="btnPrint"><span
+                class="material-symbols-outlined">print</span>Print / Save PDF</button>
+            <button type="button" class="btn btn-primary" id="btnSave"><span
+                class="material-symbols-outlined">save</span>Save snapshot</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <footer class="footer-bar">
+      <img
+        src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgaWQ9IkxvZ28iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmVyc2lvbj0iMS4xIiBmaWxsPSIjM2UzOTM1IiB2aWV3Qm94PSIwIDAgMjg4IDg3LjY5OTIiPgogIDxkZWZzPgogICAgCiAgPC9kZWZzPgogIDxnPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNzYuMjYzNywzLjQxNWM4LjE3MTgsMCwxMi4xMTgxLDQuODM2LDEyLjExODEsMTEuMDA2OSwwLDQuMzM0OS0xLjk0NTMsNy4xNjk5LTQuODkxNiw4LjQ0OTIsMy4wNTcyLDEuMzM0LDQuODkxNiw0LjI4MTIsNC44OTE2LDguNDQ5MiwwLDYuMTcwOS0zLjk0NjMsMTEuMDA1OS0xMi4xMTgxLDExLjAwNTloLTE2LjczMjRWMy40MTVoMTYuNzMyNFpNNzUuOTg1OCwxMi44NjQzaC03LjAwNDR2NS4yODEyaDYuODM3NGMxLjg5MDIsMCwzLjExMzMtMSwzLjExMzMtMi43MjM2LDAtMS40NDUzLS44ODk2LTIuNTU3Ni0yLjk0NjMtMi41NTc2Wk03NS44MTg4LDI3LjU5NjdoLTYuODM3NHY1LjI4MTJoNy4wMDQ0YzIuMDU2NywwLDIuOTQ2My0xLjA1NjYsMi45NDYzLTIuNTU3NiwwLTEuNzc5My0xLjIyMzEtMi43MjM2LTMuMTEzMy0yLjcyMzZaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMTAuMjMxNCwzLjQxNWM1LjI4MTMsMCwxMC40NTEyLDEuNjEyMywxNC4yODYyLDUuMjI1NmwtNC42MTMzLDguNjE2MmMtMi45NDYzLTMuMTEzMi02LjAwMzktNC4zOTI1LTkuNjcyOS00LjM5MjUtNS44OTIsMC0xMC4xMTcxLDQuMTE0Mi0xMC4xMTcxLDEwLjAwNjhzNC4xNjk0LDEwLjAwNjgsMTAuMDYyLDEwLjAwNjhjMy41MDE5LDAsNy4xMTUyLTEuMjIzNiwxMC4zMzkzLTQuOTQ4Mmw0Ljc4MDgsOC43Mjc1Yy00LjAwMjUsMy42NjktOS4xMTY3LDUuNjY5LTE0Ljk1MzYsNS42NjktMTEuMzQwNCwwLTE5LjY3ODctOC4zOTI2LTE5LjY3ODctMTkuNTEwOFM5OS4wNTgxLDMuNDE1LDExMC4yMzE0LDMuNDE1WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTY5LjI3MjQ5LDMuNDE1djM4LjkxMTJoLTkuNDQ5M3YtMTQuNzI5NWgtMTMuOTUzMXYxNC43Mjk1aC05LjQ1MDJWMy40MTVoOS40NTAydjE0LjczMDVoMTMuOTUzMVYzLjQxNWg5LjQ0OTNaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzcuNzA2MDksNTEuMDkyOGw1LjczNjMtMTIuOTM0Ni0xMS43NDMyLTIzLjYyNWgxMC4zNTM1bDYuMDAzLDEzLjIyOTUsNS44MzY5LTEzLjIyOTVoOS4zOTQ1bC0xNi4yNDIyLDM2LjU1OTZoLTkuMzM4OFoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTIzMi4zNjAzOSwzLjQxNXYzOC45MTEyaC04Ljg5NDZ2LTMuNzc5M2MtMi4wMDEsMi44MzQ5LTUuMTE0Miw0LjUwMTktOC45NDkyLDQuNTAxOS02LjM5MjU5LDAtMTIuMTczOC00Ljg5MDYtMTIuMTczOC0xNC42MTkxczUuNzI1Ni0xNC42MjAxLDEyLjAwNjgtMTQuNjIwMWM0LjI4MDMsMCw3LjQ0OTIsMi4xMTMzLDkuMTE2Miw0LjY2OTlWMy40MTVoOC44OTQ2Wk0yMTEuNDU5LDI4LjQyOTdjMCwzLjY2ODksMi44MzU4OSw1LjgzNzksNi4wNTk1OSw1LjgzNzlzNi4wNTg1LTIuMTY5LDYuMDU4NS01LjgzNzktMi44MzQ5LTUuODM2OS02LjA1ODUtNS44MzY5LTYuMDU5NTksMi4xNjc5LTYuMDU5NTksNS44MzY5WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjUzLjY1NDI5LDEzLjg2NTJjMS4wNTY2LDAsMS44MzUuMTY3LDIuNjY4OS40NDUzdjkuNjE3MmMtMS4wMDA5LS4zODk2LTIuMzkwNi0uNTU1Ni0zLjYxMzE5LS41NTU2LTQuMDAzLDAtNi4zMzc5MSwxLjgzNC02LjMzNzkxLDYuNjY5OXYxMi4yODQyaC04Ljg5NDZWMTQuNTMzMmg4LjU2MTZ2NC44MzU5YzEuMzg5Ni0zLjMzNDksMy43MjQ2LTUuNTAzOSw3LjYxNTItNS41MDM5WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjcyLjgyNDE5LDEzLjg2NTJjOC42NzE5LDAsMTUuMTc1ODEsNS42NzA5LDE1LjE3NTgxLDE0LjU2NDUsMCw4Ljg5NDUtNi41MDM5MSwxNC41NjQ0LTE1LjE3NTgxLDE0LjU2NDRzLTE1LjE3NTgtNS42Njk5LTE1LjE3NTgtMTQuNTY0NGMwLTguODkzNiw2LjUwMzktMTQuNTY0NSwxNS4xNzU4LTE0LjU2NDVaTTI3Mi44MjQxOSwyMi41OTI4Yy0zLjIyMzYsMC02LjA1OTYsMi4xNjc5LTYuMDU5Niw1LjgzNjlzMi44MzYsNS44Mzc5LDYuMDU5Niw1LjgzNzljMy4yMjQ2LDAsNi4wNTg2LTIuMTY5LDYuMDU4Ni01LjgzNzlzLTIuODM0LTUuODM2OS02LjA1ODYtNS44MzY5WiI+PC9wYXRoPgogIDwvZz4KICA8Zz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTY5LjA5NzIsNjAuMzQ2N2M1LjIyNDYsMCw5LjA2NjQsMy44NDE4LDkuMDY2NCw5LjA2NjRzLTMuODQxOCw5LjA2NjQtOS4wNjY0LDkuMDY2NGgtNi4xMDg0djguNzU4OGgtMy40NTc1di0yNi44OTE2aDkuNTY1OVpNNjkuMDk3Miw2My44MDM3aC02LjEwODR2MTEuMjE4OGg2LjEwODRjMy4xMTE4LDAsNS42MDg5LTIuMzQzOCw1LjYwODktNS42MDk0LDAtMy4yNjQ3LTIuNDk3MS01LjYwOTQtNS42MDg5LTUuNjA5NFoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTkwLjYzNTcsNjcuNTY5M2M1Ljc2MjcsMCwxMC4wNjUsNC4zMDI4LDEwLjA2NSwxMC4wNjQ1LDAsNS43NjI3LTQuMzAyMywxMC4wNjU0LTEwLjA2NSwxMC4wNjU0cy0xMC4wNjQ5LTQuMzAyNy0xMC4wNjQ5LTEwLjA2NTRjMC01Ljc2MTcsNC4zMDIyLTEwLjA2NDUsMTAuMDY0OS0xMC4wNjQ1Wk05MC42MzU3LDcwLjc1NzhjLTMuOTk1MSwwLTYuNjQ1NSwyLjg3OTktNi42NDU1LDYuODc2LDAsMy45OTUxLDIuNjUwNCw2Ljg3NjksNi42NDU1LDYuODc2OXM2LjY0NjUtMi44ODE4LDYuNjQ2NS02Ljg3NjljMC0zLjk5NjEtMi42NTEzLTYuODc2LTYuNjQ2NS02Ljg3NloiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTEwOS45OTk1LDg3LjIzODNsLTcuODc1NS0xOS4yMDhoMy43NjQ3bDUuNDU1NSwxNC4yNTE5LDUuODM5NC0xNC4yNTE5aDIuMzgxOGw1LjgzODksMTQuMjUxOSw1LjQ1NTEtMTQuMjUxOWgzLjc2NDZsLTcuODc1NSwxOS4yMDhoLTIuNTM1MWwtNS44Mzg5LTEzLjc5MS01LjgzOTMsMTMuNzkxaC0yLjUzNTdaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNDUuNTk2Nyw2Ny41NjkzYzYuMDMxMiwwLDkuMjE5Nyw0LjM3ODksOS4yMTk3LDEwLjA2NDV2Ljk5OWgtMTUuMzY3N3YuMDM5MWMuMTkxNCwzLjkxNzksMy4wMzUyLDUuOTUzMSw2LjMwMTMsNS45NTMxLDIuODA1NywwLDQuNzYzNy0xLjM4MTgsNi4xMDk0LTIuOTU3bDEuNzI4NSwyLjU3NDJjLTEuNTM2MSwxLjcyODUtNC4xMTA0LDMuNDU3LTcuNjgzNiwzLjQ1Ny01LjgwMjIsMC05Ljc5NzktMy44NDE4LTkuNzk3OS05LjkxMjEsMC01LjY0NjUsMy42ODc1LTEwLjIxNzgsOS40OTAzLTEwLjIxNzhaTTE0NS42MzQ4LDcwLjY0MTZjLTMuNjEyOCwwLTUuNTcxOCwyLjE1MjMtNi4wMzIzLDUuMzQwOGgxMS42MDM2Yy0uMzA3Ny0zLjE4ODUtMi4xMTQzLTUuMzQwOC01LjU3MTMtNS4zNDA4WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTY4LjI0NjA5LDY3LjU2OTNjLjY1MzMsMCwxLjI2NzYuMDc2MiwxLjg4MTguMTkyNHYzLjQ5NDJjLS42NTMzLS4xNTM0LTEuMjI4NS0uMjI5NS0xLjkyMDg5LS4yMjk1LTQuMzAyNzEsMC01LjY0ODQxLDIuOTIwOS01LjY0ODQxLDcuMjYwN3Y4Ljk1MTJoLTMuMzAzN3YtMTkuMjA4aDMuMTg5NHYyLjg4MThjMS4xOTE0LTIuMTEzMywzLjExMjMtMy4zNDI4LDUuODAxOC0zLjM0MjhaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xOTEuNzMwNDksNjcuNTY5M2MzLjgwMjcsMCw2LjE4NDUxLDEuNjE0Myw3LjYwNTQsNC4xNDk1bC0yLjcyNzUsMS43Mjg1Yy0uODA2Ni0xLjU3NTItMi4zMDM3LTIuODA1Ny00Ljk1NDEtMi44MDU3LTIuMTUyMjksMC0zLjgwMjcuODg0OC0zLjgwMjcsMi40MjA5LDAsMS44MDU3LDEuOTU4LDIuMzA1Nyw0LjU3MDMsMi44ODA5LDMuMTg5NC42OTIzLDYuOTE0LDEuMzgyOCw2LjkxNCw1LjgwMDcsMCw0LjExMDQtMy4xODg0LDUuOTU1MS03LjM3NCw1Ljk1NTEtMy41NzQyLDAtNi45NTMxLTEuMzQ1Ny04LjQ5MTItNC40OTUxbDIuNzI3NS0xLjcyODVjMS4xNTM0LDIuMzgxOCwzLjQ5NjEsMy4xNDk0LDUuODM4OSwzLjE0OTQsMi40OTcxLDAsMy45OTYxLS44NDM3LDMuOTk2MS0yLjY0OTQsMC0xLjkyMTktMS43Mjg1LTIuMzQzOC00LjI2NDYtMi44ODE4LTMuMTQ5NS0uNjUzNC03LjIyMjctMS42MTQzLTcuMjIyNy01LjgzODksMC0zLjM4MDksMi42ODk1LTUuNjg1Niw3LjE4NDYtNS42ODU2WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjI2Ljc4MjE5LDY3LjU2OTNjNS4zNzgsMCw3LjQ1MzIsMy40MTgsNy40NTMyLDguNjAzNnYxMS4wNjU0aC0zLjM0Mjh2LTExLjQ4NzNjMC0zLjMwMjgtMS40OTktNS4xMDk0LTQuNDU2MS01LjEwOTQtNC4zNzg5LDAtNS42ODU0OSwzLjM0MjgtNS42ODU0OSw3LjY0NTV2OC45NTEyaC0zLjMwMzcxdi0xMS40ODczYzAtMy4zMDI4LTEuNTM3MS01LjEwOTQtNC41MzMyLTUuMTA5NC00LjM3ODksMC01LjU3MTMsMy40MTk5LTUuNTcxMyw3LjY0NTV2OC45NTEyaC0zLjMwMjc5di0xOS4yMDhoMy4xODg0OXYyLjY4OTRjMS4xOTE0LTEuOTU5OSwzLjI2NjYtMy4xNTA0LDYuMTA4NC0zLjE1MDQsMy4yNjQ3LDAsNS4yNjM3LDEuNTM2Miw2LjI5OTgsMy44MDM3LDEuNDk5LTIuMjY3NSwzLjUzNTItMy44MDM3LDcuMTQ1NS0zLjgwMzdaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yNDYuNzg5MDksNjcuNTY5M2M1LjI5OTgsMCw3LjcyMDcsMi42MTE0LDcuNzIwNyw3LjE4Mjd2MTIuNDg2M2gtMy4zMDM3di0yLjcyNzZjLTEuMzA1NywxLjk2LTMuNTM0MiwzLjExMDQtNi4yOTg5LDMuMTEwNC00LjE0OTQsMC02LjUzMTE5LTIuNTcyMy02LjUzMTE5LTUuOTUzMSwwLTMuNTczMywyLjY1MDM5LTUuNTcwMyw2LjE4NDQ5LTUuOTE3bDUuNDE3LS41MzYyYy44ODI5LS4wNzgxLDEuMjI4Ni0uMzg0NywxLjIyODYtMS4wMzh2LS41YzAtMS44ODE5LTEuNDIwOS0zLjE0OTUtNC4yNjM3LTMuMTQ5NS0yLjY1MDM5LDAtNC41MzQyLDEuMDc1Mi00Ljk1NjEsMy40NTcxbC0yLjkxOTktMS41NzUyYy43MzA1LTIuODQyOCwzLjA3MzItNC44Mzk5LDcuNzIyNy00LjgzOTlaTTI1MS4yMDYwOSw3OC4wNTc2bC02LjI2MTguNzY3NmMtMi4xNTEyOS4yNjg2LTMuMTExMjksMS40Ni0zLjExMTI5LDIuODgxOCwwLDEuNjUwNCwxLjIyODQ5LDIuODAzNywzLjU3MzI5LDIuODAzNywzLjY0OTQsMCw1Ljc5OTgtMi42MTMyLDUuNzk5OC01LjAzMjJ2LTEuNDIwOVoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTI2OS4wMzIxOSw2Ny41NjkzYy42NTMzLDAsMS4yNjc2LjA3NjIsMS44ODE5LjE5MjR2My40OTQyYy0uNjUzNC0uMTUzNC0xLjIyODYtLjIyOTUtMS45MjA5LS4yMjk1LTQuMzAyOCwwLTUuNjQ4NSwyLjkyMDktNS42NDg1LDcuMjYwN3Y4Ljk1MTJoLTMuMzAyNjl2LTE5LjIwOGgzLjE4ODQ5djIuODgxOGMxLjE5MTQtMi4xMTMzLDMuMTEyMy0zLjM0MjgsNS44MDE3LTMuMzQyOFoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTI4Mi44NTE1OSw4Ny40MzA3Yy0zLjQ5NjEsMC01LjMwMDgtMS40OTkxLTUuMzAwOC01LjU3MDN2LTEwLjk0ODNoLTMuODAyNzl2LTIuODgxOGgzLjgwMjc5di01LjE0ODVoMy4zMDM3djUuMTQ4NWg1LjI2Mzd2Mi44ODE4aC01LjI2Mzd2MTEuMTM4N2MwLDEuNDU5OS41NzYyLDIuMzA1NiwyLjE4OTQsMi4zMDU2LDEuMjI4NiwwLDIuMDc0My0uMTE0MiwzLjExMTQtLjMwNjZ2Mi45MThjLS45OTgxLjI3MDUtMi4wNzUyLjQ2MjktMy4zMDM3LjQ2MjlaIj48L3BhdGg+CiAgPC9nPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTIyLjUwMzYsNDUuMDA3MmMxMS45NjE2NCwwLDIxLjczOTM4LTkuMzI5MTMsMjIuNDYxOTItMjEuMTA1ODctMy4wOTYwOS4wMzEyMi02LjE5ODU1LS4wNTg2NC05LjI2NzI1LjQ5MzQtMi4yNTk0My40MDY0Mi0zLjcwNDA4LDEuNTkzMzQtNC4yNTE2OCwzLjk0ODQyLS4xMjY2NS41NDQzNC0yLjQ5ODMsOS4zNDg4MS0yLjUyNDQ5LDkuNDUwNzMtLjE3MDk4LjY2NTQ1LS4zODgyOCwxLjM3OTY0LTEuMjg0NSwxLjM3OTY0LS45NjY4MywwLTEuMTQ4MzItLjcxMDMzLTEuMjk5My0xLjM3NTM3LS4wMTU4My0uMDY5NzEtMS43NDQ3Ny0xMC4wNjg4Ni0yLjA0MTc4LTExLjE1NjU5LS4yNjUzNy0uOTcxNzYtMS4wMzAxNy0xLjYyMjQzLTEuNzkyOTMtMS42MjI0My0uNzYyNzcsMC0xLjUyNzU2LjY1MDY3LTEuNzkyOTMsMS42MjI0My0uMjk3MDEsMS4wODc3My0yLjAyNTk1LDExLjA4Njg4LTIuMDQxNzgsMTEuMTU2NTktLjE1MDk4LjY2NTA0LS4zMzI0NywxLjM3NTM3LTEuMjk5MywxLjM3NTM3LS44OTYyMSwwLTEuMTEzNTItLjcxNDE5LTEuMjg0NS0xLjM3OTY0LS4wMjYxOS0uMTAxOTItMi4zOTc4NC04LjkwNjM5LTIuNTI0NDktOS40NTA3My0uNTQ3NTktMi4zNTUwOC0xLjk5MjI0LTMuNTQyLTQuMjUxNjgtMy45NDg0Mi0zLjA2ODctLjU1MjA0LTYuMTcxMTctLjQ2MjE4LTkuMjY3MjUtLjQ5MzQuNzIyNTQsMTEuNzc2NzMsMTAuNTAwMjgsMjEuMTA1ODcsMjIuNDYxOTIsMjEuMTA1ODciPjwvcGF0aD4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yMi41MDM2LDBjMTEuOTYxNjQsMCwyMS43MzkzOCw5LjMyOTEzLDIyLjQ2MTkyLDIxLjEwNTg3LTMuMDk2MDktLjAzMTIyLTYuMTk4NTUuMDU4NjQtOS4yNjcyNS0uNDkzNC0yLjI1OTQzLS40MDY0Mi0zLjcwNDA4LTEuNTkzMzQtNC4yNTE2OC0zLjk0ODQyLS4xMjY2NS0uNTQ0MzQtMi40OTgzLTkuMzQ4ODEtMi41MjQ0OS05LjQ1MDczLS4xNzA5OC0uNjY1NDUtLjM4ODI4LTEuMzc5NjQtMS4yODQ1LTEuMzc5NjQtLjk2NjgzLDAtMS4xNDgzMi43MTAzMy0xLjI5OTMsMS4zNzUzNy0uMDE1ODMuMDY5NzEtMS43NDQ3NywxMC4wNjg4Ni0yLjA0MTc4LDExLjE1NjU5LS4yNjUzNy45NzE3Ni0xLjAzMDE3LDEuNjIyNDMtMS43OTI5MywxLjYyMjQzLS43NjI3NywwLTEuNTI3NTYtLjY1MDY3LTEuNzkyOTMtMS42MjI0My0uMjk3MDEtMS4wODc3My0yLjAyNTk1LTExLjA4Njg4LTIuMDQxNzgtMTEuMTU2NTktLjE1MDk4LS42NjUwNC0uMzMyNDctMS4zNzUzNy0xLjI5OTMtMS4zNzUzNy0uODk2MjEsMC0xLjExMzUyLjcxNDE5LTEuMjg0NSwxLjM3OTY0LS4wMjYxOS4xMDE5Mi0yLjM5Nzg0LDguOTA2MzktMi41MjQ0OSw5LjQ1MDczLS41NDc1OSwyLjM1NTA4LTEuOTkyMjQsMy41NDItNC4yNTE2OCwzLjk0ODQyLTMuMDY4Ny41NTIwNC02LjE3MTE3LjQ2MjE4LTkuMjY3MjUuNDkzNEMuNzY0MjIsOS4zMjkxMywxMC41NDE5NiwwLDIyLjUwMzYsMCI+PC9wYXRoPgo8L3N2Zz4="
+        alt="BC Hydro" class="footer-logo">
+      <span>· Maintained by Distribution Engineering · Powered by water.</span>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var STORE = 'bch_load_requirements_form_v1';
+      var form = document.getElementById('reqForm');
+      var stageEl = document.getElementById('stageToggle');
+      var titleEl = document.getElementById('formTitle');
+      var savedAlert = document.getElementById('savedAlert');
+      var stage = 'Unconfirmed';
+      var savedTimer = null;
+      var useLimitationsBody = document.getElementById('useLimitationsBody');
+      var signOffBody = document.getElementById('signOffBody');
+      var signOffBodyConfirmed = document.getElementById('signOffBodyConfirmed');
+      var mirrorPairs = Array.prototype.slice.call(document.querySelectorAll('[data-mirror]'));
+      var richEditors = {}; // name -> contenteditable div
+      var richSyncTimers = {};
+      var RICH_FIELD_NAMES = [
+        'details_assumptions', 'scope_lpd', 'notes_lpd', 'scope_ftm', 'notes_ftm',
+        'scope_scw', 'notes_scw', 'scope_plm', 'notes_plm', 'additional_requirements'
+      ];
+
+      var USE_LIMITATIONS = {
+        Unconfirmed:
+          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
+          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>Once load is confirmed, a <strong style="color:var(--text-strong)">Confirmed Load</strong> DESRT request is required for detailed requirements.</span></div>' +
+          '<div style="margin-top:2px"><span class="badge"><span class="material-symbols-outlined" style="font-size:13px">lock</span>Internal use only</span></div>',
+        Confirmed:
+          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
+          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">event_repeat</span><span>This confirmed load form is valid for up to <strong style="color:var(--text-strong)">18 months</strong>.</span></div>' +
+          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>This form is intended for high level load assessment and not for use as baseline for design scope. Design scope might change during detailed design stage.</span></div>' +
+          '<div style="margin-top:2px"><span class="badge"><span class="material-symbols-outlined" style="font-size:13px">lock</span>Internal use only</span></div>'
+      };
+
+      function isEditorEmpty (editor) {
+        if (!editor) return true;
+        if (editor.querySelector('img')) return false;
+        var text = (editor.textContent || '').replace(/\u00a0/g, ' ').trim();
+        return !text;
+      }
+
+      function updateEditorEmptyState (editor) {
+        editor.classList.toggle('is-empty', isEditorEmpty(editor));
+      }
+
+      function syncEditorToHidden (name) {
+        var hidden = form.elements[name];
+        var editor = richEditors[name];
+        if (hidden && editor) hidden.value = editor.innerHTML;
+      }
+
+      function syncEditorFromHidden (name) {
+        var hidden = form.elements[name];
+        var editor = richEditors[name];
+        if (!hidden || !editor) return;
+        editor.innerHTML = hidden.value || '';
+        updateEditorEmptyState(editor);
+      }
+
+      function flushRichEditors () {
+        Object.keys(richEditors).forEach(function (name) {
+          clearTimeout(richSyncTimers[name]);
+          syncEditorToHidden(name);
+        });
+      }
+
+      function queueRichSync (name) {
+        clearTimeout(richSyncTimers[name]);
+        richSyncTimers[name] = setTimeout(function () { syncEditorToHidden(name); }, 150);
+      }
+
+      function convertToRichEditors () {
+        RICH_FIELD_NAMES.forEach(function (name) {
+          var ta = form.elements[name];
+          console.log('Converting to rich editor:', name, ta);
+          if (!ta || ta.tagName !== 'TEXTAREA') return;
+          var wrap = document.createElement('div');
+          wrap.className = 'rich-field';
+          ta.parentNode.insertBefore(wrap, ta);
+          wrap.appendChild(ta);
+          ta.style.display = 'none';
+
+          var editor = document.createElement('div');
+          editor.className = 'editor-inline' + (ta.classList.contains('req-textarea') ? ' req-textarea' : '');
+          editor.setAttribute('contenteditable', 'true');
+          editor.setAttribute('role', 'textbox');
+          editor.setAttribute('aria-multiline', 'true');
+          editor.setAttribute('data-placeholder', ta.getAttribute('placeholder') || '');
+          editor.setAttribute('data-field-name', name);
+          if (ta.style.minHeight) editor.style.minHeight = ta.style.minHeight;
+          if (ta.style.flex) editor.style.flex = ta.style.flex;
+          editor.innerHTML = ta.value || '';
+          wrap.appendChild(editor);
+          if (name === 'desrt_id') return;
+
+          var hint = document.createElement('div');
+          hint.className = 'field-hint-paste';
+          hint.textContent = 'Tip: paste a screenshot or image directly into this field.';
+          wrap.appendChild(hint);
+
+          updateEditorEmptyState(editor);
+
+          editor.addEventListener('input', function () {
+            updateEditorEmptyState(editor);
+            queueRichSync(name);
+            equalizeRowHeightFor(editor);
+          });
+          editor.addEventListener('paste', function () {
+            setTimeout(function () {
+              updateEditorEmptyState(editor);
+              syncEditorToHidden(name);
+              equalizeRowHeightFor(editor);
+            }, 0);
+          });
+          editor.addEventListener('blur', function () {
+            clearTimeout(richSyncTimers[name]);
+            syncEditorToHidden(name);
+          });
+
+          richEditors[name] = editor;
+        });
+        Array.prototype.forEach.call(form.querySelectorAll('.req-row'), function (row) { equalizeRowHeight(row); });
+      }
+
+      function equalizeRowHeight (row) {
+        var editors = Array.prototype.slice.call(row.querySelectorAll('.req-cell .editor-inline'));
+        if (editors.length < 2) return;
+        editors.forEach(function (ed) { ed.style.height = 'auto'; });
+        var max = editors.reduce(function (m, ed) { return Math.max(m, ed.scrollHeight); }, 0);
+        editors.forEach(function (ed) { ed.style.height = max + 'px'; });
+      }
+
+      function equalizeRowHeightFor (editor) {
+        var row = editor.closest('.req-row');
+        if (row) equalizeRowHeight(row);
+      }
+
+      function syncMirrors () {
+        mirrorPairs.forEach(function (mirrorEl) {
+          var srcEl = form.elements[mirrorEl.getAttribute('data-mirror')];
+          if (srcEl) mirrorEl.value = srcEl.value;
+        });
+      }
+
+      mirrorPairs.forEach(function (mirrorEl) {
+        mirrorEl.addEventListener('input', function () {
+          var srcEl = form.elements[mirrorEl.getAttribute('data-mirror')];
+          if (srcEl) srcEl.value = mirrorEl.value;
+        });
+      });
+
+      function setStage (s) {
+        stage = s;
+        titleEl.textContent = s + ' Load Requirements Form';
+        Array.prototype.forEach.call(stageEl.querySelectorAll('button'), function (btn) {
+          btn.classList.toggle('active', btn.getAttribute('data-stage') === s);
+        });
+        if (useLimitationsBody) {
+          useLimitationsBody.innerHTML = USE_LIMITATIONS[s] || USE_LIMITATIONS.Unconfirmed;
+        }
+        if (signOffBody && signOffBodyConfirmed) {
+          if (s === 'Confirmed') {
+            syncMirrors();
+            signOffBody.style.display = 'none';
+            signOffBodyConfirmed.style.display = 'flex';
+          } else {
+            signOffBody.style.display = 'grid';
+            signOffBodyConfirmed.style.display = 'none';
+          }
+        }
+      }
+
+      stageEl.addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-stage]');
+        if (btn) setStage(btn.getAttribute('data-stage'));
+      });
+
+      function collectData () {
+        flushRichEditors();
+        var data = {};
+        Array.prototype.forEach.call(form.elements, function (el) {
+          if (!el.name) return;
+          data[el.name] = el.value;
+        });
+        data.__stage = stage;
+        return data;
+      }
+
+      function applyData (data) {
+        if (!data) return;
+        if (data.__stage) setStage(data.__stage);
+        Object.keys(data).forEach(function (k) {
+          if (k.indexOf('__') === 0) return;
+          var el = form.elements[k];
+          if (el) el.value = data[k];
+        });
+        Object.keys(richEditors).forEach(function (name) { syncEditorFromHidden(name); });
+        Array.prototype.forEach.call(form.querySelectorAll('.req-row'), function (row) { equalizeRowHeight(row); });
+      }
+
+      function load () {
+        try {
+          var raw = localStorage.getItem(STORE);
+          if (raw) applyData(JSON.parse(raw));
+        } catch (e) { /* ignore */ }
+      }
+
+      function save () {
+        try {
+          localStorage.setItem(STORE, JSON.stringify(collectData()));
+        } catch (e) { /* ignore */ }
+        savedAlert.style.display = 'flex';
+        clearTimeout(savedTimer);
+        savedTimer = setTimeout(function () { savedAlert.style.display = 'none'; }, 3500);
+      }
+
+      function reset () {
+        form.reset();
+        try { localStorage.removeItem(STORE); } catch (e) { /* ignore */ }
+        Object.keys(richEditors).forEach(function (name) {
+          richEditors[name].innerHTML = '';
+          updateEditorEmptyState(richEditors[name]);
+        });
+        setStage('Unconfirmed');
+        savedAlert.style.display = 'none';
+      }
+
+      function downloadFilled () {
+        var data = collectData();
+        var doc = document.documentElement.cloneNode(true);
+        Array.prototype.forEach.call(doc.querySelectorAll('[name]'), function (el) {
+          var val = data[el.name];
+          if (val === undefined) return;
+          if (el.tagName === 'TEXTAREA') {
+            el.textContent = val;
+          } else if (el.tagName === 'SELECT') {
+            Array.prototype.forEach.call(el.querySelectorAll('option'), function (opt) {
+              if (opt.value === val || opt.textContent === val) opt.setAttribute('selected', 'selected');
+              else opt.removeAttribute('selected');
+            });
+          } else {
+            el.setAttribute('value', val);
+          }
+        });
+        var stageBtns = doc.querySelectorAll('#stageToggle button');
+        stageBtns.forEach(function (btn) {
+          if (btn.getAttribute('data-stage') === data.__stage) btn.classList.add('active');
+          else btn.classList.remove('active');
+        });
+        var titleNode = doc.querySelector('#formTitle');
+        if (titleNode) titleNode.textContent = data.__stage + ' Load Requirements Form';
+
+        var html = '<!DOCTYPE html>\n' + doc.outerHTML;
+        var blob = new Blob([html], { type: 'text/html' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        var name = (data.project_name || data.desrt_id || 'load-requirements-form').toString()
+          .trim().replace(/[^a-z0-9-_ ]/gi, '').replace(/\s+/g, '-').toLowerCase() || 'load-requirements-form';
+        a.href = url;
+        a.download = name + '.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      }
+
+      function detectAndHyperlinkUrl (element) {
+        if (!element) return;
+        console.log(element);
+
+        const pasted = element.querySelector('a');
+        if (pasted) {
+          if (!pasted?.href) return;
+          if (pasted.href.includes("designhub")) {
+            const number = pasted.href.match(/\d{7}/)[0];
+            pasted.textContent = "DESRT: " + number;
+            pasted.target = "_blank";
+          }
+
+        } else {
+          let pastedText = (element.textContent || '').trim();
+          if (!pastedText.includes(`designhub.bchydro.bc.ca/web/app/request/`)) return;
+          const url_element = document.createElement('a');
+          url_element.href = pastedText;
+          const number = pastedText.match(/\d{7}/);
+          url_element.target = "_blank";
+          element.innerHTML = `<a href="${url_element.href}" target="_blank">DESRT: ${number[0]}</a>`;
+
+        }
+
+      }
+
+      function initializeUrlDetection () {
+        // Attach event listeners to text inputs (not Quill editors)
+        const inputElements = document.querySelectorAll('.editor-inline');
+        console.log('Initializing URL detection for elements:', inputElements);
+
+        inputElements.forEach(element => {
+          console.log(element);
+          element.addEventListener('paste', function (e) {
+            setTimeout(() => {
+              detectAndHyperlinkUrl(this);
+            }, 0);
+          });
+
+        });
+      }
+
+      document.getElementById('btnSave').addEventListener('click', save);
+      document.getElementById('btnReset').addEventListener('click', reset);
+      document.getElementById('btnPrint').addEventListener('click', function () { window.print(); });
+      document.getElementById('btnDownload').addEventListener('click', downloadFilled);
+      form.addEventListener('submit', function (e) { e.preventDefault(); });
+
+      convertToRichEditors();
+      initializeUrlDetection();
+      load();
+      window.addEventListener('resize', function () {
+        Array.prototype.forEach.call(form.querySelectorAll('.req-row'), function (row) { equalizeRowHeight(row); });
+      });
+    })();
+
+  </script>
+</body>
+
+</html>

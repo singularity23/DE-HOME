@@ -56,6 +56,9 @@
     "editor.tabSize": 2,
     "[jsonc]": {
         "editor.defaultFormatter": "mblode.pretty-formatter"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
     }
 
 }
