@@ -2038,7 +2038,8 @@
         border-left: 0px;
       }
 
-      .ql-toolbar.ql-snow {
+      .ql-toolbar.ql-snow,
+      .ql-editor.ql-blank::before {
         display: none;
       }
 
@@ -4609,12 +4610,13 @@
 
           // Checklist-derived facts (scoped to .check-row so ch_c/pr_c doesn't interfere).
           const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
+          const prHasYes = this.rowHasAnswer(this.elements.prRows, 'yes');
 
           const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
           const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
 
           // Current behavior: expand peer review when checklist has a "No" OR min level explicitly set to Peer Review.
-          const openS4 = chHasNo || minLevel === 'Peer Review';
+          const openS4 = chHasNo || prHasYes || minLevel === 'Peer Review';
 
           const openS5 = !isLowRisk && q9Yes; // gated behind final section for now, but may want to surface earlier
 
@@ -4641,7 +4643,7 @@
 
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
-          this.setRequired(this.elements.cardCh, state.showCheck);
+          this.setCheckerRequired(state.showCheck);
           if (state.showCheck) this.syncCheckerNames();
 
           this.elements.cardPr.classList.toggle('hidden', !state.showPeer);

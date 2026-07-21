@@ -5,9 +5,9 @@
       {
         "links": [
           {
-            "name": "E13 Desk Booking",
-            "url": "http://pq.bchydro.bc.ca:99/index.php",
-            "info": "Reserve a workstation in the E13 office"
+            "name": "A01 - Desk Booking ",
+            "url": "https://pims.bchydro.bc.ca/app/tririgaRoomReservation",
+            "info": "Reserve a workstation in the A01 office"
           },
           {
             "name": "DesignHub",
@@ -107,6 +107,11 @@
             "name": "DELT",
             "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/DELT.pdf",
             "info": "Distribution Engineering Leadership Team overview"
+          },
+          {
+            "name": "DE DocHub (WIP)",
+            "url": "https://bchydro.sharepoint.com/sites/Distribution-Engineering-Doc-Hub",
+            "info": "Centralized repository of DE documentations"
           }
         ]
       },
@@ -177,6 +182,11 @@
       {
         "title": "Regional Teams",
         "links": [
+          {
+            "name": "Regional Knowledge Forms",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/DEKnowledgeOneNote/Forms/AllItems.aspx?RootFolder=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FRegional%20Knowledge%20Forms&FolderCTID=0x012000B974F0039233934E9CC4B149B240CCC9&View=%7B5640CBEC%2D53D7%2D4153%2DAB67%2D30851F731103%7D",
+            "info": "Regional or municipality specific knowledge sharing"
+          },
           {
             "name": "Lower Mainland North",
             "url": "",
@@ -602,7 +612,7 @@
             "info": "#Switchgear #Recloser"
           },
           {
-            "name": "Distribution Planning - Tableau®",
+            "name": "Distribution Planning - TableauÂ®",
             "url": "https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home",
             "info": "Feeder planning databases - capacity, peak demand, reliability, etc."
           },
@@ -617,7 +627,7 @@
             "info": "Repository for distribution planning memos"
           },
           {
-            "name": "BCH ArcGIS®",
+            "name": "BCH ArcGISÂ®",
             "url": "https://kdcesriweb1.bchydro.adroot.bchydro.bc.ca/gisportal/home/index.html",
             "info": "Distribution planning GIS data"
           }
@@ -632,8 +642,8 @@
             "info": "Homepage for Power Quality Team"
           },
           {
-            "name": "DSwiki",
-            "url": "http://edmbchwiki1/dist/standards/index.php/Main_Page",
+            "name": "Distribution Standards Sharepoint",
+            "url": "https://bchydro.sharepoint.com/sites/diststd/SitePages/Home.aspx",
             "info": "Homepage for Distribution Standards"
           }
         ]
@@ -682,7 +692,7 @@
         "title": "Asset Management & Maintenance",
         "links": [
           {
-            "name": "Feeder Load Research Tool - SAS®",
+            "name": "Feeder Load Research Tool - SASÂ®",
             "url": "https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/",
             "info": "#LoadFactors #LoadProfile",
             "class": "_clipboard"
@@ -773,7 +783,7 @@
         "title": "Technical Tools & Resources",
         "links": [
           {
-            "name": "ASPEN Relay Database™",
+            "name": "ASPEN Relay Databaseâ„¢",
             "url": "http://kdcssweb1/aspen/rdbweb.exe",
             "info": "Database for relay settings and configurations",
             "sub_links": [
@@ -789,7 +799,7 @@
             "info": "Quickly get standard fuse size for standard transformers and its impedances"
           },
           {
-            "name": "EATON® CYME",
+            "name": "EATONÂ® CYME",
             "url": "file:///J:/Engineering/Distribution/CYME",
             "info": "",
             "sub_links": [
@@ -962,7 +972,7 @@
           },
           {
             "name": "Engineering Expense Claim Template",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20%26%20Documents/Engineering%20Expense%20Claim%20Template.xlsx?d=wd4f1fdf420d74263ba1cc951772f50ad",
+            "url": "https://bchydro.sharepoint.com/:x:/r/sites/engineering/HydroWeb%20Documents/Resources/Engineering%20Expense%20Claim%20Template.xlsx?d=w564e1ec25f8646168b6735e530e73d04&csf=1&web=1&e=Nn0DiV",
             "info": "Standard template for engineering business expense claims and reimbursements",
             "class": "_form"
           },
