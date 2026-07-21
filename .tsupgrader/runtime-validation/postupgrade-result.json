@@ -1,0 +1,26 @@
+{
+  "planHash": "1e1cc57fd89f331139ea28f677da55833a1a5444d18e97cf87767c336a2ed23a",
+  "phase": "postupgrade",
+  "recordedAtUtc": "2026-07-21T03:47:18.2271169Z",
+  "retryCount": 2,
+  "resetBaseline": false,
+  "result": {
+    "setupSucceeded": true,
+    "setupDurationMs": 3942,
+    "setupFailureOutput": null,
+    "assertions": [
+      {
+        "name": "package-manifest-readable",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "ok\r\n",
+        "durationMs": 127
+      }
+    ]
+  }
+}

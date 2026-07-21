@@ -1,0 +1,27 @@
+{
+  "projectType": "library",
+  "name": "baseline-runtime-validation",
+  "description": "Minimal runtime validation plan for the current workspace.",
+  "setup": [
+    {
+      "command": "npm",
+      "args": [
+        "install"
+      ]
+    }
+  ],
+  "assertions": [
+    {
+      "name": "package-manifest-readable",
+      "kind": "process",
+      "command": "node",
+      "args": [
+        "-e",
+        "require('./package.json'); console.log('ok')"
+      ],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 30
+    }
+  ]
+}

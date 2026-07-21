@@ -318,7 +318,7 @@ h1 {
   margin-inline-start: 0px;
 }
 
-.links dd a {
+.links dd>a {
   display: block;
   padding: 5px 10px 5px 5px;
   min-height: 70px;
@@ -375,29 +375,44 @@ h1 {
   flex-wrap: wrap;
 }
 
-.links dd .sub-link a::before {
-  content: '\01F449';
-  position: relative;
-  left: -0.2em;
-  top: -0.2em;
+.links dd .sub-link span {
+  display: inline-block;
+  margin-right: 5px;
+  font-size: 0.9em;
 }
 
 .links dd .sub-link a {
-  font-size: 1rem;
-  color: var(--text-color) !important;
-  border-bottom: 2px dotted var(--text-color);
-  display: inline;
-  padding: 0;
-  border-radius: 0;
-  font-weight: 500;
-  line-height: 1.35em;
-  letter-spacing: 0.015em;
-  unicode-bidi: isolate;
-  word-spacing: normal;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: None;
+
 }
+
+.links dd .sub-link a .sub-link-text {
+  color: var(--text-color);
+  border-bottom: 2px dotted var(--text-color);
+  line-height: 1.2em;
+  display: inline;
+}
+
+
 
 .links dd .sub-link a:hover {
   background-color: var(--sublink-highlight-color) !important;
+}
+
+.sub-link .material-symbols-outlined {
+  font-size: 15px;
+  color: var(--box-text-sub);
+}
+
+.sub-link a:hover .material-symbols-outlined {
+  font-size: 14px;
+  color: var(--link-highlight-color);
 }
 
 footer {

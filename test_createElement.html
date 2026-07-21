@@ -70,7 +70,7 @@
   <script>
     // Copy the improved createElement function
     const DOM = {
-      createElement(tag, options = {}) {
+      createElement (tag, options = {}) {
         // Input validation
         if (typeof tag !== 'string' || !tag.trim()) {
           throw new Error('Invalid tag name: must be a non-empty string');
@@ -133,7 +133,7 @@
     };
 
     // Test functions
-    function runTests() {
+    function runTests () {
       test1();
       test2();
       test3();
@@ -141,7 +141,7 @@
       test5();
     }
 
-    function test1() {
+    function test1 () {
       const result = document.getElementById('test1-result');
       try {
         const div = DOM.createElement('div');
@@ -155,7 +155,7 @@
       }
     }
 
-    function test2() {
+    function test2 () {
       const result = document.getElementById('test2-result');
       try {
         const input = DOM.createElement('input', {
@@ -186,7 +186,7 @@
       }
     }
 
-    function test3() {
+    function test3 () {
       const result = document.getElementById('test3-result');
       try {
         let clicked = false;
@@ -209,7 +209,7 @@
       }
     }
 
-    function test4() {
+    function test4 () {
       const result = document.getElementById('test4-result');
       try {
         const div = DOM.createElement('div', {
@@ -240,7 +240,7 @@
       }
     }
 
-    function test5() {
+    function test5 () {
       const result = document.getElementById('test5-result');
       let errorsCaught = 0;
 
