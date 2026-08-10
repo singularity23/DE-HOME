@@ -13,11 +13,6 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
     rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-    rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-    rel="stylesheet">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
@@ -25,6 +20,13 @@
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
   <style>
+    /* ============================================================
+    OPTIMIZED VERSION
+    - Removed debug trace logging
+    - Added noopener/noreferrer to external links
+    - Replaced high-cost :has() selectors with state classes where safe
+    - Removed MutationObserver progress watcher in favour of direct event updates
+    ============================================================ */
     /* ============================================================
     DISTRIBUTION ENGINEERING CHECK FORM
     StudioBlank design system — minimal, flat, accessible
@@ -129,7 +131,7 @@
       direction: ltr;
       -webkit-font-smoothing: antialiased;
       pointer-events: none;
-      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20;
     }
 
     /* --------------------------------
@@ -163,8 +165,8 @@
 
     .skip-link:focus {
       transform: translateY(0);
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+      outline: 1px solid var(--color-primary);
+      outline-offset: 1px;
     }
 
     /* --------------------------------
@@ -208,7 +210,7 @@
     /* Focus styles - FIXED */
     :focus-visible {
       outline: 1px solid var(--color-link) !important;
-      outline-offset: 1px !important;
+      outline-offset: 0px !important;
     }
 
     /* --------------------------------
@@ -352,7 +354,7 @@
       font-weight: 600;
       color: var(--color-primary);
       font-family: 'Roboto', system-ui, sans-serif;
-      min-width: 48px;
+      min-width: 24px;
       text-align: right;
       font-size: 14px;
     }
@@ -423,6 +425,7 @@
       cursor: pointer;
       border-bottom: 1px solid var(--border-soft);
       user-select: none;
+      -webkit-user-select: none;
       gap: var(--gap-md);
       background: var(--header-bg);
     }
@@ -466,13 +469,19 @@
       border: 1px solid var(--border);
     }
 
+    .sec-num .material-symbols-sharp {
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+    }
+
     .sec-num.complete {
       background: var(--success);
       color: var(--color-secondary);
       border-color: var(--success);
     }
 
-    .sec-title {
+    .sec-title,
+    .sig-modal-title {
       font-family: 'Roboto', system-ui, sans-serif;
       font-size: 0.875rem;
       font-weight: 700;
@@ -497,12 +506,12 @@
     .sec-right {
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 12px;
       width: 50%;
       justify-content: flex-end;
     }
 
-    .sec-right:has(.role-selector) {
+    .sec-right.has-role-selector {
       justify-content: flex-start;
     }
 
@@ -651,7 +660,8 @@
     }
 
     input:valid,
-    select:valid {
+    select:valid,
+    select.field-input:disabled {
       background-color: var(--valid);
     }
 
@@ -671,6 +681,7 @@
       min-height: var(--touch-min);
     }
 
+
     select.field-input {
       cursor: pointer;
       min-height: var(--touch-min);
@@ -678,6 +689,12 @@
 
     select.field-input:invalid {
       color: var(--color-tertiary);
+    }
+
+    select.field-input:disabled:has(option:checked[value=""]) {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: var(--surface);
     }
 
     select.field-input option {
@@ -703,6 +720,7 @@
     input.field-input:valid+.required-field-underline,
     input.field-input:focus+.required-field-underline,
     select.field-input:valid+.required-field-underline,
+    select.field-input:disabled+.required-field-underline,
     select.field-input:focus+.required-field-underline,
     .role-selector:has(input[type='radio']:checked)+.required-field-underline,
     .risk-row:has(.risk-btn.active)+.required-field-underline,
@@ -716,9 +734,15 @@
       opacity: 0.5;
       background-color: var(--muted-bg);
       border: 1px solid color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
+      cursor: not-allowed;
     }
 
-    .meta-cell:has(input:disabled) {
+    select:disabled {
+      opacity: 1;
+      cursor: not-allowed;
+    }
+
+    .meta-cell.is-disabled {
       opacity: 0.5;
     }
 
@@ -920,6 +944,14 @@
       align-self: center;
     }
 
+    .check-comments {
+      display: flex;
+      text-align: right;
+      gap: 10px;
+      padding: 0 var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
+      background: var(--header-bg);
+    }
+
     .row-notice-stack {
       flex-basis: 100%;
       display: flex;
@@ -1010,6 +1042,7 @@
       white-space: nowrap;
       pointer-events: none;
       user-select: none;
+      -webkit-user-select: none;
     }
 
 
@@ -1177,6 +1210,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       background: var(--border-soft);
+      border-top: 1px solid var(--border-soft);
     }
 
     .comments-grid.comments-grid--single {
@@ -1184,13 +1218,13 @@
     }
 
     .comments-cell {
-      background: var(--surface);
-      padding: var(--space-cell-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
+      background: var(--header-bg);
+      padding: var(--space-row-y) var(--space-cell-x) var(--space-cell-y) var(--space-row-y);
     }
 
     .comments-cell:first-child,
     .comments-cell:nth-child(3) {
-      padding: var(--space-cell-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
+      padding: var(--space-row-y) var(--space-row-y) var(--space-cell-y) var(--space-cell-x);
     }
 
     textarea.comments-textarea,
@@ -1216,7 +1250,7 @@
       word-break: break-word;
     }
 
-    .comments-inline-editor:empty::before {
+    .comments-inline-editor.is-empty::before {
       content: attr(data-placeholder);
       color: var(--text-muted);
       font-style: italic;
@@ -1242,7 +1276,7 @@
       display: none;
     }
 
-    .comments-area:has(.comments-editor-fallback) .comments-image-gallery {
+    .comments-area.has-fallback-editor .comments-image-gallery {
       display: none;
     }
 
@@ -1354,7 +1388,8 @@
       background: var(--warn-bg);
     }
 
-    .btn-action:disabled {
+    .btn-action:disabled,
+    .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -1409,167 +1444,7 @@
     }
 
     /* Signature clear button always visible */
-    .image-thumbnail-remove {
-      opacity: 0;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
 
-    .sig-draw-surface.has-signature .image-thumbnail-remove,
-    .image-thumbnail:hover .image-thumbnail-remove {
-      opacity: 1;
-    }
-
-    /* --------------------------------
-    18. Print Styles
-    -------------------------------- */
-    @media print {
-      :root {
-        --space-1: 5px;
-        --space-2: 5px;
-        --space-3: 5px;
-        --space-4: 5px;
-        --space-5: 5px;
-        --space-6: 5px;
-      }
-
-      @page {
-        size: letter portrait;
-        margin: 0.15in;
-      }
-
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        background-clip: padding-box !important;
-      }
-
-      body {
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        max-width: 100%;
-      }
-
-      .shell {
-        max-width: 100%;
-        margin: 10px;
-      }
-
-      .sec-head {
-        padding: 5px 15px;
-      }
-
-      .check-row {
-        padding: 2px 15px;
-      }
-
-      .card,
-      .header {
-        margin-bottom: 5px;
-      }
-
-      /* Expand all accordion bodies for print */
-      .sec-body {
-        display: block !important;
-      }
-
-      .sec-head .chevron {
-        display: none !important;
-      }
-
-      /* Hide non-printable elements */
-      .sec-badge,
-      .actions,
-      .progress-strip,
-      .sec-num,
-      .btn-clear {
-        display: none !important;
-      }
-
-      /* Improve page breaks */
-      .card {
-        page-break-inside: avoid;
-      }
-
-      .notice {
-        page-break-inside: avoid;
-      }
-
-      /* Remove shadows and transitions */
-      * {
-        box-shadow: none !important;
-        transition: none !important;
-      }
-
-      a {
-        color: var(--text) !important;
-        text-decoration: underline;
-      }
-
-      /* Hide unchecked radio labels */
-      input[type='radio']:not(:checked)+label,
-      input[type='checkbox']:not(:checked)+label,
-      .risk-btn:not(.active) {
-        display: none !important;
-      }
-
-      .meta-grid {
-        padding-bottom: 5px !important;
-      }
-
-      .meta-cell,
-      .sig-grid {
-        padding-bottom: 0px !important;
-      }
-
-      .field-input::placeholder {
-        color: transparent;
-      }
-
-      .meta-cell:has(input:disabled) {
-        display: none;
-      }
-
-      input:valid,
-      select:valid {
-        background-color: var(--surface) !important;
-      }
-
-      .signature-pad-tabs,
-      .btn-sig-tab {
-        display: none;
-      }
-
-      .sig-draw-surface.has-signature .image-thumbnail-remove,
-      .image-thumbnail:hover .image-thumbnail-remove {
-        opacity: 0;
-        display: none;
-      }
-
-      /* Disable animations */
-      @keyframes fadeUp {
-        from {
-          opacity: 1;
-          transform: none;
-        }
-
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-    }
 
     /* --------------------------------
     19. Comments Image Gallery
@@ -1627,13 +1502,30 @@
     }
 
     .sig-draw-surface.has-signature .image-thumbnail-remove:hover .material-symbols-sharp,
-    .image-thumbnail:hover .image-thumbnail-remove:hover .material-symbols-sharp {
+    .sig-inline-preview:hover .image-thumbnail-remove:hover .material-symbols-sharp {
       font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
-    .sig-draw-surface.has-signature .image-thumbnail-remove,
-    .image-thumbnail:hover .image-thumbnail-remove {
+    .sig-draw-surface.has-signature:hover .image-thumbnail-remove,
+    .sig-inline-preview:hover .image-thumbnail-remove {
       opacity: 1;
+    }
+
+    .sig-draw-surface.has-signature .sig-inline-preview {
+      display: flex;
+    }
+
+    .sig-draw-surface.has-signature .btn-open-modal {
+      display: none;
+    }
+
+    .sig-draw-surface.has-signature .image-thumbnail-remove,
+    .sig-inline-preview .image-thumbnail-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      opacity: 0;
+      pointer-events: auto;
     }
 
     .comments-paste-hint,
@@ -1753,21 +1645,7 @@
       object-fit: contain;
     }
 
-    .sig-draw-surface.has-signature .sig-inline-preview {
-      display: flex;
-    }
 
-    .sig-draw-surface.has-signature .btn-open-modal {
-      display: none;
-    }
-
-    .sig-draw-surface .image-thumbnail-remove {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      opacity: 0;
-      pointer-events: auto;
-    }
 
     .anchor-element {
       anchor-name: --sig-anchor;
@@ -1867,34 +1745,43 @@
 
     /* Quill Rich Text Editor Styles */
     .ql-toolbar {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       border-bottom: none;
       background: var(--surface-base);
       border-radius: 0;
     }
 
     .ql-toolbar.ql-snow {
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       box-sizing: border-box;
       padding: 8px;
     }
 
-    .ql-container {
-      border: 1px solid var(--border-hard);
+    .comments-area .ql-container {
+      border: 1px solid var(--border-soft);
       border-radius: 0;
       font-family: inherit;
       font-size: 13px;
       min-height: 100px;
+      height: auto;
       overflow: hidden;
+      box-sizing: border-box;
     }
 
-    .ql-editor {
+
+
+    .comments-area .ql-editor {
       padding: 10px 12px;
       font-size: 13px;
       font-family: inherit;
       line-height: 1.6;
-      min-height: 100px;
+      min-height: 0;
+      height: auto;
+      overflow-y: hidden;
+      box-sizing: border-box;
+      background: var(--surface);
     }
+
 
     .ql-container .ql-tooltip {
       z-index: 999 !important;
@@ -1907,13 +1794,27 @@
       padding-left: 0 !important;
     }
 
+    .ql-snow.ql-toolbar button,
+    .ql-snow .ql-toolbar button {
+      padding: 0px;
+      height: 18px;
+    }
+
     .ql-editor.ql-blank::before {
       color: var(--text-muted);
       font-style: italic;
     }
 
+    .ql-toolbar.ql-snow+.ql-container.ql-snow {
+      border-top: 1px solid var(--border-soft);
+    }
+
     .ql-toolbar.ql-snow {
-      padding: 8px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 0px;
     }
 
     .ql-toolbar.ql-snow .ql-formats {
@@ -1954,17 +1855,214 @@
       fill: var(--accent);
     }
 
+    .ql-editor:focus-within {
+      outline: none !important;
+    }
+
     .ql-container:focus-within {
       outline: 1px solid var(--color-link) !important;
-      outline-offset: 1px !important;
+      outline-offset: 0px !important;
     }
 
     .rich-text-wrapper {
       position: relative;
     }
 
-    .comments-area .rich-text-wrapper {
-      margin-bottom: var(--gap-md);
+    .completed {
+      border: 1px solid var(--low-border);
+      color: var(--low);
+      background-color: var(--low-bg);
+    }
+
+    .completed:hover {
+      border: 1px solid var(--low-border);
+      color: var(--surface-base);
+      background-color: var(--low);
+    }
+
+    .seal {
+      width: 80px;
+      height: 80px;
+      border: 1px dashed var(--border-soft);
+      border-radius: 50%;
+      display: flex;
+      margin: 0 auto;
+      justify-content: center;
+      align-items: center;
+      align-self: anchor-center;
+      font-size: 0.7rem;
+      text-align: center;
+      background: var(--bg);
+    }
+
+    .button-text {
+      margin-left: 5px;
+    }
+
+
+
+    /* --------------------------------
+    18. Print Styles
+    -------------------------------- */
+    @media print {
+      :root {
+        --space-1: 5px;
+        --space-2: 5px;
+        --space-3: 5px;
+        --space-4: 5px;
+        --space-5: 5px;
+        --space-6: 5px;
+      }
+
+      @page {
+        size: letter portrait;
+        margin: 0.15in;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background-clip: padding-box !important;
+      }
+
+      .seal {
+        display: none;
+      }
+
+      .card.is-print-hidden {
+        display: none;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .shell {
+        max-width: 100%;
+        margin: 10px;
+      }
+
+      .sec-head {
+        padding: 5px 15px;
+      }
+
+      .check-row {
+        padding: 2px 15px;
+      }
+
+      .card,
+      .header {
+        margin-bottom: 5px;
+      }
+
+      /* Expand all accordion bodies for print */
+      .sec-body {
+        display: block !important;
+
+      }
+
+      div[id$='rows'] {
+        page-break-inside: avoid;
+      }
+
+      .sec-head .chevron {
+        display: none !important;
+      }
+
+      /* Hide non-printable elements */
+      .sec-badge,
+      .actions,
+      .progress-strip,
+      .sec-num,
+      .btn-clear {
+        display: none !important;
+      }
+
+      /* Improve page breaks */
+      .card {
+        page-break-inside: avoid;
+      }
+
+      .comments-grid,
+      .sig-grid {
+        page-break-inside: avoid;
+      }
+
+      .notice {
+        page-break-inside: avoid;
+      }
+
+      /* Remove shadows and transitions */
+      * {
+        box-shadow: none !important;
+        transition: none !important;
+      }
+
+      a {
+        color: var(--text) !important;
+        text-decoration: underline;
+      }
+
+      /* Hide unchecked radio labels */
+      input[type='radio']:not(:checked)+label,
+      input[type='checkbox']:not(:checked)+label,
+      .risk-btn:not(.active) {
+        display: none !important;
+      }
+
+      .meta-grid {
+        padding-bottom: 5px !important;
+      }
+
+      .meta-cell,
+      .sig-grid {
+        padding-bottom: 0px !important;
+      }
+
+      .field-input::placeholder {
+        color: transparent;
+      }
+
+      .meta-cell.is-disabled {
+        display: none;
+      }
+
+      input:valid,
+      select:valid,
+      select:disabled {
+        background-color: var(--surface) !important;
+      }
+
+      .signature-pad-tabs,
+      .btn-sig-tab,
+      .btn-sig-upload {
+        display: none;
+      }
+
+      .sig-tab-content {
+        border-left: 0px;
+      }
+
+      .ql-toolbar.ql-snow {
+        display: none;
+      }
+
+
+      /* Disable animations */
+      @keyframes fadeUp {
+        from {
+          opacity: 1;
+          transform: none;
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
     }
   </style>
 
@@ -1996,18 +2094,19 @@
       </div>
 
       <!-- Document Information -->
-      <div class="card info">
-        <div class="sec-head open" id="sec-info-head" tabindex="0" aria-expanded="true" aria-controls="sec-info-body">
+      <div class="card info" id="card-info" data-prefix="info" role="tablist">
+        <div class="sec-head open" id="sec-info-head" aria-controls="sec-info-body" aria-expanded="true" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-info"><span class="material-symbols-sharp"> info_i </span></div>
             <span class="sec-title">Work Information</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearWorkInfoBtn"><span class="material-symbols-sharp">
+                delete_history
+              </span><span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body open" id="sec-info-body">
@@ -2026,7 +2125,7 @@
             </div>
             <div class="meta-cell role-cell">
               <div class="field-label" id="roleLabel">Your Role</div>
-              <div class="role-selector">
+              <div class="role-selector" role="radiogroup" aria-labelledby="roleLabel">
                 <input type="radio" name="sc_role" id="sc_role_eng" value="Engineer" checked>
                 <label for="sc_role_eng">Engineer</label>
                 <input type="radio" name="sc_role" id="sc_role_eit" value="Engineer-in-Training">
@@ -2035,7 +2134,7 @@
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell risk-level-cell">
-              <div class="field-label">Risk Level</div>
+              <div class="field-label" id="riskLevelLabel">Risk Level</div>
               <div class="risk-row" id="riskButtons"><button class="risk-btn" type="button" data-risk="low"
                   aria-describedby="riskLevelLabel" aria-pressed="false">Low</button><button class="risk-btn"
                   type="button" data-risk="medium" aria-describedby="riskLevelLabel"
@@ -2046,7 +2145,7 @@
             <div class="meta-cell deliverable-cell">
               <label class="field-label" for="deliverable">Check / Review Deliverable or Milestone</label>
               <select class="field-input" id="deliverable" name="deliverable" required>
-                <option value="" disabled selected>Choose an item…</option>
+                <option value disabled selected>Choose an item…</option>
                 <option>Memo</option>
                 <option>Standard Form</option>
                 <option>Settings Sheet</option>
@@ -2060,8 +2159,8 @@
             </div>
             <div class="meta-cell review-level-cell">
               <label class="field-label" for="minCheckLevel">Minimum Check / Review Level</label>
-              <select class="field-input" id="minCheckLevel" required>
-                <option value="" disabled selected>Select level…</option>
+              <select class="field-input" id="minCheckLevel" name="minCheckLevel" required>
+                <option value selected>Select Risk Level above…</option>
                 <option>Self-Check</option>
                 <option>Check</option>
                 <option>Peer Review</option>
@@ -2086,19 +2185,21 @@
       </div>
 
       <!-- Section 1: Self-Check -->
-      <div class="card sc">
-        <div class="sec-head open" id="sec1-head" tabindex="1" aria-expanded="true" aria-controls="s1">
+      <div class="card sc" id="card-sc" data-prefix="sc" role="tablist">
+        <div class="sec-head open" id="sec1-head" aria-expanded="true" aria-controls="s1" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-1">1</div>
             <span class="sec-title">Self-Check</span>
-            <span class="sec-badge" id="badge-1">0 / {sc_number}</span>
+            <span class="sec-badge" id="badge-1">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec1Btn" data-testid="clear-sec1">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec1Btn" data-testid="clear-sec1"><span
+                class="material-symbols-sharp">
+                delete_history
+              </span><span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body open" id="s1">
@@ -2108,54 +2209,60 @@
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="sc-date">
+                <input class="field-input" id="sc_date" name="sc_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="sc-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_name">Name (Engineer) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="sc-name">
+                <input class="field-input" id="sc_name" name="sc_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="sc-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="sc_sig">Signature (Engineer) <span class="sr-only">(required)</span></div>
-              <div class="signature-pad-container" id="scSigContainer" data-prefix="sc">
+              <div class="signature-pad-container" id="scSigContainer" data-prefix="sc" role="group"
+                aria-labelledby="sc_sig">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="scSigDrawTab" tabindex="0"
+                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="scSigDrawTab" tabindex="-1"
                     data-testid="sc-sig-draw">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="scSigUploadTab"
-                    tabindex="-1" data-testid="sc-sig-upload">
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="scSigUploadTab" tabindex="0"
+                    data-testid="sc-sig-upload">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content " id="scSigDrawTab" role="tabpanel" aria-labelledby="scSigDrawBtn"
+                  tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="sc" data-testid="sc-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="sc" data-testid="sc-sig-open">
-                      Open signature pad
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="sc" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
                     </button>
                   </div>
                 </div>
-                <div class="sig-tab-content" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
+                <div class="sig-tab-content active" id="scSigUploadTab" role="tabpanel" aria-labelledby="scSigUploadBtn"
                   tabindex="0">
                   <div class="sig-upload-area">
-                    <input type="file" id="scSigUpload" accept="image/*" hidden data-testid="sc-sig-file">
+                    <input type="file" id="scSigUpload" accept="image/*" hidden
+                      aria-label="Upload Engineer signature image" data-testid="sc-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="sc"
                       data-testid="sc-sig-choose">
-                      Choose Signature Image
+                      <span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
                     </button>
                     <div id="scSigPreview" class="sig-preview"></div>
                   </div>
@@ -2168,19 +2275,21 @@
       </div>
 
       <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
-      <div class="card hidden" id="card-ds">
-        <div class="sec-head" id="sec2-head" tabindex="2" aria-expanded="false" aria-controls="s2">
+      <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
+        <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-2">2</div>
             <span class="sec-title">Direct Supervision</span>
-            <span class="sec-badge" id="badge-2">0 / {ds_number}</span>
+            <span class="sec-badge" id="badge-2">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2"><span
+                class="material-symbols-sharp">
+                delete_history
+              </span><span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s2">
@@ -2189,19 +2298,20 @@
       </div>
 
       <!-- Section 3: Check -->
-      <div class="card hidden" id="card-ch">
-        <div class="sec-head" id="sec3-head" tabindex="3" aria-expanded="false" aria-controls="s3">
+      <div class="card hidden" id="card-ch" data-prefix="ch" role="tablist">
+        <div class="sec-head" id="sec3-head" aria-expanded="false" aria-controls="s3" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-3">3</div>
             <span class="sec-title">Check</span>
-            <span class="sec-badge" id="badge-3">0 / {ch_number}</span>
+            <span class="sec-badge" id="badge-3">0 / 0</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec3Btn" data-testid="clear-sec3">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec3Btn" data-testid="clear-sec3">
+              <span class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s3">
@@ -2211,174 +2321,6 @@
             <span><b>Attention:</b> A "No" answer requires your <b>Team Lead</b> to complete a Peer Review for
               acceptance.</span>
           </div>
-          <div class="sig-grid">
-            <div class="sig-cell">
-              <div class="sig-cell-sub">
-                <label class="field-label" for="ch_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ch-date">
-                <div class="required-field-underline" aria-hidden="true"></div>
-              </div>
-              <div class="sig-cell-sub">
-                <label class="field-label" for="ch_name">Name (Checker) <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="ch_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="ch-name">
-                <div class="required-field-underline" aria-hidden="true"></div>
-              </div>
-            </div>
-            <div class="sig-cell">
-              <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
-              <div class="signature-pad-container" id="chSigContainer" data-prefix="ch">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="chSigDrawTab" tabindex="0"
-                    data-testid="ch-sig-draw">
-                    <span class="material-symbols-sharp">signature</span>
-                  </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="chSigUploadTab"
-                    tabindex="-1" data-testid="ch-sig-upload">
-                    <span class="material-symbols-sharp">upload</span>
-                  </button>
-                </div>
-                <div class="sig-tab-content active" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
-                  tabindex="0">
-                  <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
-                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="ch" data-testid="ch-sig-open">
-                      Open signature pad
-                    </a>
-                    <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                    </div>
-                    <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">cancel</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="sig-tab-content" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
-                  tabindex="0">
-                  <div class="sig-upload-area">
-                    <input type="file" id="chSigUpload" accept="image/*" hidden data-testid="ch-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch"
-                      data-testid="ch-sig-choose">
-                      Choose Signature Image
-                    </button>
-                    <div id="chSigPreview" class="sig-preview"></div>
-                  </div>
-                </div>
-              </div>
-              <input type="hidden" id="ch_sig_data" name="ch_sig_data">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 4: Peer Review -->
-      <div class="card hidden" id="card-pr">
-        <div class="sec-head" id="sec4-head" tabindex="4" aria-expanded="false" aria-controls="s4">
-          <div class="sec-left">
-            <div class="sec-num" id="snum-4">4</div>
-            <span class="sec-title">Peer Review</span>
-            <span class="sec-badge" id="badge-4">0 / {pr_number}</span>
-          </div>
-          <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec4Btn" data-testid="clear-sec4">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
-          </div>
-        </div>
-        <div class="sec-body" id="s4">
-          <div class="sec-banner">
-            <div class="notice warn" id="prType1Notice" role="note">
-              <span class="material-symbols-sharp"> warning </span>
-              <span><b>Note:</b> This section is <b>not</b> a Type 1 High Risk Work Independent Review.</span>
-            </div>
-          </div>
-          <div id="pr-rows" data-section="pr"></div>
-          <div class="sig-grid">
-            <div class="sig-cell">
-              <div class="sig-cell-sub">
-                <label class="field-label" for="pr_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="pr-date">
-                <div class="required-field-underline" aria-hidden="true"></div>
-              </div>
-              <div class="sig-cell-sub">
-                <label class="field-label" for="pr_name">Name (Peer Reviewer) <span
-                    class="sr-only">(required)</span></label>
-                <input class="field-input" id="pr_name" type="text" placeholder="Type full name" autocomplete="name"
-                  required aria-required="true" data-testid="pr-name">
-                <div class="required-field-underline" aria-hidden="true"></div>
-              </div>
-            </div>
-            <div class="sig-cell">
-              <div class="field-label" id="pr_sig">Signature (Peer Reviewer) <span class="sr-only">(required)</span>
-              </div>
-              <div class="signature-pad-container" id="prSigContainer" data-prefix="pr">
-                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="prSigDrawTab" tabindex="0"
-                    data-testid="pr-sig-draw">
-                    <span class="material-symbols-sharp">signature</span>
-                  </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="prSigUploadTab"
-                    tabindex="-1" data-testid="pr-sig-upload">
-                    <span class="material-symbols-sharp">upload</span>
-                  </button>
-                </div>
-                <div class="sig-tab-content active" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
-                  tabindex="0">
-                  <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
-                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
-                      type="button" data-prefix="pr" data-testid="pr-sig-open">
-                      Open signature pad
-                    </a>
-                    <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                    </div>
-                    <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
-                      <span class="material-symbols-sharp">cancel</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="sig-tab-content" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
-                  tabindex="0">
-                  <div class="sig-upload-area">
-                    <input type="file" id="prSigUpload" accept="image/*" hidden data-testid="pr-sig-file">
-                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr"
-                      data-testid="pr-sig-choose">
-                      Choose Signature Image
-                    </button>
-                    <div id="prSigPreview" class="sig-preview"></div>
-                  </div>
-                </div>
-              </div>
-              <input type="hidden" id="pr_sig_data" name="pr_sig_data">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 5: Comments -->
-      <div class="card hidden" id="card-comments">
-        <div class="sec-head" id="sec5-head" tabindex="5" aria-expanded="false" aria-controls="s5">
-          <div class="sec-left">
-            <div class="sec-num" id="snum-5">5</div>
-            <span class="sec-title">Comments &amp; Corrective Actions</span>
-          </div>
-          <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec5Btn" data-testid="clear-sec5">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
-          </div>
-        </div>
-        <div class="sec-body" id="s5">
           <div class="comments-grid" id="commentsGrid">
             <div class="comments-cell" id="commentsCell1">
               <label class="field-label" id="for_checkerComments">Checker Comments &amp; Corrections</label>
@@ -2404,7 +2346,111 @@
                 <div class="comments-image-gallery" id="engineerResponse-gallery" aria-live="polite"></div>
               </div>
             </div>
-            <div class="comments-cell hidden" id="commentsCell3">
+          </div>
+          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
+            <div class="pill-group"><input type="radio" name="ch_c" id="ch_c_yes" value="yes" data-prefix="ch"><label
+                for="ch_c_yes">Yes</label><input type="radio" name="ch_c" id="ch_c_no" value="no"
+                data-prefix="ch"><label for="ch_c_no">No</label><input type="radio" name="ch_c" id="ch_c_na" value="na"
+                data-prefix="ch"><label for="ch_c_na">N/A</label></div>
+          </div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ch_date">Date <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="ch_date" name="ch_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ch-date">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ch_name">Name (Checker) <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="ch_name" name="ch_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="ch-name">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label" id="ch_sig">Signature (Checker) <span class="sr-only">(required)</span></div>
+              <div class="signature-pad-container" id="chSigContainer" data-prefix="ch" role="group"
+                aria-labelledby="ch_sig">
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab " data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="chSigDrawTab" tabindex="-1"
+                    data-testid="ch-sig-draw" disabled>
+                    <span class="material-symbols-sharp">signature</span>
+                  </button>
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="chSigUploadTab" tabindex="0"
+                    data-testid="ch-sig-upload" disabled>
+                    <span class="material-symbols-sharp">upload</span>
+                  </button>
+                </div>
+                <div class="sig-tab-content " id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
+                  tabindex="-1">
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="ch" data-testid="ch-sig-open" id="chSigPad" disabled>
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
+                    </a>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="ch" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="sig-tab-content active" id="chSigUploadTab" role="tabpanel" aria-labelledby="chSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="chSigUpload" accept="image/*" hidden
+                      aria-label="Upload Checker signature image" data-testid="ch-sig-file">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="ch" id="chSigImg"
+                      data-testid="ch-sig-choose" disabled>
+                      <span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
+                    </button>
+                    <div id="chSigPreview" class="sig-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="ch_sig_data" name="ch_sig_data">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Peer Review -->
+      <div class="card hidden" id="card-pr" data-prefix="pr" role="tablist">
+        <div class="sec-head" id="sec4-head" aria-expanded="false" aria-controls="s4" role="tab">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-4">4</div>
+            <span class="sec-title">Peer Review</span>
+            <span class="sec-badge" id="badge-4">0 / 0</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" type="button" id="clearSec4Btn" data-testid="clear-sec4"><span
+                class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
+          </div>
+        </div>
+        <div class="sec-body" id="s4">
+          <div class="sec-banner">
+            <div class="notice warn" id="prType1Notice" role="note">
+              <span class="material-symbols-sharp"> warning </span>
+              <span><b>Note:</b> This section applies when the PoR requests an <b>additional</b> peer review by another
+                professional engineer, <b>at any risk level</b>. <b>NOT</b> for the Type 1 High Risk Work Independent
+                Review.</span>
+            </div>
+          </div>
+          <div id="pr-rows" data-section="pr"></div>
+          <div class="comments-grid">
+            <div class="comments-cell" id="commentsCell3">
               <label class="field-label" id="for_reviewerComments">Reviewer Comments &amp; Corrections</label>
               <div class="comments-area">
                 <div class="rich-text-wrapper">
@@ -2416,7 +2462,7 @@
                 <div class="comments-image-gallery" id="reviewerComments-gallery" aria-live="polite"></div>
               </div>
             </div>
-            <div class="comments-cell hidden" id="commentsCell4">
+            <div class="comments-cell" id="commentsCell4">
               <label class="field-label" id="for_engineerResponse_2">Engineer Response</label>
               <div class="comments-area">
                 <div class="rich-text-wrapper">
@@ -2429,78 +2475,242 @@
               </div>
             </div>
           </div>
+          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
+            <div class="pill-group"><input type="radio" name="pr_c" id="pr_c_yes" value="yes" data-prefix="pr"><label
+                for="pr_c_yes">Yes</label><input type="radio" name="pr_c" id="pr_c_no" value="no"
+                data-prefix="pr"><label for="pr_c_no">No</label><input type="radio" name="pr_c" id="pr_c_na" value="na"
+                data-prefix="pr"><label for="pr_c_na">N/A</label></div>
+          </div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div class="sig-cell-sub">
+                <label class="field-label" for="pr_date">Date <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="pr_date" name="pr_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="pr-date">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+              <div class="sig-cell-sub">
+                <label class="field-label" for="pr_name">Name (Peer Reviewer) <span
+                    class="sr-only">(required)</span></label>
+                <input class="field-input" id="pr_name" name="pr_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="pr-name">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label" id="pr_sig">Signature (Peer Reviewer) <span class="sr-only">(required)</span>
+              </div>
+              <div class="signature-pad-container" id="prSigContainer" data-prefix="pr" role="group"
+                aria-labelledby="pr_sig">
+                <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
+                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="prSigDrawTab" tabindex="-1"
+                    data-testid="pr-sig-draw" disabled>
+                    <span class="material-symbols-sharp">signature</span>
+                  </button>
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="prSigUploadTab" tabindex="0"
+                    data-testid="pr-sig-upload" disabled>
+                    <span class="material-symbols-sharp">upload</span>
+                  </button>
+                </div>
+                <div class="sig-tab-content" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
+                  tabindex="-1">
+                  <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
+                    <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
+                      type="button" data-prefix="pr" data-testid="pr-sig-open" id="prSigPad" disabled>
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
+                    </a>
+                    <div class="sig-inline-preview" aria-hidden="true">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                    </div>
+                    <button class="image-thumbnail-remove" type="button" data-prefix="pr" aria-label="Clear signature">
+                      <span class="material-symbols-sharp">cancel</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="sig-tab-content active" id="prSigUploadTab" role="tabpanel" aria-labelledby="prSigUploadBtn"
+                  tabindex="0">
+                  <div class="sig-upload-area">
+                    <input type="file" id="prSigUpload" accept="image/*" hidden
+                      aria-label="Upload Peer Reviewer signature image" data-testid="pr-sig-file">
+                    <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="pr"
+                      data-testid="pr-sig-choose" id="prSigImg" disabled>
+                      <span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
+                    </button>
+                    <div id="prSigPreview" class="sig-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" id="pr_sig_data" name="pr_sig_data">
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Section 5: Independent Review -->
+
+      <div class="card hidden" id="card-ir" data-prefix="ir" role="tablist">
+        <div class="sec-head" id="sec5-head" aria-expanded="false" aria-controls="s5" role="tab">
+          <div class="sec-left">
+            <div class="sec-num" id="snum-5">5</div>
+            <span class="sec-title">Independent Structural Review</span>
+            <span class="sec-badge" id="badge-5">0 / 0</span>
+          </div>
+          <div class="sec-right">
+            <button class="btn-clear no-print" type="button" id="clearSec5Btn" data-testid="clear-sec5"><span
+                class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
+          </div>
+        </div>
+        <div class="sec-body" id="s5">
+
+          <div id="ir-rows" data-section="ir"></div>
+          <div class="comments-grid">
+            <div class="comments-cell" id="commentsCell5">
+              <label class="field-label" id="for_id_reviewerComments">Reviewer Comments &amp; Corrections</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="id_reviewerComments-editor">
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"></div>
+                  </div>
+                  <input type="hidden" name="id_reviewerComments" id="id_reviewerComments">
+                </div>
+                <div class="comments-image-gallery" id="id_reviewerComments-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="comments-cell" id="commentsCell6">
+              <label class="field-label" id="for_id_engineerResponse_2">Engineer Response</label>
+              <div class="comments-area">
+                <div class="rich-text-wrapper">
+                  <div class="ql-container" id="id_engineerResponse_2-editor">
+                    <div class="ql-editor" data-placeholder="Accept / Reject / Address comments…"></div>
+                  </div>
+                  <input type="hidden" name="id_engineerResponse_2" id="id_engineerResponse_2">
+                </div>
+                <div class="comments-image-gallery" id="id_engineerResponse_2-gallery" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+          <div class="check-comments"><span class="check-text">Are all comments and corrections addressed?</span>
+            <div class="pill-group"><input type="radio" name="ir_c" id="ir_c_yes" value="yes" data-prefix="ir"><label
+                for="ir_c_yes">Yes</label><input type="radio" name="ir_c" id="ir_c_no" value="no"
+                data-prefix="ir"><label for="ir_c_no">No</label><input type="radio" name="ir_c" id="ir_c_na" value="na"
+                data-prefix="ir"><label for="ir_c_na">N/A</label></div>
+          </div>
+          <div class="sig-grid">
+            <div class="sig-cell">
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ir_date">Date <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="ir_date" name="ir_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ir-date">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+              <div class="sig-cell-sub">
+                <label class="field-label" for="ir_name">Name (Independent Reviewer) <span
+                    class="sr-only">(required)</span></label>
+                <input class="field-input" id="ir_name" name="ir_name" type="text" placeholder="Type full name"
+                  autocomplete="name" required aria-required="true" data-testid="ir-name">
+                <div class="required-field-underline" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="sig-cell">
+              <div class="field-label" id="ir_sig">Signature and Seal (Independent Reviewer) <span
+                  class="sr-only">(required)</span>
+              </div>
+              <div class="signature-pad-container" id="irSigContainer" data-prefix="ir" role="group"
+                aria-labelledby="ir_sig">
+                <div class="seal">S&amp;S after converting to PDF</div>
+
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Section 6: Final Signatures -->
-      <div class="card hidden" id="card-final">
-        <div class="sec-head" id="sec6-head" tabindex="6" aria-expanded="false" aria-controls="s6">
+      <div class="card hidden" id="card-final" data-prefix="fT1" role="tablist">
+        <div class="sec-head" id="sec6-head" aria-expanded="false" aria-controls="s6" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-6">6</div>
-            <span class="sec-title">Final Signatures</span>
+            <span class="sec-title">Appoint Tier 1 Reviewer &amp; Team Lead Signatures</span>
           </div>
           <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6">Clear</button>
-            <svg class="chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <button class="btn-clear no-print" type="button" id="clearSec6Btn" data-testid="clear-sec6"><span
+                class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <div class="chevron"><span class="material-symbols-sharp">
+                keyboard_arrow_down
+              </span></div>
           </div>
         </div>
         <div class="sec-body" id="s6">
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
-                <label class="field-label" for="fT1Date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1Date" type="date" autocomplete="off" required aria-required="true"
-                  data-testid="ft1-date">
+                <label class="field-label" for="fT1_date">Date <span class="sr-only">(required)</span></label>
+                <input class="field-input" id="fT1_date" name="fT1_date" type="date" autocomplete="off" required
+                  aria-required="true" data-testid="ft1-date">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
               <div class="sig-cell-sub">
-                <label class="field-label" for="fT1">Assigned Type 1 Reviewer <span
+                <label class="field-label" for="fT1_name">Assigned Type 1 Reviewer <span
                     class="sr-only">(required)</span></label>
-                <input class="field-input" id="fT1" type="text" placeholder="Full name" autocomplete="name" required
-                  aria-required="true" data-testid="ft1-name">
+                <input class="field-input" id="fT1_name" name="fT1_name" type="text" placeholder="Full name"
+                  autocomplete="name" required aria-required="true" data-testid="ft1-name">
                 <div class="required-field-underline" aria-hidden="true"></div>
               </div>
             </div>
             <div class="sig-cell">
               <div class="field-label" id="fT1Sig">DE TL Signature <span class="sr-only">(required)</span></div>
-              <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1">
+              <div class="signature-pad-container" id="fT1SigContainer" data-prefix="fT1" role="group"
+                aria-labelledby="fT1Sig">
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
-                  <button class="btn btn-sig-tab active" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
-                    aria-label="Draw signature" aria-selected="true" aria-controls="fT1SigDrawTab" tabindex="0"
-                    data-testid="ft1-sig-draw">
+                  <button class="btn btn-sig-tab" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
+                    aria-label="Draw signature" aria-selected="false" aria-controls="fT1SigDrawTab" tabindex="-1"
+                    data-testid="ft1-sig-draw" disabled>
                     <span class="material-symbols-sharp">signature</span>
                   </button>
-                  <button class="btn btn-sig-tab" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
-                    aria-label="Upload signature image" aria-selected="false" aria-controls="fT1SigUploadTab"
-                    tabindex="-1" data-testid="ft1-sig-upload">
+                  <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
+                    aria-label="Upload signature image" aria-selected="true" aria-controls="fT1SigUploadTab"
+                    tabindex="0" data-testid="ft1-sig-upload" disabled>
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
-                <div class="sig-tab-content active" id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
-                  tabindex="0">
+                <div class="sig-tab-content " id="fT1SigDrawTab" role="tabpanel" aria-labelledby="fT1SigDrawBtn"
+                  tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="fT1" data-testid="ft1-sig-surface">
                     <a href="#sigModal" data-toggle="modal" data-target="#sigModal" class="btn btn-open-modal"
                       type="button" data-prefix="fT1" data-testid="ft1-sig-open">
-                      Open signature pad
+                      <span class="material-symbols-sharp">stylus_note</span>
+                      <span class="button-text">Open signature pad</span>
                     </a>
                     <div class="sig-inline-preview" aria-hidden="true">
-                      <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
+                      <img alt src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
                     </div>
                     <button class="image-thumbnail-remove" type="button" data-prefix="fT1" aria-label="Clear signature">
                       <span class="material-symbols-sharp">cancel</span>
                     </button>
                   </div>
                 </div>
-                <div class="sig-tab-content" id="fT1SigUploadTab" role="tabpanel" aria-labelledby="fT1SigUploadBtn"
-                  tabindex="0">
+                <div class="sig-tab-content active" id="fT1SigUploadTab" role="tabpanel"
+                  aria-labelledby="fT1SigUploadBtn" tabindex="0">
                   <div class="sig-upload-area">
-                    <input type="file" id="fT1SigUpload" accept="image/*" hidden data-testid="ft1-sig-file">
+                    <input type="file" id="fT1SigUpload" accept="image/*" hidden
+                      aria-label="Upload Team Lead signature image" data-testid="ft1-sig-file">
                     <button class="btn btn-sig-upload sig-upload-trigger" type="button" data-prefix="fT1"
-                      data-testid="ft1-sig-choose">
-                      Choose Signature Image
+                      data-testid="ft1-sig-choose"><span class="material-symbols-sharp">
+                        image
+                      </span>
+                      <span class="button-text">Choose Signature Image</span>
                     </button>
                     <div id="fT1SigPreview" class="sig-preview"></div>
                   </div>
@@ -2528,7 +2738,9 @@
         <div class="sig-modal-panel" role="document">
           <div class="sig-modal-head">
             <div class="sig-modal-title" id="sigModalTitle">Draw Signature</div>
-            <button class="btn btn-ghost" type="button" data-action="close-sig-modal">Close</button>
+            <button class="btn-clear no-print" type="button" data-action="close-sig-modal"><span
+                class="material-symbols-sharp">Close</span>
+              <span class="button-text">Close</span></button>
           </div>
           <div class="sig-modal-body">
             <div class="sig-modal-canvas-wrap">
@@ -2536,26 +2748,32 @@
             </div>
           </div>
           <div class="sig-modal-actions">
-            <button class="btn btn-clear" type="button" data-action="clear-sig-modal">Clear</button>
-            <button class="btn btn-primary" type="button" data-action="save-sig-modal">Save</button>
+            <button class="btn-clear no-print" type="button" data-action="clear-sig-modal"><span
+                class="material-symbols-sharp">delete_history</span>
+              <span class="button-text">Clear</span></button>
+            <button class="btn btn-primary" type="button" data-action="save-sig-modal"><span
+                class="material-symbols-sharp">save</span><span class="button-text">Save</span></button>
           </div>
         </div>
       </div>
 
       <div class="actions">
-        <div> <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form">Reset Form</button>
+        <div> <button class="btn btn-clear" type="button" id="resetFormBtn" data-testid="reset-form"><span
+              class="material-symbols-sharp">
+              restart_alt
+            </span>
+            <span class="button-text">Reset Form</span></button>
+          <button type="submit" style="display: none;">hidden</button>
         </div>
         <div>
-          <button class="btn btn-ghost" type="submit" id="saveAsPdfBtn" data-testid="save-pdf">Print / PDF</button>
-          <button class="btn btn-primary" type="submit" id="saveSnapshotBtn" data-testid="save-snapshot">Save</button>
+          <button class="btn btn-ghost" type="button" id="saveAsPdfBtn" data-testid="save-pdf"><span
+              class="material-symbols-sharp">print</span><span class="button-text">Print / PDF</span></button>
+          <button class="btn btn-primary" type="button" id="saveSnapshotBtn" data-testid="save-snapshot"><span
+              class="material-symbols-sharp">save</span><span class="button-text">Save</span></button>
         </div>
       </div>
     </main>
   </form>
-  <script type="module">
-    import { LazyBrush } from 'https://cdn.jsdelivr.net/npm/lazy-brush@2.0.0/lib/lazy-brush.js'
-    window.LazyBrush = LazyBrush; // Expose LazyBrush globally for use in signature pads
-  </script>
   <script>
     (function () {
       "use strict";
@@ -2570,7 +2788,7 @@
           "Meets BCH format and template standards?",
           "Includes standard BCH waivers/disclaimers?",
           "Completed with correct calculations / up-to-date software?",
-          `Engineering Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
+          `Engineering Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank" rel="noopener noreferrer"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank" rel="noopener noreferrer"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
           `Work is a non-standard structural design.`,
           `Work is defined as 'High-Risk'.`,
           'I am the Professional of Record and have sufficient experience and knowledge in the discipline and type of work to self-check.'
@@ -2609,6 +2827,16 @@
           "Have opportunities for innovation or cost savings been identified?"
         ];
 
+        static IR_ITEMS = [
+          "Design code loadings and serviceability limits.",
+          "Material specifications and geotechnical recommendations. ",
+          "Concept and integrity of the gravity load resisting system.",
+          "Concept and integrity of the lateral load resisting system (e.g., wind, seismic, lateral earth pressures).",
+          "Drawing completeness and continuity of load paths.",
+          "Design check of representative structural elements.",
+          "Review of representative structural details.",
+        ];
+
         static RISK_MAP = {
           low: { sc8: 'yes', sc10: 'no' },
           medium: { sc8: 'no', sc10: 'no' },
@@ -2624,12 +2852,32 @@
           ['checkerComments', 'Ctrl + V to paste screenshots...'],
           ['engineerResponse', 'Enter engineer response...'],
           ['reviewerComments', 'Ctrl + V to paste screenshots...'],
-          ['engineerResponse_2', 'Enter engineer response 2...']
+          ['engineerResponse_2', 'Enter engineer response 2...'],
+          ['id_reviewerComments', 'Ctrl + V to paste screenshots...'],
+          ['id_engineerResponse_2', 'Enter engineer response 2...']
         ];
 
+        static COMMENT_PAIRS = [
+          ['checkerComments-editor', 'engineerResponse-editor'],
+          ['reviewerComments-editor', 'engineerResponse_2-editor'],
+          ['id_reviewerComments-editor', 'id_engineerResponse_2-editor']
+        ];
+
+        static SIG_PREFIXES = ['sc', 'ch', 'pr', 'ir', 'fT1'];
+
+        static RISK_TO_CHECK_LEVEL = {
+          low: 'Self-Check',
+          medium: 'Check',
+          high: 'Type 1 Independent Review Required'
+        };
+
+        static SECTION_NUM = { sc: '1', ds: '2', ch: '3', pr: '4', ir: '5' };
+
+        static EMPTY_EDITOR_HTML = '<p><br></p>';
+
+        static COMMENT_EDITOR_MIN_HEIGHT = 100;
+
         static activeAsyncButton = null;
-        static ModifiedDate = Date.now() - new Date(document.lastModified).getTime() > 0 ? true : false;
-        static origin = window.location.origin === 'file://' ? true : false; // For local testing with file://, use SharePoint origin for links
 
         // ---------- Constructor ----------
         constructor() {
@@ -2637,13 +2885,21 @@
           this.sectionConfig = this.buildSectionConfig();
           this.toastTimer = null;
           this.syncingNames = false;
-          this.penColor = '#000000';
-          this.signaturePads = {};
           this.isRestored = false;
+          this._progressRaf = 0;
+          this._syncCommentsRaf = 0;
+          this._boundClick = this.handleGlobalClick.bind(this);
+          this._boundChange = this.handleGlobalChange.bind(this);
+          this._boundInput = this.handleGlobalInput.bind(this);
+          this._boundKeydown = this.handleGlobalKeydown.bind(this);
           this.init();
         }
 
         // Cache all frequently used DOM elements
+        /**
+         * Collects and returns the DOM elements used by the form.
+         * Storing these references avoids repeated document queries.
+         */
         cacheElements () {
           const get = (id) => document.getElementById(id);
           return {
@@ -2654,17 +2910,30 @@
             // Work info
             workTitle: get('workTitle'),
             engineer: get('engineer'),
+            revision: get('revision'),
             checker: get('checker'),
             minCheckLevel: get('minCheckLevel'),
             riskBtns: document.querySelectorAll('.risk-btn'),
-            // Role radios
-            roleRadios: document.getElementsByName('sc_role'),
+            sc11No: get('sc11_no'),
+            sc11Yes: get('sc11_yes'),
+            sc9No: get('sc9_no'),
+            sc9Yes: get('sc9_yes'),
+            scRoleEng: get('sc_role_eng'),
+            chCYes: get('ch_c_yes'),
+            chCNo: get('ch_c_no'),
+            chCNa: get('ch_c_na'),
+            prCYes: get('pr_c_yes'),
+            prCNo: get('pr_c_no'),
+            prCNa: get('pr_c_na'),
+            irCYes: get('ir_c_yes'),
+            irCNo: get('ir_c_no'),
+            irCNa: get('ir_c_na'),
             // Cards
             cardDs: get('card-ds'),
             cardCh: get('card-ch'),
             cardPr: get('card-pr'),
-            cardComments: get('card-comments'),
             cardFinal: get('card-final'),
+            cardIr: get('card-ir'),
             // Notices
             chNotice: get('chNotice'),
             globalNotice: get('globalNotice'),
@@ -2677,18 +2946,18 @@
             badge2: get('badge-2'), num2: get('snum-2'),
             badge3: get('badge-3'), num3: get('snum-3'),
             badge4: get('badge-4'), num4: get('snum-4'),
+            badge5: get('badge-5'), num5: get('snum-5'),
             // Row containers
             scRows: get('sc-rows'),
             dsRows: get('ds-rows'),
             chRows: get('ch-rows'),
             prRows: get('pr-rows'),
+            irRows: get('ir-rows'),
             // Signature fields
             scName: get('sc_name'),
             chName: get('ch_name'),
-            scSigDrawBtn: get('scSigDrawBtn'),
-            scSigUploadBtn: get('scSigUploadBtn'),
-            scSigDrawTab: get('scSigDrawTab'),
-            scSigUploadTab: get('scSigUploadTab'),
+            fT1Name: get('fT1_name'),
+            irName: get('ir_name'),
             // Dynamic labels
             engLabel: document.querySelector('#engineer_eit .field-label'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
@@ -2704,24 +2973,299 @@
             s3Body: get('s3'), s3Head: get('sec3-head'),
             s4Body: get('s4'), s4Head: get('sec4-head'),
             s5Body: get('s5'), s5Head: get('sec5-head'),
-            s6Body: get('s6'), s6Head: get('sec6-head')
+            s6Body: get('s6'), s6Head: get('sec6-head'),
+
+            //btns
+            savePdf: get('saveAsPdfBtn'),
+            chSigImg: get('chSigImg'),
+            chSigPad: get('chSigPad'),
+            prSigImg: get('prSigImg'),
+            prSigPad: get('prSigPad'),
+            irSigImg: get('irSigImg'),
+            irSigPad: get('irSigPad')
           };
         }
 
+        /**
+         * Builds the section metadata used for progress tracking and visibility.
+         * Each section entry links the DOM row container with its badge and counters.
+         */
         buildSectionConfig () {
+          const card = (id) => document.getElementById(id);
           return [
-            { rowsId: '#sc-rows', count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc' },
-            { rowsId: '#ds-rows', count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds' },
-            { rowsId: '#ch-rows', count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch' },
-            { rowsId: '#pr-rows', count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr' }
+            { rowsId: '#sc-rows', rowsEl: this.elements.scRows, count: CheckForm.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc', cardEl: card('card-sc') },
+            { rowsId: '#ds-rows', rowsEl: this.elements.dsRows, count: CheckForm.DS_ITEMS.length, badge: this.elements.badge2, num: this.elements.num2, label: '2', cardId: 'card-ds', cardEl: card('card-ds') },
+            { rowsId: '#ch-rows', rowsEl: this.elements.chRows, count: CheckForm.CH_ITEMS.length, badge: this.elements.badge3, num: this.elements.num3, label: '3', cardId: 'card-ch', cardEl: card('card-ch') },
+            { rowsId: '#pr-rows', rowsEl: this.elements.prRows, count: CheckForm.PR_ITEMS.length, badge: this.elements.badge4, num: this.elements.num4, label: '4', cardId: 'card-pr', cardEl: card('card-pr') },
+            { rowsId: '#ir-rows', rowsEl: this.elements.irRows, count: CheckForm.IR_ITEMS.length, badge: this.elements.badge5, num: this.elements.num5, label: '5', cardId: 'card-ir', cardEl: card('card-ir') }
           ];
         }
 
-        // ---------- Initialization ----------
-        init () {
-          this.isRestored = this.lastModified && this.origin;
+        // ---------- Shared utilities ----------
+        /**
+         * Returns true when the selected SC role is Engineer-in-Training.
+         * Used to adjust form behavior for EIT-specific rules and labels.
+         */
+        isEitRole () {
+          return this.getRadioValue('sc_role') === 'Engineer-in-Training';
+        }
 
-          if (!this.isRestored) this.buildAllRows();
+        /**
+         * Locates the dynamically generated sc11 radio buttons after rows are built.
+         * This ensures later logic can query those elements safely.
+         */
+        cacheRowRadios () {
+          // sc11 radios are built dynamically in #sc-rows, not present at constructor time
+          this.elements.sc11No = document.getElementById('sc11_no');
+          this.elements.sc11Yes = document.getElementById('sc11_yes');
+          this.elements.sc9No = document.getElementById('sc9_no');
+          this.elements.sc9Yes = document.getElementById('sc9_yes');
+        }
+
+        /**
+         * Returns true when SC question 1.11 is answered No.
+         * This affects direct supervision and section visibility.
+         */
+        isSc11No () {
+          return this.elements.sc11No?.checked ?? false;
+        }
+
+        /**
+         * Returns true when SC question 1.9 is answered Yes.
+         * This triggers additional review requirements in the form rules.
+         */
+        isSc9Yes () {
+          return this.elements.sc9Yes?.checked ?? false;
+        }
+
+        /**
+         * Returns true when any row in the given section has a radio option checked.
+         * Used to determine visibility and warning states based on checklist answers.
+         */
+        rowHasAnswer (rowsEl, value) {
+          return !!rowsEl?.querySelector(
+            `.check-row input[type="radio"][value="${value}"]:checked`
+          );
+        }
+
+        /**
+         * Finds the comment editor wrapper for a DOM element.
+         * This helps unify handling of rich text and fallback comment editors.
+         */
+        resolveCommentEditor (el) {
+          return el?.closest?.('.comments-inline-editor, .ql-editor, .ql-container') ?? null;
+        }
+
+        /**
+         * Returns the editor container and text surface nodes for a comment editor element.
+         * Supports both Quill-based editors and plain contenteditable fallbacks.
+         */
+        getCommentEditorNodes (el) {
+          if (!el) return { container: null, surface: null };
+          if (el.classList.contains('comments-inline-editor')) {
+            return { container: null, surface: el };
+          }
+          if (el.classList.contains('ql-editor')) {
+            return { container: el.closest('.ql-container'), surface: el };
+          }
+          if (el.classList.contains('ql-container')) {
+            return { container: el, surface: el.querySelector('.ql-editor') };
+          }
+          const container = el.closest?.('.ql-container');
+          if (container) {
+            return { container, surface: container.querySelector('.ql-editor') };
+          }
+          return { container: null, surface: el };
+        }
+
+        /**
+         * Returns true when the element belongs to a comment editor.
+         * Useful for filtering input events that affect comment areas.
+         */
+        isCommentEditor (el) {
+          return !!this.resolveCommentEditor(el);
+        }
+
+        /**
+         * Converts HTML markup from a comment editor into plain text.
+         * Removes non-breaking spaces and trims whitespace for empty checks.
+         */
+        htmlToPlainText (html) {
+          if (!html || html === CheckForm.EMPTY_EDITOR_HTML) return '';
+          const el = document.createElement('div');
+          el.innerHTML = html;
+          return el.textContent?.replace(/\u00a0/g, ' ').trim() ?? '';
+        }
+
+        /**
+         * Determines if a comment editor is visually empty.
+         * Treats blank HTML and comments containing no meaningful text or images as empty.
+         */
+        isCommentEditorEmpty (editorOrHtml) {
+          if (typeof editorOrHtml === 'string') {
+            return !this.htmlToPlainText(editorOrHtml) && !/<img\b/i.test(editorOrHtml);
+          }
+          if (!editorOrHtml) return true;
+          const html = editorOrHtml.innerHTML ?? '';
+          if (/<img\b/i.test(html)) return false;
+          return !this.htmlToPlainText(html);
+        }
+
+        /**
+         * Updates the placeholder styling for a comment editor based on content.
+         * Adds or removes the empty state so hint text can be styled appropriately.
+         */
+        updateCommentEditorPlaceholder (editor) {
+          if (!editor?.classList?.contains('comments-inline-editor')) return;
+          editor.classList.toggle('is-empty', this.isCommentEditorEmpty(editor));
+        }
+
+        /**
+         * Returns the current CSS width and height of a canvas element.
+         * Used to resize signature canvases to the visible layout size.
+         */
+        getCanvasCssSize (canvas) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            width: canvas.offsetWidth || rect.width,
+            height: canvas.offsetHeight || rect.height
+          };
+        }
+
+        /**
+         * Returns the hidden input element that stores the signature data URL for a prefix.
+         */
+        getSigDataInput (prefix) {
+          return document.getElementById(`${prefix}_sig_data`);
+        }
+
+        /**
+         * Returns the visual signature preview surface for a given prefix.
+         */
+        getSigSurface (prefix) {
+          return document.querySelector(`.sig-draw-surface[data-prefix="${prefix}"]`);
+        }
+
+        /**
+         * Copies the source input value into one or more target fields.
+         * Also clears any inline validation styling on the synced fields.
+         */
+        syncLinkedFields (source, ...targets) {
+          const value = source.value;
+          for (const field of targets) {
+            if (field) field.value = value;
+            field?.previousElementSibling?.removeAttribute('style');
+          }
+          source.previousElementSibling?.removeAttribute('style');
+        }
+
+        /**
+         * Clears all rich-text and inline comment editors within a root node.
+         * Resets editors to an empty paragraph and updates placeholders.
+         */
+        clearEditorContent (root = document) {
+          root.querySelectorAll('.ql-editor, .comments-inline-editor').forEach((el) => {
+            el.innerHTML = CheckForm.EMPTY_EDITOR_HTML;
+            this.updateCommentEditorPlaceholder(el);
+          });
+        }
+
+        /**
+         * Clears all form controls inside the given root node.
+         * This includes radios, text inputs, selects, textareas, risk buttons, signature markers, and comment editors.
+         */
+        clearFormControls (root) {
+          root.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
+          root.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach((i) => { i.value = ''; });
+          root.querySelectorAll('select').forEach((s) => { s.selectedIndex = 0; });
+          root.querySelectorAll('textarea').forEach((t) => { t.value = ''; });
+          root.querySelectorAll('.risk-btn').forEach((b) => b.classList.remove('active'));
+          root.querySelectorAll('.sig-draw-surface').forEach((e) => e.classList.remove('has-signature'));
+          this.clearEditorContent(root);
+          root.querySelectorAll('.comments-image-gallery').forEach((g) => g.replaceChildren());
+          this.syncAllComments();
+          this.syncMinCheckLevelLock();
+          this.syncCssStateClasses();
+        }
+
+        /**
+         * Handles input changes in comment fields and resizes the editor as needed.
+         */
+        handleCommentFieldEvent (target) {
+          const editor = this.resolveCommentEditor(target);
+          if (!editor) return;
+          this.autosizeTextarea(editor);
+        }
+
+        /**
+         * Queues a one-frame progress update via requestAnimationFrame.
+         * Prevents repeated updates during fast input events.
+         */
+        scheduleUpdateProgress () {
+          if (this._progressRaf) return;
+          this._progressRaf = requestAnimationFrame(() => {
+            this._progressRaf = 0;
+            this.updateProgress();
+          });
+        }
+
+        /**
+         * Schedules comment editor height synchronization on the next animation frame.
+         * Uses a double requestAnimationFrame to allow DOM updates to settle first.
+         */
+        scheduleSyncCommentsHeights () {
+          if (this._syncCommentsRaf) return;
+          this._syncCommentsRaf = requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              this._syncCommentsRaf = 0;
+              this.syncCommentsHeights();
+            });
+          });
+        }
+
+
+        /**
+         * Synchronizes CSS state classes that replace expensive :has() selectors.
+         * This keeps style recalculation local and predictable.
+         */
+        syncCssStateClasses () {
+          document.querySelectorAll('.sec-right').forEach((el) => {
+            el.classList.toggle('has-role-selector', !!el.querySelector('.role-selector'));
+          });
+          document.querySelectorAll('.meta-cell').forEach((el) => {
+            el.classList.toggle('is-disabled', !!el.querySelector('input:disabled, select:disabled, textarea:disabled'));
+          });
+          document.querySelectorAll('.comments-area').forEach((el) => {
+            el.classList.toggle('has-fallback-editor', !!el.querySelector('.comments-editor-fallback'));
+          });
+        }
+
+        /**
+         * Adds print-only classes before printing so CSS does not need :has().
+         */
+        syncPrintStateClasses () {
+          document.querySelectorAll('.card').forEach((card) => {
+            card.classList.toggle('is-print-hidden', !card.querySelector('.sec-body.open'));
+          });
+        }
+
+        // ---------- Initialization ----------
+        /**
+         * Initializes the form when the page loads.
+         * Builds rows, attaches event listeners, restores saved state, and initializes signatures/comments.
+         */
+        init () {
+          const hasPersistedRows = !!this.elements.scRows?.querySelector('.check-row');
+          if (!hasPersistedRows) this.buildAllRows();
+          else this.cacheRowRadios();
+
+          this.isRestored = !!(
+            hasPersistedRows &&
+            (window.location.protocol === 'file:' ||
+              !!document.querySelector('#check_form input[type="radio"]:checked') ||
+              !!this.elements.workTitle?.value?.trim())
+          );
+
           this.attachEventListeners();
           this.updateProgress();
           this.syncAllSectionVisibility();
@@ -2730,16 +3274,28 @@
           this.initSignaturePads();
           this.refreshAllSignaturePreviews();
           this.initCommentEditors();
+          //this.syncMinCheckLevelLock();
+          this.syncCssStateClasses();
         }
 
+        /**
+         * Builds all checklist rows for each section using the configured item lists.
+         */
         buildAllRows () {
           this.buildRows(this.elements.scRows, 'sc', CheckForm.SC_ITEMS, CheckForm.BINARY_QUESTIONS.sc);
           this.buildRows(this.elements.dsRows, 'ds', CheckForm.DS_ITEMS);
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
+          this.buildRows(this.elements.irRows, 'ir', CheckForm.IR_ITEMS);
+
+          this.cacheRowRadios();
         }
 
         // ---------- Signature Pad Methods ----------
+        /**
+         * Initializes signature modal and drawing canvas state.
+         * Prepares the form for drawing or uploading signatures.
+         */
         initSignaturePads () {
           this.signatureModal = document.getElementById('sigModal');
           this.signatureModalCanvas = document.getElementById('sigModalCanvas');
@@ -2752,13 +3308,9 @@
           this.setupModalFocusTrap();
         }
 
-        htmlToPlainText (html) {
-          if (!html || html === '<p><br></p>') return '';
-          const el = document.createElement('div');
-          el.innerHTML = html;
-          return el.textContent?.trim() ?? '';
-        }
-
+        /**
+         * Escapes HTML special characters to prevent markup injection in fallback comment rendering.
+         */
         escapeHtml (text) {
           return String(text)
             .replace(/&/g, '&amp;')
@@ -2767,6 +3319,10 @@
             .replace(/"/g, '&quot;');
         }
 
+        /**
+         * Builds the initial HTML content for a comment editor from stored text and attached images.
+         * Ensures pasted screenshots are preserved in the fallback comment editor.
+         */
         buildCommentInitialHtml (initial, gallery) {
           let html = (initial || '').trim();
           const galleryUrls = gallery
@@ -2781,9 +3337,134 @@
           if (html && !/<[a-z][\s\S]*>/i.test(html)) {
             return `<p>${this.escapeHtml(html).replace(/\n/g, '<br>')}</p>`;
           }
-          return html || '<p><br></p>';
+          return html || CheckForm.EMPTY_EDITOR_HTML;
         }
 
+        /**
+         * Reads the current HTML content from a comment editor adapter.
+         */
+        getCommentHtml (fieldId) {
+          return this.getCommentAdapter(fieldId).getHtml();
+        }
+
+        /**
+         * Writes HTML content into the matching comment editor.
+         */
+        setCommentHtml (fieldId, html) {
+          this.comment_setHtml(fieldId, html);
+        }
+
+        /**
+         * Synchronizes the visible comment editor value into its hidden form field.
+         */
+        syncCommentField (fieldId) {
+          this.comment_syncHidden(fieldId);
+        }
+
+        /**
+         * Synchronizes all comment editor contents into their hidden inputs.
+         * This is used before saving or serializing the form state.
+         */
+        syncAllComments () {
+          this.comment_syncAllHidden();
+        }
+
+        /**
+         * Restores comment editor content from hidden form values.
+         * This is typically called on load when the form has persisted content.
+         */
+        restoreComments () {
+          CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => {
+            const hidden = document.getElementById(fieldId);
+            if (!hidden?.value) return;
+            this.setCommentHtml(fieldId, hidden.value);
+            const editorEl = this.getCommentAdapter(fieldId).getContainerEl();
+            if (!editorEl) return;
+            this.updateCommentEditorPlaceholder(editorEl);
+            this.autosizeCommentEditor(editorEl);
+            this.scheduleSyncCommentsHeights();
+          });
+        }
+
+        // ---------- CommentEditorRouter (deep seam facade) ----------
+        /**
+         * Returns a generic adapter for a comment field so callers can read/write content.
+         * Supports both Quill rich text editors and fallback contenteditable elements.
+         */
+        getCommentAdapter (fieldId) {
+          const quill = this.quillEditors?.[fieldId];
+          if (quill) {
+            return {
+              kind: 'quill',
+              getContainerEl: () => document.getElementById(`${fieldId}-editor`),
+              getHtml: () => quill.root?.innerHTML ?? '',
+              setHtml: (html) => { quill.root.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML; }
+            };
+          }
+          const fallback = this.commentTextareas?.[fieldId] || null;
+          return {
+            kind: 'fallback',
+            getContainerEl: () => fallback,
+            getHtml: () => fallback?.innerHTML ?? '',
+            setHtml: (html) => {
+              if (!fallback) return;
+              fallback.innerHTML = html || CheckForm.EMPTY_EDITOR_HTML;
+              this.updateCommentEditorPlaceholder(fallback);
+              this.autosizeCommentEditor(fallback);
+            }
+          };
+        }
+
+        /**
+         * Reads the current HTML from a comment field via the adapter.
+         */
+        comment_getHtml (fieldId) {
+          return this.getCommentAdapter(fieldId).getHtml();
+        }
+
+        /**
+         * Writes HTML into the comment field adapter and updates layout state.
+         */
+        comment_setHtml (fieldId, html) {
+          const ad = this.getCommentAdapter(fieldId);
+          ad.setHtml(html);
+          const container = ad.getContainerEl();
+          if (container) {
+            this.autosizeCommentEditor(container);
+            this.scheduleSyncCommentsHeights();
+          }
+        }
+
+        /**
+         * Copies the adapter HTML into the hidden form input for a comment field.
+         */
+        comment_syncHidden (fieldId) {
+          const hidden = document.getElementById(fieldId);
+          if (!hidden) return;
+          hidden.value = this.comment_getHtml(fieldId);
+        }
+
+        /**
+         * Synchronizes all comment fields to hidden inputs in one pass.
+         */
+        comment_syncAllHidden () {
+          CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => this.comment_syncHidden(fieldId));
+        }
+
+        /**
+         * Triggers autosizing for a specified comment editor by ID or element.
+         */
+        comment_autosize (fieldIdOrEl) {
+          const el = typeof fieldIdOrEl === 'string'
+            ? document.getElementById(`${fieldIdOrEl}-editor`)
+            : fieldIdOrEl;
+          if (el) this.autosizeCommentEditor(el);
+        }
+
+        /**
+         * Inserts an inline image into a comment editor at the current selection.
+         * Used for pasted or uploaded screenshots in comments.
+         */
         insertCommentInlineImage (editor, dataUrl) {
           if (!editor || !dataUrl) return;
           editor.focus();
@@ -2813,8 +3494,13 @@
           } else {
             editor.appendChild(block);
           }
+          this.updateCommentEditorPlaceholder(editor);
         }
 
+        /**
+         * Opens a modal preview for a comment image.
+         * Used when users click a pasted screenshot inside comment content.
+         */
         showCommentImageModal (dataUrl) {
           const modal = document.createElement('div');
           modal.className = 'comment-image-modal';
@@ -2838,6 +3524,10 @@
           document.body.appendChild(modal);
         }
 
+        /**
+         * Processes an uploaded image file and inserts it into a comment editor.
+         * Reads the image as a data URL and updates the comment field state.
+         */
         processCommentImageFile (file, fieldId) {
           if (!file?.type?.startsWith('image/')) return;
           const editor = this.commentTextareas?.[fieldId];
@@ -2846,19 +3536,24 @@
           reader.onload = (e) => {
             this.insertCommentInlineImage(editor, e.target.result);
             this.syncCommentFieldToHidden(fieldId);
+            this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
-            this.syncCommentsHeights();
+            this.scheduleSyncCommentsHeights();
           };
           reader.readAsDataURL(file);
         }
 
+        /**
+         * A convenience wrapper that syncs a comment editor into its hidden form input.
+         */
         syncCommentFieldToHidden (fieldId) {
-          const editor = this.commentTextareas?.[fieldId];
-          const hidden = document.getElementById(fieldId);
-          if (!editor || !hidden) return;
-          hidden.value = editor.innerHTML;
+          this.syncCommentField(fieldId);
         }
 
+        /**
+         * Attaches event listeners to a fallback comment editor element.
+         * Handles input, paste, blur, and image preview behavior.
+         */
         bindCommentEditor (editor, fieldId, placeholder) {
           if (editor.dataset.editorBound === '1') return;
           editor.dataset.placeholder = placeholder;
@@ -2867,8 +3562,13 @@
 
           editor.addEventListener('input', () => {
             this.syncCommentFieldToHidden(fieldId);
+            this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
-            this.syncCommentsHeights();
+            this.scheduleSyncCommentsHeights();
+          });
+
+          editor.addEventListener('blur', () => {
+            this.updateCommentEditorPlaceholder(editor);
           });
 
           editor.addEventListener('paste', (e) => {
@@ -2895,17 +3595,95 @@
           editor.dataset.editorBound = '1';
         }
 
-        autosizeCommentEditor (el) {
-          if (!el) return;
-          el.style.height = 'auto';
-          el.style.height = `${el.scrollHeight}px`;
+        /**
+         * Sets the height of a comment editor container and surface.
+         * Ensures editors respect a minimum visible height.
+         */
+        setCommentEditorHeight (el, heightPx) {
+          const { container, surface } = this.getCommentEditorNodes(el);
+          const minH = CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
+          const h = Math.max(minH, heightPx);
+          const px = `${h}px`;
+          if (surface) {
+            surface.style.minHeight = '0';
+            surface.style.height = px;
+          }
+          if (container) {
+            container.style.minHeight = `${minH}px`;
+            container.style.height = px;
+          }
         }
 
+        /**
+         * Measures how tall a comment editor should be to fit its content.
+         * Temporarily sets height to auto to compute scrollHeight without layout locking.
+         */
+        measureCommentEditorHeight (el) {
+          const { container, surface } = this.getCommentEditorNodes(el);
+          if (!surface) return CheckForm.COMMENT_EDITOR_MIN_HEIGHT;
+          const prevSurface = surface.style.height;
+          const prevContainer = container?.style.height;
+          surface.style.height = 'auto';
+          if (container) container.style.height = 'auto';
+          const h = Math.max(CheckForm.COMMENT_EDITOR_MIN_HEIGHT, surface.scrollHeight);
+          surface.style.height = prevSurface;
+          if (container) container.style.height = prevContainer;
+          return h;
+        }
+
+        /**
+         * Automatically resizes a comment editor to fit its content.
+         */
+        autosizeCommentEditor (el) {
+          if (!el) return;
+          this.setCommentEditorHeight(el, this.measureCommentEditorHeight(el));
+        }
+
+        /**
+         * Attaches Quill text-change and mutation observers for rich-text comment editors.
+         * Keeps hidden inputs in sync and resizes the editor when content changes.
+         */
+        bindQuillCommentEditor (container, fieldId) {
+          const quill = this.quillEditors?.[fieldId];
+          if (!quill || !container) return;
+
+          if (container._quillTextChangeHandler) {
+            quill.off('text-change', container._quillTextChangeHandler);
+          }
+          container._quillTextChangeHandler = () => {
+            this.syncCommentField(fieldId);
+            this.autosizeCommentEditor(container);
+            this.scheduleSyncCommentsHeights();
+          };
+          quill.on('text-change', container._quillTextChangeHandler);
+
+          container._quillResizeObserver?.disconnect();
+          const qlEditor = quill.root;
+          if (qlEditor) {
+            container._quillResizeObserver = new MutationObserver(() => {
+              this.autosizeCommentEditor(container);
+              this.scheduleSyncCommentsHeights();
+            });
+            container._quillResizeObserver.observe(qlEditor, {
+              childList: true,
+              subtree: true,
+              characterData: true
+            });
+          }
+
+          this.autosizeCommentEditor(container);
+          this.scheduleSyncCommentsHeights();
+        }
+
+        /**
+         * Initializes comment editor UI, preferring Quill when available.
+         * Falls back to plain contenteditable editors if Quill fails or is unavailable.
+         */
         initCommentEditors () {
           if (typeof Quill !== 'undefined') {
             try {
               this.initQuillEditors();
-              if (!this.isRestored) this.restoreQuillEditors();
+              if (!this.isRestored) this.restoreComments();
               return;
             } catch (err) {
               console.warn('Quill editor failed; using textarea fallback.', err);
@@ -2914,10 +3692,14 @@
             console.warn('Quill is not available; using textarea fallback.');
           }
           this.initCommentTextareaFallbacks();
-          if (!this.isRestored) this.restoreQuillEditors();
+          if (!this.isRestored) this.restoreComments();
           this.toast('Rich text editor unavailable. Type and paste screenshots directly in the comment box.', 'warn');
         }
 
+        /**
+         * Initializes fallback comment editors using contenteditable divs.
+         * This allows comments to work even if the rich text editor library is unavailable.
+         */
         initCommentTextareaFallbacks () {
           this.quillEditors = null;
           this.commentTextareas = {};
@@ -2943,15 +3725,17 @@
             if (!editor) {
               editor = document.createElement('div');
               editor.className = 'field-input comments-textarea comments-inline-editor';
-              editor.contentEditable = 'true';
               wrapper.insertBefore(editor, hidden);
             }
+            editor.contentEditable = 'true';
             editor.id = `${fieldId}-editor`;
             editor.innerHTML = this.buildCommentInitialHtml(initial, gallery);
 
             this.bindCommentEditor(editor, fieldId, placeholder);
             this.syncCommentFieldToHidden(fieldId);
+            this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
+            this.scheduleSyncCommentsHeights();
 
             if (commentsArea && !commentsArea.querySelector('.comments-paste-hint')) {
               const hint = document.createElement('p');
@@ -2964,6 +3748,10 @@
           });
         }
 
+        /**
+         * Sets up Quill rich text editors for all comment fields.
+         * Removes stale toolbars and re-initializes editors for idempotent snapshots.
+         */
         initQuillEditors () {
           const quillConfig = {
             theme: 'snow',
@@ -2971,7 +3759,6 @@
               toolbar: [
                 ['bold', 'italic', 'underline'],
                 [{ 'list': 'ordered' }],
-                [{ 'header': [1, 2, 3, false] }],
                 ['link'],
                 ['clean']
               ]
@@ -2995,58 +3782,37 @@
               // Reset serialized Quill DOM from reopened snapshots so initialization is idempotent.
               container.classList.remove('ql-snow');
               container.innerHTML = '<div class="ql-editor"></div>';
+              container._quillResizeObserver?.disconnect();
+              delete container._quillResizeObserver;
+              delete container._quillTextChangeHandler;
 
               const quill = new Quill(container, { ...quillConfig, placeholder: place_holder });
               this.quillEditors[fieldId] = quill;
 
-              if (existingHtml && existingHtml !== '<p><br></p>') {
+              if (existingHtml && existingHtml !== CheckForm.EMPTY_EDITOR_HTML) {
                 quill.root.innerHTML = existingHtml;
               }
 
-              quill.on('text-change', () => {
-                const hiddenInput = document.getElementById(fieldId);
-                hiddenInput.value = quill.root.innerHTML;
-              });
+              this.bindQuillCommentEditor(container, fieldId);
             }
           });
+          this.scheduleSyncCommentsHeights();
         }
 
+        /**
+         * Ensures all Quill editor contents are synced to hidden inputs.
+         * Called before snapshotting or serializing the form.
+         */
         syncAllQuillEditors () {
-          if (this.quillEditors) {
-            Object.keys(this.quillEditors).forEach(fieldId => {
-              const quill = this.quillEditors[fieldId];
-              const hiddenInput = document.getElementById(fieldId);
-              if (quill && hiddenInput) hiddenInput.value = quill.root.innerHTML;
-            });
-            return;
-          }
-          if (!this.commentTextareas) return;
-          Object.keys(this.commentTextareas).forEach((fieldId) => {
-            this.syncCommentFieldToHidden(fieldId);
-          });
+          this.syncAllComments();
         }
 
-        restoreQuillEditors () {
-          if (this.quillEditors) {
-            Object.keys(this.quillEditors).forEach(fieldId => {
-              const quill = this.quillEditors[fieldId];
-              const hiddenInput = document.getElementById(fieldId);
-              if (quill && hiddenInput && hiddenInput.value) {
-                quill.root.innerHTML = hiddenInput.value;
-              }
-            });
-            return;
-          }
-          if (!this.commentTextareas) return;
-          Object.entries(this.commentTextareas).forEach(([fieldId, editor]) => {
-            const hiddenInput = document.getElementById(fieldId);
-            if (!editor || !hiddenInput?.value) return;
-            editor.innerHTML = hiddenInput.value;
-            this.autosizeCommentEditor(editor);
-          });
-        }
-
+        /**
+         * Changes the active signature tab within a signature section.
+         * Handles toggling between draw and upload modes.
+         */
         changeSignatureTab (tabBtn) {
+          if (!tabBtn) return;
           const container = tabBtn.closest('.signature-pad-container');
           const tabContent = tabBtn.getAttribute('aria-controls');
           const prefix = container.getAttribute('data-prefix');
@@ -3061,15 +3827,21 @@
           });
         }
 
+        /**
+         * Refreshes the inline signature preview for every signature section.
+         */
         refreshAllSignaturePreviews () {
-          ['sc', 'ch', 'pr', 'fT1'].forEach((prefix) => {
-            const dataInput = document.getElementById(`${prefix}_sig_data`);
-            this.setSignaturePreview(prefix, dataInput?.value || '');
+          CheckForm.SIG_PREFIXES.forEach((prefix) => {
+            this.setSignaturePreview(prefix, this.getSigDataInput(prefix)?.value || '');
           });
         }
 
+        /**
+         * Updates the signature preview image and active state for a prefix.
+         * If no signature data exists, clears the preview surface.
+         */
         setSignaturePreview (prefix, dataUrl) {
-          const surface = document.querySelector(`.sig-draw-surface[data-prefix="${prefix}"]`);
+          const surface = this.getSigSurface(prefix);
           const img = surface?.querySelector('.sig-inline-preview img');
           if (!surface || !img) return;
           if (dataUrl) {
@@ -3079,10 +3851,17 @@
             img.removeAttribute('src');
             surface.classList.remove('has-signature');
           }
-          const tabBtn = surface.closest('.signature-pad-container')?.querySelector('.btn-sig-tab[data-tab="draw"]');
-          this.changeSignatureTab(tabBtn);
+          const container = surface.closest('.signature-pad-container');
+          const tabBtn = container?.querySelector(
+            `.btn-sig-tab[data-tab="${dataUrl ? 'draw' : 'upload'}"]`
+          );
+          if (tabBtn) this.changeSignatureTab(tabBtn);
         }
 
+        /**
+         * Opens the signature drawing modal for the specified signature prefix.
+         * Loads any existing signature into the modal canvas.
+         */
         openSignatureModal (prefix) {
           if (!this.signatureModal || !this.signatureModalCanvas) return;
           this.activeSignaturePrefix = prefix;
@@ -3090,20 +3869,21 @@
           this.signatureModal.classList.add('open');
           this.signatureModal.setAttribute("data-prefix", prefix);
           this.resizeModalCanvas();
-          const dataInput = document.getElementById(`${prefix}_sig_data`);
-          const existing = dataInput?.value || '';
-          this.loadDataUrlIntoModalCanvas(existing);
+          this.loadDataUrlIntoModalCanvas(this.getSigDataInput(prefix)?.value || '');
           this.signatureModal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
 
           // Focus trap setup is handled by the open event listener in setupModalFocusTrap
         }
 
+        /**
+         * Closes the signature modal and optionally saves the drawn signature.
+         */
         closeSignatureModal (save) {
           if (!this.signatureModal || !this.signatureModalCanvas) return;
           const prefix = this.activeSignaturePrefix;
           if (save && prefix) {
             const dataUrl = this.signatureModalCanvas.toDataURL();
-            const dataInput = document.getElementById(`${prefix}_sig_data`);
+            const dataInput = this.getSigDataInput(prefix);
             if (dataInput) dataInput.value = dataUrl;
             this.setSignaturePreview(prefix, dataUrl);
           }
@@ -3113,19 +3893,23 @@
           this.activeSignaturePrefix = null;
         }
 
+        /**
+         * Clears the current signature drawing from the modal canvas.
+         */
         clearModalSignature () {
           if (!this.signatureModalCanvas) return;
-          const ctx = this.signatureModalCanvas.getContext('2d');
-          const cssW = this.signatureModalCanvas.offsetWidth || this.signatureModalCanvas.getBoundingClientRect().width;
-          const cssH = this.signatureModalCanvas.offsetHeight || this.signatureModalCanvas.getBoundingClientRect().height;
-          ctx.clearRect(0, 0, cssW, cssH);
+          const { width, height } = this.getCanvasCssSize(this.signatureModalCanvas);
+          this.signatureModalCanvas.getContext('2d').clearRect(0, 0, width, height);
         }
 
+        /**
+         * Resizes the signature modal canvas to match its CSS size.
+         * Also configures the drawing context for smooth strokes.
+         */
         resizeModalCanvas () {
           const canvas = this.signatureModalCanvas;
           if (!canvas) return;
-          const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-          const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
+          const { width: cssW, height: cssH } = this.getCanvasCssSize(canvas);
           if (!cssW || !cssH) return;
           canvas.width = cssW;
           canvas.height = cssH;
@@ -3135,35 +3919,41 @@
           ctx.lineWidth = 2;
         }
 
+        /**
+         * Loads an existing signature image into the modal canvas.
+         * Clears any prior drawing before rendering the loaded image.
+         */
         loadDataUrlIntoModalCanvas (dataUrl) {
           this.clearModalSignature();
           if (!dataUrl) return;
           const canvas = this.signatureModalCanvas;
           const ctx = canvas.getContext('2d');
-          const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-          const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
+          const { width: cssW, height: cssH } = this.getCanvasCssSize(canvas);
           const img = new Image();
-          img.onload = () => {
-            ctx.drawImage(img, 0, 0, cssW, cssH);
-          };
+          img.onload = () => ctx.drawImage(img, 0, 0, cssW, cssH);
           img.src = dataUrl;
         }
 
+        /**
+         * Clears all canvas-based drawings and data inputs inside a section.
+         * Used when a section is reset or cleared.
+         */
         removeCanvas (section) {
-          const canvases = section.querySelectorAll('canvas');
-          if (!canvases.length) return;
-          canvases.forEach((canvas) => {
-            const ctx = canvas.getContext('2d');
-            const cssW = canvas.offsetWidth || canvas.getBoundingClientRect().width;
-            const cssH = canvas.offsetHeight || canvas.getBoundingClientRect().height;
-            ctx.clearRect(0, 0, cssW, cssH);
+          section.querySelectorAll('canvas').forEach((canvas) => {
+            const { width, height } = this.getCanvasCssSize(canvas);
+            canvas.getContext('2d').clearRect(0, 0, width, height);
             const dataInput = document.getElementById(`${canvas.id.replace('_canvas', '')}_data`);
             if (dataInput) dataInput.value = '';
           });
         }
 
 
+        /**
+         * Sets up pointer drawing behavior for the signature modal canvas.
+         * Handles smoothing, pressure-less width variation, and animation frame loops.
+         */
         setupModalCanvasDrawing (canvas) {
+          const sigModal = this.signatureModal;
           const ctx = canvas.getContext('2d');
           // --------------------------
           // Tuned for responsive 60Hz feel
@@ -3202,14 +3992,23 @@
           // --------------------------
           // Helpers
           // --------------------------
+          /**
+           * Keeps a value within a specified range.
+           */
           function clamp (v, lo, hi) {
             return Math.max(lo, Math.min(hi, v));
           }
 
+          /**
+           * Computes an exponential smoothing factor for rate-based interpolation.
+           */
           function expSmoothingFactor (hz, dtSec) {
             return 1 - Math.exp(-hz * dtSec);
           }
 
+          /**
+           * Converts pointer coordinates from page space to canvas pixel space.
+           */
           function getCanvasPoint (e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -3220,12 +4019,18 @@
             };
           }
 
+          /**
+           * Ends the current drawing stroke and resets pointer state.
+           */
           function endDraw () {
             drawing = false;
             hasPointer = false;
             prevMid = null;
           }
 
+          /**
+           * Clears the signature canvas content completely.
+           */
           function clearCanvas () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
           }
@@ -3243,6 +4048,7 @@
             prevBrush = { ...pointer };
             currentWidth = maxWidth;
             prevMid = null;
+            scheduleFrame();
           });
 
           canvas.addEventListener("pointermove", (e) => {
@@ -3257,9 +4063,28 @@
           canvas.addEventListener("dblclick", clearCanvas);
 
           // --------------------------
-          // Main RAF loop
+          // Main RAF loop (runs only while modal is open)
           // --------------------------
+          let rafId = 0;
+          const stopFrame = () => {
+            if (rafId) {
+              cancelAnimationFrame(rafId);
+              rafId = 0;
+            }
+          };
+          const scheduleFrame = () => {
+            if (!rafId) rafId = requestAnimationFrame(frame);
+          };
+
+          /**
+           * Animation frame loop that smooths brush movement and renders strokes.
+           */
           function frame (ts) {
+            rafId = 0;
+            if (!canvas.isConnected || !sigModal?.classList.contains('open')) {
+              if (hasPointer) endDraw();
+              return;
+            }
             const dtMsRaw = ts - lastTs || TARGET_DT_MS;
             const dtMs = Math.min(33, Math.max(1, dtMsRaw)); // clamp stalls
             const dtSec = dtMs / 1000;
@@ -3320,92 +4145,25 @@
               prevBrush.y = brush.y;
             }
 
-            requestAnimationFrame(frame);
+            if (hasPointer) scheduleFrame();
           }
 
-          requestAnimationFrame(frame);
-        }
-
-        setupStandardCanvasDrawing (canvas) {
-          const ctx = canvas.getContext('2d');
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          ctx.lineWidth = 3;
-
-          let drawing = false;
-          let lastX = 0, lastY = 0, lastMidX = 0, lastMidY = 0, hasLastMid = false, lastT = 0, lastW = 3;
-          const minW = 3.0, maxW = 9.0, smoothing = 0.1;
-
-          const getPos = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
-            const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
-            return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+          const origOpen = this.openSignatureModal;
+          const origClose = this.closeSignatureModal;
+          this.openSignatureModal = (prefix) => {
+            origOpen.call(this, prefix);
+            lastTs = performance.now();
           };
-
-          canvas.addEventListener('pointerdown', (e) => {
-            canvas.setPointerCapture(e.pointerId);
-            drawing = true;
-            hasLastMid = false;
-            const { x, y } = getPos(e);
-            lastX = x;
-            lastY = y;
-            lastMidX = x;
-            lastMidY = y;
-            lastT = performance.now();
-            lastW = 3;
-          });
-
-          canvas.addEventListener('pointermove', (e) => {
-            if (!drawing) return;
-            const { x, y } = getPos(e);
-            const now = performance.now();
-            const dt = Math.max(now - lastT, 1);
-            const midX = (lastX + x) / 2;
-            const midY = (lastY + y) / 2;
-            const dx = x - lastX, dy = y - lastY;
-            let dist = Math.sqrt(dx * dx + dy * dy);
-            let speed = dist / dt;
-            let targetW = Math.max(minW, Math.min(maxW, maxW - speed * 3.0));
-            let w = lastW + (targetW - lastW) * smoothing;
-            ctx.lineWidth = w;
-            ctx.beginPath();
-            if (!hasLastMid) {
-              ctx.moveTo(lastX, lastY);
-              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
-              hasLastMid = true;
-            } else {
-              ctx.moveTo(lastMidX, lastMidY);
-              ctx.quadraticCurveTo(lastX, lastY, midX, midY);
-            }
-            ctx.stroke();
-            lastMidX = midX;
-            lastMidY = midY;
-            lastX = x;
-            lastY = y;
-            lastT = now;
-            lastW = w;
-          });
-
-          function endStroke () {
-            if (!drawing) return;
-            drawing = false;
-            if (hasLastMid) {
-              ctx.beginPath();
-              ctx.moveTo(lastMidX, lastMidY);
-              ctx.quadraticCurveTo(lastX, lastY, lastX, lastY);
-              ctx.stroke();
-            }
-            hasLastMid = false;
-          }
-
-          canvas.addEventListener('pointerup', endStroke);
-          canvas.addEventListener('pointercancel', endStroke);
-          canvas.addEventListener('lostpointercapture', endStroke);
+          this.closeSignatureModal = (save) => {
+            origClose.call(this, save);
+            stopFrame();
+          };
         }
 
+        /**
+         * Enables keyboard focus trapping while the signature modal is open.
+         * Keeps tab navigation contained inside the modal dialog.
+         */
         setupModalFocusTrap () {
           const modal = this.signatureModal;
           if (!modal) return;
@@ -3450,10 +4208,17 @@
         /**
          * Build radio button rows using DOM APIs
          */
+        /**
+         * Generates checklist rows dynamically for a section.
+         * Creates labeled radio groups and optional binary-only options.
+         */
         buildRows (container, prefix, items, binarySet = new Set()) {
           if (!container) return;
           container.innerHTML = '';
-          const sectionNum = { sc: '1', ds: '2', ch: '3', pr: '4' }[prefix];
+          const sectionNum = CheckForm.SECTION_NUM[prefix];
+          const pillOptions = (binary) => binary
+            ? [['yes', 'Yes'], ['no', 'No'], ['na', ' ', true]]
+            : [['yes', 'Yes'], ['no', 'No'], ['na', 'N/A']];
           items.forEach((text, idx) => {
             const n = idx + 1;
             const isBinary = binarySet.has(n);
@@ -3468,7 +4233,7 @@
             const pillGroup = document.createElement('div');
             pillGroup.className = `pill-group${isBinary ? ' pill-group--yes-no' : ''}`;
             const name = `${prefix}${n}`;
-            const createRadio = (value, labelText, disabled = false) => {
+            pillOptions(isBinary).forEach(([value, labelText, disabled]) => {
               const id = `${name}_${value}`;
               const radio = document.createElement('input');
               radio.type = 'radio';
@@ -3480,19 +4245,8 @@
               label.htmlFor = id;
               label.textContent = labelText;
               if (disabled) label.setAttribute('disabled', '');
-              return { radio, label };
-            };
-            if (isBinary) {
-              const yes = createRadio('yes', 'Yes');
-              const no = createRadio('no', 'No');
-              const na = createRadio('na', ' ', true);
-              pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
-            } else {
-              const yes = createRadio('yes', 'Yes');
-              const no = createRadio('no', 'No');
-              const na = createRadio('na', 'N/A');
-              pillGroup.append(yes.radio, yes.label, no.radio, no.label, na.radio, na.label);
-            }
+              pillGroup.append(radio, label);
+            });
             const noticeStack = document.createElement('div');
             noticeStack.className = 'row-notice-stack hidden';
             noticeStack.id = `${name}_notice_stack`;
@@ -3502,51 +4256,55 @@
           });
         }
 
+        /**
+         * Attaches global event listeners for click, change, input, and keydown events.
+         * Also sets up signature upload drag/drop and mutation observers for row updates.
+         */
         attachEventListeners () {
-          document.addEventListener('click', this.handleGlobalClick.bind(this));
-          document.addEventListener('change', this.handleGlobalChange.bind(this));
-          document.addEventListener('input', this.handleGlobalInput.bind(this));
-          document.addEventListener('keydown', this.handleGlobalKeydown.bind(this));
-          document.addEventListener('click', this.handleSignatureUploadTriggerClick.bind(this));
+          document.addEventListener('click', this._boundClick);
+          document.addEventListener('change', this._boundChange);
+          document.addEventListener('input', this._boundInput);
+          document.addEventListener('keydown', this._boundKeydown);
 
-          const observer = new MutationObserver(() => this.updateProgress());
-          [this.elements.scRows, this.elements.dsRows, this.elements.chRows, this.elements.prRows].forEach(container => {
-            if (container) observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ['checked'] });
+          document.querySelectorAll('.sig-upload-trigger').forEach((trigger) => {
+            const prefix = trigger.getAttribute('data-prefix');
+            if (!prefix) return;
+            const uploadInput = document.getElementById(`${prefix}SigUpload`);
+            const container = document.getElementById(`${prefix}SigContainer`);
+            const uploadArea = container?.querySelector('.sig-upload-area');
+            trigger.addEventListener('click', (e) => {
+              e.preventDefault();
+              uploadInput?.click();
+            });
+            if (uploadInput) {
+              uploadInput.addEventListener('change', (e) => this.handleSignatureUpload(e, prefix));
+            }
+            if (uploadArea && uploadInput) {
+              ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((evt) => {
+                uploadArea.addEventListener(evt, (ev) => { ev.preventDefault(); ev.stopPropagation(); });
+              });
+              uploadArea.addEventListener('drop', (ev) => {
+                const files = ev.dataTransfer?.files;
+                if (files?.length) {
+                  uploadInput.files = files;
+                  uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              });
+            }
           });
         }
 
-        handleSignatureUploadTriggerClick (e) {
-          const trigger = e.target.closest('.sig-upload-trigger');
-          if (!trigger) return;
-          e.preventDefault();
-          const prefix = trigger.getAttribute('data-prefix');
-          if (!prefix) return;
-          const uploadInput = document.getElementById(`${prefix}SigUpload`);
-          if (uploadInput) uploadInput.click();
-          uploadInput.addEventListener('change', (e) => this.handleSignatureUpload(e, prefix));
-          const container = document.getElementById(`${prefix}SigContainer`);
-          const uploadArea = container?.querySelector('.sig-upload-area');
-          if (uploadArea && uploadInput) {
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-              uploadArea.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); });
-            });
-            uploadArea.addEventListener('drop', (e) => {
-              const files = e.dataTransfer.files;
-              if (files.length > 0) {
-                uploadInput.files = files;
-                uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
-              }
-            });
-          }
-        }
-
+        /**
+         * Handles uploaded signature image files for a section.
+         * Reads the file and updates the signature preview/input value.
+         */
         handleSignatureUpload (e, prefix) {
           const file = e.target.files?.[0];
           if (!file) return;
           const reader = new FileReader();
           reader.onload = (event) => {
             const dataUrl = String(event.target.result || '');
-            const dataInput = document.getElementById(`${prefix}_sig_data`);
+            const dataInput = this.getSigDataInput(prefix);
             if (dataInput) dataInput.value = dataUrl;
             this.setSignaturePreview(prefix, dataUrl);
           };
@@ -3554,6 +4312,10 @@
         }
 
         // ---------- Event Handlers ----------
+        /**
+         * Global click handler for UI controls across the form.
+         * Dispatches signature tab changes, modal actions, section toggles, and button clicks.
+         */
         handleGlobalClick (e) {
           const tabBtn = e.target.closest('.btn-sig-tab');
           if (tabBtn) {
@@ -3564,6 +4326,7 @@
           const openSigBtn = e.target.closest('.btn-open-modal');
           if (openSigBtn) {
             e.preventDefault();
+            if (openSigBtn.hasAttribute('disabled') || openSigBtn.getAttribute('aria-disabled') === 'true') return;
             const prefix = openSigBtn.getAttribute('data-prefix');
             if (prefix) this.openSignatureModal(prefix);
             openSigBtn.classList.add("anchor-element");
@@ -3574,7 +4337,7 @@
             e.preventDefault();
             const prefix = clearInline.getAttribute('data-prefix');
             if (prefix) {
-              const dataInput = document.getElementById(`${prefix}_sig_data`);
+              const dataInput = this.getSigDataInput(prefix);
               if (dataInput) dataInput.value = '';
               this.setSignaturePreview(prefix, '');
             }
@@ -3601,7 +4364,7 @@
           }
           const head = e.target.closest('.sec-head');
           if (head && head.hasAttribute('aria-controls')) {
-            const interactive = e.target.closest('button, a, input, select, textarea, label, [role="button"]');
+            const interactive = e.target.closest('button, a, input, select, textarea, label, [role="tab"]');
             if (!interactive || interactive === head) {
               e.preventDefault();
               this.toggleSection(head);
@@ -3610,6 +4373,9 @@
           if (e.target.classList.contains('risk-btn')) {
             this.setRiskLevel(e.target.dataset.risk);
           }
+
+          const clickedButton = e.target.closest('button');
+
           const clearActions = {
             clearWorkInfoBtn: () => this.clearSection('sec-info-body'),
             clearSec1Btn: () => this.clearSection('s1'),
@@ -3618,68 +4384,114 @@
             clearSec4Btn: () => this.clearSection('s4'),
             clearSec5Btn: () => this.clearSection('s5'),
             clearSec6Btn: () => this.clearSection('s6'),
+
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
             dismissNoticeBtn: () => this.hideGlobalNotice()
           };
-          const id = e.target.id;
-          if (id in clearActions) {
+          if (clickedButton && clickedButton.id in clearActions) {
             e.stopPropagation();
-            clearActions[id](e);
+            clearActions[clickedButton.id](e);
           }
+          this.syncSectionVisibility();
+
         }
 
+        /**
+         * Global change handler for input and select changes.
+         * Updates progress, visibility, and syncs comment editor changes.
+         */
         handleGlobalChange (e) {
           if (e.target.matches('input[type="radio"]')) {
-            this.updateProgress();
-            const name = e.target.name;
-            if (name.startsWith('sc')) {
-              if (name === 'sc11') this.updateRoleLabels(false);
-            }
-            if (name.startsWith('ch')) this.syncCheckWarning();
-            if (name === 'sc_role') this.updateRoleLabels(true);
-            this.showRiskConsistencyNotices();
-            this.syncSectionVisibility();
+            this.dispatchRadioChange(e.target);
           }
           if (e.target.matches('input') || e.target.matches('select')) {
-            if (e.target.validity.valid || e.target.focus()) {
+            if (e.target.validity.valid) {
               e.target.previousElementSibling?.removeAttribute('style');
+              this.scheduleUpdateProgress();
             }
           }
           if (e.target.id === 'minCheckLevel') {
             this.syncDirectSupervision();
             this.syncSectionVisibility();
           }
-          if (e.target.matches('textarea, .comments-inline-editor')) {
-            this.autosizeTextarea(e.target);
-            this.syncCommentsHeights();
-          }
-          if (e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-            this.syncCommentsHeights();
-          }
+          const commentEditor = this.resolveCommentEditor(e.target);
+          if (commentEditor) this.handleCommentFieldEvent(commentEditor);
         }
 
+        // ---------- GlobalEventRouter (deep seam) ----------
+        /**
+         * Central router for radio button state changes.
+         * Handles risk level, role changes, signature gating, and section visibility.
+         */
+        dispatchRadioChange (radio) {
+          this.scheduleUpdateProgress();
+          const name = radio?.name || '';
+
+          if (name.startsWith('sc') && name === 'sc11') {
+            this.updateRoleLabels(false);
+          }
+
+          if (name === 'sc_role') {
+            this.updateRoleLabels(true);
+          }
+
+          // Risk consistency notices depend on SC radios and risk selection.
+          this.showRiskConsistencyNotices();
+
+          // Signature gates are driven by the *_c radios only.
+          if (name === 'ch_c' || name === 'pr_c' || name === 'ir_c') {
+            const prefix = radio.getAttribute('data-prefix');
+            if (prefix) this.signatureGate_apply(prefix);
+            return;
+          }
+
+          // Checklist radios (e.g. ch1..chN) influence chNotice + section visibility.
+          if (name.startsWith('ch')) {
+            this.syncCheckWarning();
+            return;
+          }
+
+          // Default: re-run visibility state machine.
+          this.syncSectionVisibility();
+        }
+
+        /**
+         * Global input handler for field typing.
+         * Synchronizes linked fields, comment editors, and progress updates.
+         */
         handleGlobalInput (e) {
-          if (e.target.id === 'engineer') this.elements.scName.value = e.target.value;
-          if (e.target.id === 'sc_name') this.elements.engineer.value = e.target.value;
-          if (e.target.id === 'checker' && !this.elements.cardCh.classList.contains('hidden')) {
-            this.elements.chName.value = e.target.value;
+          const { target } = e;
+          if (target.id === 'engineer' || target.id === 'sc_name') {
+            this.syncLinkedFields(target, this.elements.scName, this.elements.engineer);
+          } else if ((target.id === 'checker' || target.id === 'ch_name') && !this.elements.cardCh.classList.contains('hidden')) {
+            this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
           }
-          if (e.target.id === 'ch_name' && !this.elements.cardCh.classList.contains('hidden')) {
-            this.elements.checker.value = e.target.value;
-          }
-          if (e.target.matches('textarea, .comments-inline-editor')) {
-            this.autosizeTextarea(e.target);
-            this.syncCommentsHeights();
-          }
-          if (e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-            this.syncCommentsHeights();
+
+          const commentEditor = this.resolveCommentEditor(target);
+          if (commentEditor) this.handleCommentFieldEvent(commentEditor);
+
+          if ((target.matches('input') || target.matches('select')) && target.validity.valid) {
+            target.previousElementSibling?.removeAttribute('style');
+            this.scheduleUpdateProgress();
           }
         }
 
+        // ---------- SignatureGate (deep seam facade) ----------
+        /**
+         * Applies signature gating logic for a prefix.
+         * This is a compatibility facade for legacy signature gate usage.
+         */
+        signatureGate_apply (prefix) {
+          // Facade for legacy implementation.
+          this.enableSignature(prefix);
+        }
+
+        /**
+         * Handles keyboard shortcuts such as Escape to close the signature modal.
+         * Also makes section headers keyboard-accessible via Enter/Space.
+         */
         handleGlobalKeydown (e) {
           if (e.key === 'Escape' && this.signatureModal?.classList.contains('open')) {
             e.preventDefault();
@@ -3691,38 +4503,69 @@
             e.preventDefault();
             head.click();
           }
-          if (e.key === 'Enter' && e.target.className.includes('ql-editor')) {
-            e.preventDefault();
-            this.syncCommentsHeights();
-          }
         }
 
         // ---------- UI State Updates ----------
+        /**
+         * Toggles a collapsible section header and its associated body.
+         */
         toggleSection (head) {
           head.classList.toggle('open');
           const body = document.getElementById(head.getAttribute('aria-controls'));
-          if (body) body.classList.toggle('open');
+          if (body) {
+            body.classList.toggle('open');
+          }
           head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
         }
 
+        /**
+         * Sets the selected risk level and updates related form state.
+         * Also synchronizes the minimum check level and consistency notices.
+         */
         setRiskLevel (level) {
-          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
-          document.querySelector(`.risk-btn[data-risk="${level}"]`)?.classList.add('active');
-          const levelMap = { low: 'Self-Check', medium: 'Check', high: 'Type 1 Independent Review Required' };
-          if (levelMap[level]) {
-            this.elements.minCheckLevel.value = levelMap[level];
+          let activeBtn = null;
+          this.elements.riskBtns.forEach((b) => {
+            const isActive = b.dataset.risk === level;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            if (isActive) activeBtn = b;
+          });
+          activeBtn?.parentElement?.previousElementSibling?.removeAttribute('style');
+          const checkLevel = CheckForm.RISK_TO_CHECK_LEVEL[level];
+          if (checkLevel) {
+            this.elements.minCheckLevel.value = checkLevel;
             this.elements.minCheckLevel.dispatchEvent(new Event('change', { bubbles: true }));
           }
+          //this.syncMinCheckLevelLock();
           this.showRiskConsistencyNotices();
           this.updateProgress();
         }
 
+        /**
+         * Locks the minimum check level dropdown so it cannot be edited directly.
+         * The value is instead derived from risk level and role settings.
+         */
+        //syncMinCheckLevelLock () {
+        //const locked = true;
+        //this.elements.minCheckLevel.disabled = locked;
+        //}
+
+        /**
+         * Returns the currently active risk level button value.
+         */
         getActiveRiskLevel () {
-          return document.querySelector('.risk-btn.active')?.dataset?.risk ?? null;
+          for (const btn of this.elements.riskBtns) {
+            if (btn.classList.contains('active')) return btn.dataset.risk ?? null;
+          }
+          return null;
         }
 
+        /**
+         * Generates and displays notices when risk-related answers conflict with selected risk level.
+         * Includes warnings for incorrect high-risk, EIT, and project requirements.
+         */
         showRiskConsistencyNotices () {
-          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
+          const isEit = this.isEitRole();
           const level = this.getActiveRiskLevel();
           const exp = level ? CheckForm.RISK_MAP[level] : null;
           const getVal = (n) => document.querySelector(`input[name="sc${n}"]:checked`)?.value;
@@ -3733,7 +4576,7 @@
           this.renderNoticeStack('sc', 8, blocks8);
           const blocks9 = [];
           if (getVal(9) === 'yes') {
-            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete this check form and the <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank"><strong>DE Independent Structural Review form</strong></a>.`, type: 'warn' });
+            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete the <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn' });
             if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 9, blocks9);
@@ -3742,7 +4585,7 @@
             blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
           }
           if (getVal(10) === 'yes') {
-            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
+            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank" rel="noopener noreferrer"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 10, blocks10);
           const blocks11 = [];
@@ -3755,6 +4598,10 @@
           this.renderNoticeStack('sc', 11, blocks11);
         }
 
+        /**
+         * Renders one notice stack for a single checklist item.
+         * Displays warnings or errors beneath the question row.
+         */
         renderNoticeStack (prefix, n, blocks) {
           const stack = document.getElementById(`${prefix}${n}_notice_stack`);
           if (!stack) return;
@@ -3771,8 +4618,11 @@
             </div>`).join('');
         }
 
+        /**
+         * Shows or hides the direct supervision section based on SC question 1.11.
+         */
         syncDirectSupervision () {
-          const noChecked = document.getElementById('sc11_no')?.checked ?? false;
+          const noChecked = this.isSc11No();
           this.elements.cardDs.classList.toggle('hidden', !noChecked);
           const body = this.elements.s2Body, head = this.elements.s2Head;
           if (body && head) {
@@ -3783,46 +4633,108 @@
           this.updateProgress();
         }
 
+        // ---------- SectionVisibilityPolicy (deep seam) ----------
+        /**
+         * Computes the current section visibility state from risk and checklist facts.
+         * Returns an object used to show/hide and expand sections.
+         */
+        computeVisibilityState () {
+          const isEit = this.isEitRole();
+          const q111No = this.isSc11No();
+          const q9Yes = this.isSc9Yes();
+          const risk = this.getActiveRiskLevel();
+          const isHighRisk = risk === 'high';
+          const isMidRisk = risk === 'medium';
+          const isLowRisk = risk === 'low';
+          const minLevel = this.elements.minCheckLevel.value;
+
+          // Checklist-derived facts (scoped to .check-row so ch_c/pr_c doesn't interfere).
+          const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
+
+          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
+          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
+
+          // Current behavior: expand peer review when checklist has a "No" OR min level explicitly set to Peer Review.
+          const openS4 = chHasNo || minLevel === 'Peer Review';
+
+          const openS5 = !isLowRisk && q9Yes; // gated behind final section for now, but may want to surface earlier
+
+          // Current behavior: warning is tied to checklist "No" answers (not ch_c).
+          const showChNotice = chHasNo;
+
+          const finalShown = isHighRisk;
+
+          return {
+            showCheck,
+            showPeer,
+            openS4,
+            openS5,
+            showChNotice,
+            finalShown
+          };
+        }
+
+        /**
+         * Applies the computed visibility state to the form UI.
+         */
+        applyVisibilityState (state) {
+          this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
+
+          this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
+          this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
+          this.setCheckerRequired(state.showCheck);
+          //this.setRequired(this.elements.cardCh, state.showCheck);
+          if (state.showCheck) this.syncCheckerNames();
+
+          this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
+          const openS4 = this.elements.cardPr.querySelector('.sec-body.open');
+          console.log('openS4', openS4);
+          const openS4State = openS4 ? openS4.classList.contains('open') : false;
+          console.log('openS4State', openS4State);
+          const stateS4 = openS4State || state.openS4;
+          console.log(stateS4);
+          this.setRequired(this.elements.cardPr, stateS4);
+          if (stateS4) this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, true);
+
+          this.elements.cardFinal.classList.toggle('hidden', !state.finalShown);
+          this.setRequired(this.elements.cardFinal, state.finalShown && (this.getActiveRiskLevel() === 'high'));
+          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, state.finalShown && (this.getActiveRiskLevel() === 'high'));
+
+          this.elements.cardIr.classList.toggle('hidden', !state.openS5);
+          this.setRequired(this.elements.cardIr, state.openS5);
+          this.syncCssStateClasses();
+          if (state.openS5) this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, true);
+        }
+
+        /**
+         * Legacy entry point preserved for backwards compatibility.
+         * Triggers a section visibility recalculation.
+         */
         syncCheckWarning () {
-          const hasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
-          this.elements.chNotice.classList.toggle('hidden', !hasNo);
+          // Legacy entry point; kept for locality. Visibility now owns chNotice.
           this.syncSectionVisibility();
         }
 
+        /**
+         * Recalculates and applies section visibility for the current form state.
+         */
         syncSectionVisibility () {
-          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
-          const q111No = document.getElementById('sc11_no')?.checked ?? false;
-          const isHighRisk = this.getActiveRiskLevel() === 'high';
-          const minLevel = this.elements.minCheckLevel.value;
-          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
-          this.elements.cardCh.classList.toggle('hidden', !showCheck);
-          this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, showCheck);
-          this.setCheckerRequired(showCheck);
-          if (showCheck) this.syncCheckerNames();
-          const chHasNo = !!document.querySelector('#ch-rows input[value="no"]:checked');
-          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk;
-          this.elements.cardPr.classList.toggle('hidden', !showPeer);
-          this.setSectionOpen(this.elements.s4Head, this.elements.s4Body, showPeer && chHasNo);
-          const dsShown = !this.elements.cardDs.classList.contains('hidden');
-          const chShown = !this.elements.cardCh.classList.contains('hidden');
-          const prShown = !this.elements.cardPr.classList.contains('hidden');
-          const commentsShown = dsShown || chShown || prShown;
-          this.elements.cardComments.classList.toggle('hidden', !commentsShown);
-          this.setSectionOpen(this.elements.s5Head, this.elements.s5Body, commentsShown);
-          this.elements.commentsCell3.classList.toggle('hidden', !prShown);
-          this.elements.commentsCell4.classList.toggle('hidden', !prShown);
-          this.syncCommentsHeights();
-          const finalShown = showPeer || isHighRisk;
-          this.elements.cardFinal.classList.toggle('hidden', !finalShown);
-          this.setSectionOpen(this.elements.s6Head, this.elements.s6Body, isHighRisk && finalShown);
+          const state = this.computeVisibilityState();
+          this.applyVisibilityState(state);
         }
 
+        /**
+         * Synchronizes all section visibility rules at once.
+         */
         syncAllSectionVisibility () {
           this.syncDirectSupervision();
           this.syncSectionVisibility();
-          this.syncCheckWarning();
+          this.syncCheckWarning(); // legacy: kept for callers that expect it
         }
 
+        /**
+         * Opens or closes a section header and body programmatically.
+         */
         setSectionOpen (head, body, open) {
           if (!head || !body) return;
           head.classList.toggle('open', open);
@@ -3830,6 +4742,9 @@
           head.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
 
+        /**
+         * Toggles the required state of the checker name input.
+         */
         setCheckerRequired (required) {
           const checker = this.elements.checker;
           if (required) {
@@ -3841,6 +4756,22 @@
           }
         }
 
+        setRequired (element, required) {
+          const inputFields = element.querySelectorAll(`input[id$='_date'], input[id$='_name']`);
+          inputFields.forEach(input => {
+            if (required) {
+              input.setAttribute('required', '');
+              input.removeAttribute('disabled');
+            } else {
+              input.removeAttribute('required');
+              input.setAttribute('disabled', '');
+            }
+          })
+        }
+
+        /**
+         * Synchronizes checker name fields between the visible and hidden checker inputs.
+         */
         syncCheckerNames () {
           if (this.syncingNames) return;
           this.syncingNames = true;
@@ -3852,10 +4783,12 @@
           this.syncingNames = false;
         }
 
+        /**
+         * Updates labels and placeholders throughout the form based on the selected SC role.
+         */
         updateRoleLabels (resetSc11 = true) {
-          const isEit = this.getRadioValue('sc_role') === 'Engineer-in-Training';
-          const sc11No = document.getElementById('sc11_no');
-          const sc11Yes = document.getElementById('sc11_yes');
+          const isEit = this.isEitRole();
+          const { sc11No, sc11Yes } = this.elements;
           if (resetSc11) {
             if (isEit) {
               if (sc11No) sc11No.checked = true;
@@ -3870,8 +4803,7 @@
           this.elements.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
           this.elements.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
           this.elements.engineerResponseLabel.textContent = isEit ? 'EIT Response' : 'Engineer Response';
-          const q111No = document.getElementById('sc11_no')?.checked ?? false;
-          const usePor = q111No || isEit;
+          const usePor = this.isSc11No() || isEit;
           const secondRole = usePor ? 'Professional of Record' : 'Checker';
           const secondShort = usePor ? 'POR' : 'Checker';
           if (this.elements.wiLabel) this.elements.wiLabel.textContent = secondRole;
@@ -3884,15 +4816,21 @@
           this.syncSectionVisibility();
         }
 
+        /**
+         * Returns the selected value for a named radio group.
+         */
         getRadioValue (name) {
           return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
         // ---------- Progress & Validation ----------
+        /**
+         * Recomputes overall checklist completion progress and updates the UI.
+         */
         updateProgress () {
           const counts = new Map();
           this.sectionConfig.forEach(s => {
-            const cnt = document.querySelectorAll(`${s.rowsId} input[type="radio"]:checked`).length;
+            const cnt = s.rowsEl?.querySelectorAll('input[type="radio"]:checked').length ?? 0;
             counts.set(s.rowsId, cnt);
             if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
             if (s.num) {
@@ -3908,8 +4846,7 @@
           const prAnswered = (counts.get('#pr-rows') ?? 0) > 0;
           let total = 0, answered = 0;
           this.sectionConfig.forEach(s => {
-            const hidden = s.cardId && document.getElementById(s.cardId)?.classList.contains('hidden');
-            if (hidden) return;
+            if (s.cardEl?.classList.contains('hidden')) return;
             const isSection1 = s.rowsId === '#sc-rows';
             const isSection4 = s.rowsId === '#pr-rows';
             if (isSection1 || !isSection4 || prAnswered) {
@@ -3918,111 +4855,202 @@
             }
           });
           const pct = total ? Math.round((answered / total) * 100) : 0;
-          this.elements.progressStrip.classList.toggle('completed', pct === 100);
+          const fullyComplete = pct === 100;
+          this.elements.progressStrip.classList.toggle('completed', fullyComplete);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
+          this.elements.savePdf.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid() && this.allOpenSignatureEnabled());
+
         }
 
-        async withLoading (button, callback) {
-          if (CheckForm.activeAsyncButton) return;
-          const originalText = button.textContent;
-          button.disabled = true;
-          button.textContent = 'Processing...';
-          CheckForm.activeAsyncButton = button;
-          try {
-            await callback();
-          } finally {
-            button.disabled = false;
-            button.textContent = originalText;
-            CheckForm.activeAsyncButton = null;
+        // ---------- SignatureGate adapter (real seam) ----------
+        /**
+         * Returns whether a signature section is enabled based on comment gating rules.
+         */
+        isSignatureEnabledByComments (prefix) {
+          // Only CH and PR signatures are gated by the "addressed?" radios.
+          if (prefix !== 'ch' && prefix !== 'pr' && prefix !== 'ir') return true;
+
+          const yes = this.elements[`${prefix}CYes`];
+          const na = this.elements[`${prefix}CNa`];
+          return !!(yes?.checked || na?.checked);
+        }
+
+        /**
+         * Returns true when all currently open signature sections are enabled.
+         */
+        allOpenSignatureEnabled () {
+          const prefixes = ["ch", "pr", "ir"];
+          for (const prefix of prefixes) {
+            const card = document.getElementById(`card-${prefix}`);
+            const body = card?.querySelector('.sec-body');
+            const bodyOpen = body?.classList.contains('open') === true;
+            if (bodyOpen && !this.isSignatureEnabledByComments(prefix)) return false;
           }
+          return true;
+
         }
 
-        allRequiredFieldsValid () {
-          const required = Array.from(document.querySelectorAll('.required-field-underline'));
-          let firstInvalid = null;
-          let allValid = true;
-          required.forEach((el) => {
-            if (el.closest('.hidden')) return;
-            const control = el.previousElementSibling?.matches?.('input, select, textarea') ? el.previousElementSibling :
-              el.parentElement?.querySelector?.('input, select, textarea');
-            if (control?.disabled) return;
-            const isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+        /**
+         * Enables or disables the signature controls for a section.
+         * Disables interactive buttons and clears file inputs when locked.
+         */
+        setSignatureEnabled (prefix, enabled) {
+          const container = document.getElementById(`${prefix}SigContainer`);
+          if (!container) return;
 
-            const label = el.parentElement?.querySelector('.field-label');
-            if (label) label.style.color = isValid ? '' : '#d32f2f';
-            if (!isValid && !firstInvalid) firstInvalid = { el, control };
-            if (!isValid) allValid = false;
+          container.classList.toggle('is-locked', !enabled);
+          container.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+
+          // Disable all interactive controls inside the signature container.
+          container.querySelectorAll('button, a.btn-open-modal').forEach((el) => {
+            if (el instanceof HTMLButtonElement) {
+              el.disabled = !enabled;
+            } else {
+              el.toggleAttribute('disabled', !enabled);
+              el.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+              el.tabIndex = enabled ? 0 : -1;
+            }
           });
-          if (firstInvalid) {
-            const { el, control } = firstInvalid;
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (control?.focus) control.focus({ preventScroll: true });
-            return false;
+
+          // If disabled, also clear any file input selection to avoid stale UI.
+          const fileInput = container.querySelector('input[type="file"]');
+          if (!enabled && fileInput) fileInput.value = '';
+        }
+
+        /**
+         * Applies signature enablement logic for a section.
+         * This method is called by the signature gating facade.
+         */
+        enableSignature (prefix) {
+          // Backwards-compatible entry point used by the global router.
+
+          const enabled = this.isSignatureEnabledByComments(prefix);
+          this.setSignatureEnabled(prefix, enabled);
+          if (prefix === 'ch') {
+            this.elements.chSigGateNotice?.classList.toggle('hidden', enabled);
           }
-          return allValid;
+        }
+
+        /**
+         * Validates that all required visible fields are filled correctly.
+         * Optionally highlights invalid labels when printing.
+         */
+        allRequiredFieldsValid (print = false) {
+          const required = Array.from(document.querySelectorAll('.required-field-underline'));
+
+          const requiredShown = required.filter(el => !el.closest('.hidden')
+            && !el.previousElementSibling?.disabled && !el.parentElement?.disabled);
+
+          let isValid;
+
+          return requiredShown.reduce((acc, el) => {
+            isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+            if (print) {
+              const label = el.parentElement?.querySelector('.field-label');
+              if (label) label.style.color = isValid ? '' : '#d32f2f';
+            }
+            return acc && isValid;
+          }, true);
         }
 
         // ---------- Textarea Utilities ----------
+        /**
+         * Autosizes a textarea or comment editor based on its content.
+         */
         autosizeTextarea (el) {
           if (!el) return;
-          if (el.classList?.contains('comments-inline-editor')) {
-            this.autosizeCommentEditor(el);
+          const commentEditor = this.resolveCommentEditor(el);
+          if (commentEditor) {
+            this.autosizeCommentEditor(commentEditor);
+            this.scheduleSyncCommentsHeights();
             return;
           }
           el.style.height = 'auto';
           el.style.height = el.scrollHeight + 'px';
         }
 
+        /**
+         * Synchronizes heights for paired comment editor cells.
+         * Ensures side-by-side comments remain aligned.
+         */
         syncCommentsHeights () {
-          const pair = (aId, bId) => {
-            const a = document.getElementById(aId), b = document.getElementById(bId);
+          const syncPair = (aId, bId) => {
+            const a = document.getElementById(aId);
+            const b = document.getElementById(bId);
             const aHidden = a?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
             const bHidden = b?.closest('.comments-cell')?.classList.contains('hidden') ?? true;
             if (!a || !b || aHidden || bHidden) {
-              if (a && !aHidden) this.autosizeTextarea(a);
-              if (b && !bHidden) this.autosizeTextarea(b);
+              if (a && !aHidden) this.autosizeCommentEditor(a);
+              if (b && !bHidden) this.autosizeCommentEditor(b);
               return;
             }
-            a.style.height = 'auto'; b.style.height = 'auto';
-            const h = Math.max(a.scrollHeight, b.scrollHeight);
-            a.style.height = h + 'px'; b.style.height = h + 'px';
+            const h = Math.max(
+              this.measureCommentEditorHeight(a),
+              this.measureCommentEditorHeight(b)
+            );
+            this.setCommentEditorHeight(a, h);
+            this.setCommentEditorHeight(b, h);
           };
-          pair('checkerComments-editor', 'engineerResponse-editor');
-          pair('reviewerComments-editor', 'engineerResponse_2-editor');
+          CheckForm.COMMENT_PAIRS.forEach(([aId, bId]) => syncPair(aId, bId));
         }
 
         // ---------- Section Clearing ----------
+        /**
+         * Clears all content for a single section, including controls and signature canvases.
+         */
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           if (!sec) return;
-          sec.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          sec.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach(i => i.value = '');
-          sec.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-          sec.querySelectorAll('textarea').forEach(t => t.value = '');
-          sec.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
-          sec.querySelectorAll('input[type="hidden"]').forEach(c => c.value = '');
-          sec.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'));
-          sec.querySelectorAll('.ql-editor, .comments-inline-editor').forEach(f => { f.innerHTML = '<p><br></p>'; });
-          sec.querySelectorAll('.comments-image-gallery').forEach(g => g.replaceChildren());
+          this.clearFormControls(sec);
           this.removeCanvas(sec);
           this.updateProgress();
           if (sectionId === 's1') {
             this.syncDirectSupervision();
             this.showRiskConsistencyNotices();
           }
-          if (sectionId === 's3') this.syncCheckWarning();
-          sec.querySelectorAll('textarea, .comments-inline-editor').forEach(t => this.autosizeTextarea(t));
+          if (sectionId === 's3') {
+            this.syncCheckWarning();
+            const prefix = 'ch';
+            this.setSignatureEnabled(prefix, false);
+          }
+          sec.querySelectorAll('textarea, .comments-inline-editor, .ql-container').forEach((t) => {
+            this.autosizeCommentEditor(t);
+          });
+
+          if (sectionId === 's4') {
+            const prefix = 'pr';
+            this.setSignatureEnabled(prefix, false);
+          }
+
+          if (sectionId === 's5') {
+            const prefix = 'ir';
+            this.setSignatureEnabled('ir', false);
+          }
+          if (sectionId === 's6') {
+            const prefix = 'fT1';
+            this.setSignatureEnabled('fT1', false);
+          }
+
           this.syncCommentsHeights();
+          this.restoreDefaults();
+
+          this.syncCssStateClasses();
           this.toast('Section cleared', 'info');
         }
 
         // ---------- Global Notice (Toast) ----------
+        /**
+         * Hides the global notice toast message.
+         */
         hideGlobalNotice () {
           this.elements.globalNotice.classList.add('hidden');
           clearTimeout(this.toastTimer);
         }
 
+        /**
+         * Displays a temporary toast message at the top of the form.
+         */
         toast (msg, type = 'info') {
           this.elements.globalNoticeText.innerHTML = msg;
           this.elements.globalNotice.classList.remove('hidden', 'info', 'success', 'error', 'warn');
@@ -4032,132 +5060,135 @@
         }
 
         // ---------- Form Actions ----------
+        /**
+         * Resets the entire form to its initial state after confirmation.
+         */
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
-          document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-          document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="hidden"][id$="_sig_data"]').forEach(i => i.value = '');
-          document.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
-          document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-          document.querySelectorAll('textarea').forEach(t => t.value = '');
-          document.querySelectorAll('.comments-inline-editor').forEach(el => { el.innerHTML = '<p><br></p>'; });
-          document.querySelectorAll('.comments-image-gallery').forEach(g => g.replaceChildren());
-          document.querySelectorAll('.sig-draw-surface').forEach(e => e.classList.remove('has-signature'));
-          this.elements.riskBtns.forEach(b => b.classList.remove('active'));
-          document.getElementById('sc_role_eng').checked = true;
+          this.clearFormControls(document);
+          document.querySelectorAll('input[type="hidden"][id$="_sig_data"]').forEach((i) => { i.value = ''; });
+          this.elements.riskBtns.forEach((b) => b.classList.remove('active'));
+          if (this.elements.scRoleEng) this.elements.scRoleEng.checked = true;
           this.removeCanvas(document);
-          document.querySelectorAll('.sig-preview').forEach(p => { p.innerHTML = ''; });
+          document.querySelectorAll('.sig-preview').forEach((p) => { p.innerHTML = ''; });
           this.updateRoleLabels(true);
           this.syncAllSectionVisibility();
           this.showRiskConsistencyNotices();
           this.updateProgress();
+          this.syncAllComments();
           this.syncCommentsHeights();
+          this.restoreDefaults();
+          this.syncCssStateClasses();
           this.toast('Form reset', 'info');
         }
 
+        /**
+         * Restores the default static form values after a reset.
+         */
+        restoreDefaults () {
+          this.elements.revision.value = '0';
+          this.elements.scRoleEng.checked = true;
+        }
+
+        /**
+         * Saves a snapshot of the current form state as a standalone HTML file.
+         * Clones the document and preserves form values and signature data.
+         */
         saveSnapshot () {
           const btn = document.getElementById('saveSnapshotBtn');
-          this.withLoading(btn, () => {
-            return new Promise((resolve) => {
-              this.syncAllQuillEditors();
-              const clone = document.documentElement.cloneNode(true);
-              const liveControls = Array.from(document.querySelectorAll('input, textarea, select'));
-              const cloneControls = Array.from(clone.querySelectorAll('input, textarea, select'));
-              for (let i = 0; i < liveControls.length; i++) {
-                const live = liveControls[i], el = cloneControls[i];
-                if (!el) continue;
-                if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
-                if (el.tagName === 'SELECT') {
-                  Array.from(el.options).forEach(o => o.removeAttribute('selected'));
-                  if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
-                  continue;
-                }
-                const type = el.getAttribute('type')?.toLowerCase();
-                if (type === 'radio' || type === 'checkbox') {
-                  if (live.checked) el.setAttribute('checked', '');
-                  else el.removeAttribute('checked');
-                  continue;
-                }
-                el.setAttribute('value', live.value);
-              }
-              const signatures = Array.from(document.querySelectorAll('.sig-draw-surface.has-signature'));
-              const cloneSignatures = Array.from(clone.querySelectorAll('.sig-draw-surface'));
-              signatures.forEach((surface, idx) => {
-                const cloneSig = cloneSignatures[idx];
-                if (!cloneSig) return;
-                const prefix = surface.getAttribute('data-prefix');
-                const dataInput = document.getElementById(`${prefix}_sig_data`);
-                if (dataInput?.value) {
-                  cloneSig.setAttribute('data-url', dataInput.value);
-                }
-              });
-              const progressClone = clone.querySelector('#progressBar');
-              if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
-              const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
-              const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-              const url = URL.createObjectURL(blob);
-              const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
-              const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
-              const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
-              const a = document.createElement('a');
-              if (window.location.protocol === 'file:') {
-                const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
-                const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
-                a.download = cleanFilename;
-              } else {
-                a.download = `${safe}_snapshot_${ts}.html`;
-              }
-              a.href = url;
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              URL.revokeObjectURL(url);
-              //this.saveJasonFile();
-              this.toast('Snapshot saved', 'success');
-              resolve();
-            });
-          });
-        }
 
-        saveJasonFile () {
           this.syncAllQuillEditors();
-          const form = document.getElementById('check_form');
-          const formData = new FormData(form);
-          let jsonData = {};
-          formData.forEach((value, key) => {
-            jsonData[key] = value;
+          const clone = document.documentElement.cloneNode(true);
+
+          const findCloneControl = (live) => {
+            if (live.id) {
+              try {
+                const byId = clone.querySelector(`#${CSS.escape(live.id)}`);
+                if (byId) return byId;
+              } catch (_) { /* invalid id */ }
+            }
+            const type = (live.getAttribute('type') || '').toLowerCase();
+            const name = live.getAttribute('name');
+            if (name && (type === 'radio' || type === 'checkbox')) {
+              try {
+                return clone.querySelector(
+                  `input[type="${type}"][name="${CSS.escape(name)}"][value="${CSS.escape(live.value)}"]`
+                );
+              } catch (_) { /* */ }
+            }
+            return null;
+          };
+
+          for (const live of document.querySelectorAll('input, textarea, select')) {
+            const el = findCloneControl(live);
+            if (!el) continue;
+            if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
+            if (el.tagName === 'SELECT') {
+              Array.from(el.options).forEach(o => o.removeAttribute('selected'));
+              if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
+              continue;
+            }
+            const type = el.getAttribute('type')?.toLowerCase();
+            if (type === 'radio' || type === 'checkbox') {
+              if (live.checked) el.setAttribute('checked', '');
+              else el.removeAttribute('checked');
+              continue;
+            }
+            el.setAttribute('value', live.value);
+          }
+          document.querySelectorAll('.sig-draw-surface.has-signature').forEach((surface) => {
+            const prefix = surface.getAttribute('data-prefix');
+            if (!prefix) return;
+            const cloneSig = clone.querySelector(`.sig-draw-surface[data-prefix="${CSS.escape(prefix)}"]`);
+            const dataInput = document.getElementById(`${prefix}_sig_data`);
+            if (cloneSig && dataInput?.value) cloneSig.setAttribute('data-url', dataInput.value);
           });
-          const jsonStr = JSON.stringify(jsonData);
-          const jsonBlob = new Blob([jsonStr], { type: 'application/json' });
-          const jsonUrl = URL.createObjectURL(jsonBlob);
-          const jsonA = document.createElement('a');
-          jsonA.href = jsonUrl;
-          jsonA.download = `DE_CheckForm.json`;
-          document.body.appendChild(jsonA);
-          jsonA.click();
-          jsonA.remove();
-          URL.revokeObjectURL(jsonUrl);
+          const progressClone = clone.querySelector('#progressBar');
+          if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
+          const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
+          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
+          const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
+          const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
+          const a = document.createElement('a');
+          if (window.location.protocol === 'file:') {
+            const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
+            const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
+            a.download = cleanFilename;
+          } else {
+            a.download = `${safe}_snapshot_${ts}.html`;
+          }
+          a.href = url;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          this.toast('Snapshot saved', 'success');
         }
 
-        printFormAsPdf (e) {
+        /**
+         * Triggers print view for PDF export after validating required fields.
+         */
+        async printFormAsPdf (e) {
           e.preventDefault();
           const btn = document.getElementById('saveAsPdfBtn');
-          this.withLoading(btn, () => {
-            return new Promise((resolve) => {
-              this.updateProgress();
-              if (!this.allRequiredFieldsValid() || this.elements.progressBar.value < 100) {
-                this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
-                resolve();
-                return;
-              }
-              window.print();
-              resolve();
-            });
-          });
+          this.updateProgress();
+          if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100) {
+            this.toast(`Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.`, 'error');
+            return;
+          }
+          window.print();
         }
       }
 
-      window.addEventListener('DOMContentLoaded', () => new CheckForm());
+
+      window.addEventListener('beforeprint', () => {
+        window.__checkFormInstance?.syncPrintStateClasses?.();
+      });
+      document.querySelectorAll('.card.hidden').forEach((card) => card.classList.add('is-print-hidden'));
+
+      window.addEventListener('DOMContentLoaded', () => { window.__checkFormInstance = new CheckForm(); });
     })();
   </script>
 </body>

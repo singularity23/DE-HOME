@@ -1,0 +1,194 @@
+<html>
+<!-- Start - Section: 'Useful helpers:' -->
+<div class="box">
+    <div class="box-head">Useful helpers:</div>
+    <h1>CYME / CymPy Cheat Sheet</h1>
+    <h2>1) Import and entry points</h2>
+    <pre><code class="language-python">import cympy
+from cympy import app, study, enums, sim, eq, dm
+</code></pre>
+
+    <ul>
+        <li><code>cympy.GetInputParameter(name)</code></li>
+        <li><code>cympy.GetParameterAsText(name)</code></li>
+        <li><code>cympy.QueryInfo(keyword, obj)</code></li>
+        <li><code>cympy.GetMessages()</code></li>
+    </ul>
+    <hr>
+    <h2>2) Study lifecycle</h2>
+    <pre><code class="language-python">study.New()
+study.Open("path/to/file")
+study.Save("path/to/file")
+study.Close()
+</code></pre>
+    <p>Project structure:</p>
+    <pre><code class="language-python">study.NewProject("MyProject", enums.ProjectMode.Normal)
+study.AddSubProject("Sub1", "TYPE_ID")
+study.AddScenario("Scenario1")
+</code></pre>
+    <p>Time/context:</p>
+    <pre><code class="language-python">study.SetCurrentDate(datetime.datetime.now())
+study.SetPosition("OBJECT_ID", enums.StudyPosition.Beginning)
+</code></pre>
+    <hr>
+    <h2>3) Networks</h2>
+    <pre><code class="language-python">networks = study.ListNetworks()
+network = study.GetNetwork("NET1")
+</code></pre>
+    <pre><code class="language-python">study.LoadNetwork("NET1")
+study.UnloadNetwork("NET1")
+</code></pre>
+    <pre><code class="language-python">study.AddNetwork("NET1", enums.NetworkType.Substation)
+</code></pre>
+    <hr>
+    <h2>4) Topology objects</h2>
+    <h3>Nodes</h3>
+    <pre><code class="language-python">node = study.GetNode("NODE1")
+node.ID
+node.GetValue("PropertyName")
+node.SetValue("Value", "PropertyName")
+</code></pre>
+    <h3>Sections</h3>
+    <pre><code class="language-python">section = study.GetSection("SEC1")
+section.ID
+section.GetValue("PropertyName")
+section.SetValue("Value", "PropertyName")
+section.ListDevices()
+</code></pre>
+    <h3>Devices</h3>
+    <pre><code class="language-python">device = study.GetDevice("DEV1", enums.DeviceType.Transformer)
+device.DeviceNumber
+device.DeviceType
+device.GetValue("PropertyName")
+device.SetValue("Value", "PropertyName")
+</code></pre>
+    <h3>Instruments</h3>
+    <pre><code class="language-python">inst = study.GetInstrument("INST1", enums.InstrumentType.Voltmeter)
+inst.GetValue("PropertyName")
+inst.SetValue("Value", "PropertyName")
+</code></pre>
+    <hr>
+    <h2>5) Build and edit the network</h2>
+    <pre><code class="language-python">study.AddSection("SEC1", "NET1", "DEV1", enums.DeviceType.Transformer, "NODE_A", "NODE_B")
+study.Connect("NODE_A", "NODE_B")
+study.Disconnect("SEC1", "NODE_A")
+study.MoveDevice("DEV1", enums.DeviceType.Transformer, "SEC2")
+study.DeleteDevice("DEV1", enums.DeviceType.Transformer)
+</code></pre>
+    <hr>
+    <h2>6) Query values</h2>
+    <pre><code class="language-python">study.QueryInfoNode("NominalKVLL", "NODE1")
+study.QueryInfoDevice("IAout", "DEV1", enums.DeviceType.Transformer)
+study.QueryInfoSection("Length", "SEC1")
+study.QueryInfo("SomeKeyword", device_or_node_or_instrument)
+</code></pre>
+    <p>Generic object access:</p>
+    <pre><code class="language-python">obj.GetValue("PropertyName")
+obj.SetValue("Value", "PropertyName")
+obj.GetUDD("KeywordID")
+obj.SetUDD("Value", "KeywordID")
+</code></pre>
+    <hr>
+    <h2>7) Loads and customers</h2>
+    <pre><code class="language-python">load = study.GetLoad("DEV1", enums.LoadType.Load)
+load.GetValue("PropertyName")
+load.SetValue("Value", "PropertyName", "CUSTOMER1", enums.Phase.A, "DEFAULT")
+</code></pre>
+    <pre><code class="language-python">study.ListCustomerTypes()
+study.GetCustomerType("Residential")
+</code></pre>
+    <hr>
+    <h2>8) Simulation</h2>
+    <h3>Load flow</h3>
+    <pre><code class="language-python">lf = sim.LoadFlow()
+lf.Run(["NET1"])
+</code></pre>
+    <h3>Load allocation</h3>
+    <pre><code class="language-python">la = sim.LoadAllocation()
+la.SetValue("Method", "Method")
+la.Run(["NET1"])
+</code></pre>
+    <h3>Short circuit</h3>
+    <pre><code class="language-python">sc = sim.ShortCircuit()
+sc.Run(["NET1"])
+</code></pre>
+    <h3>ANSI / IEC variants</h3>
+    <pre><code class="language-python">sc_ansi = sim.ShortCircuitANSI()
+sc_ansi.Run(["NET1"])
+
+sc_iec = sim.ShortCircuitIEC()
+sc_iec.Run(["NET1"])
+</code></pre>
+    <hr>
+    <h2>9) Equipment library</h2>
+    <pre><code class="language-python">eq_obj = eq.GetEquipment("EQ1", enums.EquipmentType.Transformer)
+eq.Add("EQ2", enums.EquipmentType.Transformer)
+eq.ListEquipments(enums.EquipmentType.Transformer)
+eq.Delete("EQ2", enums.EquipmentType.Transformer)
+</code></pre>
+    <hr>
+    <h2>10) Useful enums</h2>
+    <pre><code class="language-python">enums.DeviceType.Transformer
+enums.DeviceType.Breaker
+enums.DeviceType.Source
+enums.EquipmentType.Transformer
+enums.Phase.A
+enums.Phase.BC
+enums.Phase.ABC
+enums.LoadType.Load
+enums.NetworkType.Substation
+</code></pre>
+    <hr>
+    <h2>11) Useful CYME helpers</h2>
+    <pre><code class="language-python">for prop in dm.Describe("Device"):
+    print(prop.Name, "-&gt;", prop.Type, ":", prop.Description)
+
+for kw in app.ListKeywords():
+    print(kw)
+
+kw = app.GetKeyword("NominalKVLL")
+print(kw)
+</code></pre>
+    <hr>
+    <h2>12) Beginner recipes</h2>
+    <h3>Read a device property</h3>
+    <pre><code class="language-python">dev = study.GetDevice("DEV1", enums.DeviceType.Transformer)
+print(dev.GetValue("NominalKVLL"))
+</code></pre>
+    <h3>Read a node property</h3>
+    <pre><code class="language-python">node = study.GetNode("NODE1")
+print(study.QueryInfoNode("$NetworkId$", "NODE1"))
+</code></pre>
+    <h3>Run load flow</h3>
+    <pre><code class="language-python">lf = sim.LoadFlow()
+lf.Run(["NET1"])
+</code></pre>
+    <h3>List all devices</h3>
+    <pre><code class="language-python">for d in study.ListDevices():
+    print(d.DeviceNumber, d.DeviceType)
+</code></pre>
+
+    <hr>
+    <h2>13) Mental model</h2>
+
+    <ul>
+        <li>
+            <code>Study</code> = project container
+        </li>
+        <li>
+            <code>Network</code> = electrical model
+        </li>
+        <li>
+            <code>Node / Section / Device</code> = topology elements
+        </li>
+        <li> <code>GetValue / SetValue</code> = property access </li>
+        <li><code>QueryInfo*</code> = keyword-based read </li>
+        <li><code>Sim</code> objects = analysis engines
+        </li>
+    </ul>
+
+
+</div>
+
+</html>
+<!-- End - Section: 'Useful helpers:' -->

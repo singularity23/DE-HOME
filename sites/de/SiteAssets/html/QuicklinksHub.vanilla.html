@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuickLinks Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bch-jay: #0074a4;
+      --bch-sea: #05a1c6;
+      --bch-sea-deep: #10a3c8;
+      --bch-spruce: #004f6c;
+      --bch-ice: #ffffff;
+      --bch-hemlock: #046a38;
+      --bch-grass: #48a739;
+      --bch-moss: #bcd19b;
+      --bch-arbutus: #fa4616;
+      --bch-sunset: #e8927c;
+      --bch-quartz: #fcd299;
+
+      --bch-granite: #3e3935;
+      --bch-stone: #9c948d;
+      --bch-sand: #cbc4bc;
+      --bch-paper: #f5f3f2;
+      --bch-paper-2: #f5f4f3;
+      --bch-line: #e4ded9;
+      --bch-line-strong: #cbc4bc;
+      --bch-ink-60: #6c6661;
+      --bch-ink-40: #9c948d;
+      --surface-page: var(--bch-paper);
+      --surface-card: var(--bch-ice);
+      --text-strong: var(--bch-granite);
+      --text-body: var(--bch-granite);
+      --text-muted: var(--bch-ink-60);
+      --text-subtle: var(--bch-ink-40);
+      --text-on-brand: var(--bch-ice);
+      --text-link: var(--bch-spruce);
+      --text-link-hover: var(--bch-arbutus);
+      --border-subtle: var(--bch-line);
+      --border-default: var(--bch-line-strong);
+      --border-brand: var(--bch-sea);
+      --action-primary: var(--bch-jay);
+      --action-primary-hover: var(--bch-spruce);
+      --status-info-surface: #e4f4f9;
+      --status-danger-surface: #fde8e1;
+      --font-display: 'GT Haptik', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-body: Arial, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --radius-sm: 8px;
+      --radius-pill: 999px;
+      --radius-xs: 4px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+      --duration-fast: 120ms;
+      --duration-base: 180ms;
+      --ease-standard: ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+    }
+
+    body {
+      background: var(--surface-page);
+      font-family: var(--font-body);
+      color: var(--text-body);
+    }
+
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: 400;
+      font-style: normal;
+      line-height: 1;
+    }
+
+    a {
+      color: var(--text-link);
+    }
+
+    a:hover {
+      color: var(--text-link-hover);
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--bch-spruce);
+      color: var(--bch-ice);
+      padding: 40px 24px 30px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      right: -40px;
+      bottom: -30px;
+      height: 230px;
+      opacity: 0.16;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 24px 0px;
+    }
+
+    .hero-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .hero-brand img {
+      height: 26px;
+      width: auto;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 38px;
+      letter-spacing: -0.015em;
+      line-height: 1.02;
+    }
+
+    .hero-sub {
+      margin: 8px 0 22px;
+      font-size: 15px;
+      line-height: 1.5;
+      opacity: 0.85;
+      max-width: 560px;
+    }
+
+    .hero-count {
+      margin: 12px;
+      font-size: 12px;
+      opacity: 0.8;
+      padding: 6px 14px;
+      background: var(--bch-sea);
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+
+    }
+
+    /* SEARCH FIELD */
+    .search-form {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 620px;
+      font-family: var(--font-body);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      font-size: 22px;
+      color: var(--text-subtle);
+      pointer-events: none;
+      transition: color var(--duration-base) var(--ease-standard);
+    }
+
+    .search-form.focus .search-icon {
+      color: var(--action-primary);
+    }
+
+    .search-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 15px 22px 15px 52px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-body);
+      background: var(--surface-card);
+      border: 2px solid var(--border-brand);
+      outline: none;
+      box-shadow: var(--shadow-sm);
+      transition: border-color var(--duration-base) var(--ease-standard), box-shadow var(--duration-base) var(--ease-standard);
+    }
+
+    .search-input:focus {
+      border-color: var(--action-primary);
+      box-shadow: 0 0 0 4px rgba(0, 79, 108, 0.1);
+    }
+
+    /* MAIN / MASONRY */
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 24px 64px;
+    }
+
+    .masonry {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: 20px;
+    }
+
+    /* LINK BOX */
+    .linkbox {
+      break-inside: avoid;
+      margin: 0 0 20px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      font-family: var(--font-body);
+    }
+
+    .linkbox-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      border-top: 6px solid var(--bch-sea);
+    }
+
+    .linkbox-head .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    .linkbox-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.075em;
+      color: var(--text-strong);
+    }
+
+    .linkbox ul {
+      list-style: none;
+      margin: 0;
+      padding: 8px 0;
+    }
+
+    .linkbox a {
+      display: block;
+      padding: 8px 18px;
+      font-size: 14px;
+      line-height: 1.35;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all var(--duration-fast) var(--ease-standard);
+    }
+
+    .linkbox a:hover {
+      color: var(--text-link-hover);
+      border-left-color: var(--bch-arbutus);
+      background: rgba(0, 79, 108, 0.05);
+    }
+
+    .link-tag {
+      margin-left: 6px;
+      padding: 1px 5px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-radius: var(--radius-xs);
+    }
+
+    .link-tag.update {
+      background: var(--status-info-surface);
+      color: var(--bch-spruce);
+    }
+
+    .link-tag.new {
+      background: var(--status-danger-surface);
+      color: var(--bch-arbutus);
+    }
+
+    .sublinks {
+      padding: 0 0 4px 0 !important;
+    }
+
+    .sublinks a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 18px 5px 40px !important;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-left: none !important;
+      background: none !important;
+    }
+
+    .sublinks a:hover {
+      color: var(--text-link-hover);
+    }
+
+    .sublinks .material-symbols-outlined {
+      font-size: 15px;
+      color: var(--bch-stone);
+    }
+
+    .sublinks .sub-label {
+      border-bottom: 1.5px dotted currentColor;
+    }
+
+    /* NO RESULTS */
+    .no-results {
+      text-align: center;
+      padding: 64px 20px;
+      color: var(--text-muted);
+    }
+
+    .no-results .material-symbols-outlined {
+      font-size: 52px;
+      color: var(--bch-sand);
+    }
+
+    .no-results h2 {
+      margin: 14px 0 6px;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--text-strong);
+    }
+
+    .no-results p {
+      margin: 0 0 18px;
+      font-size: 14px;
+    }
+
+    .clear-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 14px;
+      min-height: 32px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--action-primary);
+      background: var(--surface-card);
+      border: 1.5px solid var(--action-primary);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: background var(--duration-base) var(--ease-standard);
+    }
+
+    .clear-btn:hover {
+      background: var(--status-info-surface);
+    }
+
+    .clear-btn .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    .feedback-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 14px;
+      min-height: 32px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      color: var(--bch-ice);
+      background: var(--action-accent);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transform: none;
+      transition: background var(--duration-base) var(--ease-standard), transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-base) var(--ease-standard);
+      opacity: 1;
+      white-space: nowrap;
+      background: var(--bch-arbutus);
+
+    }
+
+    .feedback-button:hover {
+      background: var(--bch-sunset);
+      color: var(--bch-ink-60);
+      box-shadow: var(--shadow-md);
+    }
+
+    .mail-symbol {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .feedback-actions {
+      margin: 12px;
+    }
+
+    .compaign-symbol {
+      font-size: 21px;
+    }
+
+    .feedback-insde,
+    .hero-inside {
+      display: contents;
+    }
+
+    .hero-inside {
+      max-width: 620px;
+      width: 100%;
+      display: flex;
+    }
+
+    .feedback-header {
+      background: var(--bch-arbutus);
+      color: var(--bch-ice);
+      padding: 15px 15px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feedback {
+      max-width: 380px;
+      background: var(--surface-card);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+
+    }
+
+    .functions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      justify-content: space-between;
+      align-items: end;
+    }
+
+    .function-1,
+    .function-2 {
+      min-height: 110px;
+    }
+
+    footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+      font-size: 12px;
+      color: var(--text-subtle);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    footer img {
+      height: 15px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="hero">
+    <img class="hero-bg" src="powered_by_water_graphic.png" alt="">
+    <div class="hero-inner">
+      <div class="hero-brand">
+        <img src="bch-logo-white-rgb.svg" alt="BC Hydro">
+        <span class="hero-eyebrow">Distribution Engineering</span>
+      </div>
+      <h1 class="hero-title">QuickLinks Hub</h1>
+      <p class="hero-sub">Every frequently-used DE site in one place. Start typing to filter across categories, links,
+        and sub-links.</p>
+      <div class="functions">
+        <div class="function-1">
+          <div class="search-form" id="searchForm">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input class="search-input" id="searchInput" type="search" placeholder="Search for websites, tools, teams…"
+              autocomplete="off">
+          </div>
+          <div class="hero-inside">
+            <div class="hero-count" id="countLabel"></div>
+          </div>
+        </div>
+        <div class="function-2">
+          <div class="feedback">
+            <div class="feedback-header">
+              <span class="material-symbols-outlined compaign-symbol">campaign</span>Something out of
+              date?
+            </div>
+            <div class="feedback-text">
+              <div class="feedback-actions">
+                <div class="feedback-inside">
+                  <button type="button" class="feedback-button"><span
+                      class="material-symbols-outlined mail-symbol">mail</span>Send
+                    feedback</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+    <div class="masonry" id="results"></div>
+    <div class="no-results" id="noResults" style="display: none">
+      <span class="material-symbols-outlined">search_off</span>
+      <h2 id="noResultsTitle">No matches</h2>
+      <p>Try a different term, or clear the search to see everything.</p>
+      <button class="clear-btn" id="clearBtn" type="button">
+        <span class="material-symbols-outlined">restart_alt</span>Clear search
+      </button>
+    </div>
+  </main>
+
+  <footer>
+    <img src="bch-logo-dark-rgb.svg" alt="BC Hydro">
+    <span>· Quick access to all DE-related sites · Bookmark this page · Powered by water.</span>
+  </footer>
+
+  <script>
+    ' use strict';
+    var CATEGORIES = [
+      {
+        title: 'Administrative',
+        icon: 'badge',
+        accent: 'var(--bch-spruce)',
+        links: [
+          {
+            label: 'Engineering HydroShare',
+            href: '#',
+          },
+          { label: 'Engineering Resources & Templates', href: '#' },
+          {
+            label: 'Charge Codes F25',
+            href: '#',
+          },
+          { label: 'E13 Desk Booking', href: '#' },
+          {
+            label: 'DELT',
+            href: '#',
+            title: 'Distribution Engineering Team Leads',
+            sublinks: [
+              { label: 'Business Review', href: '#' },
+              {
+                label: 'ScoreCard',
+                href: '#',
+              },
+            ],
+          },
+          { label: 'Employee Onboarding', href: '#' },
+          {
+            label: 'OPPRA',
+            href: '#',
+            title: 'Online Performance Planning & Review Application',
+          },
+          {
+            label: 'CLRA Solution Office',
+            href: '#',
+            title: 'Contingent Labour Resource Augmentation',
+            tag: 'new',
+          },
+          {
+            label: 'RDE Request Tracker',
+            href: '#',
+            tag: 'new',
+          },
+        ],
+      },
+      {
+        title: 'Teams',
+        icon: 'groups',
+        accent: 'var(--bch-jay)',
+        links: [
+          { label: 'DE Org Chart', href: '#' },
+          {
+            label: 'Lower Mainland North',
+            href: '#',
+          },
+          { label: 'Lower Mainland South', href: '#' },
+          {
+            label: 'Interior & NIA',
+            href: '#',
+            title: 'Non Integrated Area',
+          },
+          { label: 'Vancouver Island', href: '#' },
+          {
+            label: 'Distribution Civil Engineering',
+            href: '#',
+          },
+          {
+            label: 'Specialization Teams',
+            sublinks: [
+              {
+                label: 'Protection & Modelling',
+                href: '#',
+              },
+              { label: 'Distribution Feeders', href: '#' },
+              {
+                label: 'Applied Engineering',
+                href: '#',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Tools & Applications',
+        icon: 'build',
+        accent: 'var(--bch-sea-deep)',
+        links: [
+          {
+            label: 'DesignHub',
+            href: '#',
+          },
+          { label: 'JotForm', href: '#' },
+          {
+            label: 'IEDG Application Site',
+            href: '#',
+            title: 'Intelligent Electronic Device Gateway',
+          },
+          {
+            label: 'AAG for IEDG',
+            href: '#',
+            title: 'Admin Access Gateway',
+          },
+          {
+            label: 'ASPEN Relay Database',
+            href: '#',
+            sublinks: [
+              {
+                label: 'ASPEN PN Query',
+                href: '#',
+              },
+            ],
+          },
+          { label: 'P&C Bus Fault Summary', href: '#', tag: 'update' },
+          {
+            label: 'Drawings',
+            sublinks: [
+              { label: 'McLaren Drawings Search', href: '#' },
+              {
+                label: 'DE CADD Drafting Request',
+                href: '#',
+              },
+            ],
+          },
+          {
+            label: 'Databases',
+            sublinks: [
+              {
+                label: 'EAS',
+                href: '#',
+              },
+              { label: 'BCH ArcGIS', href: '#' },
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Useful Links',
+        icon: 'link',
+        accent: 'var(--bch-hemlock)',
+        links: [
+          {
+            label: 'Standards',
+            sublinks: [
+              { label: 'PQweb', href: '#' },
+              {
+                label: 'DSwiki',
+                href: '#',
+              },
+              { label: 'PAT', href: '#' },
+              { label: 'Wiki DI', href: '#' },
+            ],
+          },
+          {
+            label: 'SPOT',
+            href: '#',
+            title: 'Strategic Portfolio Optimization Tool',
+            tag: 'update',
+          },
+          {
+            label: 'Revenue Metering',
+            href: '#',
+          },
+          { label: 'DR', href: '#', title: 'Distribution Request' },
+          {
+            label: 'Operations',
+            sublinks: [
+              {
+                label: 'CROW',
+                href: '#',
+              },
+              { label: 'PowerOn Remote', href: '#' },
+              { label: 'DASM HydroShare', href: '#' },
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Technical References',
+        icon: 'menu_book',
+        accent: 'var(--bch-moss)',
+        links: [
+          {
+            label: 'Learning & Development',
+            href: '#',
+          },
+          { label: 'DE Knowledge OneNote', href: '#' },
+          {
+            label: 'LMN Knowledge Sharing Sessions',
+            href: '#',
+          },
+          { label: 'BCH Library and Archives', href: '#' },
+          {
+            label: 'Conductor Slap',
+            sublinks: [
+              { label: 'Technical Report', href: '#' },
+              {
+                label: 'Modelling / Calculator',
+                href: '#',
+              },
+            ],
+          },
+          { label: 'EATON CYME', href: '#' },
+        ],
+      },
+      {
+        title: 'Procedures & Guidelines',
+        icon: 'rule',
+        accent: 'var(--bch-quartz)',
+        links: [
+          {
+            label: 'External Design & Engineering DBR',
+            href: '#',
+            title: 'Design Business Requirements',
+            sublinks: [{ label: 'EDQA', href: '#' }],
+          },
+          {
+            label: "Owner's Engineering Guide",
+            href: '#',
+            tag: 'update',
+          },
+          {
+            label: 'CIPD Guide',
+            href: '#',
+            title: 'Capital Infrastructure Project Delivery',
+          },
+          { label: 'Voltage Management Guideline', href: '#' },
+          {
+            label: 'Protection Coordination Guideline',
+            href: '#',
+          },
+          {
+            label: 'Connection Variance Request Guide',
+            href: '#',
+            tag: 'new',
+          },
+        ],
+      },
+      {
+        title: 'Professional Practice',
+        icon: 'workspace_premium',
+        accent: 'var(--bch-sunset)',
+        links: [
+          { label: 'Respectful Workplace Program', href: '#' },
+          {
+            label: 'PGA – EGBC Home',
+            href: '#',
+            title: 'Professional Governance Act',
+          },
+          {
+            label: 'EGBC Filing — Guides and References',
+            href: '#',
+            title: 'Engineers and Geoscientists BC',
+          },
+          { label: 'CNS', href: '#', title: 'Controlled Numbering System' },
+          {
+            label: 'Signature Verification — verifiO',
+            href: '#',
+          },
+          { label: 'Field Review Tracking', href: '#' },
+          {
+            label: 'SuccessFactors Learning',
+            href: '#',
+          },
+        ],
+      },
+      {
+        title: 'Health & Safety',
+        icon: 'health_and_safety',
+        accent: 'var(--bch-arbutus)',
+        links: [
+          { label: 'Safety Framework', href: '#' },
+          {
+            label: 'SafeHub',
+            href: '#',
+          },
+          { label: 'PSSP', href: '#', title: 'Power System Safety Protection' },
+          {
+            label: 'Safety by Design',
+            sublinks: [
+              { label: 'OH Checklist', href: '#' },
+              { label: 'UG Checklist', href: '#' },
+            ],
+          },
+          {
+            label: 'Reported Safety Incidents',
+            href: '#',
+          },
+          { label: 'Emergency Response Plan', href: '#' },
+        ],
+      },
+      {
+        title: 'Others',
+        icon: 'more_horiz',
+        accent: 'var(--bch-stone)',
+        links: [
+          {
+            label: 'Flood Plan Revision',
+            href: '#',
+          },
+          { label: 'Telematics', href: '#' },
+          { label: 'Branded Templates', href: '#' },
+          {
+            label: 'IT Services',
+            sublinks: [
+              { label: 'Application Portal', href: '#' },
+              {
+                label: 'ServiceNow',
+                href: '#',
+              },
+            ],
+          },
+          { label: 'Business Travel', href: '#' },
+          {
+            label: 'Vehicle Booking',
+            sublinks: [
+              {
+                label: 'Edmonds Office',
+                href: '#',
+              },
+              { label: 'Victoria Office', href: '#' },
+            ],
+          },
+        ],
+      },
+    ];
+    var resultsEl = document.getElementById('results');
+    var noResultsEl = document.getElementById('noResults');
+    var noResultsTitleEl = document.getElementById('noResultsTitle');
+    var countLabelEl = document.getElementById('countLabel');
+    var searchInput = document.getElementById('searchInput');
+    var searchForm = document.getElementById('searchForm');
+    var clearBtn = document.getElementById('clearBtn');
+    function escapeHtml (str) {
+      return String(str).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function filterCategory (cat, q) {
+      if (cat.title && cat.title.toLowerCase().indexOf(q) !== -1) return cat;
+      var links = (cat.links || []).filter(function (link) {
+        var nameMatch = (link.label || '').toLowerCase().indexOf(q) !== -1;
+        var titleMatch = (link.title || '').toLowerCase().indexOf(q) !== -1;
+        var subMatch = (link.sublinks || []).some(function (s) {
+          return (s.label || '').toLowerCase().indexOf(q) !== -1;
+        });
+        return nameMatch || titleMatch || subMatch;
+      });
+      return links.length ? Object.assign({}, cat, { links: links }) : null;
+    }
+    function renderLinkBox (cat) {
+      var box = document.createElement('section');
+      box.className = 'linkbox';
+      var head = document.createElement('header');
+      head.className = 'linkbox-head';
+      head.style.borderTopColor = cat.accent;
+      if (cat.icon) {
+        var iconEl = document.createElement('span');
+        iconEl.className = 'material-symbols-outlined';
+        iconEl.style.color = cat.accent;
+        iconEl.textContent = cat.icon;
+        head.appendChild(iconEl);
+      }
+      var titleEl = document.createElement('h3');
+      titleEl.className = 'linkbox-title';
+      titleEl.textContent = cat.title;
+      head.appendChild(titleEl);
+      box.appendChild(head);
+      var ul = document.createElement('ul');
+      (cat.links || []).forEach(function (link) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.href = link.href || '#';
+        if (link.title) a.title = link.title;
+        a.innerHTML =
+          escapeHtml(link.label) + (link.tag ? ' <sup class="link-tag ' + link.tag + '">' + escapeHtml(link.tag) + '</sup>' : '');
+        li.appendChild(a);
+        if (link.sublinks && link.sublinks.length) {
+          var subUl = document.createElement('ul');
+          subUl.className = 'sublinks';
+          link.sublinks.forEach(function (sl) {
+            var subLi = document.createElement('li');
+            var subA = document.createElement('a');
+            subA.href = sl.href || '#';
+            subA.innerHTML =
+              '<span class="material-symbols-outlined">subdirectory_arrow_right</span><span class="sub-label">' +
+              escapeHtml(sl.label) +
+              '</span>';
+            subLi.appendChild(subA);
+            subUl.appendChild(subLi);
+          });
+          li.appendChild(subUl);
+        }
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+      return box;
+    }
+    function render () {
+      var q = searchInput.value.trim().toLowerCase();
+      var loaded = CATEGORIES.length > 0;
+      var categories = q
+        ? CATEGORIES.map(function (c) {
+          return filterCategory(c, q);
+        }).filter(Boolean)
+        : CATEGORIES;
+
+      var countAll = CATEGORIES.reduce(function (n, c) {
+        return n + (c.links ? c.links.length : 0);
+      }, 0);
+      var countShown = categories.reduce(function (n, c) {
+        return n + (c.links ? c.links.length : 0);
+      }, 0);
+
+      countLabelEl.textContent = !loaded
+        ? ''
+        : q
+          ? countShown +
+          ' link' +
+          (countShown === 1 ? '' : 's') +
+          ' in ' +
+          categories.length +
+          ' categor' +
+          (categories.length === 1 ? 'y' : 'ies')
+          : countAll + ' links across ' + CATEGORIES.length + ' categories';
+
+      var noResults = loaded && q.length > 0 && categories.length === 0;
+      resultsEl.style.display = noResults ? 'none' : '';
+      noResultsEl.style.display = noResults ? '' : 'none';
+
+      if (noResults) {
+        noResultsTitleEl.textContent = 'No matches for "' + searchInput.value + '"';
+        return;
+      }
+
+      resultsEl.innerHTML = '';
+      categories.forEach(function (cat) {
+        resultsEl.appendChild(renderLinkBox(cat));
+      });
+    }
+
+    searchInput.addEventListener('input', render);
+    searchInput.addEventListener('focus', function () {
+      searchForm.classList.add('focus');
+    });
+    searchInput.addEventListener('blur', function () {
+      searchForm.classList.remove('focus');
+    });
+    searchForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+    });
+    clearBtn.addEventListener('click', function () {
+      searchInput.value = '';
+      render();
+      searchInput.focus();
+    });
+
+    render();
+  </script>
+</body>
+
+</html>

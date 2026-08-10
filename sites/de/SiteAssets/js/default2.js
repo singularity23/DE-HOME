@@ -507,12 +507,14 @@ const createLinkElement = (link, categoryIndex, subheaderIndex, linkIndex) => {
       const sublinkEl = createElement('span');
       sublinkEl.innerHTML = subLink.class
         ? `
-        <a href="${subLink.url}" target="_blank" class="${subLink.class}">${subLink.name}</a>
-        <span>&nbsp;</span>
+        <a href="${subLink.url}" target="_blank" class="${subLink.class}">
+        <span class="material-symbols-outlined">subdirectory_arrow_right</span>
+        <span class="sub-link-text">${subLink.name}</span></a>
       `
         : `
-        <a href="${subLink.url}" target="_blank">${subLink.name}</a>
-        <span>&nbsp;</span>
+        <a href="${subLink.url}" target="_blank">        
+        <span class="material-symbols-outlined">subdirectory_arrow_right</span>
+        <span class="sub-link-text">${subLink.name}</span></a>
       `;
       sublinkContainer.appendChild(sublinkEl);
     });
