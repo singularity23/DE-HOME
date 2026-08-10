@@ -2276,7 +2276,7 @@
 
       <!-- Section 2: Direct Supervision (shown when Q1.11 is No) -->
       <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
-        <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
+        <div class="sec-head" id="sec2-head" aria-expanded="true" aria-controls="s2" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-2">2</div>
             <span class="sec-title">Direct Supervision</span>
@@ -2299,7 +2299,7 @@
 
       <!-- Section 3: Check -->
       <div class="card hidden" id="card-ch" data-prefix="ch" role="tablist">
-        <div class="sec-head" id="sec3-head" aria-expanded="false" aria-controls="s3" role="tab">
+        <div class="sec-head" id="sec3-head" aria-expanded="true" aria-controls="s3" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-3">3</div>
             <span class="sec-title">Check</span>
@@ -2424,7 +2424,7 @@
 
       <!-- Section 4: Peer Review -->
       <div class="card hidden" id="card-pr" data-prefix="pr" role="tablist">
-        <div class="sec-head" id="sec4-head" aria-expanded="false" aria-controls="s4" role="tab">
+        <div class="sec-head" id="sec4-head" aria-expanded="true" aria-controls="s4" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-4">4</div>
             <span class="sec-title">Peer Review</span>
@@ -2556,7 +2556,7 @@
       <!-- Section 5: Independent Review -->
 
       <div class="card hidden" id="card-ir" data-prefix="ir" role="tablist">
-        <div class="sec-head" id="sec5-head" aria-expanded="false" aria-controls="s5" role="tab">
+        <div class="sec-head" id="sec5-head" aria-expanded="true" aria-controls="s5" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-5">5</div>
             <span class="sec-title">Independent Structural Review</span>
@@ -2638,7 +2638,7 @@
 
       <!-- Section 6: Final Signatures -->
       <div class="card hidden" id="card-final" data-prefix="fT1" role="tablist">
-        <div class="sec-head" id="sec6-head" aria-expanded="false" aria-controls="s6" role="tab">
+        <div class="sec-head" id="sec6-head" aria-expanded="true" aria-controls="s6" role="tab">
           <div class="sec-left">
             <div class="sec-num" id="snum-6">6</div>
             <span class="sec-title">Appoint Tier 1 Reviewer &amp; Team Lead Signatures</span>
@@ -2829,12 +2829,12 @@
 
         static IR_ITEMS = [
           "Design code loadings and serviceability limits.",
-          "Material specifications and geotechnical recommendations. ",
+          "Material specifications and geotechnical recommendations.",
           "Concept and integrity of the gravity load resisting system.",
           "Concept and integrity of the lateral load resisting system (e.g., wind, seismic, lateral earth pressures).",
           "Drawing completeness and continuity of load paths.",
           "Design check of representative structural elements.",
-          "Review of representative structural details.",
+          "Review of representative structural details."
         ];
 
         static RISK_MAP = {
@@ -2876,6 +2876,11 @@
         static EMPTY_EDITOR_HTML = '<p><br></p>';
         static COMMENT_EDITOR_MIN_HEIGHT = 100;
 
+        static PILL_OPTIONS = {
+          binary: [['yes', 'Yes'], ['no', 'No'], ['na', ' ', true]],
+          standard: [['yes', 'Yes'], ['no', 'No'], ['na', 'N/A']]
+        };
+
         // ---------- Constructor ----------
         constructor() {
           this.elements = this.cacheElements();
@@ -2884,13 +2889,12 @@
           this.syncingNames = false;
           this.isRestored = false;
 
-          // Animation and Trap States
           this._progressRaf = 0;
           this._syncCommentsRaf = 0;
           this._sigRafId = 0;
           this._focusTrapHandler = null;
+          this._autosizeTimer = null;
 
-          // Event Handlers
           this._boundClick = this.handleGlobalClick.bind(this);
           this._boundChange = this.handleGlobalChange.bind(this);
           this._boundInput = this.handleGlobalInput.bind(this);
@@ -2899,9 +2903,6 @@
           this.init();
         }
 
-        /**
-         * Collects and returns the DOM elements used by the form.
-         */
         cacheElements () {
           const get = (id) => document.getElementById(id);
           return {
@@ -2926,6 +2927,7 @@
             chNameLabel: document.querySelector('label[for="ch_name"]'), chSigLabel: document.querySelector('#ch_sig'),
             checkerCommentsLabel: document.querySelector('label[id="for_checkerComments"]'),
             engineerResponseLabel: document.querySelector('label[id="for_engineerResponse"]'),
+            s1Body: get('s1'), s1Head: get('sec1-head'),
             s2Body: get('s2'), s2Head: get('sec2-head'), s3Body: get('s3'), s3Head: get('sec3-head'),
             s4Body: get('s4'), s4Head: get('sec4-head'), s5Body: get('s5'), s5Head: get('sec5-head'),
             s6Body: get('s6'), s6Head: get('sec6-head'),
@@ -2934,9 +2936,6 @@
           };
         }
 
-        /**
-         * Builds the section metadata used for progress tracking and visibility.
-         */
         buildSectionConfig () {
           const card = (id) => document.getElementById(id);
           return [
@@ -2948,16 +2947,7 @@
           ];
         }
 
-        // ---------- Shared utilities ----------
         isEitRole () { return this.getRadioValue('sc_role') === 'Engineer-in-Training'; }
-
-        cacheRowRadios () {
-          this.elements.sc11No = document.getElementById('sc11_no');
-          this.elements.sc11Yes = document.getElementById('sc11_yes');
-          this.elements.sc9No = document.getElementById('sc9_no');
-          this.elements.sc9Yes = document.getElementById('sc9_yes');
-        }
-
         isSc11No () { return this.elements.sc11No?.checked ?? false; }
         isSc9Yes () { return this.elements.sc9Yes?.checked ?? false; }
 
@@ -3004,18 +2994,19 @@
         }
 
         getCanvasCssSize (canvas) {
-          const rect = canvas.getBoundingClientRect();
-          return { width: canvas.offsetWidth || rect.width, height: canvas.offsetHeight || rect.height };
+          return { width: canvas.offsetWidth || canvas.clientWidth, height: canvas.offsetHeight || canvas.clientHeight };
         }
 
         getSigDataInput (prefix) { return document.getElementById(`${prefix}_sig_data`); }
         getSigSurface (prefix) { return document.querySelector(`.sig-draw-surface[data-prefix="${prefix}"]`); }
 
         syncLinkedFields (source, ...targets) {
-          const value = source.value;
+          const { value } = source;
           for (const field of targets) {
-            if (field) field.value = value;
-            field?.previousElementSibling?.removeAttribute('style');
+            if (field && field !== source) {
+              field.value = value;
+              field.previousElementSibling?.removeAttribute('style');
+            }
           }
           source.previousElementSibling?.removeAttribute('style');
         }
@@ -3028,7 +3019,7 @@
         }
 
         clearFormControls (root) {
-          root.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
+          root.querySelectorAll('input[type="radio"]:checked').forEach((r) => { r.checked = false; });
           root.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach((i) => { i.value = ''; });
           root.querySelectorAll('select').forEach((s) => { s.selectedIndex = 0; });
           root.querySelectorAll('textarea').forEach((t) => { t.value = ''; });
@@ -3036,14 +3027,27 @@
           root.querySelectorAll('.sig-draw-surface').forEach((e) => e.classList.remove('has-signature'));
           this.clearEditorContent(root);
           root.querySelectorAll('.comments-image-gallery').forEach((g) => g.replaceChildren());
-          this.syncAllComments();
+          this.syncAllCommentsToHidden();
           this.syncCssStateClasses();
         }
 
-        handleCommentFieldEvent (target) {
-          const editor = this.resolveCommentEditor(target);
-          if (!editor) return;
-          this.autosizeTextarea(editor);
+        handleFieldInteraction (target) {
+          if (!target) return;
+          const commentEditor = this.resolveCommentEditor(target);
+          if (commentEditor) {
+            this.autosizeCommentEditor(target);
+            this.scheduleSyncCommentsHeights();
+          } else if (target.tagName === 'TEXTAREA') {
+            target.style.height = 'auto';
+            target.style.height = `${target.scrollHeight}px`;
+          }
+
+          if ((target.matches('input') || target.matches('select')) && target.validity?.valid) {
+            target.previousElementSibling?.removeAttribute('style');
+            this.scheduleUpdateProgress();
+          }
+
+          this.updateLocalCssState(target);
         }
 
         scheduleUpdateProgress () {
@@ -3064,9 +3068,6 @@
           });
         }
 
-        /**
-         * Synchronizes CSS state classes globally. Only called on major state changes, not on every input.
-         */
         syncCssStateClasses () {
           document.querySelectorAll('.sec-right').forEach((el) => {
             el.classList.toggle('has-role-selector', !!el.querySelector('.role-selector'));
@@ -3079,11 +3080,8 @@
           });
         }
 
-        /**
-         * Targeted CSS state update for input events to prevent layout thrashing.
-         */
         updateLocalCssState (target) {
-          const metaCell = target.closest('.meta-cell');
+          const metaCell = target.closest?.('.meta-cell');
           if (metaCell) {
             metaCell.classList.toggle('is-disabled', !!metaCell.querySelector('input:disabled, select:disabled, textarea:disabled'));
           }
@@ -3095,11 +3093,9 @@
           });
         }
 
-        // ---------- Initialization ----------
         init () {
           const hasPersistedRows = !!this.elements.scRows?.querySelector('.check-row');
           if (!hasPersistedRows) this.buildAllRows();
-          else this.cacheRowRadios();
 
           this.isRestored = !!(
             hasPersistedRows &&
@@ -3125,10 +3121,8 @@
           this.buildRows(this.elements.chRows, 'ch', CheckForm.CH_ITEMS, CheckForm.BINARY_QUESTIONS.ch);
           this.buildRows(this.elements.prRows, 'pr', CheckForm.PR_ITEMS);
           this.buildRows(this.elements.irRows, 'ir', CheckForm.IR_ITEMS);
-          this.cacheRowRadios();
         }
 
-        // ---------- Signature Pad Methods ----------
         initSignaturePads () {
           this.signatureModal = document.getElementById('sigModal');
           this.signatureModalCanvas = document.getElementById('sigModalCanvas');
@@ -3177,9 +3171,9 @@
           };
         }
 
-        comment_getHtml (fieldId) { return this.getCommentAdapter(fieldId).getHtml(); }
+        getCommentHtml (fieldId) { return this.getCommentAdapter(fieldId).getHtml(); }
 
-        comment_setHtml (fieldId, html) {
+        setCommentHtml (fieldId, html) {
           const ad = this.getCommentAdapter(fieldId);
           ad.setHtml(html);
           const container = ad.getContainerEl();
@@ -3189,14 +3183,14 @@
           }
         }
 
-        comment_syncHidden (fieldId) {
+        syncCommentToHidden (fieldId) {
           const hidden = document.getElementById(fieldId);
-          if (hidden) hidden.value = this.comment_getHtml(fieldId);
+          if (hidden) hidden.value = this.getCommentHtml(fieldId);
         }
 
-        comment_syncAllHidden () { CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => this.comment_syncHidden(fieldId)); }
-        syncCommentField (fieldId) { this.comment_syncHidden(fieldId); }
-        syncAllComments () { this.comment_syncAllHidden(); }
+        syncAllCommentsToHidden () {
+          CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => this.syncCommentToHidden(fieldId));
+        }
 
         restoreComments () {
           CheckForm.COMMENT_FIELDS.forEach(([fieldId]) => {
@@ -3209,13 +3203,6 @@
             this.autosizeCommentEditor(editorEl);
             this.scheduleSyncCommentsHeights();
           });
-        }
-
-        setCommentHtml (fieldId, html) { this.comment_setHtml(fieldId, html); }
-
-        comment_autosize (fieldIdOrEl) {
-          const el = typeof fieldIdOrEl === 'string' ? document.getElementById(`${fieldIdOrEl}-editor`) : fieldIdOrEl;
-          if (el) this.autosizeCommentEditor(el);
         }
 
         insertCommentInlineImage (editor, dataUrl) {
@@ -3270,15 +3257,13 @@
           const reader = new FileReader();
           reader.onload = (e) => {
             this.insertCommentInlineImage(editor, e.target.result);
-            this.syncCommentFieldToHidden(fieldId);
+            this.syncCommentToHidden(fieldId);
             this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
             this.scheduleSyncCommentsHeights();
           };
           reader.readAsDataURL(file);
         }
-
-        syncCommentFieldToHidden (fieldId) { this.syncCommentField(fieldId); }
 
         bindCommentEditor (editor, fieldId, placeholder) {
           if (editor.dataset.editorBound === '1') return;
@@ -3287,10 +3272,9 @@
           editor.setAttribute('aria-multiline', 'true');
 
           editor.addEventListener('input', () => {
-            this.syncCommentFieldToHidden(fieldId);
+            this.syncCommentToHidden(fieldId);
             this.updateCommentEditorPlaceholder(editor);
-            this.autosizeCommentEditor(editor);
-            this.scheduleSyncCommentsHeights();
+            this.handleFieldInteraction(editor);
           });
           editor.addEventListener('blur', () => this.updateCommentEditorPlaceholder(editor));
           editor.addEventListener('paste', (e) => {
@@ -3335,7 +3319,10 @@
 
         autosizeCommentEditor (el) {
           if (!el) return;
-          this.setCommentEditorHeight(el, this.measureCommentEditorHeight(el));
+          clearTimeout(this._autosizeTimer);
+          this._autosizeTimer = setTimeout(() => {
+            this.setCommentEditorHeight(el, this.measureCommentEditorHeight(el));
+          }, 50); // Debounce to prevent layout thrashing during rapid input
         }
 
         bindQuillCommentEditor (container, fieldId) {
@@ -3343,7 +3330,7 @@
           if (!quill || !container) return;
           if (container._quillTextChangeHandler) quill.off('text-change', container._quillTextChangeHandler);
           container._quillTextChangeHandler = () => {
-            this.syncCommentField(fieldId);
+            this.syncCommentToHidden(fieldId);
             this.autosizeCommentEditor(container);
             this.scheduleSyncCommentsHeights();
           };
@@ -3401,7 +3388,7 @@
             editor.id = `${fieldId}-editor`;
             editor.innerHTML = this.buildCommentInitialHtml(initial, gallery);
             this.bindCommentEditor(editor, fieldId, placeholder);
-            this.syncCommentFieldToHidden(fieldId);
+            this.syncCommentToHidden(fieldId);
             this.updateCommentEditorPlaceholder(editor);
             this.autosizeCommentEditor(editor);
             this.scheduleSyncCommentsHeights();
@@ -3416,6 +3403,10 @@
         }
 
         initQuillEditors () {
+          if (this.quillEditors) {
+            Object.values(this.quillEditors).forEach(q => q?.disable?.());
+          }
+
           const quillConfig = {
             theme: 'snow',
             modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered' }], ['link'], ['clean']] }
@@ -3442,8 +3433,6 @@
           });
           this.scheduleSyncCommentsHeights();
         }
-
-        syncAllQuillEditors () { this.syncAllComments(); }
 
         changeSignatureTab (tabBtn) {
           if (!tabBtn) return;
@@ -3487,7 +3476,6 @@
           this.loadDataUrlIntoModalCanvas(this.getSigDataInput(prefix)?.value || '');
           this.signatureModal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
 
-          // Start animation and trap
           this.startCanvasAnimation();
           this.enableFocusTrap();
         }
@@ -3496,7 +3484,6 @@
           if (!this.signatureModal || !this.signatureModalCanvas) return;
           const prefix = this.activeSignaturePrefix;
 
-          // Stop animation and trap
           this.stopCanvasAnimation();
           this.disableFocusTrap();
 
@@ -3506,7 +3493,7 @@
             if (dataInput) dataInput.value = dataUrl;
             this.setSignaturePreview(prefix, dataUrl);
           }
-          const modalBtn = document.querySelector("a.btn-open-modal[data-prefix='" + prefix + "']");
+          const modalBtn = document.querySelector(`a.btn-open-modal[data-prefix='${prefix}']`);
           if (modalBtn) modalBtn.classList.remove('anchor-element');
           this.signatureModal.classList.remove('open');
           this.activeSignaturePrefix = null;
@@ -3628,7 +3615,6 @@
             if (this._sigRafId) { cancelAnimationFrame(this._sigRafId); this._sigRafId = 0; }
           };
 
-          // Reset time when opening
           const origOpen = this.openSignatureModal.bind(this);
           this.openSignatureModal = (prefix) => {
             origOpen(prefix);
@@ -3671,51 +3657,33 @@
           if (!container) return;
           container.innerHTML = '';
           const sectionNum = CheckForm.SECTION_NUM[prefix];
-          const pillOptions = (binary) => binary
-            ? [['yes', 'Yes'], ['no', 'No'], ['na', ' ', true]]
-            : [['yes', 'Yes'], ['no', 'No'], ['na', 'N/A']];
 
-          const fragment = document.createDocumentFragment();
-
-          items.forEach((text, idx) => {
+          const html = items.map((text, idx) => {
             const n = idx + 1;
             const isBinary = binarySet.has(n);
-            const row = document.createElement('div');
-            row.className = 'check-row';
-
-            const numSpan = document.createElement('span');
-            numSpan.className = 'check-num';
-            numSpan.textContent = `${sectionNum}.${n}`;
-
-            const textSpan = document.createElement('span');
-            textSpan.className = 'check-text';
-            textSpan.innerHTML = text;
-
-            const pillGroup = document.createElement('div');
-            pillGroup.className = `pill-group${isBinary ? ' pill-group--yes-no' : ''}`;
             const name = `${prefix}${n}`;
+            const options = isBinary ? CheckForm.PILL_OPTIONS.binary : CheckForm.PILL_OPTIONS.standard;
 
-            pillOptions(isBinary).forEach(([value, labelText, disabled]) => {
+            const optionsHtml = options.map(([value, labelText, disabled]) => {
               const id = `${name}_${value}`;
-              const radio = document.createElement('input');
-              radio.type = 'radio'; radio.name = name; radio.id = id; radio.value = value;
-              if (disabled) radio.disabled = true;
-              const label = document.createElement('label');
-              label.htmlFor = id; label.textContent = labelText;
-              if (disabled) label.setAttribute('disabled', '');
-              pillGroup.append(radio, label);
-            });
+              const disabledAttr = disabled ? 'disabled' : '';
+              return `<input type="radio" name="${name}" id="${id}" value="${value}" ${disabledAttr}>
+                  <label for="${id}">${labelText}</label>`;
+            }).join('');
 
-            const noticeStack = document.createElement('div');
-            noticeStack.className = 'row-notice-stack hidden';
-            noticeStack.id = `${name}_notice_stack`;
-            noticeStack.setAttribute('aria-live', 'polite');
+            return `
+          <div class="check-row">
+            <span class="check-num">${sectionNum}.${n}</span>
+            <span class="check-text">${text}</span>
+            <div class="pill-group${isBinary ? ' pill-group--yes-no' : ''}">
+              ${optionsHtml}
+            </div>
+            <div class="row-notice-stack hidden" id="${name}_notice_stack" aria-live="polite"></div>
+          </div>
+        `;
+          }).join('');
 
-            row.append(numSpan, textSpan, pillGroup, noticeStack);
-            fragment.appendChild(row);
-          });
-
-          container.appendChild(fragment);
+          container.innerHTML = html;
         }
 
         attachEventListeners () {
@@ -3760,12 +3728,13 @@
           reader.readAsDataURL(file);
         }
 
-        // ---------- Event Handlers ----------
         handleGlobalClick (e) {
-          const tabBtn = e.target.closest('.btn-sig-tab');
+          const target = e.target;
+
+          const tabBtn = target.closest('.btn-sig-tab');
           if (tabBtn) { e.preventDefault(); this.changeSignatureTab(tabBtn); return; }
 
-          const openSigBtn = e.target.closest('.btn-open-modal');
+          const openSigBtn = target.closest('.btn-open-modal');
           if (openSigBtn) {
             e.preventDefault();
             if (openSigBtn.hasAttribute('disabled') || openSigBtn.getAttribute('aria-disabled') === 'true') return;
@@ -3775,7 +3744,7 @@
             return;
           }
 
-          const clearInline = e.target.closest('.sig-draw-surface .image-thumbnail-remove');
+          const clearInline = target.closest('.sig-draw-surface .image-thumbnail-remove');
           if (clearInline) {
             e.preventDefault();
             const prefix = clearInline.getAttribute('data-prefix');
@@ -3787,7 +3756,7 @@
             return;
           }
 
-          const modalAction = e.target.closest('[data-action]');
+          const modalAction = target.closest('[data-action]');
           if (modalAction) {
             const action = modalAction.getAttribute('data-action');
             if (action === 'close-sig-modal') { e.preventDefault(); this.closeSignatureModal(false); return; }
@@ -3795,76 +3764,81 @@
             if (action === 'clear-sig-modal') { e.preventDefault(); this.clearModalSignature(); return; }
           }
 
-          const head = e.target.closest('.sec-head');
+          const head = target.closest('.sec-head');
           if (head && head.hasAttribute('aria-controls')) {
-            const interactive = e.target.closest('button, a, input, select, textarea, label, [role="tab"]');
+            const interactive = target.closest('button, a, input, select, textarea, label, [role="tab"]');
             if (!interactive || interactive === head) { e.preventDefault(); this.toggleSection(head); }
           }
 
-          if (e.target.classList.contains('risk-btn')) this.setRiskLevel(e.target.dataset.risk);
-
-          const clickedButton = e.target.closest('button');
-          const clearActions = {
-            clearWorkInfoBtn: () => this.clearSection('sec-info-body'),
-            clearSec1Btn: () => this.clearSection('s1'), clearSec2Btn: () => this.clearSection('s2'),
-            clearSec3Btn: () => this.clearSection('s3'), clearSec4Btn: () => this.clearSection('s4'),
-            clearSec5Btn: () => this.clearSection('s5'), clearSec6Btn: () => this.clearSection('s6'),
-            resetFormBtn: () => this.resetForm(), saveSnapshotBtn: () => this.saveSnapshot(),
-            saveAsPdfBtn: (ev) => this.printFormAsPdf(ev), dismissNoticeBtn: () => this.hideGlobalNotice()
-          };
-
-          if (clickedButton && clickedButton.id in clearActions) {
-            e.stopPropagation();
-            clearActions[clickedButton.id](e);
+          if (target.classList.contains('risk-btn')) {
+            this.setRiskLevel(target.dataset.risk);
+            return;
           }
+
+          const clickedButton = target.closest('button');
+          if (clickedButton) {
+            e.stopPropagation();
+            const actions = {
+              'clearWorkInfoBtn': () => this.clearSection('sec-info-body'),
+              'clearSec1Btn': () => this.clearSection('s1'),
+              'clearSec2Btn': () => this.clearSection('s2'),
+              'clearSec3Btn': () => this.clearSection('s3'),
+              'clearSec4Btn': () => this.clearSection('s4'),
+              'clearSec5Btn': () => this.clearSection('s5'),
+              'clearSec6Btn': () => this.clearSection('s6'),
+              'resetFormBtn': () => this.resetForm(),
+              'saveSnapshotBtn': () => this.saveSnapshot(),
+              'saveAsPdfBtn': () => this.printFormAsPdf(e),
+              'dismissNoticeBtn': () => this.hideGlobalNotice()
+            };
+
+            if (actions[clickedButton.id]) {
+              actions[clickedButton.id]();
+              this.syncSectionVisibility();
+              return;
+            }
+          }
+
           this.syncSectionVisibility();
         }
 
         handleGlobalChange (e) {
-          if (e.target.matches('input[type="radio"]')) this.dispatchRadioChange(e.target);
-          if (e.target.matches('input') || e.target.matches('select')) {
-            if (e.target.validity.valid) {
-              e.target.previousElementSibling?.removeAttribute('style');
-              this.scheduleUpdateProgress();
-            }
-          }
-          if (e.target.id === 'minCheckLevel') {
+          const target = e.target;
+          if (target.matches('input[type="radio"]')) this.dispatchRadioChange(target);
+          if (target.id === 'minCheckLevel') {
             this.syncDirectSupervision();
             this.syncSectionVisibility();
           }
-          const commentEditor = this.resolveCommentEditor(e.target);
-          if (commentEditor) this.handleCommentFieldEvent(commentEditor);
+          this.handleFieldInteraction(target);
         }
 
         dispatchRadioChange (radio) {
           this.scheduleUpdateProgress();
           const name = radio?.name || '';
-          if (name.startsWith('sc') && name === 'sc11') this.updateRoleLabels(false);
+
+          if (name === 'sc11') this.updateRoleLabels(false);
           if (name === 'sc_role') this.updateRoleLabels(true);
+
           this.showRiskConsistencyNotices();
+
           if (name === 'ch_c' || name === 'pr_c' || name === 'ir_c') {
             const prefix = radio.getAttribute('data-prefix');
             if (prefix) this.enableSignature(prefix);
             return;
           }
-          if (name.startsWith('ch')) { this.syncCheckWarning(); return; }
+
           this.syncSectionVisibility();
         }
 
         handleGlobalInput (e) {
-          const { target } = e;
+          const target = e.target;
           if (target.id === 'engineer' || target.id === 'sc_name') {
             this.syncLinkedFields(target, this.elements.scName, this.elements.engineer);
           } else if ((target.id === 'checker' || target.id === 'ch_name') && !this.elements.cardCh.classList.contains('hidden')) {
             this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
           }
-          const commentEditor = this.resolveCommentEditor(target);
-          if (commentEditor) this.handleCommentFieldEvent(commentEditor);
-          if ((target.matches('input') || target.matches('select')) && target.validity.valid) {
-            target.previousElementSibling?.removeAttribute('style');
-            this.scheduleUpdateProgress();
-          }
-          this.updateLocalCssState(target);
+
+          this.handleFieldInteraction(target);
         }
 
         enableSignature (prefix) {
@@ -3881,7 +3855,6 @@
           if (head && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); head.click(); }
         }
 
-        // ---------- UI State Updates ----------
         toggleSection (head) {
           head.classList.toggle('open');
           const body = document.getElementById(head.getAttribute('aria-controls'));
@@ -3918,62 +3891,42 @@
           const isEit = this.isEitRole();
           const level = this.getActiveRiskLevel();
           const exp = level ? CheckForm.RISK_MAP[level] : null;
-          const getVal = (n) => document.querySelector(`input[name="sc${n}"]:checked`)?.value;
 
-          const rules = [
-            {
-              q: 8,
-              blocks: () => {
-                const val = getVal(8);
-                if (exp && val && val !== 'na' && val !== exp.sc8) {
-                  return [{ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' }];
-                }
-                return [];
-              }
-            },
-            {
-              q: 9,
-              blocks: () => {
-                const val = getVal(9);
-                const b = [];
-                if (val === 'yes') {
-                  b.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete the <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn' });
-                  if (level === 'low') b.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
-                }
-                return b;
-              }
-            },
-            {
-              q: 10,
-              blocks: () => {
-                const val = getVal(10);
-                const b = [];
-                if (exp && val && val !== 'na' && val !== exp.sc10) {
-                  b.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
-                }
-                if (val === 'yes') {
-                  b.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank" rel="noopener noreferrer"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
-                }
-                return b;
-              }
-            },
-            {
-              q: 11,
-              blocks: () => {
-                const val = getVal(11);
-                const b = [];
-                if (isEit && val === 'yes') {
-                  b.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
-                }
-                if (val === 'no') {
-                  b.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn' });
-                }
-                return b;
-              }
-            }
-          ];
+          const sc8 = document.querySelector('input[name="sc8"]:checked')?.value;
+          const sc9 = document.querySelector('input[name="sc9"]:checked')?.value;
+          const sc10 = document.querySelector('input[name="sc10"]:checked')?.value;
+          const sc11 = document.querySelector('input[name="sc11"]:checked')?.value;
 
-          rules.forEach(({ q, blocks }) => this.renderNoticeStack('sc', q, blocks()));
+          if (exp && sc8 && sc8 !== 'na' && sc8 !== exp.sc8) {
+            this.renderNoticeStack('sc', 8, [{ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc8 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' }]);
+          } else {
+            this.renderNoticeStack('sc', 8, []);
+          }
+
+          const blocks9 = [];
+          if (sc9 === 'yes') {
+            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete the <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn' });
+            if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
+          }
+          this.renderNoticeStack('sc', 9, blocks9);
+
+          const blocks10 = [];
+          if (exp && sc10 && sc10 !== 'na' && sc10 !== exp.sc10) {
+            blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
+          }
+          if (sc10 === 'yes') {
+            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank" rel="noopener noreferrer"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
+          }
+          this.renderNoticeStack('sc', 10, blocks10);
+
+          const blocks11 = [];
+          if (isEit && sc11 === 'yes') {
+            blocks11.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
+          }
+          if (sc11 === 'no') {
+            blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn' });
+          }
+          this.renderNoticeStack('sc', 11, blocks11);
         }
 
         renderNoticeStack (prefix, n, blocks) {
@@ -4005,21 +3958,21 @@
           const q111No = this.isSc11No();
           const q9Yes = this.isSc9Yes();
           const risk = this.getActiveRiskLevel();
-          const isHighRisk = risk === 'high';
-          const isMidRisk = risk === 'medium';
-          const isLowRisk = risk === 'low';
           const minLevel = this.elements.minCheckLevel.value;
           const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
-          const showCheck = minLevel === 'Check' || q111No || isHighRisk || isEit;
-          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
+
+          const showCheck = minLevel === 'Check' || q111No || risk === 'high' || isEit;
+          const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || !!risk;
           const openS4 = chHasNo || minLevel === 'Peer Review';
-          const openS5 = !isLowRisk && q9Yes;
+          const openS5 = risk !== 'low' && q9Yes;
           const showChNotice = chHasNo;
-          const finalShown = isHighRisk;
+          const finalShown = risk === 'high';
+
           return { showCheck, showPeer, openS4, openS5, showChNotice, finalShown };
         }
 
         applyVisibilityState (state) {
+          this.setSectionOpen(this.elements.s1Head, this.elements.s1Body, true);
           this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
 
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
@@ -4045,7 +3998,6 @@
           this.syncCssStateClasses();
         }
 
-        syncCheckWarning () { this.syncSectionVisibility(); }
         syncSectionVisibility () { this.applyVisibilityState(this.computeVisibilityState()); }
 
         syncAllSectionVisibility () {
@@ -4080,8 +4032,10 @@
           this.syncingNames = true;
           const shown = !this.elements.cardCh.classList.contains('hidden');
           if (shown) {
-            if (this.elements.checker.value && !this.elements.chName.value) this.elements.chName.value = this.elements.checker.value;
-            else if (this.elements.chName.value && !this.elements.checker.value) this.elements.checker.value = this.elements.chName.value;
+            const checkerVal = this.elements.checker.value;
+            const chNameVal = this.elements.chName.value;
+            if (checkerVal && !chNameVal) this.elements.chName.value = checkerVal;
+            else if (chNameVal && !checkerVal) this.elements.checker.value = chNameVal;
           }
           this.syncingNames = false;
         }
@@ -4089,23 +4043,28 @@
         updateRoleLabels (resetSc11 = true) {
           const isEit = this.isEitRole();
           const { sc11No, sc11Yes } = this.elements;
+
           if (resetSc11) {
-            if (isEit) { if (sc11No) sc11No.checked = true; if (sc11Yes) sc11Yes.checked = false; }
-            else { if (sc11No) sc11No.checked = false; if (sc11Yes) sc11Yes.checked = false; }
+            if (sc11No) sc11No.checked = isEit;
+            if (sc11Yes) sc11Yes.checked = false;
           }
+
           this.elements.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
           this.elements.engineer.placeholder = 'Type full name';
           this.elements.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
           this.elements.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
           this.elements.engineerResponseLabel.textContent = isEit ? 'EIT Response' : 'Engineer Response';
+
           const usePor = this.isSc11No() || isEit;
           const secondRole = usePor ? 'Professional of Record' : 'Checker';
           const secondShort = usePor ? 'POR' : 'Checker';
+
           if (this.elements.wiLabel) this.elements.wiLabel.textContent = secondRole;
           if (this.elements.wiInput) this.elements.wiInput.placeholder = usePor ? 'POR name...' : 'Checker name...';
           if (this.elements.chNameLabel) this.elements.chNameLabel.textContent = `Name (${secondShort})`;
           if (this.elements.chSigLabel) this.elements.chSigLabel.textContent = usePor ? 'Signature (POR)' : 'Signature (Checker)';
           if (this.elements.checkerCommentsLabel) this.elements.checkerCommentsLabel.textContent = usePor ? 'POR Comments & Corrections' : 'Checker Comments & Corrections';
+
           this.updateProgress();
           this.syncDirectSupervision();
           this.syncSectionVisibility();
@@ -4113,7 +4072,6 @@
 
         getRadioValue (name) { return document.querySelector(`input[name="${name}"]:checked`)?.value ?? null; }
 
-        // ---------- Progress & Validation ----------
         updateProgress () {
           const counts = new Map();
           this.sectionConfig.forEach(s => {
@@ -4170,49 +4128,45 @@
         setSignatureEnabled (prefix, enabled) {
           const container = document.getElementById(`${prefix}SigContainer`);
           if (!container) return;
+
           container.classList.toggle('is-locked', !enabled);
-          container.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+          container.setAttribute('aria-disabled', String(!enabled));
+
           container.querySelectorAll('button, a.btn-open-modal').forEach((el) => {
-            if (el instanceof HTMLButtonElement) { el.disabled = !enabled; }
-            else {
-              el.toggleAttribute('disabled', !enabled);
-              el.setAttribute('aria-disabled', enabled ? 'false' : 'true');
-              el.tabIndex = enabled ? 0 : -1;
+            const isDisabled = !enabled;
+            if (el instanceof HTMLButtonElement) {
+              el.disabled = isDisabled;
+            } else {
+              el.toggleAttribute('disabled', isDisabled);
+              el.setAttribute('aria-disabled', String(isDisabled));
+              el.tabIndex = isDisabled ? -1 : 0;
             }
           });
+
           const fileInput = container.querySelector('input[type="file"]');
           if (!enabled && fileInput) fileInput.value = '';
         }
 
         allRequiredFieldsValid (print = false) {
-          const required = Array.from(document.querySelectorAll('.required-field-underline'));
-          const requiredShown = required.filter(el =>
-            !el.closest('.hidden') &&
-            !el.previousElementSibling?.disabled &&
-            !el.parentElement?.disabled
-          );
+          const inputs = document.querySelectorAll('input[required]:not([disabled]), select[required]:not([disabled]), textarea[required]:not([disabled])');
+          let isValid = true;
 
-          return requiredShown.every(el => {
-            const isValid = parseFloat(getComputedStyle(el).borderBottomWidth) === 0;
+          inputs.forEach(input => {
+            if (input.closest('.hidden')) return;
+
+            const elIsValid = input.checkValidity();
+            if (!elIsValid) isValid = false;
+
             if (print) {
-              const label = el.parentElement?.querySelector('.field-label');
-              if (label) label.style.color = isValid ? '' : '#d32f2f';
+              const wrapper = input.closest('.meta-cell');
+              const label = wrapper?.querySelector('.field-label');
+              const underline = wrapper?.querySelector('.required-field-underline');
+              if (label) label.style.color = elIsValid ? '' : '#d32f2f';
+              if (underline) underline.style.borderColor = elIsValid ? '' : '#d32f2f';
             }
-            return isValid;
           });
-        }
 
-        // ---------- Textarea Utilities ----------
-        autosizeTextarea (el) {
-          if (!el) return;
-          const commentEditor = this.resolveCommentEditor(el);
-          if (commentEditor) {
-            this.autosizeCommentEditor(commentEditor);
-            this.scheduleSyncCommentsHeights();
-            return;
-          }
-          el.style.height = 'auto';
-          el.style.height = el.scrollHeight + 'px';
+          return isValid;
         }
 
         syncCommentsHeights () {
@@ -4233,7 +4187,6 @@
           CheckForm.COMMENT_PAIRS.forEach(([aId, bId]) => syncPair(aId, bId));
         }
 
-        // ---------- Section Clearing ----------
         clearSection (sectionId) {
           const sec = document.getElementById(sectionId);
           if (!sec) return;
@@ -4241,7 +4194,7 @@
           this.removeCanvas(sec);
           this.updateProgress();
           if (sectionId === 's1') { this.syncDirectSupervision(); this.showRiskConsistencyNotices(); }
-          if (sectionId === 's3') { this.syncCheckWarning(); this.setSignatureEnabled('ch', false); }
+          if (sectionId === 's3') { this.syncSectionVisibility(); this.setSignatureEnabled('ch', false); }
           sec.querySelectorAll('textarea, .comments-inline-editor, .ql-container').forEach((t) => this.autosizeCommentEditor(t));
           if (sectionId === 's4') this.setSignatureEnabled('pr', false);
           if (sectionId === 's5') this.setSignatureEnabled('ir', false);
@@ -4252,7 +4205,6 @@
           this.toast('Section cleared', 'info');
         }
 
-        // ---------- Global Notice (Toast) ----------
         hideGlobalNotice () {
           this.elements.globalNotice.classList.add('hidden');
           clearTimeout(this.toastTimer);
@@ -4266,7 +4218,6 @@
           this.toastTimer = setTimeout(() => this.hideGlobalNotice(), 5000);
         }
 
-        // ---------- Form Actions ----------
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
           this.clearFormControls(document);
@@ -4279,7 +4230,7 @@
           this.syncAllSectionVisibility();
           this.showRiskConsistencyNotices();
           this.updateProgress();
-          this.syncAllComments();
+          this.syncAllCommentsToHidden();
           this.syncCommentsHeights();
           this.restoreDefaults();
           this.syncCssStateClasses();
@@ -4292,36 +4243,31 @@
         }
 
         saveSnapshot () {
-          this.syncAllQuillEditors();
+          this.syncAllCommentsToHidden();
           const clone = document.documentElement.cloneNode(true);
 
-          const findCloneControl = (live) => {
-            if (live.id) {
-              try {
-                const byId = clone.querySelector(`#${CSS.escape(live.id)}`);
-                if (byId) return byId;
-              } catch (_) { /* invalid id */ }
-            }
-            const type = (live.getAttribute('type') || '').toLowerCase();
-            const name = live.getAttribute('name');
-            if (name && (type === 'radio' || type === 'checkbox')) {
-              try {
-                return clone.querySelector(`input[type="${type}"][name="${CSS.escape(name)}"][value="${CSS.escape(live.value)}"]`);
-              } catch (_) { /* */ }
-            }
-            return null;
-          };
-
           document.querySelectorAll('input, textarea, select').forEach(live => {
-            const el = findCloneControl(live);
+            const id = live.id;
+            const name = live.name;
+            const type = live.type;
+            let el = null;
+
+            if (id) {
+              try { el = clone.querySelector(`#${CSS.escape(id)}`); } catch (_) { }
+            }
+
+            if (!el && name && (type === 'radio' || type === 'checkbox')) {
+              try { el = clone.querySelector(`input[type="${type}"][name="${CSS.escape(name)}"][value="${CSS.escape(live.value)}"]`); } catch (_) { }
+            }
+
             if (!el) return;
+
             if (el.tagName === 'TEXTAREA') { el.textContent = live.value; return; }
             if (el.tagName === 'SELECT') {
               Array.from(el.options).forEach(o => o.removeAttribute('selected'));
               if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
               return;
             }
-            const type = el.getAttribute('type')?.toLowerCase();
             if (type === 'radio' || type === 'checkbox') {
               if (live.checked) el.setAttribute('checked', '');
               else el.removeAttribute('checked');
@@ -4367,7 +4313,7 @@
           this.toast('Snapshot saved', 'success');
         }
 
-        async printFormAsPdf (e) {
+        printFormAsPdf (e) {
           e.preventDefault();
           this.updateProgress();
           if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100) {
@@ -4380,9 +4326,6 @@
 
       window.addEventListener('beforeprint', () => {
         window.__checkFormInstance?.syncPrintStateClasses?.();
-        document.querySelectorAll('.ql-editor.ql-blank').forEach((el) => {
-          el.classList.remove('ql-blank');
-        });
       });
       document.querySelectorAll('.card.hidden').forEach((card) => card.classList.add('is-print-hidden'));
 
