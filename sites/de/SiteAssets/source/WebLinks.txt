@@ -413,7 +413,13 @@
           {
             "name": "RDE Request Tracking",
             "url": "https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338",
-            "info": "Tracking program work requests"
+            "info": "Tracking program work requests",
+            "sub_links": [
+              {
+                "name": "RDE Request Form",
+                "url": "https://can01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fforms.cloud.microsoft%2FPages%2FResponsePage.aspx%3Fid%3D6IW7j7wMw0ii6VKM7zDsJ07uzGiaHlVMlrHlFYCmJCZUMkxJUTg4TzJPSTQ2Wk1ERVdPRzNSRUtPVi4u&data=05%7C02%7CKan.Tang%40bchydro.com%7C3c67176ffdac454744f208def8884993%7C8fbb85e80cbc48c3a2e9528cef30ec27%7C0%7C0%7C639221461423679482%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=gZvSgkCLK7hjtV4XvsOEBE4aiR6%2FXoU9rro3PR5DqU0%3D&reserved=0"
+              }
+            ]
           },
           {
             "name": "OE Review Evaluation Summary",
@@ -612,7 +618,7 @@
             "info": "#Switchgear #Recloser"
           },
           {
-            "name": "Distribution Planning - TableauÂ®",
+            "name": "Distribution Planning - TableauÃ‚Â®",
             "url": "https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home",
             "info": "Feeder planning databases - capacity, peak demand, reliability, etc."
           },
@@ -692,7 +698,7 @@
         "title": "Asset Management & Maintenance",
         "links": [
           {
-            "name": "Feeder Load Research Tool - SASÂ®",
+            "name": "Feeder Load Research Tool - SASÃ‚Â®",
             "url": "https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/",
             "info": "#LoadFactors #LoadProfile",
             "class": "_clipboard"
@@ -723,9 +729,9 @@
         "title": "Distribution Design",
         "links": [
           {
-            "name": "WikiDI",
-            "url": "http://edmbchwiki1/di/index.php/Main_Page",
-            "info": "Distribution design instructions & tariff information"
+            "name": "Distribution Design Knowledge Centre",
+            "url": "https://bchydro.sharepoint.com/sites/disin",
+            "info": "Help you find information about policies, procedures, tools, and reference material related to Distribution Design"
           },
           {
             "name": "Plant Alteration Tracking",
@@ -783,7 +789,7 @@
         "title": "Technical Tools & Resources",
         "links": [
           {
-            "name": "ASPEN Relay Databaseâ„¢",
+            "name": "ASPEN Relay DatabaseÃ¢â€žÂ¢",
             "url": "http://kdcssweb1/aspen/rdbweb.exe",
             "info": "Database for relay settings and configurations",
             "sub_links": [

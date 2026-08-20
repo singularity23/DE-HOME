@@ -5,9 +5,9 @@
       {
         "links": [
           {
-            "name": "E13 Desk Booking",
-            "url": "http://pq.bchydro.bc.ca:99/index.php",
-            "info": "Reserve a workstation in the E13 office"
+            "name": "A01 - Desk Booking ",
+            "url": "https://pims.bchydro.bc.ca/app/tririgaRoomReservation",
+            "info": "Reserve a workstation in the A01 office"
           },
           {
             "name": "DesignHub",
@@ -34,20 +34,84 @@
     ]
   },
   {
-    "name": "Department Structure",
+    "name": "Workplace Culture",
     "subheaders": [
       {
-        "title": "Leadership",
         "links": [
           {
-            "name": "DE Department Org Chart",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Org%20Chart%20PDF/Engineering%20Design%20D-Engineering.pdf",
+            "name": "Culture Moment",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/Workplace%20Culture%20Change/AllItems.aspx",
+            "info": "Share our DE culture stories"
+          },
+          {
+            "name": "Corporate Strategic Action Plan",
+            "url": "https://hw.bchydro.bc.ca/Documents/BC%20Hydro%20Strategic%20Action%20Plan.pdf",
+            "info": "Energizing our economy - 2025/26 - 2027/28"
+          },
+          {
+            "name": "Integrated Planning Action Plan F27",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Integrated%20Planning%20-%20F27%20Action%20Plan.pdf",
+            "info": "Integrated Planning F27 Performance Measures and Targets"
+          },
+          {
+            "name": "F26 Action Plan Placement",
+            "url": "https://hw.bchydro.bc.ca/Documents/F26%20Action%20Plan%20Placemat.pdf",
+            "info": "Accerlerating our work"
+          },
+          {
+            "name": "Manager Coaching Card",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Culture_Coaching_1pager.docx?d=waeabd686ef9c44f9a9cbf75f75165869",
+            "info": "Prompts for Managers coach day-to-day adoption of OWF"
+          },
+          {
+            "name": "Culture Change - Our Way Forward",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Culture-DE-Teams-2026-04-23.pptx?d=wb19045dccd684fc889477a51b4a9db76",
+            "info": "Slide Deck for Culture Change - Our Way Forward"
+          },
+          {
+            "name": "Workplace Culture Champions",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Mindtrap%20Guide.pdf",
+            "info": "Mindtrap Guide"
+          },
+          {
+            "name": "LIBRA one pager",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/LIBRA%20one%20pager.pdf",
+            "info": "Understand how to shape workplace culture"
+          },
+          {
+            "name": "Risk Framework Case Studies",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/Risk%20Management%20Case%20Studies.pdf",
+            "info": "Risk tolerance framework & risk best practices"
+          },
+          {
+            "name": "Value of Authentic Culture",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/Culture%20Moment/zz%20pwc-value-of-authentic-culture.pdf",
+            "info": "Reference materials from pwc"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Organization & Teams",
+    "subheaders": [
+      {
+        "title": "DE Overview",
+        "links": [
+          {
+            "name": "DE Division Org Chart",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/OrgCharts/Distribution%20Engineering%20%26%20Standards%20-%20D-Engineering.pdf",
             "info": "Full organizational chart for Distribution Engineering"
           },
           {
             "name": "DELT",
             "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/DELT.pdf",
             "info": "Distribution Engineering Leadership Team overview"
+          },
+          {
+            "name": "DE DocHub (WIP)",
+            "url": "https://bchydro.sharepoint.com/sites/Distribution-Engineering-Doc-Hub",
+            "info": "Centralized repository of DE documentations"
           }
         ]
       },
@@ -57,7 +121,7 @@
           {
             "name": "Distribution Civil Engineering",
             "url": "https://hydroshare.bchydro.bc.ca/sites/DCE/default.aspx",
-            "info": "Civil team structure and member directory",
+            "info": "DCE Hydroshare",
             "sub_links": [
               {
                 "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/DCE.pdf",
@@ -67,11 +131,11 @@
           },
           {
             "name": "Programs Team",
-            "url": "",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/DE%20Programs%20Team.pdf",
             "info": "Team Charter",
             "sub_links": [
               {
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Regional%20Maps/DE%20Programs%20Team.pdf",
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DE%20Photo%20Org%20Chart/Programs.pdf",
                 "name": "Member Details"
               }
             ]
@@ -118,6 +182,11 @@
       {
         "title": "Regional Teams",
         "links": [
+          {
+            "name": "Regional Knowledge Forms",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/DEKnowledgeOneNote/Forms/AllItems.aspx?RootFolder=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FRegional%20Knowledge%20Forms&FolderCTID=0x012000B974F0039233934E9CC4B149B240CCC9&View=%7B5640CBEC%2D53D7%2D4153%2DAB67%2D30851F731103%7D",
+            "info": "Regional or municipality specific knowledge sharing"
+          },
           {
             "name": "Lower Mainland North",
             "url": "",
@@ -181,7 +250,7 @@
         ]
       },
       {
-        "title": "Specialized Engineering",
+        "title": "Technical Specialty Teams",
         "links": [
           {
             "name": "Protection & Modelling",
@@ -226,10 +295,10 @@
     ]
   },
   {
-    "name": "Management",
+    "name": "Leadership & Administration",
     "subheaders": [
       {
-        "title": "Team Leadership",
+        "title": "Leadership Portal",
         "links": [
           {
             "name": "DE HydroWeb",
@@ -262,9 +331,15 @@
         "title": "Human Resources",
         "links": [
           {
-            "name": "Employee Onboarding",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/DE%20Employee%20Onoboarding/Forms/AllItems.aspx",
-            "info": "Guides and resources for new hires"
+            "name": "New Employee Onboarding",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Onboarding",
+            "info": "",
+            "sub_links": [
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28DE%20Onboarding%2FMain.one%7C56358748-A663-44AC-9C38-3BC73EE1A153%2F%29",
+                "name": "Onboarding on OneNote"
+              }
+            ]
           },
           {
             "name": "CLRA Solution Office",
@@ -305,10 +380,10 @@
     ]
   },
   {
-    "name": "Projects & Programs",
+    "name": "Project Delivery & Reviews",
     "subheaders": [
       {
-        "title": "Design Review Requirements",
+        "title": "Guidelines & References",
         "links": [
           {
             "name": "External Design & Engineering DBR",
@@ -333,8 +408,19 @@
         ]
       },
       {
-        "title": "OE Review & Evaluation",
+        "title": "Review Process & Forms",
         "links": [
+          {
+            "name": "RDE Request Tracking",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Programs/RDE%20Request%20Tracker.xlsx?d=w7802169b77d442e58ac24d9f1a25c338",
+            "info": "Tracking program work requests",
+            "sub_links": [
+              {
+                "name": "RDE Request Form",
+                "url": "https://can01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fforms.cloud.microsoft%2FPages%2FResponsePage.aspx%3Fid%3D6IW7j7wMw0ii6VKM7zDsJ07uzGiaHlVMlrHlFYCmJCZUMkxJUTg4TzJPSTQ2Wk1ERVdPRzNSRUtPVi4u&data=05%7C02%7CKan.Tang%40bchydro.com%7C3c67176ffdac454744f208def8884993%7C8fbb85e80cbc48c3a2e9528cef30ec27%7C0%7C0%7C639221461423679482%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=gZvSgkCLK7hjtV4XvsOEBE4aiR6%2FXoU9rro3PR5DqU0%3D&reserved=0"
+              }
+            ]
+          },
           {
             "name": "OE Review Evaluation Summary",
             "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Forms/AllItems.aspx?RootFolder=%2fsites%2fde%2fLists%2fSharedDocuments%2fOE%20Reviews&FolderCTID=0x012000AED0A8CEAAF530479695AD49C4B673A4",
@@ -347,15 +433,18 @@
             "sub_links": [
               {
                 "name": "Review Comment Sheet",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Sheet%20-%20Distribution%20Engineering.docx?d=w6ead9d330136412390bead5f1499a1f8"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Sheet%20-%20Distribution%20Engineering.docx?d=w6ead9d330136412390bead5f1499a1f8",
+                "class": "_form"
               },
               {
                 "name": "Review Evaluation Form",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/Design%20Review%20Evaluation%20Form%20%E2%80%93%20Distribution%20Engineering.docx?d=wb8cc734feb30426cb65d70c302958155",
+                "class": "_form"
               },
               {
                 "name": "Project Completion Form",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/OE%20Reviews/Forms/DE%20Project%20Completion%20Confirmation%20of%20Professional%20Field%20Review.pdf",
+                "class": "_form"
               }
             ]
           },
@@ -366,18 +455,20 @@
             "sub_links": [
               {
                 "name": "Overhead Checklist",
-                "url": "http://w3filenet/PRT.%7B98F4B82F-6171-426D-B48D-2B2190124244%7D"
+                "url": "http://w3filenet/PRT.%7B98F4B82F-6171-426D-B48D-2B2190124244%7D",
+                "class": "_form"
               },
               {
                 "name": "Underground Checklist",
-                "url": "http://w3filenet/PRT.%7BE9070D1A-584A-4C17-8912-4B7A37A233A1%7D"
+                "url": "http://w3filenet/PRT.%7BE9070D1A-584A-4C17-8912-4B7A37A233A1%7D",
+                "class": "_form"
               }
             ]
           }
         ]
       },
       {
-        "title": "Project Management",
+        "title": "Project Management & Delivery",
         "links": [
           {
             "name": "PCM Info Center",
@@ -395,16 +486,26 @@
             "info": "Strategic Portfolio Optimization Tool - planning scope, etc."
           },
           {
-            "name": "KAM Customer Account Lookup",
-            "url": "https://kdcbchpswebp1.bchydro.bc.ca/lookup/",
-            "info": "Look for key account manager information"
+            "name": "KAM Account",
+            "url": "",
+            "info": "Looking for who is the Key Account Manager for a customer?",
+            "sub_links": [
+              {
+                "name": "KAM Feeder Lookup",
+                "url": "https://kdcbchpswebp1.bchydro.bc.ca/KeyAccountDistribution/default.aspx"
+              },
+              {
+                "name": "Commercial Cusomter Account Lookup",
+                "url": "https://kdcbchpswebp1.bchydro.bc.ca/lookup/"
+              }
+            ]
           }
         ]
       }
     ]
   },
   {
-    "name": "Engineering Tools",
+    "name": "Engineering Drawings & Tasks",
     "subheaders": [
       {
         "title": "Drafting & Visualization",
@@ -432,7 +533,7 @@
         ]
       },
       {
-        "title": "Engineering Studies",
+        "title": "Engineering Tools & Databases",
         "links": [
           {
             "name": "JotForm",
@@ -447,17 +548,6 @@
               {
                 "name": "AAG (remote access) for IEDG",
                 "url": "https://aag.bchydro.bc.ca/logon/LogonPoint/tmindex.html"
-              }
-            ]
-          },
-          {
-            "name": "ASPEN Relay Database™",
-            "url": "http://kdcssweb1/aspen/rdbweb.exe",
-            "info": "Database for relay settings and configurations",
-            "sub_links": [
-              {
-                "name": "ASPEN PN Query Tool",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Aspen%20PN.html"
               }
             ]
           },
@@ -479,32 +569,38 @@
         ]
       },
       {
-        "title": "Engineering Request",
+        "title": "Engineering Request Review",
         "links": [
           {
             "name": "Capacity Review - Planning & Engineering Tasks",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/distplan/Lists/SharedDocuments/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/DESRT/DESRT%20Request%20Tasks%20-%20Engineering%20and%20Planning.pdf",
             "info": "#FlowChart #Process #Deliverables"
           },
           {
             "name": "Unconfirmed Load Review Form",
             "url": "https://hydroshare.bchydro.bc.ca/sites/cc/DDCCWorkSmartPublishedAssets/F23QW01-Implement-QSL-Integrated-Planning/DDCC%20Work%20Smart%20-%20Unconfirmed%20Load%20Requirements%20Form.pdf",
-            "info": "Form to provide information for unconfirmed stage"
+            "info": "Form to provide information for unconfirmed stage",
+            "class": "_form"
           },
           {
             "name": "Distribution Connection Variance Request Guide",
             "url": "https://app.bchydro.com/content/dam/BCHydro/customer-portal/documents/distribution/info-packages/customer-guide-to-variance-requests.pdf",
             "info": "Customer variance application process"
+          },
+          {
+            "name": "Distribution Request List",
+            "url": "https://hydroshare.bchydro.bc.ca/workgroup/d_requests/Lists/D_Requests/Default.aspx",
+            "info": "Request to Transmission Engineering - Whenever distribution design that will affect transmission assets"
           }
         ]
       }
     ]
   },
   {
-    "name": "Integrated Planning",
+    "name": "Distribution Planning & Standards",
     "subheaders": [
       {
-        "title": "Distribution Planning",
+        "title": "Planning Guidelines & Data",
         "links": [
           {
             "name": "Voltage Management Guideline",
@@ -522,9 +618,14 @@
             "info": "#Switchgear #Recloser"
           },
           {
-            "name": "Distribution Planning - Tableau®",
+            "name": "Distribution Planning - TableauÃ‚Â®",
             "url": "https://bchtableau.bchydro.bc.ca/#/site/AssetDistributionPlanning/home",
             "info": "Feeder planning databases - capacity, peak demand, reliability, etc."
+          },
+          {
+            "name": "Distribution Planning - Feeder Load Forecast",
+            "url": "https://app.powerbi.com/groups/me/reports/9beef7a1-c0ac-4eb7-9bf1-c5c64db2ba74/ba5f1b05841bde0c3de6?ctid=8fbb85e8-0cbc-48c3-a2e9-528cef30ec27&experience=power-bi",
+            "info": "10 year feeder load forecast - max demand + spot loads + load transfers"
           },
           {
             "name": "Distribution Planning Record Documents",
@@ -532,14 +633,14 @@
             "info": "Repository for distribution planning memos"
           },
           {
-            "name": "BCH ArcGIS®",
+            "name": "BCH ArcGISÂ®",
             "url": "https://kdcesriweb1.bchydro.adroot.bchydro.bc.ca/gisportal/home/index.html",
             "info": "Distribution planning GIS data"
           }
         ]
       },
       {
-        "title": "Distribution Standards",
+        "title": "Standards & Specifications",
         "links": [
           {
             "name": "PQweb",
@@ -547,14 +648,14 @@
             "info": "Homepage for Power Quality Team"
           },
           {
-            "name": "DSwiki",
-            "url": "http://edmbchwiki1/dist/standards/index.php/Main_Page",
+            "name": "Distribution Standards Sharepoint",
+            "url": "https://bchydro.sharepoint.com/sites/diststd/SitePages/Home.aspx",
             "info": "Homepage for Distribution Standards"
           }
         ]
       },
       {
-        "title": "Transmission",
+        "title": "T&D Interface",
         "links": [
           {
             "name": "Revenue Metering",
@@ -571,10 +672,10 @@
     ]
   },
   {
-    "name": "Operations",
+    "name": "Business Operations",
     "subheaders": [
       {
-        "title": "Grid Operations",
+        "title": "Real-Time Operations",
         "links": [
           {
             "name": "PowerOn Remote",
@@ -594,12 +695,13 @@
         ]
       },
       {
-        "title": "Sustain & Maintenance",
+        "title": "Asset Management & Maintenance",
         "links": [
           {
-            "name": "Feeder Load Research Tool - SAS®",
+            "name": "Feeder Load Research Tool - SASÃ‚Â®",
             "url": "https://kdcsasva3.bchydro.bc.ca:8343/SASLogon/login?service=https://kdcsasva3.bchydro.bc.ca:8343/SASVisualAnalyticsHub/",
-            "info": "#LoadFactors #LoadProfile"
+            "info": "#LoadFactors #LoadProfile",
+            "class": "_clipboard"
           },
           {
             "name": "DASM HydroShare",
@@ -627,9 +729,9 @@
         "title": "Distribution Design",
         "links": [
           {
-            "name": "WikiDI",
-            "url": "http://edmbchwiki1/di/index.php/Main_Page",
-            "info": "Distribution design instructions & tariff information"
+            "name": "Distribution Design Knowledge Centre",
+            "url": "https://bchydro.sharepoint.com/sites/disin",
+            "info": "Help you find information about policies, procedures, tools, and reference material related to Distribution Design"
           },
           {
             "name": "Plant Alteration Tracking",
@@ -641,7 +743,7 @@
     ]
   },
   {
-    "name": "Technical References",
+    "name": "Knowledge Base & Resources",
     "subheaders": [
       {
         "title": "Engineering Resources",
@@ -684,8 +786,43 @@
         ]
       },
       {
-        "title": "Technical Resources",
+        "title": "Technical Tools & Resources",
         "links": [
+          {
+            "name": "ASPEN Relay DatabaseÃ¢â€žÂ¢",
+            "url": "http://kdcssweb1/aspen/rdbweb.exe",
+            "info": "Database for relay settings and configurations",
+            "sub_links": [
+              {
+                "name": "ASPEN PN Query Tool",
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/html/Aspen%20PN.html"
+              }
+            ]
+          },
+          {
+            "name": "Fuse Selector",
+            "url": "https://hydroshare.bchydro.bc.ca/sites/de/SiteAssets/webapp/index.html",
+            "info": "Quickly get standard fuse size for standard transformers and its impedances"
+          },
+          {
+            "name": "EATONÂ® CYME",
+            "url": "file:///J:/Engineering/Distribution/CYME",
+            "info": "",
+            "sub_links": [
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29",
+                "name": "Short circuit python script"
+              },
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook%2FCYME.one%7C24cd4d78-abf8-4647-8e9b-be28f3c88939%2FEmission%20Study%7C086dacb2-4881-442f-a317-38b7f955b1bd%2F%29&wdorigin=703",
+                "name": "Short circuit with Emission Study python script"
+              },
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook.one%7C87ab0379-742a-41da-ae6b-8a9367348bd8%2FLoad%20Balancing%7C2da8a071-ada6-478a-90e9-8334ff4b84c6%2F%29&wdorigin=703",
+                "name": "Load flow python script"
+              }
+            ]
+          },
           {
             "name": "Conductor Slap",
             "url": "",
@@ -700,31 +837,16 @@
                 "name": "Modelling / Calculator"
               }
             ]
-          },
-          {
-            "name": "EATON® CYME",
-            "url": "file:///J:/Engineering/Distribution/CYME",
-            "info": "",
-            "sub_links": [
-              {
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28Technical%20Specialization%20Teams%2FProtection%20and%20Modeling%2FCyme.one%7C95806A46-FEC1-43A0-A4D0-DFDB268E1CCA%2FShort%20Circuit%20FAULT_POINT%20Script%7C8590C908-11C6-4FF5-93F9-D49EB349AF86%2F%29",
-                "name": "Short circuit python script"
-              },
-              {
-                "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/15/WopiFrame.aspx?sourcedoc=%2Fsites%2Fde%2FDEKnowledgeOneNote%2FDE%20Divisional%20Teams%2FRegional%2FLower%20Mainland%20North&action=edit&wd=target%28Playbook.one%7C87ab0379-742a-41da-ae6b-8a9367348bd8%2FLoad%20Balancing%7C2da8a071-ada6-478a-90e9-8334ff4b84c6%2F%29&wdorigin=703",
-                "name": "Load flow python script"
-              }
-            ]
           }
         ]
       }
     ]
   },
   {
-    "name": "Professional Practice",
+    "name": "Professional Compliance & Practice",
     "subheaders": [
       {
-        "title": "EGBC Compliances",
+        "title": "Professional Governance & Ethics",
         "links": [
           {
             "name": "Respectful Workplace Program",
@@ -737,14 +859,14 @@
             "info": "Professional Governance Act portal for BCH engineers"
           },
           {
-            "name": "EQBC Filing - Guides and References",
-            "url": "file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References",
-            "info": "DE engineers compliance guidelines"
+            "name": "SuccessFactors Learning",
+            "url": "https://hcm17.sapsf.com/login?company=bchydro",
+            "info": "Continuing education"
           }
         ]
       },
       {
-        "title": "Usual Tools",
+        "title": "Engineering Practice & Documentation",
         "links": [
           {
             "name": "Controlled Numbering System",
@@ -753,9 +875,15 @@
             "sub_links": [
               {
                 "name": "DESRT Memo Template",
-                "url": "https://hydroshare.bchydro.bc.ca/sites/PGA/_layouts/15/WopiFrame.aspx?sourcedoc=%7BE644A337-F1EE-4B8B-86EE-1625E9FAF170%7D&file=DESRT%20Memo.docx&action=default"
+                "url": "https://hydroshare.bchydro.bc.ca/sites/PGA/_layouts/15/WopiFrame.aspx?sourcedoc=%7BE644A337-F1EE-4B8B-86EE-1625E9FAF170%7D&file=DESRT%20Memo.docx&action=default",
+                "class": "_form"
               }
             ]
+          },
+          {
+            "name": "EQBC Filing - Guides and References",
+            "url": "file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References",
+            "info": "DE engineers compliance guidelines"
           },
           {
             "name": "Signature Verification - verifiO",
@@ -766,11 +894,6 @@
             "name": "Field Review Tracking",
             "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/Field%20Review%20Tracking/Active%20Items.aspx",
             "info": "Tracking system for field reviews assignmentt and completion"
-          },
-          {
-            "name": "SuccessFactors Learning",
-            "url": "https://hcm17.sapsf.com/login?company=bchydro",
-            "info": "Continuing education"
           }
         ]
       }
@@ -780,7 +903,7 @@
     "name": "Health & Safety",
     "subheaders": [
       {
-        "title": "Safety Documentations",
+        "title": "Policy & Procedures",
         "links": [
           {
             "name": "Safety Framework",
@@ -800,7 +923,7 @@
         ]
       },
       {
-        "title": "Safety Reports",
+        "title": "Incident & Emmergency Management",
         "links": [
           {
             "name": "Safety Folder",
@@ -825,7 +948,7 @@
     "name": "Travel & Site Visits",
     "subheaders": [
       {
-        "title": "Procedures",
+        "title": "Field Work Procedures",
         "links": [
           {
             "name": "Working Alone & Journey Management",
@@ -840,12 +963,13 @@
           {
             "name": "Engineering - Field Work & Travel Form",
             "url": "https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form%20Fillable.pdf",
-            "info": "Standard form for engineering field work planning"
+            "info": "Standard form for engineering field work planning",
+            "class": "_form"
           }
         ]
       },
       {
-        "title": "Booking & Claims",
+        "title": "Travel Booking & Expenses",
         "links": [
           {
             "name": "DE Travel Expense Submissions Guidelines",
@@ -854,8 +978,9 @@
           },
           {
             "name": "Engineering Expense Claim Template",
-            "url": "https://hydroshare.bchydro.bc.ca/sites/de/Lists/SharedDocuments/Expense%20Forms%20&%20Documents/Engineering%20Expense%20Claim%20Template.xlsx",
-            "info": "Standard template for engineering business expense claims and reimbursements"
+            "url": "https://bchydro.sharepoint.com/:x:/r/sites/engineering/HydroWeb%20Documents/Resources/Engineering%20Expense%20Claim%20Template.xlsx?d=w564e1ec25f8646168b6735e530e73d04&csf=1&web=1&e=Nn0DiV",
+            "info": "Standard template for engineering business expense claims and reimbursements",
+            "class": "_form"
           },
           {
             "name": "Business Travel",
@@ -865,7 +990,7 @@
         ]
       },
       {
-        "title": "Corporate Vehicles",
+        "title": "Corporate Vehicles Booking",
         "links": [
           {
             "name": "Edmonds #1 - LM Regional Team",

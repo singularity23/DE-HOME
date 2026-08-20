@@ -3438,13 +3438,13 @@
           if (!tabBtn) return;
           const container = tabBtn.closest('.signature-pad-container');
           const tabContent = tabBtn.getAttribute('aria-controls');
-          container.querySelectorAll('.btn-sig-tab').forEach((b) => {
+          container?.querySelectorAll('.btn-sig-tab').forEach((b) => {
             const isActive = b === tabBtn;
             b.classList.toggle('active', isActive);
             b.setAttribute('aria-selected', isActive ? 'true' : 'false');
             b.setAttribute('tabindex', isActive ? '0' : '-1');
           });
-          container.querySelectorAll('.sig-tab-content').forEach(c => {
+          container?.querySelectorAll('.sig-tab-content').forEach(c => {
             c.getAttribute('id') === tabContent ? c.classList.add('active') : c.classList.remove('active');
           });
         }
