@@ -174,6 +174,11 @@
       padding-left: 40px;
     }
 
+    .field-icon-wrap .field-input[type="number"] {
+      padding-right: 40px;
+      text-align: center;
+    }
+
     .field-select {
       cursor: pointer;
       height: 40px;
@@ -223,6 +228,11 @@
       content: attr(data-placeholder);
       color: var(--text-subtle);
       pointer-events: none;
+      font-size: 11px;
+    }
+
+    input::placeholder {
+      font-size: 11px;
     }
 
     .editor-inline.req-input {
@@ -252,7 +262,8 @@
 
     .field-hint-paste,
     .field-hint {
-      font-size: 11px;
+      font-size: 10px;
+      font-style: italic;
       color: var(--text-subtle);
       margin-top: 4px;
     }
@@ -477,7 +488,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -579,7 +590,7 @@
     }
 
     .use-limitations-body {
-      padding: 16px 18px;
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -597,7 +608,6 @@
       font-size: 16px;
       color: var(--bch-arbutus);
       flex: none;
-      margin-top: 1px;
     }
 
     .use-limitations-strong {
@@ -689,7 +699,7 @@
     }
 
     .badge .material-symbols-outlined {
-      font-size: 13px;
+      font-size: 16px;
     }
 
     .page-header-logo {
@@ -846,8 +856,8 @@
     <div class="page-header-meta">
       <div data-no-print class="meta-copy">
         <span class="material-symbols-outlined meta-icon">event</span>
-        Published 2026-04-24 · Revision 1.0 · <span class="meta-emphasis">Internal use
-          only</span>
+        Published 2026-04-24 · Revision 1.0 · <div><span class="badge"><span
+              class="material-symbols-outlined">lock</span>Internal use only</span></div>
       </div>
       <div data-no-print class="seg" id="stageToggle">
         <button type="button" class="active" data-stage="Unconfirmed">Unconfirmed</button>
@@ -867,17 +877,30 @@
                 class="material-symbols-outlined card-head-icon card-head-icon--accent">notification_important</span>
               <span class="card-head-title">Use &amp; Limitations</span>
             </div>
-            <div id="useLimitationsBody" class="use-limitations-body">
-              <div class="use-limitations-item"><span
-                  class="material-symbols-outlined use-limitations-icon">remove_circle</span><span>This
-                  review and preliminary scope assessment <strong class="use-limitations-strong">does not
-                    reserve</strong> circuit capacity.</span></div>
-              <div class="use-limitations-item"><span
-                  class="material-symbols-outlined use-limitations-icon">fact_check</span><span>Once
-                  load is confirmed, a <strong class="use-limitations-strong">Confirmed Load</strong> DESRT request is
-                  required for detailed requirements.</span></div>
-              <div class="use-limitations-spacer"><span class="badge"><span
-                    class="material-symbols-outlined">lock</span>Internal use only</span></div>
+            <div id="useLimitationsBody">
+              <div class="use-limitations-body Unconfirmed">
+                <div class="use-limitations-item"><span
+                    class="material-symbols-outlined use-limitations-icon">remove_circle</span><span>This
+                    review and preliminary scope assessment <strong class="use-limitations-strong">does not
+                      reserve</strong> circuit capacity.</span></div>
+                <div class="use-limitations-item"><span
+                    class="material-symbols-outlined use-limitations-icon">fact_check</span><span>Once
+                    load is confirmed, a <strong class="use-limitations-strong">Confirmed Load</strong> DESRT request is
+                    required for detailed requirements.</span></div>
+              </div>
+              <div class="use-limitations-body hidden Confirmed">
+                <div class="use-limitations-item"><span
+                    class="material-symbols-outlined use-limitations-icon">remove_circle</span><span>This
+                    review and preliminary scope assessment <strong class="use-limitations-strong">does not
+                      reserve</strong> circuit capacity.</span></div>
+                <div class="use-limitations-item"><span
+                    class="material-symbols-outlined use-limitations-icon">event_repeat</span><span>This confirmed load
+                    form is valid for up to <strong class="use-limitations-strong">18 months</strong>.</span></div>
+                <div class="use-limitations-item"><span
+                    class="material-symbols-outlined use-limitations-icon">fact_check</span><span>This form is intended
+                    for high level load assessment and not for use as baseline for design scope. Design scope might
+                    change during detailed design stage.</span></div>
+              </div>
             </div>
           </div>
           <div class="card use-panel-card use-panel-card--secondary">
@@ -908,23 +931,28 @@
           <div class="card-body">
             <div class="project-grid">
               <div>
-                <label class="field-label" for="desrt_id">DESRT ID #</label>
+                <label class="field-label" for="desrt_id">DESRT Link</label>
                 <div class="field-icon-wrap"><span class="material-symbols-outlined">link</span>
-                  <input type="text" class="field-input hidden" id="desrt_id" name="desrt_id" rows="1" value="">
-                  <div class="editor-inline req-input" id="desrt_id_editor" contenteditable="true"></div>
+                  <input type="text" class="field-input hidden" id="desrt_id" name="desrt_id" rows="1" value=""
+                    placeholder="Paste DESRT link here">
+                  <div class="editor-inline req-input is-empty" id="desrt_id_editor" contenteditable="true"
+                    data-placeholder="Paste DESRT link here"></div>
 
                 </div>
 
               </div>
               <div class="project-grid-wide">
                 <label class="field-label" for="project_name">Project name</label>
-                <input class="field-input" type="text" id="project_name" name="project_name"
-                  placeholder="Project or customer name">
+                <div class="field-icon-wrap">
+                  <span class="material-symbols-outlined">Gite</span>
+                  <input class="field-input" type="text" id="project_name" name="project_name"
+                    placeholder="Project or customer name">
+                </div>
               </div>
               <div>
                 <label class="field-label" for="feeder">Feeder</label>
-                <div class="field-icon-wrap"><span class="material-symbols-outlined">bolt</span>
-                  <input class="field-input" type="text" id="feeder" name="feeder" placeholder="e.g. 25L-12">
+                <div class="field-icon-wrap"><span class="material-symbols-outlined">cable</span>
+                  <input class="field-input" type="text" id="feeder" name="feeder" placeholder="e.g. CSQ 12F411">
                 </div>
               </div>
               <div>
@@ -939,7 +967,9 @@
               </div>
               <div>
                 <label class="field-label" for="demand">Customer estimated demand</label>
-                <input class="field-input" type="number" id="demand" name="demand" placeholder="0">
+                <div class="field-icon-wrap"><span class="material-symbols-outlined">electric_meter</span>
+                  <input class="field-input" type="number" id="demand" name="demand" placeholder="0">
+                </div>
                 <div class="field-hint">kVA at the point of connection</div>
               </div>
               <div>
@@ -1137,19 +1167,17 @@
       var richSyncTimers = {};
       var RICH_FIELD_NAMES = [
         'details_assumptions', 'scope_lpd', 'notes_lpd', 'scope_ftm', 'notes_ftm',
-        'scope_scw', 'notes_scw', 'scope_plm', 'notes_plm', 'additional_requirements'
+        'scope_scw', 'notes_scw', 'scope_plm', 'notes_plm', 'additional_requirements', 'desrt_id'
       ];
 
       var USE_LIMITATIONS = {
         Unconfirmed:
-          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
-          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>Once load is confirmed, a <strong style="color:var(--text-strong)">Confirmed Load</strong> DESRT request is required for detailed requirements.</span></div>' +
-          '<div style="margin-top:2px"><span class="badge"><span class="material-symbols-outlined" style="font-size:13px">lock</span>Internal use only</span></div>',
+          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
+          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>Once load is confirmed, a <strong style="color:var(--text-strong)">Confirmed Load</strong> DESRT request is required for detailed requirements.</span></div>',
         Confirmed:
-          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
-          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">event_repeat</span><span>This confirmed load form is valid for up to <strong style="color:var(--text-strong)">18 months</strong>.</span></div>' +
-          '<div style="display:flex; gap:8px"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>This form is intended for high level load assessment and not for use as baseline for design scope. Design scope might change during detailed design stage.</span></div>' +
-          '<div style="margin-top:2px"><span class="badge"><span class="material-symbols-outlined" style="font-size:13px">lock</span>Internal use only</span></div>'
+          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
+          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">event_repeat</span><span>This confirmed load form is valid for up to <strong style="color:var(--text-strong)">18 months</strong>.</span></div>' +
+          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>This form is intended for high level load assessment and not for use as baseline for design scope. Design scope might change during detailed design stage.</span></div>'
       };
 
       function isEditorEmpty (editor) {
@@ -1211,7 +1239,7 @@
           if (ta.style.flex) editor.style.flex = ta.style.flex;
           editor.innerHTML = ta.value || '';
           wrap.appendChild(editor);
-          if (name === 'desrt_id') return;
+          //if (name === 'desrt_id') return;
 
           var hint = document.createElement('div');
           hint.className = 'field-hint-paste';
@@ -1276,7 +1304,15 @@
           btn.classList.toggle('active', btn.getAttribute('data-stage') === s);
         });
         if (useLimitationsBody) {
-          useLimitationsBody.innerHTML = USE_LIMITATIONS[s] || USE_LIMITATIONS.Unconfirmed;
+          var confirmedBody = useLimitationsBody.querySelector('.Confirmed');
+          var unconfirmedBody = useLimitationsBody.querySelector('.Unconfirmed');
+          if (s === 'Confirmed') {
+            confirmedBody.classList.remove('hidden');
+            unconfirmedBody.classList.add('hidden');
+          } else {
+            confirmedBody.classList.add('hidden');
+            unconfirmedBody.classList.remove('hidden');
+          }
         }
         if (signOffBody && signOffBodyConfirmed) {
           if (s === 'Confirmed') {
@@ -1386,9 +1422,12 @@
 
       function detectAndHyperlinkUrl (element) {
         if (!element) return;
-        console.log(element);
 
         const pasted = element.querySelector('a');
+        const pastedText = (element.textContent || '').trim();
+        console.log(pastedText);
+
+        console.log(pasted);
         if (pasted) {
           if (!pasted?.href) return;
           if (pasted.href.includes("designhub")) {
@@ -1396,15 +1435,22 @@
             pasted.textContent = "DESRT: " + number;
             pasted.target = "_blank";
           }
+        } else if (pastedText) {
+          if (!pastedText.includes(`designhub.bchydro.bc.ca/web/app/request/`)) {
+            element.innerHTML = "";
+            updateEditorEmptyState(element);
 
-        } else {
-          let pastedText = (element.textContent || '').trim();
-          if (!pastedText.includes(`designhub.bchydro.bc.ca/web/app/request/`)) return;
+            return;
+          }
           const url_element = document.createElement('a');
           url_element.href = pastedText;
           const number = pastedText.match(/\d{7}/);
           url_element.target = "_blank";
           element.innerHTML = `<a href="${url_element.href}" target="_blank">DESRT: ${number[0]}</a>`;
+
+        } else {
+          element.innerHTML = "";
+          updateEditorEmptyState(element);
 
         }
 
@@ -1412,15 +1458,20 @@
 
       function initializeUrlDetection () {
         // Attach event listeners to text inputs (not Quill editors)
-        const inputElements = document.querySelectorAll('.editor-inline');
+        const inputElements = document.querySelectorAll('.editor-inline.req-input');
         console.log('Initializing URL detection for elements:', inputElements);
 
         inputElements.forEach(element => {
           console.log(element);
+          updateEditorEmptyState(element);
           element.addEventListener('paste', function (e) {
             setTimeout(() => {
               detectAndHyperlinkUrl(this);
             }, 0);
+          });
+
+          element.addEventListener('input', function (e) {
+            updateEditorEmptyState(element);
           });
 
         });

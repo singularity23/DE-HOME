@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="BC Hydro Distribution Engineering Check & Review Form">
   <title>Distribution Engineering Check Form</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23046a38'/><path d='M8 17l5.5 5.5L24 11' stroke='%23fff' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23046a38'/><path d='M8 17l5.5 5.5L24 11' stroke='%23fff' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -729,19 +730,35 @@
       transition: color 0.2s ease, background 0.2s ease, border 0.1s ease;
     }
 
-    .risk-btn:not(:first-child) {
-      border-left: 0;
-    }
-
     .risk-btn:hover {
       border-color: var(--text-muted);
       color: var(--text);
+    }
+
+    .risk-btn[data-risk='high']:not(.active):has(.risk-btn[data-risk='medium'].active) {
+      border-left: 0;
     }
 
     .risk-btn.active {
       background: var(--risk-bg, var(--header-bg));
       border-color: var(--risk-border, var(--border-soft));
       color: var(--risk-color, var(--text-muted));
+    }
+
+    .risk-btn[data-risk="medium"]:not(.active) {
+      border-left: 0;
+    }
+
+    .risk-btn[data-risk="high"]:not(.active) {
+      border-left: 0;
+    }
+
+    .risk-btn[data-risk='medium']:not(.active):has(~ .risk-btn[data-risk='high'].active) {
+      border-right: 0;
+    }
+
+    .risk-btn[data-risk='low']:not(.active):has(~ .risk-btn[data-risk='medium'].active) {
+      border-right: 0;
     }
 
     .risk-btn[data-risk="low"].active {
@@ -767,6 +784,13 @@
       border-color: var(--low-border);
       background: var(--low);
     }
+
+
+
+    .risk-btn[data-risk='high']:not(.active):has(~ .risk-btn[data-risk='medium'].active) {
+      border-left: 0;
+    }
+
 
     .risk-btn[data-risk="medium"]:not(.active):hover {
       color: var(--medium-bg);
@@ -809,15 +833,18 @@
     .check-comments {
       display: flex;
       align-items: center;
+      text-align: right;
       gap: 24px;
       flex-wrap: wrap;
       padding: var(--space-cell-y) var(--space-cell-x);
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      border-bottom: 1px solid var(--border-soft);
       row-gap: var(--gap-sm);
       column-gap: 24px;
+      background: var(--header-bg);
+
+
     }
 
     .check-text {
@@ -1075,6 +1102,7 @@
       align-items: center;
       justify-content: center;
       background: var(--surface);
+      border-left: 1px solid var(--border-soft);
     }
 
     .sig-tab-content.active {
@@ -1299,15 +1327,78 @@
       font-style: italic;
     }
 
-    /* Quill (loaded dynamically) */
-    .ql-toolbar.ql-snow {
+    /* Quill Rich Text Editor Styles */
+    .ql-toolbar {
       border: 1px solid var(--border-soft);
       border-bottom: none;
       background: var(--surface-base);
+      border-radius: 0;
+    }
+
+    .ql-toolbar.ql-snow {
+      border: 1px solid var(--border-soft);
+      box-sizing: border-box;
+      padding: 8px;
+    }
+
+    .comments-area .ql-container {
+      border: 1px solid var(--border-soft);
+      border-radius: 0;
+      font-family: inherit;
+      font-size: 13px;
+      min-height: 100px;
+      height: auto;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+
+
+    .comments-area .ql-editor {
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      line-height: 1.6;
+      min-height: 0;
+      height: auto;
+      overflow-y: hidden;
+      box-sizing: border-box;
+      background: var(--surface);
+    }
+
+
+    .ql-container .ql-tooltip {
+      z-index: 999 !important;
+      left: 0 !important;
+      min-width: fit-content;
+    }
+
+    .ql-editor ol li:not(.ql-direction-rtl),
+    .ql-editor ul li:not(.ql-direction-rtl) {
+      padding-left: 0 !important;
+    }
+
+    .ql-snow.ql-toolbar button,
+    .ql-snow .ql-toolbar button {
+      padding: 0px;
+      height: 18px;
+    }
+
+    .ql-editor.ql-blank::before {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .ql-toolbar.ql-snow+.ql-container.ql-snow {
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .ql-toolbar.ql-snow {
       padding: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      border-bottom: 0px;
     }
 
     .ql-toolbar.ql-snow .ql-formats {
@@ -1326,34 +1417,39 @@
       color: var(--color-primary);
     }
 
-    .ql-container.ql-snow {
-      border: 1px solid var(--border-soft);
-      border-top: none;
-      font-family: inherit;
-      font-size: 13px;
-      min-height: 100px;
-      height: auto;
+    .ql-toolbar.ql-snow button:hover,
+    .ql-toolbar.ql-snow button.ql-active,
+    .ql-toolbar.ql-snow button:focus,
+    .ql-toolbar.ql-snow button:active {
+      stroke: var(--color-primary);
+      color: var(--color-primary);
     }
 
-    .ql-editor {
-      padding: 10px 12px;
-      font-size: 13px;
-      font-family: inherit;
-      line-height: 1.6;
-      min-height: 100px;
-      height: auto;
-      overflow-y: hidden;
-      background: var(--surface);
+    .ql-toolbar.ql-snow button:hover .ql-stroke,
+    .ql-toolbar.ql-snow button.ql-active .ql-stroke,
+    .ql-toolbar.ql-snow button:focus .ql-stroke,
+    .ql-toolbar.ql-snow button:active .ql-stroke {
+      stroke: var(--accent);
     }
 
-    .ql-editor.ql-blank::before {
-      color: var(--text-muted);
-      font-style: italic;
+    .ql-toolbar.ql-snow button:hover .ql-fill,
+    .ql-toolbar.ql-snow button.ql-active .ql-fill,
+    .ql-toolbar.ql-snow button:focus .ql-fill,
+    .ql-toolbar.ql-snow button:active .ql-fill {
+      fill: var(--accent);
+    }
+
+    .ql-editor:focus-within {
+      outline: none !important;
     }
 
     .ql-container:focus-within {
       outline: 1px solid var(--color-link) !important;
-      outline-offset: 0 !important;
+      outline-offset: 0px !important;
+    }
+
+    .rich-text-wrapper {
+      position: relative;
     }
 
     /* Comment image modal */
@@ -1957,7 +2053,8 @@
               <div class="comments-area">
                 <div class="rich-text-wrapper">
                   <div class="ql-container" id="checkerComments-editor">
-                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…" tabindex="0"></div>
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"
+                      tabindex="0"></div>
                   </div>
                   <input type="hidden" name="checkerComments" id="checkerComments">
                 </div>
@@ -2017,7 +2114,8 @@
                 <div class="sig-tab-content" id="chSigDrawTab" role="tabpanel" aria-labelledby="chSigDrawBtn"
                   tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="ch" data-testid="ch-sig-surface">
-                    <button type="button" class="btn btn-open-modal" data-prefix="ch" data-testid="ch-sig-open" id="chSigPad" disabled>
+                    <button type="button" class="btn btn-open-modal" data-prefix="ch" data-testid="ch-sig-open"
+                      id="chSigPad" disabled>
                       <span class="material-symbols-sharp">stylus_note</span>
                       <span class="button-text">Open signature pad</span>
                     </button>
@@ -2079,7 +2177,8 @@
               <div class="comments-area">
                 <div class="rich-text-wrapper">
                   <div class="ql-container" id="reviewerComments-editor">
-                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…" tabindex="0"></div>
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"
+                      tabindex="0"></div>
                   </div>
                   <input type="hidden" name="reviewerComments" id="reviewerComments">
                 </div>
@@ -2141,7 +2240,8 @@
                 <div class="sig-tab-content" id="prSigDrawTab" role="tabpanel" aria-labelledby="prSigDrawBtn"
                   tabindex="-1">
                   <div class="sig-draw-surface" data-mode="draw" data-prefix="pr" data-testid="pr-sig-surface">
-                    <button type="button" class="btn btn-open-modal" data-prefix="pr" data-testid="pr-sig-open" id="prSigPad" disabled>
+                    <button type="button" class="btn btn-open-modal" data-prefix="pr" data-testid="pr-sig-open"
+                      id="prSigPad" disabled>
                       <span class="material-symbols-sharp">stylus_note</span>
                       <span class="button-text">Open signature pad</span>
                     </button>
@@ -2195,7 +2295,8 @@
               <div class="comments-area">
                 <div class="rich-text-wrapper">
                   <div class="ql-container" id="id_reviewerComments-editor">
-                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…" tabindex="0"></div>
+                    <div class="ql-editor" data-placeholder="Enter comments, corrections, or corrective actions…"
+                      tabindex="0"></div>
                   </div>
                   <input type="hidden" name="id_reviewerComments" id="id_reviewerComments">
                 </div>
@@ -2488,7 +2589,7 @@
       const queryAll = (sel, root = document) => Array.from(root.querySelectorAll(sel));
       const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-      function loadScript(src, timeoutMs = 10000) {
+      function loadScript (src, timeoutMs = 10000) {
         return new Promise((resolve, reject) => {
           const s = document.createElement('script');
           s.src = src;
@@ -2514,7 +2615,7 @@
       const SAFE_DATA_IMAGE = /^data:image\/(png|jpe?g|gif|webp);/i;
       const ANY_PROTOCOL = /^[a-z][a-z0-9+.-]*:/i;
 
-      function isSafeUrl(value) {
+      function isSafeUrl (value) {
         const v = value.trim();
         if (!v || v.startsWith('#') || v.startsWith('/') || v.startsWith('.')) return true;
         if (SAFE_URL_PROTOCOLS.test(v)) return true;
@@ -2522,7 +2623,7 @@
         return !ANY_PROTOCOL.test(v);
       }
 
-      function sanitizeHtml(html) {
+      function sanitizeHtml (html) {
         if (!html) return CONFIG.EMPTY_EDITOR_HTML;
         if (typeof DOMPurify !== 'undefined') {
           return DOMPurify.sanitize(html, {
@@ -2553,7 +2654,7 @@
         return doc.innerHTML || CONFIG.EMPTY_EDITOR_HTML;
       }
 
-      function escapeHtml(text) {
+      function escapeHtml (text) {
         return String(text)
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
@@ -2561,7 +2662,7 @@
           .replace(/"/g, '&quot;');
       }
 
-      function resolveCommentEditor(el) {
+      function resolveCommentEditor (el) {
         return el?.closest?.('.comments-inline-editor, .ql-editor, .ql-container') ?? null;
       }
 
@@ -2578,7 +2679,7 @@
           this.#text = textEl;
         }
 
-        show(msg, type = 'info', duration = 5000) {
+        show (msg, type = 'info', duration = 5000) {
           if (!this.#el || !this.#text) return;
           this.#text.innerHTML = msg;
           this.#el.classList.remove('hidden', 'info', 'success', 'error', 'warn');
@@ -2587,7 +2688,7 @@
           this.#timer = setTimeout(() => this.hide(), duration);
         }
 
-        hide() {
+        hide () {
           if (!this.#el) return;
           this.#el.classList.add('hidden');
           clearTimeout(this.#timer);
@@ -2619,13 +2720,13 @@
           this.#title = getById('sigModalTitle');
         }
 
-        init() {
+        init () {
           if (this.#canvas) this.#setupCanvasDrawing();
           this.#bindUploadControls();
         }
 
         // ---------- Tabs ----------
-        setTab(tabBtn) {
+        setTab (tabBtn) {
           if (!tabBtn) return;
           const container = tabBtn.closest('.signature-pad-container');
           const tabContent = tabBtn.getAttribute('aria-controls');
@@ -2641,7 +2742,7 @@
         }
 
         // ---------- Upload ----------
-        #bindUploadControls() {
+        #bindUploadControls () {
           queryAll('.sig-upload-trigger').forEach((trigger) => {
             const prefix = trigger.getAttribute('data-prefix');
             if (!prefix) return;
@@ -2673,7 +2774,7 @@
           });
         }
 
-        #handleUpload(e, prefix) {
+        #handleUpload (e, prefix) {
           const file = e.target.files?.[0];
           if (!file) return;
           if (!this.#validateFile(file)) return;
@@ -2690,7 +2791,7 @@
           reader.readAsDataURL(file);
         }
 
-        #validateFile(file) {
+        #validateFile (file) {
           if (!CONFIG.SIGNATURE_FILE_TYPES.includes(file.type)) {
             this.#host.toast('Please upload a PNG, JPEG, GIF, or WEBP image.', 'error');
             return false;
@@ -2703,15 +2804,15 @@
         }
 
         // ---------- Data / previews ----------
-        #dataInput(prefix) {
+        #dataInput (prefix) {
           return getById(`${prefix}_sig_data`);
         }
 
-        getSurface(prefix) {
+        getSurface (prefix) {
           return query(`.sig-draw-surface[data-prefix="${prefix}"]`);
         }
 
-        setPreview(prefix, dataUrl) {
+        setPreview (prefix, dataUrl) {
           const surface = this.getSurface(prefix);
           const img = surface?.querySelector('.sig-inline-preview img');
           if (!surface || !img) return;
@@ -2727,13 +2828,13 @@
           if (tabBtn) this.setTab(tabBtn);
         }
 
-        clearInline(prefix) {
+        clearInline (prefix) {
           const dataInput = this.#dataInput(prefix);
           if (dataInput) dataInput.value = '';
           this.setPreview(prefix, '');
         }
 
-        refreshPreviews() {
+        refreshPreviews () {
           CONFIG.SIG_PREFIXES.forEach((prefix) => {
             this.setPreview(prefix, this.#dataInput(prefix)?.value || '');
           });
@@ -2741,14 +2842,14 @@
 
         // ---------- Gating (ch / pr / ir signatures unlock when the
         //             "comments addressed" question is Yes or N/A) ----------
-        isEnabledByComments(prefix) {
+        isEnabledByComments (prefix) {
           if (prefix !== 'ch' && prefix !== 'pr' && prefix !== 'ir') return true;
           const yes = this.#host.elements[`${prefix}CYes`];
           const na = this.#host.elements[`${prefix}CNa`];
           return !!(yes?.checked || na?.checked);
         }
 
-        setEnabled(prefix, enabled) {
+        setEnabled (prefix, enabled) {
           const container = getById(`${prefix}SigContainer`);
           if (!container) return;
           container.classList.toggle('is-locked', !enabled);
@@ -2759,11 +2860,11 @@
           });
         }
 
-        updateGating(prefix) {
+        updateGating (prefix) {
           this.setEnabled(prefix, this.isEnabledByComments(prefix));
         }
 
-        allOpenEnabled() {
+        allOpenEnabled () {
           for (const prefix of ['ch', 'pr', 'ir']) {
             const card = getById(`card-${prefix}`);
             const body = card?.querySelector('.sec-body');
@@ -2773,11 +2874,11 @@
         }
 
         // ---------- Modal ----------
-        isOpen() {
+        isOpen () {
           return !!this.#modal?.classList.contains('open');
         }
 
-        open(prefix) {
+        open (prefix) {
           if (!this.#modal || !this.#canvas) return;
           this.#activePrefix = prefix;
           if (this.#title) this.#title.textContent = 'Draw signature';
@@ -2790,7 +2891,7 @@
           this.#modal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
         }
 
-        close(save) {
+        close (save) {
           if (!this.#modal || !this.#canvas) return;
           const prefix = this.#activePrefix;
           if (save && prefix) {
@@ -2805,14 +2906,14 @@
           this.#uninstallFocusTrap();
         }
 
-        clearCanvas() {
+        clearCanvas () {
           if (!this.#canvas) return;
           const { width, height } = this.#getCssSize(this.#canvas);
           this.#canvas.getContext('2d').clearRect(0, 0, width, height);
         }
 
         // ---------- Modal focus trap ----------
-        #installFocusTrap() {
+        #installFocusTrap () {
           this.#uninstallFocusTrap();
           const modal = this.#modal;
           const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -2838,7 +2939,7 @@
           }, 50);
         }
 
-        #uninstallFocusTrap() {
+        #uninstallFocusTrap () {
           if (this.#focusHandler) {
             document.removeEventListener('keydown', this.#focusHandler);
             this.#focusHandler = null;
@@ -2847,7 +2948,7 @@
         }
 
         // ---------- Canvas ----------
-        #getCssSize(canvas) {
+        #getCssSize (canvas) {
           const rect = canvas.getBoundingClientRect();
           return {
             width: canvas.offsetWidth || rect.width,
@@ -2855,7 +2956,7 @@
           };
         }
 
-        #resizeCanvas() {
+        #resizeCanvas () {
           const canvas = this.#canvas;
           if (!canvas) return;
           const { width: cssW, height: cssH } = this.#getCssSize(canvas);
@@ -2872,7 +2973,7 @@
           ctx.lineWidth = 2;
         }
 
-        #loadDataUrl(dataUrl) {
+        #loadDataUrl (dataUrl) {
           this.clearCanvas();
           if (!dataUrl) return;
           const canvas = this.#canvas;
@@ -2883,7 +2984,7 @@
           img.src = dataUrl;
         }
 
-        #setupCanvasDrawing() {
+        #setupCanvasDrawing () {
           const canvas = this.#canvas;
           const ctx = canvas.getContext('2d');
           const TARGET_DT_MS = 1000 / 60;
@@ -3020,7 +3121,7 @@
         }
 
         // ---------- Lazy init ----------
-        ensureInitialized(focusTarget) {
+        ensureInitialized (focusTarget) {
           if (this.#initialized) {
             if (focusTarget) this.#focusEditorNear(focusTarget);
             return;
@@ -3029,7 +3130,7 @@
           this.#init(focusTarget);
         }
 
-        async #init(focusTarget) {
+        async #init (focusTarget) {
           try {
             if (typeof Quill === 'undefined') {
               await this.#loadDependencies();
@@ -3044,7 +3145,7 @@
           if (focusTarget) this.#focusEditorNear(focusTarget);
         }
 
-        #focusEditorNear(target) {
+        #focusEditorNear (target) {
           if (!target?.isConnected) return;
           const wrapper = target.closest('.rich-text-wrapper');
           if (!wrapper) return;
@@ -3054,7 +3155,7 @@
           editorEl?.querySelector?.('.ql-editor')?.focus?.();
         }
 
-        #loadDependencies() {
+        #loadDependencies () {
           const purifier = typeof DOMPurify === 'undefined'
             ? loadScript(CDN.DOMPURIFY_JS).catch((err) => {
               console.warn('DOMPurify failed to load, using hardened fallback sanitizer:', err);
@@ -3071,7 +3172,7 @@
         }
 
         // ---------- Adapter ----------
-        #adapter(fieldId) {
+        #adapter (fieldId) {
           const quill = this.#quillEditors?.[fieldId];
           if (quill) {
             return {
@@ -3097,16 +3198,16 @@
 
         // Load HTML through Quill's clipboard so the internal Delta model
         // stays in sync with the DOM (direct innerHTML writes desync Quill).
-        #setQuillHtml(quill, html) {
+        #setQuillHtml (quill, html) {
           const clean = sanitizeHtml(html) || CONFIG.EMPTY_EDITOR_HTML;
           quill.setContents(quill.clipboard.convert(clean), 'silent');
         }
 
-        getHtml(fieldId) {
+        getHtml (fieldId) {
           return this.#adapter(fieldId).getHtml();
         }
 
-        setHtml(fieldId, html) {
+        setHtml (fieldId, html) {
           const ad = this.#adapter(fieldId);
           ad.setHtml(html);
           if (ad.container) {
@@ -3115,25 +3216,25 @@
           }
         }
 
-        syncHidden(fieldId) {
+        syncHidden (fieldId) {
           const hidden = getById(fieldId);
           if (!hidden) return;
           hidden.value = this.getHtml(fieldId);
         }
 
-        syncAllHidden() {
+        syncAllHidden () {
           CONFIG.COMMENT_FIELDS.forEach(([fieldId]) => this.syncHidden(fieldId));
         }
 
         // ---------- Placeholder / emptiness ----------
-        htmlToPlainText(html) {
+        htmlToPlainText (html) {
           if (!html || html === CONFIG.EMPTY_EDITOR_HTML) return '';
           const el = document.createElement('div');
           el.innerHTML = html;
           return el.textContent?.replace(/\u00a0/g, ' ').trim() ?? '';
         }
 
-        isEditorEmpty(editorOrHtml) {
+        isEditorEmpty (editorOrHtml) {
           if (typeof editorOrHtml === 'string') {
             return !this.htmlToPlainText(editorOrHtml) && !/<img\b/i.test(editorOrHtml);
           }
@@ -3143,13 +3244,13 @@
           return !this.htmlToPlainText(html);
         }
 
-        updatePlaceholder(editor) {
+        updatePlaceholder (editor) {
           if (!editor?.classList?.contains('comments-inline-editor')) return;
           editor.classList.toggle('is-empty', this.isEditorEmpty(editor));
         }
 
         // ---------- Quill editors ----------
-        #initQuillEditors() {
+        #initQuillEditors () {
           const quillConfig = {
             theme: 'snow',
             modules: {
@@ -3187,7 +3288,7 @@
           this.scheduleSyncHeights();
         }
 
-        #bindQuillEditor(container, fieldId) {
+        #bindQuillEditor (container, fieldId) {
           const quill = this.#quillEditors?.[fieldId];
           if (!quill || !container) return;
           if (container._quillTextChangeHandler) {
@@ -3219,7 +3320,7 @@
         }
 
         // ---------- Fallback editors (Quill failed / unavailable) ----------
-        #initFallbackEditors() {
+        #initFallbackEditors () {
           this.#quillEditors = null;
           this.#fallbackEditors = {};
           CONFIG.COMMENT_FIELDS.forEach(([fieldId, placeholder]) => {
@@ -3259,7 +3360,7 @@
           });
         }
 
-        #buildInitialHtml(initial, gallery) {
+        #buildInitialHtml (initial, gallery) {
           let html = (initial || '').trim();
           const galleryUrls = gallery
             ? Array.from(gallery.querySelectorAll('.image-thumbnail img[src]')).map((img) => img.src).filter(Boolean)
@@ -3276,7 +3377,7 @@
           return html || CONFIG.EMPTY_EDITOR_HTML;
         }
 
-        #bindFallbackEditor(editor, fieldId, placeholder) {
+        #bindFallbackEditor (editor, fieldId, placeholder) {
           if (editor.dataset.editorBound === '1') return;
           editor.dataset.placeholder = placeholder;
           editor.setAttribute('role', 'textbox');
@@ -3312,7 +3413,7 @@
           editor.dataset.editorBound = '1';
         }
 
-        #processImageFile(file, fieldId) {
+        #processImageFile (file, fieldId) {
           if (!file?.type?.startsWith('image/')) return;
           const editor = this.#fallbackEditors?.[fieldId];
           if (!editor) return;
@@ -3330,7 +3431,7 @@
           reader.readAsDataURL(file);
         }
 
-        #insertImage(editor, dataUrl) {
+        #insertImage (editor, dataUrl) {
           if (!editor || !dataUrl) return;
           editor.focus();
           const img = document.createElement('img');
@@ -3359,7 +3460,7 @@
           this.updatePlaceholder(editor);
         }
 
-        showImageModal(dataUrl) {
+        showImageModal (dataUrl) {
           const modal = document.createElement('div');
           modal.className = 'comment-image-modal';
           modal.setAttribute('role', 'dialog');
@@ -3389,7 +3490,7 @@
         }
 
         // ---------- Sizing / height pairing ----------
-        #getNodes(el) {
+        #getNodes (el) {
           if (!el) return { container: null, surface: null };
           if (el.classList.contains('comments-inline-editor')) {
             return { container: null, surface: el };
@@ -3407,7 +3508,7 @@
           return { container: null, surface: el };
         }
 
-        setHeight(el, heightPx) {
+        setHeight (el, heightPx) {
           const { container, surface } = this.#getNodes(el);
           const minH = CONFIG.COMMENT_EDITOR_MIN_HEIGHT;
           const h = Math.max(minH, heightPx);
@@ -3422,7 +3523,7 @@
           }
         }
 
-        measureHeight(el) {
+        measureHeight (el) {
           const { container, surface } = this.#getNodes(el);
           if (!surface) return CONFIG.COMMENT_EDITOR_MIN_HEIGHT;
           const prevSurface = surface.style.height;
@@ -3435,12 +3536,12 @@
           return h;
         }
 
-        autosize(el) {
+        autosize (el) {
           if (!el) return;
           this.setHeight(el, this.measureHeight(el));
         }
 
-        autosizeTextarea(el) {
+        autosizeTextarea (el) {
           if (!el) return;
           const commentEditor = resolveCommentEditor(el);
           if (commentEditor) {
@@ -3452,13 +3553,13 @@
           el.style.height = `${el.scrollHeight}px`;
         }
 
-        handleFieldEvent(target) {
+        handleFieldEvent (target) {
           const editor = resolveCommentEditor(target);
           if (!editor) return;
           this.autosizeTextarea(editor);
         }
 
-        syncHeights() {
+        syncHeights () {
           const syncPair = (aId, bId) => {
             const a = getById(aId);
             const b = getById(bId);
@@ -3476,7 +3577,7 @@
           CONFIG.COMMENT_PAIRS.forEach(([aId, bId]) => syncPair(aId, bId));
         }
 
-        scheduleSyncHeights() {
+        scheduleSyncHeights () {
           if (this.#syncRaf) return;
           this.#syncRaf = requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -3487,7 +3588,7 @@
         }
 
         // ---------- Clear / restore ----------
-        clearContent(root) {
+        clearContent (root) {
           root.querySelectorAll('.ql-editor, .comments-inline-editor').forEach((el) => {
             if (this.#quillEditors) {
               const entry = Object.entries(this.#quillEditors).find(([, q]) => q.root === el);
@@ -3502,11 +3603,11 @@
           });
         }
 
-        clearGalleries(root) {
+        clearGalleries (root) {
           root.querySelectorAll('.comments-image-gallery').forEach((g) => g.replaceChildren());
         }
 
-        restore() {
+        restore () {
           CONFIG.COMMENT_FIELDS.forEach(([fieldId]) => {
             const hidden = getById(fieldId);
             if (!hidden?.value) return;
@@ -3520,7 +3621,7 @@
         }
 
         // ---------- Cleanup ----------
-        destroy() {
+        destroy () {
           for (const obs of this.#observers) obs.disconnect();
           this.#observers.clear();
           if (this.#syncRaf) cancelAnimationFrame(this.#syncRaf);
@@ -3595,7 +3696,7 @@
         }
 
         // ---------- DOM cache ----------
-        cacheElements() {
+        cacheElements () {
           const get = (id) => document.getElementById(id);
           return {
             progressStrip: get('progressStrip'),
@@ -3661,7 +3762,7 @@
           };
         }
 
-        buildSectionConfig() {
+        buildSectionConfig () {
           const card = (id) => document.getElementById(id);
           return [
             { rowsId: '#sc-rows', rowsEl: this.elements.scRows, count: CONFIG.SC_ITEMS.length, badge: this.elements.badge1, num: this.elements.num1, label: '1', cardId: 'card-sc', cardEl: card('card-sc') },
@@ -3673,40 +3774,40 @@
         }
 
         // ---------- Utilities ----------
-        isEitRole() {
+        isEitRole () {
           return this.getRadioValue('sc_role') === 'Engineer-in-Training';
         }
 
-        getRadioValue(name) {
+        getRadioValue (name) {
           return query(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
-        cacheRowRadios() {
+        cacheRowRadios () {
           this.elements.sc11No = getById('sc11_no');
           this.elements.sc11Yes = getById('sc11_yes');
           this.elements.sc9Yes = getById('sc9_yes');
         }
 
-        isSc11No() {
+        isSc11No () {
           return this.elements.sc11No?.checked ?? false;
         }
 
-        isSc9Yes() {
+        isSc9Yes () {
           return this.elements.sc9Yes?.checked ?? false;
         }
 
-        rowHasAnswer(rowsEl, value) {
+        rowHasAnswer (rowsEl, value) {
           return !!rowsEl?.querySelector(`.check-row input[type="radio"][value="${value}"]:checked`);
         }
 
-        getActiveRiskLevel() {
+        getActiveRiskLevel () {
           for (const btn of this.elements.riskBtns) {
             if (btn.classList.contains('active')) return btn.dataset.risk ?? null;
           }
           return null;
         }
 
-        syncLinkedFields(source, ...targets) {
+        syncLinkedFields (source, ...targets) {
           const value = source.value;
           for (const field of targets) {
             if (field) field.value = value;
@@ -3716,7 +3817,7 @@
         }
 
         // ---------- Init ----------
-        init() {
+        init () {
           const hasPersistedRows = !!this.elements.scRows?.querySelector('.check-row');
           if (!hasPersistedRows) this.buildAllRows();
           else this.cacheRowRadios();
@@ -3735,7 +3836,7 @@
           this.syncCssStateClasses();
         }
 
-        attachEventListeners() {
+        attachEventListeners () {
           document.addEventListener('click', this.#boundClick);
           document.addEventListener('change', this.#boundChange);
           document.addEventListener('input', this.#boundInput);
@@ -3746,7 +3847,7 @@
         }
 
         // ---------- Build rows ----------
-        buildAllRows() {
+        buildAllRows () {
           this.buildRows(this.elements.scRows, 'sc', CONFIG.SC_ITEMS, CONFIG.BINARY_QUESTIONS.sc);
           this.buildRows(this.elements.dsRows, 'ds', CONFIG.DS_ITEMS);
           this.buildRows(this.elements.chRows, 'ch', CONFIG.CH_ITEMS, CONFIG.BINARY_QUESTIONS.ch);
@@ -3755,7 +3856,7 @@
           this.cacheRowRadios();
         }
 
-        buildRows(container, prefix, items, binarySet = new Set()) {
+        buildRows (container, prefix, items, binarySet = new Set()) {
           if (!container) return;
           const fragment = document.createDocumentFragment();
           const sectionNum = CONFIG.SECTION_NUM[prefix];
@@ -3801,7 +3902,7 @@
         }
 
         // ---------- Global delegated handlers ----------
-        #handleClick(e) {
+        #handleClick (e) {
           const target = e.target;
 
           // Signature method tabs
@@ -3866,7 +3967,7 @@
           this.syncSectionVisibility();
         }
 
-        #handleChange(e) {
+        #handleChange (e) {
           const target = e.target;
           if (target.matches('input[type="radio"]')) {
             this.#onRadioChange(target);
@@ -3885,7 +3986,7 @@
           if (commentEditor) this.#comments.handleFieldEvent(commentEditor);
         }
 
-        #handleInput(e) {
+        #handleInput (e) {
           const target = e.target;
           if (target.id === 'engineer' || target.id === 'sc_name') {
             this.syncLinkedFields(target, this.elements.scName, this.elements.engineer);
@@ -3900,7 +4001,7 @@
           }
         }
 
-        #handleKeydown(e) {
+        #handleKeydown (e) {
           if (e.key === 'Escape' && this.#sig.isOpen()) {
             e.preventDefault();
             this.#sig.close(false);
@@ -3917,7 +4018,7 @@
           }
         }
 
-        #onRadioChange(radio) {
+        #onRadioChange (radio) {
           this.scheduleUpdateProgress();
           const name = radio?.name || '';
           if (name === 'sc11') this.updateRoleLabels(false);
@@ -3936,7 +4037,7 @@
         }
 
         // ---------- Section toggle ----------
-        toggleSection(head) {
+        toggleSection (head) {
           const body = getById(head.getAttribute('aria-controls'));
           const isExpanding = !head.classList.contains('open');
           head.classList.toggle('open');
@@ -3949,7 +4050,7 @@
         }
 
         // ---------- Risk ----------
-        setRiskLevel(level) {
+        setRiskLevel (level) {
           let activeBtn = null;
           this.elements.riskBtns.forEach((b) => {
             const isActive = b.dataset.risk === level;
@@ -3968,7 +4069,7 @@
         }
 
         // ---------- Notices ----------
-        showRiskConsistencyNotices() {
+        showRiskConsistencyNotices () {
           const isEit = this.isEitRole();
           const level = this.getActiveRiskLevel();
           const exp = level ? CONFIG.RISK_MAP[level] : null;
@@ -4002,7 +4103,7 @@
           this.renderNoticeStack('sc', 11, blocks11);
         }
 
-        renderNoticeStack(prefix, n, blocks) {
+        renderNoticeStack (prefix, n, blocks) {
           const stack = getById(`${prefix}${n}_notice_stack`);
           if (!stack) return;
           if (!blocks?.length) {
@@ -4019,7 +4120,7 @@
         }
 
         // ---------- Direct Supervision ----------
-        syncDirectSupervision() {
+        syncDirectSupervision () {
           const noChecked = this.isSc11No();
           this.elements.cardDs.classList.toggle('hidden', !noChecked);
           const body = this.elements.s2Body, head = this.elements.s2Head;
@@ -4032,7 +4133,7 @@
         }
 
         // ---------- Section visibility ----------
-        computeVisibilityState() {
+        computeVisibilityState () {
           const isEit = this.isEitRole();
           const q11No = this.isSc11No();
           const q9Yes = this.isSc9Yes();
@@ -4054,7 +4155,7 @@
           return { showCheck, showPeer, openS4, openS5, showChNotice, finalShown };
         }
 
-        applyVisibilityState(state) {
+        applyVisibilityState (state) {
           this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
@@ -4078,23 +4179,23 @@
           this.syncCssStateClasses();
         }
 
-        syncSectionVisibility() {
+        syncSectionVisibility () {
           this.applyVisibilityState(this.computeVisibilityState());
         }
 
-        syncAllSectionVisibility() {
+        syncAllSectionVisibility () {
           this.syncDirectSupervision();
           this.syncSectionVisibility();
         }
 
-        setSectionOpen(head, body, open) {
+        setSectionOpen (head, body, open) {
           if (!head || !body) return;
           head.classList.toggle('open', open);
           body.classList.toggle('open', open);
           head.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
 
-        setCheckerRequired(required) {
+        setCheckerRequired (required) {
           const checker = this.elements.checker;
           if (required) {
             checker.setAttribute('required', '');
@@ -4105,7 +4206,7 @@
           }
         }
 
-        setRequired(element, required) {
+        setRequired (element, required) {
           if (!element) return;
           const inputFields = element.querySelectorAll(`input[id$='_date'], input[id$='_name']`);
           inputFields.forEach((input) => {
@@ -4119,7 +4220,7 @@
           });
         }
 
-        syncCheckerNames() {
+        syncCheckerNames () {
           if (this.#syncingNames) return;
           this.#syncingNames = true;
           const shown = !this.elements.cardCh.classList.contains('hidden');
@@ -4130,12 +4231,12 @@
           this.#syncingNames = false;
         }
 
-        syncCheckWarning() {
+        syncCheckWarning () {
           this.syncSectionVisibility();
         }
 
         // ---------- Role labels ----------
-        updateRoleLabels(resetSc11 = true) {
+        updateRoleLabels (resetSc11 = true) {
           const isEit = this.isEitRole();
           const { sc11No, sc11Yes } = this.elements;
           if (resetSc11) {
@@ -4166,7 +4267,7 @@
         }
 
         // ---------- Progress ----------
-        updateProgress() {
+        updateProgress () {
           const counts = new Map();
           this.sectionConfig.forEach((s) => {
             const cnt = s.rowsEl?.querySelectorAll('input[type="radio"]:checked').length ?? 0;
@@ -4204,7 +4305,7 @@
           }
         }
 
-        scheduleUpdateProgress() {
+        scheduleUpdateProgress () {
           if (this.#progressTimer) clearTimeout(this.#progressTimer);
           this.#progressTimer = setTimeout(() => {
             this.updateProgress();
@@ -4213,13 +4314,13 @@
         }
 
         // ---------- Validation ----------
-        showValidationMessage(msg) {
+        showValidationMessage (msg) {
           if (this.elements.validationAnnouncer) {
             this.elements.validationAnnouncer.textContent = msg;
           }
         }
 
-        allRequiredFieldsValid(print = false) {
+        allRequiredFieldsValid (print = false) {
           const underlines = Array.from(document.querySelectorAll('.required-field-underline'));
           return underlines.reduce((acc, el) => {
             const isValid = this.#isUnderlineHidden(el);
@@ -4233,7 +4334,7 @@
 
         // Mirrors the CSS rules that hide the required-field underline,
         // without reading computed styles (avoids layout thrash).
-        #isUnderlineHidden(el) {
+        #isUnderlineHidden (el) {
           if (el.closest('.hidden')) return true;                  // card hidden
           if (el.closest('.sec-body:not(.open)')) return true;     // section collapsed
           const ctrl = el.previousElementSibling;
@@ -4247,7 +4348,7 @@
           return true;
         }
 
-        handleSubmitAttempt() {
+        handleSubmitAttempt () {
           this.updateProgress();
           const ready = this.allRequiredFieldsValid() && this.elements.progressBar.value == 100;
           if (!ready) {
@@ -4258,7 +4359,7 @@
         }
 
         // ---------- Clear section ----------
-        clearSection(sectionId) {
+        clearSection (sectionId) {
           const sec = getById(sectionId);
           if (!sec) return;
           this.clearFormControls(sec);
@@ -4289,7 +4390,7 @@
           this.toast('Section cleared', 'info');
         }
 
-        clearFormControls(root) {
+        clearFormControls (root) {
           root.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
           root.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"], input[type="file"]').forEach((i) => { i.value = ''; });
           root.querySelectorAll('select').forEach((s) => { s.selectedIndex = 0; });
@@ -4303,16 +4404,16 @@
         }
 
         // ---------- Toast ----------
-        hideGlobalNotice() {
+        hideGlobalNotice () {
           this.#toast.hide();
         }
 
-        toast(msg, type = 'info') {
+        toast (msg, type = 'info') {
           this.#toast.show(msg, type);
         }
 
         // ---------- CSS state classes ----------
-        syncCssStateClasses() {
+        syncCssStateClasses () {
           document.querySelectorAll('.sec-right').forEach((el) => {
             el.classList.toggle('has-role-selector', !!el.querySelector('.role-selector'));
           });
@@ -4324,14 +4425,14 @@
           });
         }
 
-        syncPrintStateClasses() {
+        syncPrintStateClasses () {
           document.querySelectorAll('.card').forEach((card) => {
             card.classList.toggle('is-print-hidden', !card.querySelector('.sec-body.open'));
           });
         }
 
         // ---------- Reset ----------
-        resetForm() {
+        resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
           this.clearFormControls(document);
           document.querySelectorAll('input[type="hidden"][id$="_sig_data"]').forEach((i) => { i.value = ''; });
@@ -4349,13 +4450,13 @@
           this.toast('Form reset', 'info');
         }
 
-        restoreDefaults() {
+        restoreDefaults () {
           this.elements.revision.value = '0';
           this.elements.scRoleEng.checked = true;
         }
 
         // ---------- Save snapshot ----------
-        saveSnapshot() {
+        saveSnapshot () {
           this.#comments.syncAllHidden();
           const clone = document.documentElement.cloneNode(true);
           const findCloneControl = (live) => {
@@ -4425,7 +4526,7 @@
         }
 
         // ---------- Print ----------
-        printFormAsPdf(e) {
+        printFormAsPdf (e) {
           e.preventDefault();
           this.updateProgress();
           if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100) {
@@ -4438,7 +4539,7 @@
         }
 
         // ---------- Cleanup ----------
-        destroy() {
+        destroy () {
           this.#comments.destroy();
           document.removeEventListener('click', this.#boundClick);
           document.removeEventListener('change', this.#boundChange);
