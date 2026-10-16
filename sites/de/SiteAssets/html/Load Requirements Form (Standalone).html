@@ -139,12 +139,13 @@
     .field-select,
     .field-textarea {
       width: 100%;
+      height: 40px;
       box-sizing: border-box;
       padding: 11px 12px;
       font-size: 14px;
       color: var(--text-body);
       background: var(--surface-card);
-      border: 1.5px solid var(--border-default);
+      border: 1px solid var(--border-default);
       border-radius: 0;
       outline: none;
       transition: border-color .3s ease, box-shadow .3s ease;
@@ -172,11 +173,11 @@
 
     .field-icon-wrap .field-input {
       padding-left: 40px;
+      min-height: 40px;
     }
 
     .field-icon-wrap .field-input[type="number"] {
-      padding-right: 40px;
-      text-align: center;
+      text-align: right;
     }
 
     .field-select {
@@ -211,7 +212,7 @@
       line-height: 1.1;
       color: var(--text-body);
       background: var(--surface-card);
-      border: 1.5px solid var(--border-default);
+      border: 1px solid var(--border-default);
       outline: none;
       white-space: pre-wrap;
       word-break: break-word;
@@ -228,11 +229,11 @@
       content: attr(data-placeholder);
       color: var(--text-subtle);
       pointer-events: none;
-      font-size: 11px;
+      font-size: 14px;
     }
 
     input::placeholder {
-      font-size: 11px;
+      font-size: 14px;
     }
 
     .editor-inline.req-input {
@@ -248,7 +249,7 @@
       display: inline-block;
       vertical-align: middle;
       margin: 4px 8px 4px 0;
-      border: 1.5px solid var(--border-default);
+      border: 1px solid var(--border-default);
     }
 
     .editor-inline.req-textarea {
@@ -262,7 +263,7 @@
 
     .field-hint-paste,
     .field-hint {
-      font-size: 10px;
+      font-size: 11px;
       font-style: italic;
       color: var(--text-subtle);
       margin-top: 4px;
@@ -394,7 +395,7 @@
       background: transparent;
       color: var(--text-muted);
       font-family: var(--font-display);
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 600;
       letter-spacing: 0.03em;
       cursor: pointer;
@@ -594,7 +595,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      font-size: 12.5px;
+      font-size: 13px;
       line-height: 1.45;
       color: var(--text-muted);
     }
@@ -833,6 +834,34 @@
         margin-bottom: 5px;
       }
     }
+
+    /* ===== Date inputs: hide native icon, overlay custom icon ===== */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      display: none;
+    }
+
+    input[type="date"] {
+      appearance: none;
+      /* for Safari */
+      -moz-appearance: none;
+      padding-right: 38px;
+    }
+
+    .date-icon-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .date-icon-wrap .material-symbols-outlined {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -974,7 +1003,10 @@
               </div>
               <div>
                 <label class="field-label" for="in_service_date">Target in-service date</label>
-                <input class="field-input" type="date" id="in_service_date" name="in_service_date">
+                <div class="date-icon-wrap">
+                  <input class="field-input" type="date" id="in_service_date" name="in_service_date">
+                  <span class="material-symbols-outlined">event</span>
+                </div>
               </div>
             </div>
             <div class="form-block-spaced">
@@ -1094,7 +1126,10 @@
           <div class="card-body signoff-grid" id="signOffBody">
             <div>
               <label class="field-label" for="completed_date">Completed date</label>
-              <input class="field-input" id="completed_date" name="completed_date" type="date">
+              <div class="date-icon-wrap">
+                <input class="field-input" id="completed_date" name="completed_date" type="date">
+                <span class="material-symbols-outlined">event</span>
+              </div>
             </div>
             <div>
               <label class="field-label" for="completed_by">Completed by</label>
@@ -1106,7 +1141,10 @@
             <div class="signoff-column">
               <div>
                 <label class="field-label" for="completed_date_c">Completed date</label>
-                <input class="field-input" id="completed_date_c" data-mirror="completed_date" type="date">
+                <div class="date-icon-wrap">
+                  <input class="field-input" id="completed_date_c" data-mirror="completed_date" type="date">
+                  <span class="material-symbols-outlined">event</span>
+                </div>
               </div>
               <div>
                 <label class="field-label" for="completed_by_c">Completed by</label>
@@ -1116,9 +1154,9 @@
               </div>
             </div>
             <div class="signoff-column--wide">
-              <label class="field-label" for="signature">Signature</label>
+              <label class="field-label" for="signature">Signature &amp; Seal</label>
               <textarea class="field-textarea signoff-textarea" id="signature" name="signature"
-                placeholder="Signature"></textarea>
+                placeholder="Please sign & seal. "></textarea>
             </div>
           </div>
         </div>
@@ -1146,7 +1184,7 @@
       <img
         src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgaWQ9IkxvZ28iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmVyc2lvbj0iMS4xIiBmaWxsPSIjM2UzOTM1IiB2aWV3Qm94PSIwIDAgMjg4IDg3LjY5OTIiPgogIDxkZWZzPgogICAgCiAgPC9kZWZzPgogIDxnPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNzYuMjYzNywzLjQxNWM4LjE3MTgsMCwxMi4xMTgxLDQuODM2LDEyLjExODEsMTEuMDA2OSwwLDQuMzM0OS0xLjk0NTMsNy4xNjk5LTQuODkxNiw4LjQ0OTIsMy4wNTcyLDEuMzM0LDQuODkxNiw0LjI4MTIsNC44OTE2LDguNDQ5MiwwLDYuMTcwOS0zLjk0NjMsMTEuMDA1OS0xMi4xMTgxLDExLjAwNTloLTE2LjczMjRWMy40MTVoMTYuNzMyNFpNNzUuOTg1OCwxMi44NjQzaC03LjAwNDR2NS4yODEyaDYuODM3NGMxLjg5MDIsMCwzLjExMzMtMSwzLjExMzMtMi43MjM2LDAtMS40NDUzLS44ODk2LTIuNTU3Ni0yLjk0NjMtMi41NTc2Wk03NS44MTg4LDI3LjU5NjdoLTYuODM3NHY1LjI4MTJoNy4wMDQ0YzIuMDU2NywwLDIuOTQ2My0xLjA1NjYsMi45NDYzLTIuNTU3NiwwLTEuNzc5My0xLjIyMzEtMi43MjM2LTMuMTEzMy0yLjcyMzZaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMTAuMjMxNCwzLjQxNWM1LjI4MTMsMCwxMC40NTEyLDEuNjEyMywxNC4yODYyLDUuMjI1NmwtNC42MTMzLDguNjE2MmMtMi45NDYzLTMuMTEzMi02LjAwMzktNC4zOTI1LTkuNjcyOS00LjM5MjUtNS44OTIsMC0xMC4xMTcxLDQuMTE0Mi0xMC4xMTcxLDEwLjAwNjhzNC4xNjk0LDEwLjAwNjgsMTAuMDYyLDEwLjAwNjhjMy41MDE5LDAsNy4xMTUyLTEuMjIzNiwxMC4zMzkzLTQuOTQ4Mmw0Ljc4MDgsOC43Mjc1Yy00LjAwMjUsMy42NjktOS4xMTY3LDUuNjY5LTE0Ljk1MzYsNS42NjktMTEuMzQwNCwwLTE5LjY3ODctOC4zOTI2LTE5LjY3ODctMTkuNTEwOFM5OS4wNTgxLDMuNDE1LDExMC4yMzE0LDMuNDE1WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTY5LjI3MjQ5LDMuNDE1djM4LjkxMTJoLTkuNDQ5M3YtMTQuNzI5NWgtMTMuOTUzMXYxNC43Mjk1aC05LjQ1MDJWMy40MTVoOS40NTAydjE0LjczMDVoMTMuOTUzMVYzLjQxNWg5LjQ0OTNaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzcuNzA2MDksNTEuMDkyOGw1LjczNjMtMTIuOTM0Ni0xMS43NDMyLTIzLjYyNWgxMC4zNTM1bDYuMDAzLDEzLjIyOTUsNS44MzY5LTEzLjIyOTVoOS4zOTQ1bC0xNi4yNDIyLDM2LjU1OTZoLTkuMzM4OFoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTIzMi4zNjAzOSwzLjQxNXYzOC45MTEyaC04Ljg5NDZ2LTMuNzc5M2MtMi4wMDEsMi44MzQ5LTUuMTE0Miw0LjUwMTktOC45NDkyLDQuNTAxOS02LjM5MjU5LDAtMTIuMTczOC00Ljg5MDYtMTIuMTczOC0xNC42MTkxczUuNzI1Ni0xNC42MjAxLDEyLjAwNjgtMTQuNjIwMWM0LjI4MDMsMCw3LjQ0OTIsMi4xMTMzLDkuMTE2Miw0LjY2OTlWMy40MTVoOC44OTQ2Wk0yMTEuNDU5LDI4LjQyOTdjMCwzLjY2ODksMi44MzU4OSw1LjgzNzksNi4wNTk1OSw1LjgzNzlzNi4wNTg1LTIuMTY5LDYuMDU4NS01LjgzNzktMi44MzQ5LTUuODM2OS02LjA1ODUtNS44MzY5LTYuMDU5NTksMi4xNjc5LTYuMDU5NTksNS44MzY5WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjUzLjY1NDI5LDEzLjg2NTJjMS4wNTY2LDAsMS44MzUuMTY3LDIuNjY4OS40NDUzdjkuNjE3MmMtMS4wMDA5LS4zODk2LTIuMzkwNi0uNTU1Ni0zLjYxMzE5LS41NTU2LTQuMDAzLDAtNi4zMzc5MSwxLjgzNC02LjMzNzkxLDYuNjY5OXYxMi4yODQyaC04Ljg5NDZWMTQuNTMzMmg4LjU2MTZ2NC44MzU5YzEuMzg5Ni0zLjMzNDksMy43MjQ2LTUuNTAzOSw3LjYxNTItNS41MDM5WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjcyLjgyNDE5LDEzLjg2NTJjOC42NzE5LDAsMTUuMTc1ODEsNS42NzA5LDE1LjE3NTgxLDE0LjU2NDUsMCw4Ljg5NDUtNi41MDM5MSwxNC41NjQ0LTE1LjE3NTgxLDE0LjU2NDRzLTE1LjE3NTgtNS42Njk5LTE1LjE3NTgtMTQuNTY0NGMwLTguODkzNiw2LjUwMzktMTQuNTY0NSwxNS4xNzU4LTE0LjU2NDVaTTI3Mi44MjQxOSwyMi41OTI4Yy0zLjIyMzYsMC02LjA1OTYsMi4xNjc5LTYuMDU5Niw1LjgzNjlzMi44MzYsNS44Mzc5LDYuMDU5Niw1LjgzNzljMy4yMjQ2LDAsNi4wNTg2LTIuMTY5LDYuMDU4Ni01LjgzNzlzLTIuODM0LTUuODM2OS02LjA1ODYtNS44MzY5WiI+PC9wYXRoPgogIDwvZz4KICA8Zz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTY5LjA5NzIsNjAuMzQ2N2M1LjIyNDYsMCw5LjA2NjQsMy44NDE4LDkuMDY2NCw5LjA2NjRzLTMuODQxOCw5LjA2NjQtOS4wNjY0LDkuMDY2NGgtNi4xMDg0djguNzU4OGgtMy40NTc1di0yNi44OTE2aDkuNTY1OVpNNjkuMDk3Miw2My44MDM3aC02LjEwODR2MTEuMjE4OGg2LjEwODRjMy4xMTE4LDAsNS42MDg5LTIuMzQzOCw1LjYwODktNS42MDk0LDAtMy4yNjQ3LTIuNDk3MS01LjYwOTQtNS42MDg5LTUuNjA5NFoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTkwLjYzNTcsNjcuNTY5M2M1Ljc2MjcsMCwxMC4wNjUsNC4zMDI4LDEwLjA2NSwxMC4wNjQ1LDAsNS43NjI3LTQuMzAyMywxMC4wNjU0LTEwLjA2NSwxMC4wNjU0cy0xMC4wNjQ5LTQuMzAyNy0xMC4wNjQ5LTEwLjA2NTRjMC01Ljc2MTcsNC4zMDIyLTEwLjA2NDUsMTAuMDY0OS0xMC4wNjQ1Wk05MC42MzU3LDcwLjc1NzhjLTMuOTk1MSwwLTYuNjQ1NSwyLjg3OTktNi42NDU1LDYuODc2LDAsMy45OTUxLDIuNjUwNCw2Ljg3NjksNi42NDU1LDYuODc2OXM2LjY0NjUtMi44ODE4LDYuNjQ2NS02Ljg3NjljMC0zLjk5NjEtMi42NTEzLTYuODc2LTYuNjQ2NS02Ljg3NloiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTEwOS45OTk1LDg3LjIzODNsLTcuODc1NS0xOS4yMDhoMy43NjQ3bDUuNDU1NSwxNC4yNTE5LDUuODM5NC0xNC4yNTE5aDIuMzgxOGw1LjgzODksMTQuMjUxOSw1LjQ1NTEtMTQuMjUxOWgzLjc2NDZsLTcuODc1NSwxOS4yMDhoLTIuNTM1MWwtNS44Mzg5LTEzLjc5MS01LjgzOTMsMTMuNzkxaC0yLjUzNTdaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNDUuNTk2Nyw2Ny41NjkzYzYuMDMxMiwwLDkuMjE5Nyw0LjM3ODksOS4yMTk3LDEwLjA2NDV2Ljk5OWgtMTUuMzY3N3YuMDM5MWMuMTkxNCwzLjkxNzksMy4wMzUyLDUuOTUzMSw2LjMwMTMsNS45NTMxLDIuODA1NywwLDQuNzYzNy0xLjM4MTgsNi4xMDk0LTIuOTU3bDEuNzI4NSwyLjU3NDJjLTEuNTM2MSwxLjcyODUtNC4xMTA0LDMuNDU3LTcuNjgzNiwzLjQ1Ny01LjgwMjIsMC05Ljc5NzktMy44NDE4LTkuNzk3OS05LjkxMjEsMC01LjY0NjUsMy42ODc1LTEwLjIxNzgsOS40OTAzLTEwLjIxNzhaTTE0NS42MzQ4LDcwLjY0MTZjLTMuNjEyOCwwLTUuNTcxOCwyLjE1MjMtNi4wMzIzLDUuMzQwOGgxMS42MDM2Yy0uMzA3Ny0zLjE4ODUtMi4xMTQzLTUuMzQwOC01LjU3MTMtNS4zNDA4WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTY4LjI0NjA5LDY3LjU2OTNjLjY1MzMsMCwxLjI2NzYuMDc2MiwxLjg4MTguMTkyNHYzLjQ5NDJjLS42NTMzLS4xNTM0LTEuMjI4NS0uMjI5NS0xLjkyMDg5LS4yMjk1LTQuMzAyNzEsMC01LjY0ODQxLDIuOTIwOS01LjY0ODQxLDcuMjYwN3Y4Ljk1MTJoLTMuMzAzN3YtMTkuMjA4aDMuMTg5NHYyLjg4MThjMS4xOTE0LTIuMTEzMywzLjExMjMtMy4zNDI4LDUuODAxOC0zLjM0MjhaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xOTEuNzMwNDksNjcuNTY5M2MzLjgwMjcsMCw2LjE4NDUxLDEuNjE0Myw3LjYwNTQsNC4xNDk1bC0yLjcyNzUsMS43Mjg1Yy0uODA2Ni0xLjU3NTItMi4zMDM3LTIuODA1Ny00Ljk1NDEtMi44MDU3LTIuMTUyMjksMC0zLjgwMjcuODg0OC0zLjgwMjcsMi40MjA5LDAsMS44MDU3LDEuOTU4LDIuMzA1Nyw0LjU3MDMsMi44ODA5LDMuMTg5NC42OTIzLDYuOTE0LDEuMzgyOCw2LjkxNCw1LjgwMDcsMCw0LjExMDQtMy4xODg0LDUuOTU1MS03LjM3NCw1Ljk1NTEtMy41NzQyLDAtNi45NTMxLTEuMzQ1Ny04LjQ5MTItNC40OTUxbDIuNzI3NS0xLjcyODVjMS4xNTM0LDIuMzgxOCwzLjQ5NjEsMy4xNDk0LDUuODM4OSwzLjE0OTQsMi40OTcxLDAsMy45OTYxLS44NDM3LDMuOTk2MS0yLjY0OTQsMC0xLjkyMTktMS43Mjg1LTIuMzQzOC00LjI2NDYtMi44ODE4LTMuMTQ5NS0uNjUzNC03LjIyMjctMS42MTQzLTcuMjIyNy01LjgzODksMC0zLjM4MDksMi42ODk1LTUuNjg1Niw3LjE4NDYtNS42ODU2WiI+PC9wYXRoPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjI2Ljc4MjE5LDY3LjU2OTNjNS4zNzgsMCw3LjQ1MzIsMy40MTgsNy40NTMyLDguNjAzNnYxMS4wNjU0aC0zLjM0Mjh2LTExLjQ4NzNjMC0zLjMwMjgtMS40OTktNS4xMDk0LTQuNDU2MS01LjEwOTQtNC4zNzg5LDAtNS42ODU0OSwzLjM0MjgtNS42ODU0OSw3LjY0NTV2OC45NTEyaC0zLjMwMzcxdi0xMS40ODczYzAtMy4zMDI4LTEuNTM3MS01LjEwOTQtNC41MzMyLTUuMTA5NC00LjM3ODksMC01LjU3MTMsMy40MTk5LTUuNTcxMyw3LjY0NTV2OC45NTEyaC0zLjMwMjc5di0xOS4yMDhoMy4xODg0OXYyLjY4OTRjMS4xOTE0LTEuOTU5OSwzLjI2NjYtMy4xNTA0LDYuMTA4NC0zLjE1MDQsMy4yNjQ3LDAsNS4yNjM3LDEuNTM2Miw2LjI5OTgsMy44MDM3LDEuNDk5LTIuMjY3NSwzLjUzNTItMy44MDM3LDcuMTQ1NS0zLjgwMzdaIj48L3BhdGg+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yNDYuNzg5MDksNjcuNTY5M2M1LjI5OTgsMCw3LjcyMDcsMi42MTE0LDcuNzIwNyw3LjE4Mjd2MTIuNDg2M2gtMy4zMDM3di0yLjcyNzZjLTEuMzA1NywxLjk2LTMuNTM0MiwzLjExMDQtNi4yOTg5LDMuMTEwNC00LjE0OTQsMC02LjUzMTE5LTIuNTcyMy02LjUzMTE5LTUuOTUzMSwwLTMuNTczMywyLjY1MDM5LTUuNTcwMyw2LjE4NDQ5LTUuOTE3bDUuNDE3LS41MzYyYy44ODI5LS4wNzgxLDEuMjI4Ni0uMzg0NywxLjIyODYtMS4wMzh2LS41YzAtMS44ODE5LTEuNDIwOS0zLjE0OTUtNC4yNjM3LTMuMTQ5NS0yLjY1MDM5LDAtNC41MzQyLDEuMDc1Mi00Ljk1NjEsMy40NTcxbC0yLjkxOTktMS41NzUyYy43MzA1LTIuODQyOCwzLjA3MzItNC44Mzk5LDcuNzIyNy00LjgzOTlaTTI1MS4yMDYwOSw3OC4wNTc2bC02LjI2MTguNzY3NmMtMi4xNTEyOS4yNjg2LTMuMTExMjksMS40Ni0zLjExMTI5LDIuODgxOCwwLDEuNjUwNCwxLjIyODQ5LDIuODAzNywzLjU3MzI5LDIuODAzNywzLjY0OTQsMCw1Ljc5OTgtMi42MTMyLDUuNzk5OC01LjAzMjJ2LTEuNDIwOVoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTI2OS4wMzIxOSw2Ny41NjkzYy42NTMzLDAsMS4yNjc2LjA3NjIsMS44ODE5LjE5MjR2My40OTQyYy0uNjUzNC0uMTUzNC0xLjIyODYtLjIyOTUtMS45MjA5LS4yMjk1LTQuMzAyOCwwLTUuNjQ4NSwyLjkyMDktNS42NDg1LDcuMjYwN3Y4Ljk1MTJoLTMuMzAyNjl2LTE5LjIwOGgzLjE4ODQ5djIuODgxOGMxLjE5MTQtMi4xMTMzLDMuMTEyMy0zLjM0MjgsNS44MDE3LTMuMzQyOFoiPjwvcGF0aD4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTI4Mi44NTE1OSw4Ny40MzA3Yy0zLjQ5NjEsMC01LjMwMDgtMS40OTkxLTUuMzAwOC01LjU3MDN2LTEwLjk0ODNoLTMuODAyNzl2LTIuODgxOGgzLjgwMjc5di01LjE0ODVoMy4zMDM3djUuMTQ4NWg1LjI2Mzd2Mi44ODE4aC01LjI2Mzd2MTEuMTM4N2MwLDEuNDU5OS41NzYyLDIuMzA1NiwyLjE4OTQsMi4zMDU2LDEuMjI4NiwwLDIuMDc0My0uMTE0MiwzLjExMTQtLjMwNjZ2Mi45MThjLS45OTgxLjI3MDUtMi4wNzUyLjQ2MjktMy4zMDM3LjQ2MjlaIj48L3BhdGg+CiAgPC9nPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTIyLjUwMzYsNDUuMDA3MmMxMS45NjE2NCwwLDIxLjczOTM4LTkuMzI5MTMsMjIuNDYxOTItMjEuMTA1ODctMy4wOTYwOS4wMzEyMi02LjE5ODU1LS4wNTg2NC05LjI2NzI1LjQ5MzQtMi4yNTk0My40MDY0Mi0zLjcwNDA4LDEuNTkzMzQtNC4yNTE2OCwzLjk0ODQyLS4xMjY2NS41NDQzNC0yLjQ5ODMsOS4zNDg4MS0yLjUyNDQ5LDkuNDUwNzMtLjE3MDk4LjY2NTQ1LS4zODgyOCwxLjM3OTY0LTEuMjg0NSwxLjM3OTY0LS45NjY4MywwLTEuMTQ4MzItLjcxMDMzLTEuMjk5My0xLjM3NTM3LS4wMTU4My0uMDY5NzEtMS43NDQ3Ny0xMC4wNjg4Ni0yLjA0MTc4LTExLjE1NjU5LS4yNjUzNy0uOTcxNzYtMS4wMzAxNy0xLjYyMjQzLTEuNzkyOTMtMS42MjI0My0uNzYyNzcsMC0xLjUyNzU2LjY1MDY3LTEuNzkyOTMsMS42MjI0My0uMjk3MDEsMS4wODc3My0yLjAyNTk1LDExLjA4Njg4LTIuMDQxNzgsMTEuMTU2NTktLjE1MDk4LjY2NTA0LS4zMzI0NywxLjM3NTM3LTEuMjk5MywxLjM3NTM3LS44OTYyMSwwLTEuMTEzNTItLjcxNDE5LTEuMjg0NS0xLjM3OTY0LS4wMjYxOS0uMTAxOTItMi4zOTc4NC04LjkwNjM5LTIuNTI0NDktOS40NTA3My0uNTQ3NTktMi4zNTUwOC0xLjk5MjI0LTMuNTQyLTQuMjUxNjgtMy45NDg0Mi0zLjA2ODctLjU1MjA0LTYuMTcxMTctLjQ2MjE4LTkuMjY3MjUtLjQ5MzQuNzIyNTQsMTEuNzc2NzMsMTAuNTAwMjgsMjEuMTA1ODcsMjIuNDYxOTIsMjEuMTA1ODciPjwvcGF0aD4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0yMi41MDM2LDBjMTEuOTYxNjQsMCwyMS43MzkzOCw5LjMyOTEzLDIyLjQ2MTkyLDIxLjEwNTg3LTMuMDk2MDktLjAzMTIyLTYuMTk4NTUuMDU4NjQtOS4yNjcyNS0uNDkzNC0yLjI1OTQzLS40MDY0Mi0zLjcwNDA4LTEuNTkzMzQtNC4yNTE2OC0zLjk0ODQyLS4xMjY2NS0uNTQ0MzQtMi40OTgzLTkuMzQ4ODEtMi41MjQ0OS05LjQ1MDczLS4xNzA5OC0uNjY1NDUtLjM4ODI4LTEuMzc5NjQtMS4yODQ1LTEuMzc5NjQtLjk2NjgzLDAtMS4xNDgzMi43MTAzMy0xLjI5OTMsMS4zNzUzNy0uMDE1ODMuMDY5NzEtMS43NDQ3NywxMC4wNjg4Ni0yLjA0MTc4LDExLjE1NjU5LS4yNjUzNy45NzE3Ni0xLjAzMDE3LDEuNjIyNDMtMS43OTI5MywxLjYyMjQzLS43NjI3NywwLTEuNTI3NTYtLjY1MDY3LTEuNzkyOTMtMS42MjI0My0uMjk3MDEtMS4wODc3My0yLjAyNTk1LTExLjA4Njg4LTIuMDQxNzgtMTEuMTU2NTktLjE1MDk4LS42NjUwNC0uMzMyNDctMS4zNzUzNy0xLjI5OTMtMS4zNzUzNy0uODk2MjEsMC0xLjExMzUyLjcxNDE5LTEuMjg0NSwxLjM3OTY0LS4wMjYxOS4xMDE5Mi0yLjM5Nzg0LDguOTA2MzktMi41MjQ0OSw5LjQ1MDczLS41NDc1OSwyLjM1NTA4LTEuOTkyMjQsMy41NDItNC4yNTE2OCwzLjk0ODQyLTMuMDY4Ny41NTIwNC02LjE3MTE3LjQ2MjE4LTkuMjY3MjUuNDkzNEMuNzY0MjIsOS4zMjkxMywxMC41NDE5NiwwLDIyLjUwMzYsMCI+PC9wYXRoPgo8L3N2Zz4="
         alt="BC Hydro" class="footer-logo">
-      <span>· Maintained by Distribution Engineering · Powered by water.</span>
+      <span>· Maintained by Distribution Engineering.</span>
     </footer>
   </div>
 
@@ -1169,16 +1207,6 @@
         'details_assumptions', 'scope_lpd', 'notes_lpd', 'scope_ftm', 'notes_ftm',
         'scope_scw', 'notes_scw', 'scope_plm', 'notes_plm', 'additional_requirements', 'desrt_id'
       ];
-
-      var USE_LIMITATIONS = {
-        Unconfirmed:
-          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
-          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>Once load is confirmed, a <strong style="color:var(--text-strong)">Confirmed Load</strong> DESRT request is required for detailed requirements.</span></div>',
-        Confirmed:
-          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">remove_circle</span><span>This review and preliminary scope assessment <strong style="color:var(--text-strong)">does not reserve</strong> circuit capacity.</span></div>' +
-          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">event_repeat</span><span>This confirmed load form is valid for up to <strong style="color:var(--text-strong)">18 months</strong>.</span></div>' +
-          '<div class="use-liminations-item"><span class="material-symbols-outlined" style="font-size:16px; color:var(--bch-arbutus); flex:none; margin-top:1px">fact_check</span><span>This form is intended for high level load assessment and not for use as baseline for design scope. Design scope might change during detailed design stage.</span></div>'
-      };
 
       function isEditorEmpty (editor) {
         if (!editor) return true;
@@ -1351,6 +1379,7 @@
           if (el) el.value = data[k];
         });
         Object.keys(richEditors).forEach(function (name) { syncEditorFromHidden(name); });
+        syncDesrtEditorFromInput();
         Array.prototype.forEach.call(form.querySelectorAll('.req-row'), function (row) { equalizeRowHeight(row); });
       }
 
@@ -1377,6 +1406,11 @@
           richEditors[name].innerHTML = '';
           updateEditorEmptyState(richEditors[name]);
         });
+        var desrtEditor = document.getElementById('desrt_id_editor');
+        if (desrtEditor) {
+          desrtEditor.innerHTML = '';
+          updateEditorEmptyState(desrtEditor);
+        }
         setStage('Unconfirmed');
         savedAlert.style.display = 'none';
       }
@@ -1384,6 +1418,17 @@
       function downloadFilled () {
         var data = collectData();
         var doc = document.documentElement.cloneNode(true);
+        // The live DOM already contains converted rich editors; strip those
+        // wrappers from the copy so its own script converts each textarea
+        // exactly once (otherwise every rich field renders as two editors).
+        Array.prototype.forEach.call(doc.querySelectorAll('.rich-field'), function (wrap) {
+          var ta = wrap.querySelector('textarea');
+          if (ta) {
+            ta.style.display = '';
+            wrap.parentNode.insertBefore(ta, wrap);
+          }
+          wrap.parentNode.removeChild(wrap);
+        });
         Array.prototype.forEach.call(doc.querySelectorAll('[name]'), function (el) {
           var val = data[el.name];
           if (val === undefined) return;
@@ -1406,12 +1451,23 @@
         var titleNode = doc.querySelector('#formTitle');
         if (titleNode) titleNode.textContent = data.__stage + ' Load Requirements Form';
 
+        // A downloaded copy must show the filled values, not the opener's stored snapshot:
+        // strip the auto-restore call from the embedded script.
+        var scriptNode = doc.querySelector('script');
+        if (scriptNode && scriptNode.textContent) {
+          scriptNode.textContent = scriptNode.textContent.replace(/\n\s*load\(\);\s*/, '\n');
+        }
+
         var html = '<!DOCTYPE html>\n' + doc.outerHTML;
         var blob = new Blob([html], { type: 'text/html' });
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
-        var name = (data.project_name || data.desrt_id || 'load-requirements-form').toString()
-          .trim().replace(/[^a-z0-9-_ ]/gi, '').replace(/\s+/g, '-').toLowerCase() || 'load-requirements-form';
+        var baseName = (data.project_name || '').toString().trim();
+        if (!baseName && data.desrt_id) {
+          var desrtNumber = (data.desrt_id.toString().match(/\d{7}/) || [])[0];
+          baseName = desrtNumber ? 'desrt-' + desrtNumber : '';
+        }
+        var name = baseName.replace(/[^a-z0-9-_ ]/gi, '').replace(/\s+/g, '-').toLowerCase() || 'load-requirements-form';
         a.href = url;
         a.download = name + '.html';
         document.body.appendChild(a);
@@ -1420,60 +1476,79 @@
         setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
       }
 
+      var DESRT_URL_MARK = 'designhub.bchydro.bc.ca/web/app/request';
+
+      function getDesrtInput () {
+        return form.elements['desrt_id'];
+      }
+
+      function extractDesrtSource (element) {
+        // If the browser already turned the paste into a link, prefer its href.
+        var anchor = element.querySelector('a');
+        if (anchor && anchor.href) return anchor.href;
+        return (element.textContent || '').replace(/\u00a0/g, ' ').trim();
+      }
+
+      function isDesrtUrl (url) {
+        return typeof url === 'string' && url.toLowerCase().indexOf(DESRT_URL_MARK) !== -1;
+      }
+
+      function renderDesrtContent (element, source) {
+        var text = (source || '').replace(/\u00a0/g, ' ').trim();
+        element.innerHTML = '';
+        var input = getDesrtInput();
+        var urlMatch = text.match(/https?:\/\/\S+/i);
+        var url = urlMatch ? urlMatch[0].replace(/[),.;:"'\u201d\u2019]+$/, '') : '';
+        if (url && isDesrtUrl(url)) {
+          var numberMatch = url.match(/\d{7}/);
+          var link = document.createElement('a');
+          link.href = url;
+          link.target = '_blank';
+          link.textContent = numberMatch ? 'DESRT: ' + numberMatch[0] : url;
+          element.appendChild(link);
+          if (input) input.value = url;
+        } else {
+          // Strict field: only DESRT request links are accepted; anything else is cleared.
+          if (input) input.value = '';
+        }
+        updateEditorEmptyState(element);
+      }
+
+      function syncDesrtToInput (element) {
+        var input = getDesrtInput();
+        if (!input) return;
+        var anchor = element.querySelector('a');
+        input.value = anchor && anchor.href ? anchor.href : (element.textContent || '').trim();
+      }
+
+      function syncDesrtEditorFromInput () {
+        var editor = document.getElementById('desrt_id_editor');
+        var input = getDesrtInput();
+        if (editor) renderDesrtContent(editor, input ? input.value : '');
+      }
+
       function detectAndHyperlinkUrl (element) {
         if (!element) return;
-
-        const pasted = element.querySelector('a');
-        const pastedText = (element.textContent || '').trim();
-        console.log(pastedText);
-
-        console.log(pasted);
-        if (pasted) {
-          if (!pasted?.href) return;
-          if (pasted.href.includes("designhub")) {
-            const number = pasted.href.match(/\d{7}/)[0];
-            pasted.textContent = "DESRT: " + number;
-            pasted.target = "_blank";
-          }
-        } else if (pastedText) {
-          if (!pastedText.includes(`designhub.bchydro.bc.ca/web/app/request/`)) {
-            element.innerHTML = "";
-            updateEditorEmptyState(element);
-
-            return;
-          }
-          const url_element = document.createElement('a');
-          url_element.href = pastedText;
-          const number = pastedText.match(/\d{7}/);
-          url_element.target = "_blank";
-          element.innerHTML = `<a href="${url_element.href}" target="_blank">DESRT: ${number[0]}</a>`;
-
-        } else {
-          element.innerHTML = "";
-          updateEditorEmptyState(element);
-
-        }
-
+        renderDesrtContent(element, extractDesrtSource(element));
       }
 
       function initializeUrlDetection () {
-        // Attach event listeners to text inputs (not Quill editors)
-        const inputElements = document.querySelectorAll('.editor-inline.req-input');
-        console.log('Initializing URL detection for elements:', inputElements);
+        var editor = document.getElementById('desrt_id_editor');
+        if (!editor) return;
+        updateEditorEmptyState(editor);
 
-        inputElements.forEach(element => {
-          console.log(element);
-          updateEditorEmptyState(element);
-          element.addEventListener('paste', function (e) {
-            setTimeout(() => {
-              detectAndHyperlinkUrl(this);
-            }, 0);
-          });
+        editor.addEventListener('paste', function () {
+          var self = this;
+          setTimeout(function () { detectAndHyperlinkUrl(self); }, 0);
+        });
 
-          element.addEventListener('input', function (e) {
-            updateEditorEmptyState(element);
-          });
+        editor.addEventListener('input', function () {
+          updateEditorEmptyState(this);
+          syncDesrtToInput(this);
+        });
 
+        editor.addEventListener('blur', function () {
+          syncDesrtToInput(this);
         });
       }
 
