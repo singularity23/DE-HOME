@@ -487,7 +487,7 @@
         'title title title title title revision'
         'role role role level level level'
         'deliverable deliverable deliverable review review review'
-        'engineer engineer engineer checker checker checker';
+        'engineer engineer supervisor supervisor checker checker';
     }
 
     .work-title-cell {
@@ -500,6 +500,10 @@
 
     .engineer-cell {
       grid-area: engineer;
+    }
+
+    .ds-cell {
+      grid-area: supervisor;
     }
 
     .checker-cell {
@@ -531,14 +535,21 @@
       flex-direction: column;
       background: var(--surface);
       overflow-wrap: break-word;
+      padding: 5px 0;
     }
 
-    .meta-cell:nth-child(2n) {
-      padding: 5px 15px 5px 0;
+    .work-title-cell,
+    .role-cell,
+    .deliverable-cell,
+    .engineer-cell {
+      padding-left: 15px;
     }
 
-    .meta-cell:nth-child(2n-1) {
-      padding: 5px 0 5px 15px;
+    .revision-cell,
+    .risk-level-cell,
+    .review-level-cell,
+    .checker-cell {
+      padding-right: 15px;
     }
 
     @media (max-width: 600px) {
@@ -1909,9 +1920,15 @@
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell engineer-cell" id="engineer_eit">
-              <label class="field-label" for="engineer">Engineer</label>
-              <input class="field-input" id="engineer" name="engineer" type="text" placeholder="Engineer name..."
-                autocomplete="name" required>
+              <label class="field-label" for="POR">Professional of Record</label>
+              <input class="field-input" id="POR" name="POR" type="text" placeholder="POR name..." autocomplete="name"
+                required>
+              <div class="required-field-underline" aria-hidden="true"></div>
+            </div>
+            <div class="meta-cell ds-cell" id="supervisor">
+              <label class="field-label" for="direct_supervisor">Direct Supervisor</label>
+              <input class="field-input" id="direct_supervisor" type="text" placeholder="Direct Supervisor name..."
+                autocomplete="name" disabled>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell checker-cell" id="checker_por">
