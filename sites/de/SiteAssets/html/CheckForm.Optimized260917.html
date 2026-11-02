@@ -32,7 +32,7 @@
     :root {
       --color-primary: rgb(50, 50, 50);
       --color-secondary: rgb(250, 250, 250);
-      --color-tertiary: #d4d4d8;
+      --color-tertiary: rgb(180, 180, 180);
       --surface-base: rgb(250, 250, 250);
       --surface-inverse: #231f20;
       --color-success: #046a38;
@@ -49,7 +49,7 @@
       --border-hard: var(--color-tertiary);
       --border-soft: var(--color-tertiary);
       --text: color-mix(in srgb, var(--color-primary) 80%, var(--surface-base));
-      --text-muted: var(--color-info);
+      --text-muted: color-mix(in srgb, var(--color-primary) 60%, var(--surface-base));
       --muted: color-mix(in srgb, var(--color-tertiary) 10%, var(--surface));
       --muted-bg: var(--color-tertiary);
       --muted-border: var(--color-info);
@@ -313,6 +313,13 @@
       min-width: 24px;
       text-align: right;
       font-size: 14px;
+      min-height: 21px;
+    }
+
+    .completion {
+      display: flex;
+      align-items: center;
+      min-height: 22px;
     }
 
     .progress-track {
@@ -359,8 +366,11 @@
     }
 
     #card-ds {
-      margin-bottom: 0;
+      border-left: 0;
+      border-right: 0;
       border-bottom: 0;
+      margin-bottom: 0;
+
     }
 
     .card.role .sec-head {
@@ -603,6 +613,7 @@
       font-weight: 400;
     }
 
+
     .field-input[type="date"] {
       padding: 7px;
       min-height: var(--touch-min);
@@ -611,6 +622,10 @@
     select.field-input {
       cursor: pointer;
       min-height: var(--touch-min);
+    }
+
+    select.field-input option {
+      color: var(--text);
     }
 
     select.field-input:invalid {
@@ -639,6 +654,44 @@
       background-color: var(--muted-bg);
       border-color: color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
       cursor: not-allowed;
+    }
+
+    input[type="date"]:not(:valid)::-webkit-datetime-edit {
+      color: var(--border-soft);
+      /* light gray placeholder look */
+    }
+
+    /* ===== Date inputs: hide native icon, overlay custom icon ===== */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      color: transparent;
+      background: transparent;
+    }
+
+    input[type="date"] {
+      appearance: none;
+      /* for Safari */
+      -moz-appearance: none;
+      padding-right: 38px;
+    }
+
+    .date-icon-wrap {
+      position: relative;
+      align-items: center;
+    }
+
+    date-input-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .date-icon-wrap .material-symbols-sharp {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-subtle);
+      pointer-events: none;
+      color: var(--text-muted);
     }
 
     select:disabled {
@@ -1003,6 +1056,16 @@
       font-size: 0.75rem;
       margin: var(--space-inset-y) var(--space-inset-x);
       align-items: center;
+    }
+
+    .notice:first-of-type {
+      margin: var(--space-inset-y) var(--space-inset-x) 0 var(--space-inset-x);
+
+    }
+
+    .notice:last-of-type {
+      margin: 0 var(--space-inset-x) var(--space-inset-y) var(--space-inset-x);
+
     }
 
     #main>#globalNotice.notice {
@@ -1405,7 +1468,7 @@
     }
 
     .ql-toolbar.ql-snow {
-      padding: 0;
+      padding: 0 8px !important;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1666,7 +1729,7 @@
       border: 1px dashed var(--border-soft);
       border-radius: 50%;
       display: flex;
-      margin: 0 auto;
+      margin: auto;
       justify-content: center;
       align-items: center;
       font-size: 0.7rem;
@@ -1703,6 +1766,11 @@
 
       .card.is-print-hidden {
         display: none;
+      }
+
+      .meta-grid,
+      .meta-cell {
+        padding-bottom: 0;
       }
 
       body {
@@ -1782,6 +1850,12 @@
         color: transparent;
       }
 
+      .ql-editor.ql-blank::before {
+        display: none;
+        color: transparent;
+        content: "";
+      }
+
       .meta-cell.is-disabled {
         display: none;
       }
@@ -1790,6 +1864,14 @@
       select:valid,
       select:disabled {
         background-color: var(--surface) !important;
+      }
+
+      .ql-toolbar.ql-snow+.ql-container.ql-snow {
+        border-top: 1px solid #ccc !important;
+      }
+
+      .row-notice-stack {
+        display: none;
       }
 
       .signature-pad-tabs,
@@ -1805,6 +1887,15 @@
       .ql-toolbar.ql-snow {
         display: none;
       }
+
+      .pill-group label {
+        padding: 0 5px;
+      }
+
+      .card {
+        margin-bottom: var(--gap-xs);
+      }
+
 
       @keyframes fadeUp {
         from {
@@ -1843,6 +1934,9 @@
         <div class="completion"><span class="progress-pct" id="progressPct">0</span><span
             class="material-symbols-sharp"> percent </span></div>
       </div>
+
+      <!-- Reader-mode summary: plain-text mirror of the form, kept in sync by script (see section 9) -->
+      <article id="readerSummary" class="sr-only" aria-label="Form summary (text version)"></article>
 
       <!-- Validation announcer -->
       <div role="alert" aria-live="assertive" id="validationMessages" class="sr-only"></div>
@@ -1920,9 +2014,9 @@
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell engineer-cell" id="engineer_eit">
-              <label class="field-label" for="POR">Professional of Record</label>
-              <input class="field-input" id="POR" name="POR" type="text" placeholder="POR name..." autocomplete="name"
-                required>
+              <label class="field-label" for="engineer">Professional of Record</label>
+              <input class="field-input" id="engineer" name="engineer" type="text" placeholder="POR name..."
+                autocomplete="name" required>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell ds-cell" id="supervisor">
@@ -1957,14 +2051,37 @@
         </div>
         <div class="sec-body open" id="s1">
           <div id="sc-rows" data-section="sc"></div>
-
+          <!-- Section 2: Direct Supervision -->
+          <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
+            <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
+              <div class="sec-left">
+                <div class="sec-num" id="snum-2">2</div>
+                <span class="sec-title">Direct Supervision</span>
+                <span class="sec-badge" id="badge-2">0 / 0</span>
+              </div>
+              <div class="sec-right">
+                <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2"><span
+                    class="material-symbols-sharp"> delete_history </span><span
+                    class="button-text">Clear</span></button>
+                <div class="chevron"><span class="material-symbols-sharp"> keyboard_arrow_down </span></div>
+              </div>
+            </div>
+            <div class="sec-body" id="s2">
+              <div id="ds-rows" data-section="ds"></div>
+            </div>
+          </div>
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_date">Date <span class="sr-only">(required)</span></label>
-                <input class="field-input" id="sc_date" name="sc_date" type="date" autocomplete="off" required
-                  aria-required="true" data-testid="sc-date">
-                <div class="required-field-underline" aria-hidden="true"></div>
+                <div class="date-icon-wrap">
+                  <div class="date-input-wrap">
+                    <input class="field-input" id="sc_date" name="sc_date" type="date" autocomplete="off" required
+                      aria-required="true" data-testid="sc-date">
+                    <div class="required-field-underline" aria-hidden="true"></div>
+                  </div>
+                  <span class="material-symbols-sharp">event</span>
+                </div>
               </div>
               <div class="sig-cell-sub">
                 <label class="field-label" for="sc_name">Name (Engineer) <span class="sr-only">(required)</span></label>
@@ -2024,24 +2141,7 @@
         </div>
       </div>
 
-      <!-- Section 2: Direct Supervision -->
-      <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
-        <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
-          <div class="sec-left">
-            <div class="sec-num" id="snum-2">2</div>
-            <span class="sec-title">Direct Supervision</span>
-            <span class="sec-badge" id="badge-2">0 / 0</span>
-          </div>
-          <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2"><span
-                class="material-symbols-sharp"> delete_history </span><span class="button-text">Clear</span></button>
-            <div class="chevron"><span class="material-symbols-sharp"> keyboard_arrow_down </span></div>
-          </div>
-        </div>
-        <div class="sec-body" id="s2">
-          <div id="ds-rows" data-section="ds"></div>
-        </div>
-      </div>
+
 
       <!-- Section 3: Check -->
       <div class="card hidden" id="card-ch" data-prefix="ch" role="tablist">
@@ -2182,7 +2282,7 @@
           <div class="sec-banner">
             <div class="notice warn" id="prType1Notice" role="note">
               <span class="material-symbols-sharp"> warning </span>
-              <span><b>Note:</b> This section applies when the PoR requests an <b>additional</b> peer review by another
+              <span><b>Note:</b> This section applies when the POR requests an <b>additional</b> peer review by another
                 professional engineer, <b>at any risk level</b>. <b>NOT</b> for the Type 1 High Risk Work Independent
                 Review.</span>
             </div>
@@ -2508,15 +2608,15 @@
         SC_ITEMS: [
           "Meets client/user objectives and requirements?",
           "Meets construction/operation requirements?",
-          "Relevant field observations and data used?",
-          "Have appropriate text and grammar been used?",
+          "Uses Relevant field observations and data?",
+          "Uses appropriate text and grammar?",
           "Meets BCH format and template standards?",
           "Includes standard BCH waivers/disclaimers?",
-          "Completed with correct calculations / up-to-date software?",
-          `Engineering Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank" rel="noopener noreferrer"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank" rel="noopener noreferrer"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
+          "Uses correct calculations / up-to-date software?",
+          `Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank" rel="noopener noreferrer"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank" rel="noopener noreferrer"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
           `Work is a non-standard structural design.`,
           `Work is defined as 'High-Risk'.`,
-          'I am the Professional of Record and have sufficient experience and knowledge in the discipline and type of work to self-check.'
+          'I am a Professional Registrant who is appropriately qualified with current expertise in the discipline and type of work to self-check.'
         ],
         DS_ITEMS: [
           "I have active involvement, control, and interaction in delegated work.",
@@ -2544,9 +2644,9 @@
           "Meets inter-disciplinary requirements (DE, DCE, TE, etc.)?",
           "Meets health, safety and environmental requirements?",
           "Meets other stakeholders (e.g. Local Government, First Nations) requirements?",
-          "Have all major risks been identified?",
-          "Considered safety by design?",
-          "Have opportunities for innovation or cost savings been identified?"
+          "Indentifies all major risks?",
+          "Considers safety by design?",
+          "Identifies opportunities for innovation or cost savings?"
         ],
         IR_ITEMS: [
           "Design code loadings and serviceability limits.",
@@ -2657,6 +2757,7 @@
           'script, iframe, object, embed, link, meta, base, form, input, button, select, textarea, style, video, audio, source'
         ).forEach((el) => el.remove());
         doc.querySelectorAll('*').forEach((el) => {
+          el.removeAttribute('style');
           for (const attr of Array.from(el.attributes)) {
             const name = attr.name.toLowerCase();
             if (name.startsWith('on')) {
@@ -2920,6 +3021,9 @@
           this.#modal.classList.remove('open');
           this.#activePrefix = null;
           this.#stopRaf?.();
+          hasPointer = false;
+          drawing = false;
+          prevMid = null;
           this.#uninstallFocusTrap();
         }
 
@@ -3155,6 +3259,7 @@
             this.#initQuillEditors();
           } catch (err) {
             console.warn('Quill unavailable, using fallback:', err);
+            this.#host.toast("Rich‑text editor failed to load, simple text mode active", "warn");
             this.#initFallbackEditors();
           }
           if (!this.#host.isRestored) this.restore();
@@ -3661,6 +3766,8 @@
         sectionConfig;
         isRestored = false;
 
+        formState;
+
         // Internals
         #sig;
         #comments;
@@ -3677,6 +3784,14 @@
         #syncingNames = false;
 
         constructor() {
+          this.formState = {
+            sc: {},
+            ds: {},
+            ch: {},
+            pr: {},
+            ir: {}
+          };
+
           this.elements = this.cacheElements();
           this.sectionConfig = this.buildSectionConfig();
           this.#sig = new SignatureManager(this);
@@ -3712,6 +3827,32 @@
           this.init();
         }
 
+        /**
+       * Read all checklist radio inputs from DOM and hydrate formState cache.
+       * Call after DOM changes that modify radio checked state (load snapshot, reset, clear section).
+       */
+        _hydrateFormStateFromDom () {
+          // reset state object
+          this.formState = { sc: {}, ds: {}, ch: {}, pr: {}, ir: {} };
+
+          const prefixList = ['sc', 'ds', 'ch', 'pr', 'ir'];
+          for (const prefix of prefixList) {
+            const selector = `input[name^="${prefix}"]:checked`;
+            const checkedRadios = queryAll(selector);
+            for (const radio of checkedRadios) {
+              // name format: sc1, ds3, ch5 etc
+              const name = radio.name;
+              // extract numeric index: strip prefix letters
+              const idxStr = name.replace(prefix, '');
+              const idx = parseInt(idxStr, 10);
+              if (!Number.isNaN(idx)) {
+                this.formState[prefix][idx] = radio.value;
+              }
+            }
+          }
+        }
+
+
         // ---------- DOM cache ----------
         cacheElements () {
           const get = (id) => document.getElementById(id);
@@ -3723,6 +3864,7 @@
             engineer: get('engineer'),
             revision: get('revision'),
             checker: get('checker'),
+            directSuper: get('direct_supervisor'),
             minCheckLevel: get('minCheckLevel'),
             riskBtns: document.querySelectorAll('.risk-btn'),
             sc11No: null,
@@ -3761,6 +3903,7 @@
             fT1Name: get('fT1_name'),
             irName: get('ir_name'),
             engLabel: document.querySelector('#engineer_eit .field-label'),
+            engInput: document.querySelector('#engineer_eit input'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
             scSigLabel: document.querySelector('#sc_sig'),
             wiLabel: document.querySelector('#checker_por .field-label'),
@@ -3842,6 +3985,9 @@
           this.isRestored = !!(hasPersistedRows && (window.location.protocol === 'file:' ||
             !!query('#check_form input[type="radio"]:checked') ||
             !!this.elements.workTitle?.value?.trim()));
+
+
+          this._hydrateFormStateFromDom();
 
           this.attachEventListeners();
           this.updateProgress();
@@ -4004,10 +4150,15 @@
         }
 
         #handleInput (e) {
+          const state = this.computeVisibilityState();
           const target = e.target;
-          if (target.id === 'engineer' || target.id === 'sc_name') {
+
+          if ((target.id === 'engineer' || target.id === 'sc_name') && !state.showDs) {
             this.syncLinkedFields(target, this.elements.scName, this.elements.engineer);
-          } else if ((target.id === 'checker' || target.id === 'ch_name') && !this.elements.cardCh.classList.contains('hidden')) {
+          } else if ((target.id === 'direct_supervisor' || target.id === 'sc_name') && state.showDs) {
+            this.syncLinkedFields(target, this.elements.scName, this.elements.directSuper);
+          }
+          if ((target.id === 'checker' || target.id === 'ch_name') && !state.showCh) {
             this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
           }
           const commentEditor = resolveCommentEditor(target);
@@ -4038,6 +4189,18 @@
         #onRadioChange (radio) {
           this.scheduleUpdateProgress();
           const name = radio?.name || '';
+
+          // parse prefix and index from radio name e.g. sc11 → prefix=sc, idx=11
+          const prefixMatch = name.match(/^([a-z]+)(\d+)$/);
+          if (prefixMatch) {
+            const prefix = prefixMatch[1];
+            const idx = parseInt(prefixMatch[2], 10);
+            if (this.formState[prefix] !== undefined && !Number.isNaN(idx)) {
+              // set current checked value
+              this.formState[prefix][idx] = radio.value;
+            }
+          }
+
           if (name === 'sc11') this.updateRoleLabels(false);
           if (name === 'sc_role') this.updateRoleLabels(true);
           this.showRiskConsistencyNotices();
@@ -4098,7 +4261,7 @@
           this.renderNoticeStack('sc', 8, blocks8);
           const blocks9 = [];
           if (getVal(9) === 'yes') {
-            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". Complete the <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn' });
+            blocks9.push({ message: `<b>Action required:</b> Question 1.9 is "Yes". The <b>POR</b> must complete the <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn' });
             if (level === 'low') blocks9.push({ message: `<b>Correction required:</b> This is a non-standard application - the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error' });
           }
           this.renderNoticeStack('sc', 9, blocks9);
@@ -4107,15 +4270,15 @@
             blocks10.push({ message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>). Expected <b>"${exp.sc10 === 'yes' ? 'Yes' : 'No'}"</b>.`, type: 'error' });
           }
           if (getVal(10) === 'yes') {
-            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The POR must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank" rel="noopener noreferrer"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
+            blocks10.push({ message: `<b>Action required:</b> Question 1.10 is "Yes". The <b>POR</b> must complete this check form and the <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8" target="_blank" rel="noopener noreferrer"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 10, blocks10);
           const blocks11 = [];
           if (isEit && getVal(11) === 'yes') {
-            blocks11.push({ message: `<b>Correction Required:</b> As an EIT, direct supervision from a professional engineer is required. Expected <b>'No'</b> for this question.`, type: 'error' });
+            blocks11.push({ message: `<b>Correction Required:</b> As an EIT for this work type, direct supervision from an experienced individual is required. Expected <b> "No" </b> for this question.`, type: 'error' });
           }
           if (getVal(11) === 'no') {
-            blocks11.push({ message: `<b>Action required:</b> Since Q1.11 is "No", the <b>Professional of Record</b> must complete the <b>Direct Supervision</b> and <b>Check</b> sections below.`, type: 'warn' });
+            blocks11.push({ message: `<b>Action required:</b> Question 1.11 is "No". As an EIT/Unqualified Engineer for this work type, the <b>POR</b> must also complete the <b>Section 2 - Direct Supervision</b>.`, type: 'warn' });
           }
           this.renderNoticeStack('sc', 11, blocks11);
         }
@@ -4162,22 +4325,35 @@
 
           const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
 
-          const showCheck = minLevel === 'Check' || q11No || isHighRisk || isEit;
+          const showDs = q11No || isEit;
+          const showCheck = minLevel === 'Check' || isHighRisk;
           const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
           const openS4 = chHasNo || minLevel === 'Peer Review';
           const openS5 = !isLowRisk && q9Yes;
           const showChNotice = chHasNo;
           const finalShown = isHighRisk;
 
-          return { showCheck, showPeer, openS4, openS5, showChNotice, finalShown };
+          return { showCheck, showPeer, openS4, openS5, showChNotice, finalShown, showDs };
         }
 
         applyVisibilityState (state) {
           this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
+          this.elements.cardDs.classList.toggle('hidden', !state.showDs);
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
+
+          this.setSectionOpen(this.elements.s2Head, this.elements.s2Body, state.showDs);
+          this.setDirectSuperRequired(state.showDs);
+          // if (state.showDs) {
+          //   this.syncNames(state.showDs, this.elements.directSuper, this.elements.scName);
+          // } else {
+          //   this.syncNames(!state.showDs, this.elements.engineer, this.elements.scName);
+          // }
+
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
           this.setCheckerRequired(state.showCheck);
-          if (state.showCheck) this.syncCheckerNames();
+          // if (state.showCheck) {
+          //   this.syncNames(state.showCheck, this.elements.checker, this.elements.chName);
+          // }
 
           this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
           const bodyPr = this.elements.s4Body;
@@ -4212,6 +4388,17 @@
           head.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
 
+        setDirectSuperRequired (required) {
+          const directSuper = this.elements.directSuper;
+          if (required) {
+            directSuper.setAttribute('required', '');
+            directSuper.removeAttribute('disabled');
+          } else {
+            directSuper.removeAttribute('required');
+            directSuper.setAttribute('disabled', '');
+          }
+        }
+
         setCheckerRequired (required) {
           const checker = this.elements.checker;
           if (required) {
@@ -4237,13 +4424,15 @@
           });
         }
 
-        syncCheckerNames () {
+        syncNames (shown, name, sigName) {
           if (this.#syncingNames) return;
           this.#syncingNames = true;
-          const shown = !this.elements.cardCh.classList.contains('hidden');
+          console.log('syncNames called with', { shown, name, sigName });
+          console.log(name.value, sigName.value);
           if (shown) {
-            if (this.elements.checker.value && !this.elements.chName.value) this.elements.chName.value = this.elements.checker.value;
-            else if (this.elements.chName.value && !this.elements.checker.value) this.elements.checker.value = this.elements.chName.value;
+            if (name.value && !sigName.value) sigName.value = name.value;
+            else if (sigName.value && !name.value) name.value = sigName.value;
+            else sigName.value = name.value;
           }
           this.#syncingNames = false;
         }
@@ -4266,18 +4455,20 @@
             }
           }
           this.elements.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
-          this.elements.engineer.placeholder = 'Type full name';
-          this.elements.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
-          this.elements.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
-          this.elements.engineerResponseLabel.textContent = isEit ? 'EIT Response' : 'Engineer Response';
+          this.elements.engInput.placeholder = isEit ? 'EIT name...' : 'Engineer name...';
+          this.elements.scNameLabel.textContent = 'Professional of Record';
+          this.elements.engineerResponseLabel.textContent = 'POR Response';
+          this.elements.scSigLabel.textContent = 'Signature (POR)';
+
           const usePor = this.isSc11No() || isEit;
           const secondRole = usePor ? 'Professional of Record' : 'Checker';
           const secondShort = usePor ? 'POR' : 'Checker';
-          if (this.elements.wiLabel) this.elements.wiLabel.textContent = secondRole;
-          if (this.elements.wiInput) this.elements.wiInput.placeholder = usePor ? 'POR name...' : 'Checker name...';
-          if (this.elements.chNameLabel) this.elements.chNameLabel.textContent = `Name (${secondShort})`;
-          if (this.elements.chSigLabel) this.elements.chSigLabel.textContent = usePor ? 'Signature (POR)' : 'Signature (Checker)';
-          if (this.elements.checkerCommentsLabel) this.elements.checkerCommentsLabel.textContent = usePor ? 'POR Comments & Corrections' : 'Checker Comments & Corrections';
+          if (this.elements.wiLabel) this.elements.wiLabel.textContent = 'Checker';
+          if (this.elements.wiInput) this.elements.wiInput.placeholder = 'Checker name...';
+
+          if (this.elements.chNameLabel) this.elements.chNameLabel.textContent = 'Name (Checker)';
+          if (this.elements.chSigLabel) this.elements.chSigLabel.textContent = 'Signature (Checker)';
+          if (this.elements.checkerCommentsLabel) this.elements.checkerCommentsLabel.textContent = 'Checker Comments & Corrections';
           this.updateProgress();
           this.syncDirectSupervision();
           this.syncSectionVisibility();
@@ -4286,9 +4477,18 @@
         // ---------- Progress ----------
         updateProgress () {
           const counts = new Map();
+
+          // loop sections metadata
           this.sectionConfig.forEach((s) => {
-            const cnt = s.rowsEl?.querySelectorAll('input[type="radio"]:checked').length ?? 0;
+            // extract section prefix from rowsId e.g "#sc-rows" → "sc"
+            const prefix = s.rowsId.replace(/^#/, '').replace(/-rows$/, '');
+            // count number of answered items from formState for this prefix
+            const sectionAnswers = this.formState[prefix] ?? {};
+            const cnt = Object.keys(sectionAnswers).length;
+
             counts.set(s.rowsId, cnt);
+
+            // update UI badge "X / Y"
             if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
             if (s.num) {
               if (cnt === s.count) {
@@ -4300,6 +4500,7 @@
               }
             }
           });
+
           const prAnswered = (counts.get('#pr-rows') ?? 0) > 0;
           let total = 0, answered = 0;
           this.sectionConfig.forEach((s) => {
@@ -4311,16 +4512,19 @@
               answered += counts.get(s.rowsId) ?? 0;
             }
           });
+
           const pct = total ? Math.round((answered / total) * 100) : 0;
           const fullyComplete = pct === 100;
           this.elements.progressStrip.classList.toggle('completed', fullyComplete);
           this.elements.progressBar.value = pct;
           this.elements.progressPct.textContent = `${pct}`;
+
           const saveBtn = this.elements.savePdf;
           if (saveBtn) {
             saveBtn.classList.toggle('completed', fullyComplete && this.allRequiredFieldsValid() && this.#sig.allOpenEnabled());
           }
         }
+
 
         scheduleUpdateProgress () {
           if (this.#progressTimer) clearTimeout(this.#progressTimer);
@@ -4380,6 +4584,10 @@
           const sec = getById(sectionId);
           if (!sec) return;
           this.clearFormControls(sec);
+
+          // ===== NEW: re‑sync state cache after clearing DOM radios =====
+          this._hydrateFormStateFromDom();
+
           this.updateProgress();
           if (sectionId === 's1') {
             this.syncDirectSupervision();
@@ -4406,6 +4614,7 @@
           this.syncCssStateClasses();
           this.toast('Section cleared', 'info');
         }
+
 
         clearFormControls (root) {
           root.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
@@ -4456,6 +4665,10 @@
           this.elements.riskBtns.forEach((b) => b.classList.remove('active'));
           if (this.elements.scRoleEng) this.elements.scRoleEng.checked = true;
           document.querySelectorAll('.sig-preview').forEach((p) => { p.innerHTML = ''; });
+
+          // ===== NEW: rebuild state cache after full DOM reset =====
+          this._hydrateFormStateFromDom();
+
           this.updateRoleLabels(true);
           this.syncAllSectionVisibility();
           this.showRiskConsistencyNotices();
@@ -4467,6 +4680,7 @@
           this.toast('Form reset', 'info');
         }
 
+
         restoreDefaults () {
           this.elements.revision.value = '0';
           this.elements.scRoleEng.checked = true;
@@ -4475,7 +4689,11 @@
         // ---------- Save snapshot ----------
         saveSnapshot () {
           this.#comments.syncAllHidden();
-          const clone = document.documentElement.cloneNode(true);
+          const sourceForm = document.documentElement;
+          const clone = sourceForm.cloneNode(true);
+
+          const formState = {};
+
           const findCloneControl = (live) => {
             if (live.id) {
               try {
@@ -4497,38 +4715,120 @@
           for (const live of document.querySelectorAll('input, textarea, select')) {
             const el = findCloneControl(live);
             if (!el) continue;
-            if (el.tagName === 'TEXTAREA') { el.textContent = live.value; continue; }
+
+            const key = live.id || live.name;
+            if (!key) continue;
+
+            if (el.tagName === 'TEXTAREA') {
+              el.textContent = live.value;
+              formState[key] = live.value;
+              continue;
+            }
+
             if (el.tagName === 'SELECT') {
               Array.from(el.options).forEach((o) => o.removeAttribute('selected'));
               if (live.selectedIndex >= 0) el.options[live.selectedIndex]?.setAttribute('selected', '');
+              formState[key] = { value: live.value, selectedIndex: live.selectedIndex };
               continue;
             }
+
             const type = el.getAttribute('type')?.toLowerCase();
             if (type === 'radio' || type === 'checkbox') {
               if (live.checked) el.setAttribute('checked', '');
               else el.removeAttribute('checked');
+              formState[key] = live.checked;
               continue;
             }
             el.setAttribute('value', live.value);
+            formState[key] = live.value;
           }
+          // Capture signature data
           document.querySelectorAll('.sig-draw-surface.has-signature').forEach((surface) => {
             const prefix = surface.getAttribute('data-prefix');
             if (!prefix) return;
             const cloneSig = clone.querySelector(`.sig-draw-surface[data-prefix="${CSS.escape(prefix)}"]`);
             const dataInput = getById(`${prefix}_sig_data`);
-            if (cloneSig && dataInput?.value) cloneSig.setAttribute('data-url', dataInput.value);
+            if (cloneSig && dataInput?.value) {
+              cloneSig.setAttribute('data-url', dataInput.value);
+              formState[`sig_${prefix}`] = dataInput.value;
+            }
           });
+
+          // Capture progress bar
           const progressClone = clone.querySelector('#progressBar');
-          if (progressClone) progressClone.setAttribute('value', this.elements.progressBar.value);
+          const progressVal = this.elements.progressBar.value;
+          if (progressClone) progressClone.setAttribute('value', progressVal);
+          formState['progressBar'] = progressVal;
+
+          // --- Inject metadata script into the clone ---
+          const jsonRaw = JSON.stringify(formState);
+          const escapedJson = jsonRaw.replace(/</g, '\\u003c');
+          const metaScript = document.createElement('script');
+          metaScript.type = 'application/json';
+          metaScript.dataset.snapshotFormState = '';
+          metaScript.textContent = escapedJson;
+          // Append metadata script at the end of cloned form
+          clone.appendChild(metaScript);
+
+          // NEW: self-hydrating script for standalone opening
+          const autoHydrateScript = document.createElement('script');
+          autoHydrateScript.textContent = `
+          (function(){
+            function applyFormStateFast(state, formRoot) {
+              for (const [key, val] of Object.entries(state)) {
+                if (key === 'progressBar') {
+                  const pb = formRoot.querySelector('#progressBar');
+                  if (pb) pb.value = val;
+                  continue;
+                }
+                if (key.startsWith('sig_')) {
+                  const prefix = key.replace('sig_', '');
+                  const sigEl = formRoot.querySelector('.sig-draw-surface[data-prefix="' + CSS.escape(prefix) + '"]');
+                  if (sigEl) sigEl.setAttribute('data-url', val);
+                  continue;
+                }
+                let el = formRoot.querySelector('#' + CSS.escape(key));
+                if (!el) el = formRoot.querySelector('[name="' + CSS.escape(key) + '"]');
+                if (!el) continue;
+
+                if (el.tagName === 'TEXTAREA') {
+                  el.value = val;
+                } else if (el.tagName === 'SELECT') {
+                  el.value = val.value;
+                  el.selectedIndex = val.selectedIndex;
+                } else if (el.type === 'checkbox' || el.type === 'radio') {
+                  el.checked = val;
+                } else {
+                  el.value = val;
+                }
+              }
+            }
+            const formRoot = document.querySelector('#check_form');
+            const stateScript = formRoot.querySelector('script[data-snapshot-form-state]');
+            if (!stateScript) return;
+            try {
+              const formState = JSON.parse(stateScript.textContent);
+              applyFormStateFast(formState, formRoot);
+            } catch(e) {
+              console.warn('Standalone snapshot hydration failed', e);
+            }
+          })();
+          `;
+          clone.appendChild(autoHydrateScript);
           const html = `<!DOCTYPE html>\n${clone.outerHTML}`;
           const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
           const url = URL.createObjectURL(blob);
+
           const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
           const safe = title.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '_').trim().slice(0, 80);
           const ts = new Date().toLocaleDateString().replace(/[:.]/g, '-');
           const a = document.createElement('a');
           if (window.location.protocol === 'file:') {
             const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
+            if (!filename) {
+              URL.revokeObjectURL(url);
+              return;
+            }
             const cleanFilename = filename.endsWith('.html') ? filename : `${filename}.html`;
             a.download = cleanFilename;
           } else {
@@ -4565,7 +4865,7 @@
           document.removeEventListener('focusin', this.#boundFocusin);
           document.removeEventListener('pointerdown', this.#boundPointerdown);
           getById('check_form')?.removeEventListener('submit', this.#boundSubmit);
-          if (this.#progressTimer) clearTimeout(this.#progressTimer);
+          if (this.#progressTimer) { clearTimeout(this.#progressTimer); this.#progressTimer = null; };
         }
       }
 
@@ -4579,6 +4879,94 @@
 
       window.addEventListener('DOMContentLoaded', () => {
         window.__checkFormInstance = new CheckForm();
+      });
+
+      // ============================================================
+      // 9. Reader mode (Edge Immersive Reader / Chrome Reading mode)
+      // Reader views strip form controls, so mirror the form as text.
+      // ============================================================
+      const ReaderSummary = (() => {
+        const root = () => getById('readerSummary');
+        const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
+        const labelOf = (el) => {
+          const lbl = el.id && document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+          return clean(lbl?.textContent);
+        };
+        const valueOf = (el) => {
+          if (el.tagName === 'SELECT') {
+            return el.selectedOptions[0]?.disabled || !el.value ? '' : clean(el.selectedOptions[0]?.textContent);
+          }
+          return clean(el.value);
+        };
+        const el = (tag, text) => {
+          const node = document.createElement(tag);
+          node.textContent = text;
+          return node;
+        };
+
+        function cellText (cell) {
+          const title = clean(cell.querySelector('.field-label')?.textContent);
+          const checked = [...cell.querySelectorAll('input[type=radio]:checked')]
+            .map((r) => labelOf(r) || r.value);
+          const pressed = [...cell.querySelectorAll('[aria-pressed="true"]')].map((b) => clean(b.textContent));
+          const fields = [...cell.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea')]
+            .map(valueOf).filter(Boolean);
+          const value = [...checked, ...pressed, ...fields].join(', ');
+          return `${title}: ${value || 'Not provided'}`;
+        }
+
+        function rowText (row) {
+          const num = clean(row.querySelector('.check-num')?.textContent);
+          const text = clean(row.querySelector('.check-text')?.textContent);
+          const r = row.querySelector('input[type=radio]:checked');
+          const answer = r ? { yes: 'Yes', no: 'No', na: 'N/A' }[r.value] || r.value : 'Not answered';
+          const notice = clean(row.querySelector('.row-notice-stack:not(.hidden)')?.textContent);
+          return `${num} ${text} — ${answer}${notice ? ` (${notice})` : ''}`;
+        }
+
+        function render () {
+          const host = root();
+          if (!host) return;
+          const frag = document.createDocumentFragment();
+          frag.append(el('h1', 'Distribution Engineering Check & Review Form'));
+          const pct = getById('progressPct')?.textContent;
+          if (pct != null) frag.append(el('p', `Completion: ${pct}%`));
+
+          document.querySelectorAll('#check_form .card:not(.hidden)').forEach((card) => {
+            const title = clean(card.querySelector('.sec-title')?.textContent);
+            const badge = clean(card.querySelector('.sec-badge')?.textContent);
+            frag.append(el('h2', badge ? `${title} (${badge})` : title));
+            const own = (n) => n.closest('.card') === card;
+            const handled = new Set();
+            card.querySelectorAll('.meta-cell, .check-row').forEach((n) => {
+              if (!own(n)) return;
+              n.querySelectorAll('input, select, textarea').forEach((i) => handled.add(i));
+              frag.append(el('p', n.classList.contains('check-row') ? rowText(n) : cellText(n)));
+            });
+            card.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea').forEach((f) => {
+              if (handled.has(f) || !own(f)) return;
+              const label = labelOf(f) || f.getAttribute('aria-label') || f.name || f.id;
+              if (label) frag.append(el('p', `${clean(label)}: ${valueOf(f) || 'Not provided'}`));
+            });
+          });
+          host.replaceChildren(frag);
+        }
+
+        let timer = null;
+        const schedule = () => { clearTimeout(timer); timer = setTimeout(render, 250); };
+
+        function init () {
+          render();
+          ['input', 'change', 'click'].forEach((t) => document.addEventListener(t, schedule, true));
+          window.addEventListener('pageshow', render);
+          document.addEventListener('visibilitychange', render);
+        }
+        return { init, render };
+      })();
+
+      window.addEventListener('DOMContentLoaded', () => {
+        // Run after CheckForm has built the question rows
+        setTimeout(() => ReaderSummary.init(), 0);
       });
 
       // Exposed for debugging / automation
