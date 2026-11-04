@@ -338,6 +338,10 @@
               {
                 "url": "https://hydroshare.bchydro.bc.ca/sites/de/_layouts/OneNote.aspx?id=%2Fsites%2Fde%2FDEKnowledgeOneNote&wd=target%28DE%20Onboarding%2FMain.one%7C56358748-A663-44AC-9C38-3BC73EE1A153%2F%29",
                 "name": "Onboarding on OneNote"
+              },
+              {
+                "url": "https://hydroshare.bchydro.bc.ca/sites/de/Documents/DE%20Onboarding%20Form.xlsx?d=w29bb98b2398b4a989d50320974da503f",
+                "name": "Onboarding Checklist"
               }
             ]
           },
@@ -965,6 +969,11 @@
             "url": "https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Travel/Engineering%20Travel%20Form%20Fillable.pdf",
             "info": "Standard form for engineering field work planning",
             "class": "_form"
+          },
+          {
+            "name": "Non-Commercial Pre-Trip Inspection Form",
+            "url": "https://bchydro.sharepoint.com/sites/Contractor_Safety_Program/_layouts/15/listforms.aspx?cid=MDk4NzhlNTYtOTdmNi00MjA0LWJlNWYtM2JhMDZjMDZhY2Q2&nav=Zjk3YjA1MDUtZjZkNy00MWZkLWI1ZDktODI5ZDM1NDRmYjMz&LOF=1",
+            "info": "Inspection form when using personal/rental vehicle for BCH work"
           }
         ]
       },

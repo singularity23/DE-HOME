@@ -32,7 +32,7 @@
     :root {
       --color-primary: rgb(50, 50, 50);
       --color-secondary: rgb(250, 250, 250);
-      --color-tertiary: #d4d4d8;
+      --color-tertiary: rgb(180, 180, 180);
       --surface-base: rgb(250, 250, 250);
       --surface-inverse: #231f20;
       --color-success: #046a38;
@@ -49,7 +49,7 @@
       --border-hard: var(--color-tertiary);
       --border-soft: var(--color-tertiary);
       --text: color-mix(in srgb, var(--color-primary) 80%, var(--surface-base));
-      --text-muted: var(--color-info);
+      --text-muted: color-mix(in srgb, var(--color-primary) 60%, var(--surface-base));
       --muted: color-mix(in srgb, var(--color-tertiary) 10%, var(--surface));
       --muted-bg: var(--color-tertiary);
       --muted-border: var(--color-info);
@@ -359,8 +359,11 @@
     }
 
     #card-ds {
-      margin-bottom: 0;
+      border-left: 0;
+      border-right: 0;
       border-bottom: 0;
+      margin-bottom: 0;
+
     }
 
     .card.role .sec-head {
@@ -603,6 +606,7 @@
       font-weight: 400;
     }
 
+
     .field-input[type="date"] {
       padding: 7px;
       min-height: var(--touch-min);
@@ -611,6 +615,10 @@
     select.field-input {
       cursor: pointer;
       min-height: var(--touch-min);
+    }
+
+    select.field-input option {
+      color: var(--text);
     }
 
     select.field-input:invalid {
@@ -1920,9 +1928,9 @@
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell engineer-cell" id="engineer_eit">
-              <label class="field-label" for="POR">Professional of Record</label>
-              <input class="field-input" id="POR" name="POR" type="text" placeholder="POR name..." autocomplete="name"
-                required>
+              <label class="field-label" for="engineer">Professional of Record</label>
+              <input class="field-input" id="engineer" name="engineer" type="text" placeholder="POR name..."
+                autocomplete="name" required>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell ds-cell" id="supervisor">
@@ -1957,7 +1965,25 @@
         </div>
         <div class="sec-body open" id="s1">
           <div id="sc-rows" data-section="sc"></div>
-
+          <!-- Section 2: Direct Supervision -->
+          <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
+            <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
+              <div class="sec-left">
+                <div class="sec-num" id="snum-2">2</div>
+                <span class="sec-title">Direct Supervision</span>
+                <span class="sec-badge" id="badge-2">0 / 0</span>
+              </div>
+              <div class="sec-right">
+                <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2"><span
+                    class="material-symbols-sharp"> delete_history </span><span
+                    class="button-text">Clear</span></button>
+                <div class="chevron"><span class="material-symbols-sharp"> keyboard_arrow_down </span></div>
+              </div>
+            </div>
+            <div class="sec-body" id="s2">
+              <div id="ds-rows" data-section="ds"></div>
+            </div>
+          </div>
           <div class="sig-grid">
             <div class="sig-cell">
               <div class="sig-cell-sub">
@@ -2024,24 +2050,7 @@
         </div>
       </div>
 
-      <!-- Section 2: Direct Supervision -->
-      <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
-        <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
-          <div class="sec-left">
-            <div class="sec-num" id="snum-2">2</div>
-            <span class="sec-title">Direct Supervision</span>
-            <span class="sec-badge" id="badge-2">0 / 0</span>
-          </div>
-          <div class="sec-right">
-            <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2"><span
-                class="material-symbols-sharp"> delete_history </span><span class="button-text">Clear</span></button>
-            <div class="chevron"><span class="material-symbols-sharp"> keyboard_arrow_down </span></div>
-          </div>
-        </div>
-        <div class="sec-body" id="s2">
-          <div id="ds-rows" data-section="ds"></div>
-        </div>
-      </div>
+
 
       <!-- Section 3: Check -->
       <div class="card hidden" id="card-ch" data-prefix="ch" role="tablist">
@@ -3723,6 +3732,7 @@
             engineer: get('engineer'),
             revision: get('revision'),
             checker: get('checker'),
+            directSuper: get('direct_supervisor'),
             minCheckLevel: get('minCheckLevel'),
             riskBtns: document.querySelectorAll('.risk-btn'),
             sc11No: null,
@@ -3761,6 +3771,7 @@
             fT1Name: get('fT1_name'),
             irName: get('ir_name'),
             engLabel: document.querySelector('#engineer_eit .field-label'),
+            engInput: document.querySelector('#engineer_eit input'),
             scNameLabel: document.querySelector('label[for="sc_name"]'),
             scSigLabel: document.querySelector('#sc_sig'),
             wiLabel: document.querySelector('#checker_por .field-label'),
@@ -4004,10 +4015,15 @@
         }
 
         #handleInput (e) {
+          const state = this.computeVisibilityState();
           const target = e.target;
-          if (target.id === 'engineer' || target.id === 'sc_name') {
+
+          if ((target.id === 'engineer' || target.id === 'sc_name') && !state.showDs) {
             this.syncLinkedFields(target, this.elements.scName, this.elements.engineer);
-          } else if ((target.id === 'checker' || target.id === 'ch_name') && !this.elements.cardCh.classList.contains('hidden')) {
+          } else if ((target.id === 'direct_supervisor' || target.id === 'sc_name') && state.showDs) {
+            this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
+          }
+          if ((target.id === 'checker' || target.id === 'ch_name') && !state.showCh) {
             this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
           }
           const commentEditor = resolveCommentEditor(target);
@@ -4162,22 +4178,35 @@
 
           const chHasNo = this.rowHasAnswer(this.elements.chRows, 'no');
 
-          const showCheck = minLevel === 'Check' || q11No || isHighRisk || isEit;
+          const showDs = q11No || isEit;
+          const showCheck = minLevel === 'Check' || isHighRisk;
           const showPeer = chHasNo || minLevel === 'Peer Review' || minLevel === 'Type 1 Independent Review Required' || isHighRisk || isMidRisk || isLowRisk;
           const openS4 = chHasNo || minLevel === 'Peer Review';
           const openS5 = !isLowRisk && q9Yes;
           const showChNotice = chHasNo;
           const finalShown = isHighRisk;
 
-          return { showCheck, showPeer, openS4, openS5, showChNotice, finalShown };
+          return { showCheck, showPeer, openS4, openS5, showChNotice, finalShown, showDs };
         }
 
         applyVisibilityState (state) {
           this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
+          this.elements.cardDs.classList.toggle('hidden', !state.showDs);
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
+
+          this.setSectionOpen(this.elements.s2Head, this.elements.s2Body, state.showDs);
+          this.setDirectSuperRequired(state.showDs);
+          // if (state.showDs) {
+          //   this.syncNames(state.showDs, this.elements.directSuper, this.elements.scName);
+          // } else {
+          //   this.syncNames(!state.showDs, this.elements.engineer, this.elements.scName);
+          // }
+
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
           this.setCheckerRequired(state.showCheck);
-          if (state.showCheck) this.syncCheckerNames();
+          // if (state.showCheck) {
+          //   this.syncNames(state.showCheck, this.elements.checker, this.elements.chName);
+          // }
 
           this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
           const bodyPr = this.elements.s4Body;
@@ -4212,6 +4241,17 @@
           head.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
 
+        setDirectSuperRequired (required) {
+          const directSuper = this.elements.directSuper;
+          if (required) {
+            directSuper.setAttribute('required', '');
+            directSuper.removeAttribute('disabled');
+          } else {
+            directSuper.removeAttribute('required');
+            directSuper.setAttribute('disabled', '');
+          }
+        }
+
         setCheckerRequired (required) {
           const checker = this.elements.checker;
           if (required) {
@@ -4237,13 +4277,15 @@
           });
         }
 
-        syncCheckerNames () {
+        syncNames (shown, name, sigName) {
           if (this.#syncingNames) return;
           this.#syncingNames = true;
-          const shown = !this.elements.cardCh.classList.contains('hidden');
+          console.log('syncNames called with', { shown, name, sigName });
+          console.log(name.value, sigName.value);
           if (shown) {
-            if (this.elements.checker.value && !this.elements.chName.value) this.elements.chName.value = this.elements.checker.value;
-            else if (this.elements.chName.value && !this.elements.checker.value) this.elements.checker.value = this.elements.chName.value;
+            if (name.value && !sigName.value) sigName.value = name.value;
+            else if (sigName.value && !name.value) name.value = sigName.value;
+            else sigName.value = name.value;
           }
           this.#syncingNames = false;
         }
@@ -4266,18 +4308,20 @@
             }
           }
           this.elements.engLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
-          this.elements.engineer.placeholder = 'Type full name';
-          this.elements.scNameLabel.textContent = isEit ? 'Engineer-in-Training' : 'Engineer';
-          this.elements.scSigLabel.textContent = isEit ? 'Signature (EIT)' : 'Signature (Engineer)';
-          this.elements.engineerResponseLabel.textContent = isEit ? 'EIT Response' : 'Engineer Response';
+          this.elements.engInput.placeholder = isEit ? 'EIT name...' : 'Engineer name...';
+          this.elements.scNameLabel.textContent = 'Professional of Record';
+          this.elements.engineerResponseLabel.textContent = 'PoR Response';
+          this.elements.scSigLabel.textContent = 'Signature (PoR)';
+
           const usePor = this.isSc11No() || isEit;
           const secondRole = usePor ? 'Professional of Record' : 'Checker';
           const secondShort = usePor ? 'POR' : 'Checker';
-          if (this.elements.wiLabel) this.elements.wiLabel.textContent = secondRole;
-          if (this.elements.wiInput) this.elements.wiInput.placeholder = usePor ? 'POR name...' : 'Checker name...';
-          if (this.elements.chNameLabel) this.elements.chNameLabel.textContent = `Name (${secondShort})`;
-          if (this.elements.chSigLabel) this.elements.chSigLabel.textContent = usePor ? 'Signature (POR)' : 'Signature (Checker)';
-          if (this.elements.checkerCommentsLabel) this.elements.checkerCommentsLabel.textContent = usePor ? 'POR Comments & Corrections' : 'Checker Comments & Corrections';
+          if (this.elements.wiLabel) this.elements.wiLabel.textContent = 'Checker';
+          if (this.elements.wiInput) this.elements.wiInput.placeholder = 'Checker name...';
+
+          if (this.elements.chNameLabel) this.elements.chNameLabel.textContent = 'Name (Checker)';
+          if (this.elements.chSigLabel) this.elements.chSigLabel.textContent = 'Signature (Checker)';
+          if (this.elements.checkerCommentsLabel) this.elements.checkerCommentsLabel.textContent = 'Checker Comments & Corrections';
           this.updateProgress();
           this.syncDirectSupervision();
           this.syncSectionVisibility();
