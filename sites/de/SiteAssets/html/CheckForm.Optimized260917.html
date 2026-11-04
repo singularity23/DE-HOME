@@ -33,6 +33,7 @@
       --color-primary: rgb(50, 50, 50);
       --color-secondary: rgb(250, 250, 250);
       --color-tertiary: rgb(180, 180, 180);
+      --color-tertiary: rgb(180, 180, 180);
       --surface-base: rgb(250, 250, 250);
       --surface-inverse: #231f20;
       --color-success: #046a38;
@@ -49,6 +50,7 @@
       --border-hard: var(--color-tertiary);
       --border-soft: var(--color-tertiary);
       --text: color-mix(in srgb, var(--color-primary) 80%, var(--surface-base));
+      --text-muted: color-mix(in srgb, var(--color-primary) 60%, var(--surface-base));
       --text-muted: color-mix(in srgb, var(--color-primary) 60%, var(--surface-base));
       --muted: color-mix(in srgb, var(--color-tertiary) 10%, var(--surface));
       --muted-bg: var(--color-tertiary);
@@ -320,6 +322,13 @@
       display: flex;
       align-items: center;
       min-height: 22px;
+      min-height: 21px;
+    }
+
+    .completion {
+      display: flex;
+      align-items: center;
+      min-height: 22px;
     }
 
     .progress-track {
@@ -368,7 +377,11 @@
     #card-ds {
       border-left: 0;
       border-right: 0;
+      border-left: 0;
+      border-right: 0;
       border-bottom: 0;
+      margin-bottom: 0;
+
       margin-bottom: 0;
 
     }
@@ -654,43 +667,6 @@
       background-color: var(--muted-bg);
       border-color: color-mix(in srgb, var(--muted-border) 40%, var(--surface-base));
       cursor: not-allowed;
-    }
-
-    input[type="date"]:not(:valid)::-webkit-datetime-edit {
-      color: var(--border-soft);
-      /* light gray placeholder look */
-    }
-
-    /* ===== Date inputs: hide native icon, overlay custom icon ===== */
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      color: transparent;
-      background: transparent;
-    }
-
-    input[type="date"] {
-      appearance: none;
-      /* for Safari */
-      -moz-appearance: none;
-      padding-right: 38px;
-    }
-
-    .date-icon-wrap {
-      position: relative;
-      align-items: center;
-    }
-
-    .date-input-wrap {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .date-icon-wrap .material-symbols-sharp {
-      position: absolute;
-      right: 9px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      color: var(--text-muted);
     }
 
     select:disabled {
@@ -1719,6 +1695,7 @@
       border-radius: 50%;
       display: flex;
       margin: auto;
+      margin: auto;
       justify-content: center;
       align-items: center;
       font-size: 0.7rem;
@@ -1755,6 +1732,11 @@
 
       .card.is-print-hidden {
         display: none;
+      }
+
+      .meta-grid,
+      .meta-cell {
+        padding-bottom: 0;
       }
 
       .meta-grid,
@@ -1845,6 +1827,12 @@
         content: "";
       }
 
+      .ql-editor.ql-blank::before {
+        display: none;
+        color: transparent;
+        content: "";
+      }
+
       .meta-cell.is-disabled {
         display: none;
       }
@@ -1853,6 +1841,14 @@
       select:valid,
       select:disabled {
         background-color: var(--surface) !important;
+      }
+
+      .ql-toolbar.ql-snow+.ql-container.ql-snow {
+        border-top: 1px solid #ccc !important;
+      }
+
+      .row-notice-stack {
+        display: none;
       }
 
       .ql-toolbar.ql-snow+.ql-container.ql-snow {
@@ -1876,6 +1872,15 @@
       .ql-toolbar.ql-snow {
         display: none;
       }
+
+      .pill-group label {
+        padding: 0 5px;
+      }
+
+      .card {
+        margin-bottom: var(--gap-xs);
+      }
+
 
       .pill-group label {
         padding: 0 5px;
@@ -1923,6 +1928,9 @@
         <div class="completion"><span class="progress-pct" id="progressPct">0</span><span
             class="material-symbols-sharp"> percent </span></div>
       </div>
+
+      <!-- Reader-mode summary: plain-text mirror of the form, kept in sync by script (see section 9) -->
+      <article id="readerSummary" class="sr-only" aria-label="Form summary (text version)"></article>
 
       <!-- Reader-mode summary: plain-text mirror of the form, kept in sync by script (see section 9) -->
       <article id="readerSummary" class="sr-only" aria-label="Form summary (text version)"></article>
@@ -2006,6 +2014,9 @@
               <label class="field-label" for="engineer">Professional of Record</label>
               <input class="field-input" id="engineer" name="engineer" type="text" placeholder="POR name..."
                 autocomplete="name" required>
+              <label class="field-label" for="engineer">Professional of Record</label>
+              <input class="field-input" id="engineer" name="engineer" type="text" placeholder="POR name..."
+                autocomplete="name" required>
               <div class="required-field-underline" aria-hidden="true"></div>
             </div>
             <div class="meta-cell ds-cell" id="supervisor">
@@ -2040,6 +2051,25 @@
         </div>
         <div class="sec-body open" id="s1">
           <div id="sc-rows" data-section="sc"></div>
+          <!-- Section 2: Direct Supervision -->
+          <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
+            <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
+              <div class="sec-left">
+                <div class="sec-num" id="snum-2">2</div>
+                <span class="sec-title">Direct Supervision</span>
+                <span class="sec-badge" id="badge-2">0 / 0</span>
+              </div>
+              <div class="sec-right">
+                <button class="btn-clear no-print" type="button" id="clearSec2Btn" data-testid="clear-sec2"><span
+                    class="material-symbols-sharp"> delete_history </span><span
+                    class="button-text">Clear</span></button>
+                <div class="chevron"><span class="material-symbols-sharp"> keyboard_arrow_down </span></div>
+              </div>
+            </div>
+            <div class="sec-body" id="s2">
+              <div id="ds-rows" data-section="ds"></div>
+            </div>
+          </div>
           <!-- Section 2: Direct Supervision -->
           <div class="card hidden" id="card-ds" data-prefix="ds" role="tablist">
             <div class="sec-head" id="sec2-head" aria-expanded="false" aria-controls="s2" role="tab">
@@ -3020,7 +3050,6 @@
           this.#modal.classList.remove('open');
           this.#activePrefix = null;
           this.#stopRaf?.();
-          this.#resetDrawingState?.();
           this.#uninstallFocusTrap();
         }
 
@@ -3830,32 +3859,6 @@
           this.init();
         }
 
-        /**
-       * Read all checklist radio inputs from DOM and hydrate formState cache.
-       * Call after DOM changes that modify radio checked state (load snapshot, reset, clear section).
-       */
-        #hydrateFormStateFromDom () {
-          // reset state object
-          this.formState = { sc: {}, ds: {}, ch: {}, pr: {}, ir: {} };
-
-          const prefixList = ['sc', 'ds', 'ch', 'pr', 'ir'];
-          for (const prefix of prefixList) {
-            const selector = `input[name^="${prefix}"]:checked`;
-            const checkedRadios = queryAll(selector);
-            for (const radio of checkedRadios) {
-              // name format: sc1, ds3, ch5 etc
-              const name = radio.name;
-              // extract numeric index: strip prefix letters
-              const idxStr = name.replace(prefix, '');
-              const idx = parseInt(idxStr, 10);
-              if (!Number.isNaN(idx)) {
-                this.formState[prefix][idx] = radio.value;
-              }
-            }
-          }
-        }
-
-
         // ---------- DOM cache ----------
         cacheElements () {
           const get = (id) => document.getElementById(id);
@@ -3989,9 +3992,6 @@
           this.isRestored = !!(hasPersistedRows && (window.location.protocol === 'file:' ||
             !!query('#check_form input[type="radio"]:checked') ||
             !!this.elements.workTitle?.value?.trim()));
-
-
-          this.#hydrateFormStateFromDom();
 
           this.attachEventListeners();
           this.updateProgress();
@@ -4344,12 +4344,9 @@
           this.elements.chNotice.classList.toggle('hidden', !state.showChNotice);
           this.elements.cardDs.classList.toggle('hidden', !state.showDs);
           this.elements.cardCh.classList.toggle('hidden', !state.showCheck);
-
-          this.setSectionOpen(this.elements.s2Head, this.elements.s2Body, state.showDs);
-          this.setDirectSuperRequired(state.showDs);
-
           this.setSectionOpen(this.elements.s3Head, this.elements.s3Body, state.showCheck);
           this.setCheckerRequired(state.showCheck);
+          if (state.showCheck) this.syncCheckerNames();
 
           this.elements.cardPr.classList.toggle('hidden', !state.showPeer);
           const bodyPr = this.elements.s4Body;
@@ -4423,6 +4420,7 @@
         syncNames (shown, name, sigName) {
           if (this.#syncingNames) return;
           this.#syncingNames = true;
+          const shown = !this.elements.cardCh.classList.contains('hidden');
           if (shown) {
             if (name.value && !sigName.value) sigName.value = name.value;
             else if (sigName.value && !name.value) name.value = sigName.value;
@@ -4578,10 +4576,6 @@
           const sec = getById(sectionId);
           if (!sec) return;
           this.clearFormControls(sec);
-
-          // ===== NEW: re‑sync state cache after clearing DOM radios =====
-          this.#hydrateFormStateFromDom();
-
           this.updateProgress();
           if (sectionId === 's1') {
             this.syncDirectSupervision();
@@ -4659,10 +4653,6 @@
           this.elements.riskBtns.forEach((b) => b.classList.remove('active'));
           if (this.elements.scRoleEng) this.elements.scRoleEng.checked = true;
           document.querySelectorAll('.sig-preview').forEach((p) => { p.innerHTML = ''; });
-
-          // ===== NEW: rebuild state cache after full DOM reset =====
-          this.#hydrateFormStateFromDom();
-
           this.updateRoleLabels(true);
           this.syncAllSectionVisibility();
           this.showRiskConsistencyNotices();
