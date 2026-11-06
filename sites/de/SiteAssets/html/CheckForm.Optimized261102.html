@@ -679,7 +679,7 @@
       align-items: center;
     }
 
-    date-input-wrap {
+    .date-input-wrap {
       display: flex;
       flex-direction: column;
     }
@@ -2623,6 +2623,8 @@
         <div>
           <button class="btn btn-ghost" type="button" id="saveAsPdfBtn" data-testid="save-pdf"><span
               class="material-symbols-sharp">print</span><span class="button-text">Print / PDF</span></button>
+          <button class="btn btn-ghost" type="button" id="exportPdfBtn" data-testid="export-pdf"><span
+              class="material-symbols-sharp">picture_as_pdf</span><span class="button-text">Save PDF</span></button>
           <button class="btn btn-primary" type="button" id="saveSnapshotBtn" data-testid="save-snapshot"><span
               class="material-symbols-sharp">save</span><span class="button-text">Save</span></button>
         </div>
@@ -2728,8 +2730,16 @@
       const CDN = Object.freeze({
         QUILL_CSS: 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css',
         QUILL_JS: 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js',
-        DOMPURIFY_JS: 'https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js'
+        DOMPURIFY_JS: 'https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js',
+        PDFMAKE_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js',
+        PDFMAKE_FONTS_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js',
+        PDFLIB_JS: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'
       });
+      let pdfMakeFontsLoaded = false;
+      const BC_HYDRO_LOGO_URL = 'https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-colour-rgb.png';
+      const SIG_CELL_HEIGHT = 40;
+      const SIG_CELL_PADDING = 3;
+
 
       // ============================================================
       // 2. DOM helpers
@@ -3841,6 +3851,7 @@
             resetFormBtn: () => this.resetForm(),
             saveSnapshotBtn: () => this.saveSnapshot(),
             saveAsPdfBtn: (ev) => this.printFormAsPdf(ev),
+            exportPdfBtn: () => this.exportPdf(),
             dismissNoticeBtn: () => this.hideGlobalNotice()
           };
           this.#boundClick = (e) => this.#handleClick(e);
@@ -3951,6 +3962,8 @@
             s5Body: get('s5'), s5Head: get('sec5-head'),
             s6Body: get('s6'), s6Head: get('sec6-head'),
             savePdf: get('saveAsPdfBtn'),
+            exportPdf: get('exportPdfBtn'),
+
             validationAnnouncer: get('validationMessages')
           };
         }
@@ -4717,6 +4730,555 @@
         restoreDefaults () {
           this.elements.revision.value = '0';
           this.elements.scRoleEng.checked = true;
+        }
+        // ---------- PDF Export Optimization ----------
+        #sigFields = [];
+        #sigTooltips = {};
+
+        // --- 1. PDF-Lib Signature Field Injection ---
+        async #addSignatureFields (pdfBytes) {
+          if (!this.#sigFields.length) return pdfBytes;
+          try {
+            if (!window.PDFLib) await loadScript(CDN.PDFLIB_JS, 30000);
+            const { PDFDocument, PDFName, PDFString } = window.PDFLib;
+
+            const doc = await PDFDocument.load(pdfBytes);
+            const ctx = doc.context;
+            const pages = doc.getPages();
+            const widgetRefs = [];
+
+            // pdfmake may lay a node out more than once; keep the last position per field
+            const fields = new Map(this.#sigFields.map((sig) => [sig.name, sig]));
+            for (const sig of fields.values()) {
+              const page = pages[sig.page - 1];
+              if (!page) continue;
+
+              const height = page.getHeight();
+              const y = height - sig.top - sig.height;
+
+              const widget = ctx.obj({
+                Type: 'Annot',
+                Subtype: 'Widget',
+                FT: 'Sig',
+                T: PDFString.of(sig.name),
+                TU: PDFString.of(sig.tooltip),
+                F: 4, // Print flag
+                Rect: [sig.left, y, sig.left + sig.width, y + sig.height],
+                P: page.ref
+              });
+
+              const ref = ctx.register(widget);
+              page.node.addAnnot(ref);
+              widgetRefs.push(ref);
+            }
+
+            // Only add AcroForm if we actually have signature fields
+            if (widgetRefs.length > 0) {
+              const acroForm = ctx.obj({
+                Fields: ctx.obj(widgetRefs),
+                SigFlags: 1
+              });
+              doc.catalog.set(PDFName.of('AcroForm'), ctx.register(acroForm));
+            }
+
+            return await doc.save();
+          } catch (error) {
+            console.warn('Could not add signature fields; saving without them.', error);
+            return pdfBytes;
+          }
+        }
+
+        // --- 2. Main Export Handler ---
+        async exportPdf () {
+          const button = this.elements.exportPdf;
+          if (!button || button.disabled) return;
+
+          button.disabled = true;
+          const buttonText = query('.button-text', button);
+          const originalText = buttonText?.textContent || 'Save PDF';
+          if (buttonText) buttonText.textContent = 'Preparing PDF…';
+
+          try {
+            this.#comments.syncAllHidden();
+            if (!window.pdfMake) await loadScript(CDN.PDFMAKE_JS, 30000);
+            if (!window.pdfMake?.createPdf) throw new Error('PDF library failed to load.');
+            if (!pdfMakeFontsLoaded) {
+              await loadScript(CDN.PDFMAKE_FONTS_JS, 30000);
+              pdfMakeFontsLoaded = true;
+            }
+
+            const definition = await this.#buildPdfDefinition();
+            const title = getById('workTitle')?.value.trim().replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80) || 'DE_CheckForm';
+
+            const pdfBytes = await new Promise((resolve, reject) => {
+              try {
+                window.pdfMake.createPdf(definition).getBuffer(resolve);
+              } catch (err) {
+                reject(err);
+              }
+            });
+
+            const finalBytes = await this.#addSignatureFields(pdfBytes);
+            const blob = new Blob([finalBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `${title}.pdf`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            this.toast?.('PDF saved successfully', 'success');
+          } catch (error) {
+            console.error('PDF export failed:', error);
+            this.toast?.('Could not create the PDF. Please try "Print / PDF" instead.', 'error');
+          } finally {
+            button.disabled = false;
+            if (buttonText) buttonText.textContent = originalText;
+          }
+        }
+
+        // --- 3. PDF Definition Builder ---
+
+        async #signatureForPdf (prefix) {
+          const dataUrl = getById(`${prefix}_sig_data`)?.value || '';
+          if (!dataUrl) return '';
+
+          const image = new Image();
+          image.src = dataUrl;
+          if (typeof image.decode === 'function') {
+            await image.decode();
+          } else {
+            await new Promise((resolve, reject) => {
+              image.onload = resolve;
+              image.onerror = () => reject(new Error(`Could not read the ${prefix} signature image.`));
+            });
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          const context = canvas.getContext('2d');
+          if (!context) throw new Error(`Could not process the ${prefix} signature image.`);
+          context.drawImage(image, 0, 0);
+          return canvas.toDataURL('image/png');
+        }
+
+        async #collectPdfData () {
+          const value = (id) => getById(id)?.value?.trim() || '';
+          const checked = (name) => query(`input[name="${name}"]:checked`)?.value || '';
+          const isVisible = (id) => !getById(id)?.classList.contains('hidden');
+          const comment = (id) => {
+            const editor = getById(`${id}-editor`)?.querySelector('.ql-editor');
+            if (editor) return (editor.innerText || editor.textContent || '').trim();
+            const html = value(id);
+            if (!html) return '';
+            const container = document.createElement('div');
+            container.innerHTML = html;
+            return (container.innerText || container.textContent || '').trim();
+          };
+          const answer = (name) => ({ yes: 'Yes', no: 'No', na: 'N/A' }[checked(name)] || '');
+          const checklist = (prefix) => [...(getById(`${prefix}-rows`)?.querySelectorAll('.check-row') || [])]
+            .map((row) => {
+              const selected = row.querySelector('input[type="radio"]:checked');
+              return {
+                question: row.querySelector('.check-text')?.textContent.trim() || '',
+                answer: selected
+                  ? query(`label[for="${CSS.escape(selected.id)}"]`, row)?.textContent.trim() || selected.value
+                  : 'Not answered'
+              };
+            });
+          const signatures = await Promise.all(
+            CONFIG.SIG_PREFIXES.map((prefix) => this.#signatureForPdf(prefix))
+          );
+          const signatureByPrefix = Object.fromEntries(
+            CONFIG.SIG_PREFIXES.map((prefix, index) => [prefix, signatures[index]])
+          );
+
+          return {
+            workInfo: {
+              title: value('workTitle'),
+              revision: value('revision'),
+              role: checked('sc_role'),
+              riskLevel: query('.risk-btn.active')?.textContent.trim() || '',
+              deliverable: value('deliverable'),
+              minCheckLevel: value('minCheckLevel'),
+              por: value('engineer'),
+              directSupervisor: value('direct_supervisor')
+            },
+            selfCheck: {
+              required: isVisible('card-sc'),
+              checklist: checklist('sc'),
+              name: value('sc_name'),
+              date: value('sc_date'),
+              signature: signatureByPrefix.sc
+            },
+            directSupervision: {
+              required: isVisible('card-ds'),
+              checklist: checklist('ds'),
+              supervisor: value('direct_supervisor')
+            },
+            check: {
+              required: isVisible('card-ch'),
+              checklist: checklist('ch'),
+              name: value('ch_name'),
+              date: value('ch_date'),
+              signature: signatureByPrefix.ch,
+              comments: comment('checkerComments'),
+              response: comment('engineerResponse'),
+              addressed: answer('ch_c')
+            },
+            peerReview: {
+              required: isVisible('card-pr'),
+              checklist: checklist('pr'),
+              name: value('pr_name'),
+              date: value('pr_date'),
+              signature: signatureByPrefix.pr,
+              comments: comment('reviewerComments'),
+              response: comment('engineerResponse_2'),
+              addressed: answer('pr_c')
+            },
+            independentReview: {
+              required: isVisible('card-ir'),
+              checklist: checklist('ir'),
+              name: value('ir_name'),
+              date: value('ir_date'),
+              signature: signatureByPrefix.ir,
+              comments: comment('id_reviewerComments'),
+              response: comment('id_engineerResponse_2'),
+              addressed: answer('ir_c')
+            },
+            tier1Reviewer: {
+              required: isVisible('card-final'),
+              date: value('fT1_date'),
+              assignedReviewer: value('fT1_name'),
+              tlSignature: signatureByPrefix.fT1
+            }
+          };
+        }
+
+        async #buildPdfDefinition () {
+          const data = await this.#collectPdfData();
+          this.#sigFields = [];
+          this.#sigTooltips = {};
+
+          // 1. Initialize the content array
+          const content = [];
+
+          // 2. Build Header / Title Section
+          content.push(this.buildFormHeader(await this.#logoDataUrl()));
+
+          // 3. Build Form Sections (Modularized for maintainability)
+          content.push(this.buildSection1_WorkInfo(data.workInfo));
+
+          // Only render subsequent sections if they contain data or are required
+          if (data.selfCheck.required || this.hasData(data.selfCheck)) {
+            content.push(this.buildSection1_SelfCheck(data.selfCheck));
+          }
+          if (data.directSupervision.required || this.hasData(data.directSupervision)) {
+            content.push(this.buildSection2_DirectSupervision(data.directSupervision));
+          }
+          if (data.check.required || this.hasData(data.check)) {
+            content.push(this.buildSection3_Check(data.check));
+          }
+
+          // Peer Review is only included while its header and body are both expanded
+          const peerOpen = Boolean(getById('sec4-head')?.classList.contains('open') && getById('s4')?.classList.contains('open'));
+          if (peerOpen) {
+            content.push(this.buildSection4_PeerReview(data.peerReview));
+          }
+
+          if (data.independentReview.required || this.hasData(data.independentReview)) {
+            content.push(this.buildSection5_IndependentReview(data.independentReview));
+          }
+          if (data.tier1Reviewer.required || this.hasData(data.tier1Reviewer)) {
+            content.push(this.buildSection6_Tier1Reviewer(data.tier1Reviewer));
+          }
+
+          // 4. Return the final Document Definition
+          return {
+            pageSize: 'A4',
+            pageMargins: [40, 60, 40, 60],
+            content: content,
+
+            // Centralized Styles (Prevents repetitive inline styling)
+            styles: {
+              header: { fontSize: 16, bold: true, color: '#0074a4', margin: [0, 0, 0, 10] },
+              subheader: { fontSize: 14, bold: true, color: '#046a38', margin: [0, 15, 0, 5] },
+              sectionTitle: { fontSize: 12, bold: true, fillColor: '#E8F0FE', margin: [0, 10, 0, 5] },
+              label: { bold: true, fontSize: 10, color: '#333333' },
+              value: { fontSize: 10, color: '#000000' },
+              warning: { fontSize: 9, italics: true, color: '#fa4616', margin: [0, 5, 0, 5] },
+              tableHeader: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#0055A4' }
+            },
+
+            defaultStyle: {
+              font: 'Roboto',
+              fontSize: 10
+            },
+            pageBreakBefore: (node) => {
+              const id = String(node.id ?? '');
+              if (id.startsWith('sigfield:') && node.startPosition) {
+                const name = id.slice('sigfield:'.length);
+                const { pageNumber, pageInnerWidth, top } = node.startPosition;
+                // Field equals the whole signature cell: page margin (40) + first two columns (110 + 150),
+                // starting at the cell's top edge (node top minus the 3pt cell padding) with the fixed row height
+                console.log(pageInnerWidth - 100 - 160, pageXOffset, top);
+                this.#sigFields.push({
+                  name,
+                  tooltip: this.#sigTooltips[name] ?? 'Digital signature',
+                  page: pageNumber,
+                  left: 60 - 3 + 110 + 150,
+                  top: top - SIG_CELL_PADDING,
+                  width: pageInnerWidth - 110 - 150 - 40,
+                  height: SIG_CELL_HEIGHT
+                });
+              }
+              return false;
+            }
+          };
+        }
+
+        #signatureField (prefix, label) {
+          const name = `${prefix}_digital_signature`;
+          this.#sigTooltips[name] = `Digital signature: ${label}`;
+          return { text: ' ', fontSize: 10, id: `sigfield:${name}`, margin: [0, 0, 0, 0] };
+        }
+
+        // ==========================================
+        // HELPER FUNCTIONS (The "Secret Sauce" for Optimization)
+        // ==========================================
+
+        /** Checks if a section has any meaningful data to render */
+        hasData (section) {
+          if (!section) return false;
+          return Object.entries(section).some(([key, val]) => {
+            if (key === 'required') return false;
+            if (key === 'checklist') return val.some((item) => item.answer !== 'Not answered');
+            return val !== null && val !== undefined && val !== '';
+          });
+        }
+
+        /** Standardized Signature Block Builder */
+        buildSignatureBlock (name, date, signatureUrl, title, prefix) {
+          return this.#signatureTable([
+            { text: `${title} Name`, style: 'label' },
+            { text: 'Date', style: 'label' },
+            { text: 'Signature', style: 'label' }
+          ], [
+            { text: name || 'N/A', style: 'value' },
+            { text: date || 'N/A', style: 'value' },
+            signatureUrl ? { image: signatureUrl, width: 120, height: 40 } : this.#signatureField(prefix, title)
+          ], prefix, title, Boolean(signatureUrl));
+        }
+
+        // Table with a full-width empty cell that hosts the clickable PDF signature field
+        #signatureTable (headerCells, valueCells, prefix, title, extraRow = false) {
+          const body = [headerCells.map((cell) => ({ ...cell, fillColor: '#EDEDED' })), valueCells];
+          // A pre-drawn signature image occupies the cell, so its signing field gets its own row
+          if (extraRow) {
+            body.push([
+              { text: 'Digital signature', style: 'label', colSpan: 2, fillColor: '#F4F4F4', margin: [0, 6, 0, 0] },
+              {},
+              this.#signatureField(prefix, title)
+            ]);
+          }
+          return {
+            table: {
+              widths: [110, 150, '*'],
+              // The signing row has a fixed height so the field can match the cell exactly
+              heights: (row) => (row === (extraRow ? 2 : 1) ? SIG_CELL_HEIGHT : undefined),
+              body
+            },
+            layout: {
+              hLineColor: () => '#BFBFBF',
+              vLineColor: () => '#BFBFBF',
+              hLineWidth: () => 0.5,
+              vLineWidth: () => 0.5,
+              paddingLeft: () => 4,
+              paddingRight: () => 4,
+              paddingTop: () => SIG_CELL_PADDING,
+              paddingBottom: () => SIG_CELL_PADDING
+            },
+            margin: [0, 5, 0, 5]
+          };
+        }
+
+        /** Standardized Comments & Corrections Block Builder */
+        buildCommentsBlock (comments, response, addressed) {
+          return {
+            stack: [
+              { text: 'Comments & Corrections:', style: 'label' },
+              { text: comments || 'None', style: 'value', margin: [0, 0, 0, 5] },
+              { text: 'Engineer Response:', style: 'label' },
+              { text: response || 'None', style: 'value', margin: [0, 0, 0, 5] },
+              {
+                columns: [
+                  { width: 'auto', text: 'Are all comments addressed?', style: 'label' },
+                  { width: '*', text: addressed || 'N/A', style: 'value', bold: true, color: addressed === 'No' ? '#D32F2F' : '#000000' }
+                ]
+              }
+            ],
+            margin: [0, 10, 0, 10]
+          };
+        }
+
+        buildChecklistBlock (rows) {
+          return {
+            layout: 'lightHorizontalLines',
+            table: {
+              widths: ['*', 75],
+              headerRows: 1,
+              body: [
+                [
+                  { text: 'Checklist item', style: 'tableHeader' },
+                  { text: 'Response', style: 'tableHeader' }
+                ],
+                ...rows.map(({ question, answer }) => [
+                  { text: question, style: 'value' },
+                  { text: answer, style: 'value', alignment: 'center' }
+                ])
+              ]
+            },
+            margin: [0, 5, 0, 10]
+          };
+        }
+
+        // ==========================================
+        // SECTION BUILDERS
+        // ==========================================
+
+        async #logoDataUrl () {
+          try {
+            const response = await fetch(BC_HYDRO_LOGO_URL);
+            if (!response.ok) return '';
+            const blob = await response.blob();
+            return await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(String(reader.result));
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+          } catch {
+            return '';
+          }
+        }
+
+        buildFormHeader (logo) {
+          return {
+            columns: [
+              logo
+                ? { width: 100, image: logo }
+                : { width: 'auto', text: 'BC Hydro', bold: true, color: '#046a38', fontSize: 16 },
+              {
+                width: '*',
+                text: 'Distribution Engineering\nCheck & Review Form',
+                style: 'header',
+                alignment: 'right'
+              }
+            ],
+            margin: [0, 0, 0, 10]
+          };
+        }
+
+        buildSection1_WorkInfo (info) {
+          return {
+            stack: [
+              { text: 'Work Information', style: 'sectionTitle' },
+              {
+                layout: 'lightHorizontalLines',
+                table: {
+                  widths: ['30%', '70%'],
+                  body: [
+                    ['Work Title', info.title || ''],
+                    ['Revision', info.revision || ''],
+                    ['Your Role', info.role || ''],
+                    ['Risk Level', info.riskLevel || ''],
+                    ['Deliverable / Milestone', info.deliverable || ''],
+                    ['Minimum Check Level', info.minCheckLevel || ''],
+                    ['Professional of Record', info.por || ''],
+                    ['Direct Supervisor', info.directSupervisor || '']
+                  ].map(row => [{ text: row[0], style: 'label' }, { text: row[1], style: 'value' }])
+                }
+              }
+            ]
+          };
+        }
+
+        buildSection1_SelfCheck (data) {
+          return {
+            stack: [
+              { text: '1. Self-Check', style: 'sectionTitle' },
+              this.buildChecklistBlock(data.checklist),
+              this.buildSignatureBlock(data.name, data.date, data.signature, 'Professional of Record', 'sc')
+            ]
+          };
+        }
+
+        buildSection2_DirectSupervision (data) {
+          return {
+            stack: [
+              { text: '2. Direct Supervision', style: 'sectionTitle' },
+              this.buildChecklistBlock(data.checklist),
+              { text: `Direct Supervisor: ${data.supervisor || 'N/A'}`, style: 'value' }
+            ]
+          };
+        }
+
+        buildSection3_Check (data) {
+          return {
+            stack: [
+              { text: '3. Check', style: 'sectionTitle' },
+              this.buildChecklistBlock(data.checklist),
+              { text: 'Attention: A "No" answer requires your Team Lead to complete a Peer Review for acceptance.', style: 'warning' },
+              this.buildCommentsBlock(data.comments, data.response, data.addressed),
+              this.buildSignatureBlock(data.name, data.date, data.signature, 'Checker', 'ch')
+            ]
+          };
+        }
+
+        buildSection4_PeerReview (data) {
+          return {
+            stack: [
+              { text: '4. Peer Review', style: 'sectionTitle' },
+              this.buildChecklistBlock(data.checklist),
+              { text: 'Note: Applies when POR requests additional peer review. NOT for Type 1 High Risk Work Independent Review.', style: 'warning' },
+              this.buildCommentsBlock(data.comments, data.response, data.addressed),
+              this.buildSignatureBlock(data.name, data.date, data.signature, 'Peer Reviewer', 'pr')
+            ]
+          };
+        }
+
+        buildSection5_IndependentReview (data) {
+          return {
+            stack: [
+              { text: '5. Independent Structural Review', style: 'sectionTitle' },
+              this.buildChecklistBlock(data.checklist),
+              this.buildCommentsBlock(data.comments, data.response, data.addressed),
+              { text: 'Signature and Seal (Independent Reviewer):', style: 'label' },
+              { text: '(Seal to be applied physically after converting to PDF)', style: 'warning', margin: [0, 0, 0, 5] },
+              this.buildSignatureBlock(data.name, data.date, data.signature, 'Independent Reviewer', 'ir')
+            ]
+          };
+        }
+
+        buildSection6_Tier1Reviewer (data) {
+          return {
+            stack: [
+              { text: '6. Appoint Tier 1 Reviewer & Team Lead Signatures', style: 'sectionTitle' },
+              this.#signatureTable([
+                { text: 'Assigned Type 1 Reviewer', style: 'label' },
+                { text: 'Date', style: 'label' },
+                { text: 'DE Team Lead Signature', style: 'label' }
+              ], [
+                { text: data.assignedReviewer || 'N/A', style: 'value' },
+                { text: data.date || 'N/A', style: 'value' },
+                data.tlSignature ? { image: data.tlSignature, width: 120, height: 40 } : { text: 'Not signed', style: 'value', italics: true }
+              ], 'fT1', 'DE Team Lead')
+            ]
+          };
         }
 
         // ---------- Save snapshot ----------

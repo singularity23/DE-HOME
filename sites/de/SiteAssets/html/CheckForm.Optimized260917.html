@@ -1925,10 +1925,6 @@
 
       <!-- Reader-mode summary: plain-text mirror of the form, kept in sync by script (see section 9) -->
       <article id="readerSummary" class="sr-only" aria-label="Form summary (text version)"></article>
-
-      <!-- Reader-mode summary: plain-text mirror of the form, kept in sync by script (see section 9) -->
-      <article id="readerSummary" class="sr-only" aria-label="Form summary (text version)"></article>
-
       <!-- Validation announcer -->
       <div role="alert" aria-live="assertive" id="validationMessages" class="sr-only"></div>
 
@@ -2694,7 +2690,7 @@
         PDFLIB_JS: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'
       });
       let pdfMakeFontsLoaded = false;
-      const BC_HYDRO_LOGO_URL = 'https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-reversed.jpg';
+      const BC_HYDRO_LOGO_URL = 'https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-colour-rgb.png';
       const SIG_CELL_HEIGHT = 40;
       const SIG_CELL_PADDING = 3;
 
@@ -4952,7 +4948,7 @@
                   name,
                   tooltip: this.#sigTooltips[name] ?? 'Digital signature',
                   page: pageNumber,
-                  left: 40 + 110 + 150,
+                  left: 60 + 110 + 150,
                   top: top - SIG_CELL_PADDING,
                   width: pageInnerWidth - 110 - 150,
                   height: SIG_CELL_HEIGHT

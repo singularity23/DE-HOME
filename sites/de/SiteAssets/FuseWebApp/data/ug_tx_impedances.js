@@ -301,7 +301,7 @@ window.UG_TX_DATA = [
     "CAD ID": "360-3528",
     "kVA": 500,
     "Primary (kV)": "12 x 25",
-    "Secondary (kV)": "347/600",
+    "Secondary (V)": "347/600",
     "Minimum Impedance (%)": "4 - 6",
     "Feed": "Dual Primary / Radial"
   },
