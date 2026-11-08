@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distribution Engineering Check & Review Form</title>
+  <style>
+    :root {
+      --primary-blue: #003366;
+      --primary-yellow: #FFD100;
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #333333;
+      --text-muted: #666666;
+      --border-color: #e0e0e0;
+      --danger: #d32f2f;
+      --success: #388e3c;
+      --warning-bg: #fff8e1;
+      --warning-border: #ffecb3;
+      --info-bg: #e3f2fd;
+      --info-border: #bbdefb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: var(--primary-blue);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-logo {
+      height: 40px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      background: var(--card-bg);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-yellow);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Main Form */
+    .form-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Form Sections (Cards) */
+    .form-section {
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .section-header {
+      background: #f8f9fa;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .section-header h2 {
+      font-size: 1.1rem;
+      color: var(--primary-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-counter {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: normal;
+    }
+
+    .collapse-icon {
+      transition: transform 0.3s ease;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+    }
+
+    .form-section.collapsed .collapse-icon {
+      transform: rotate(-90deg);
+    }
+
+    .form-section.collapsed .section-body {
+      display: none;
+    }
+
+    .section-body {
+      padding: 1.5rem;
+    }
+
+    /* Form Elements */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    label .required {
+      color: var(--danger);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 0.8rem 1rem;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .alert-warning {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      color: #856404;
+    }
+
+    .alert-info {
+      background: var(--info-bg);
+      border: 1px solid var(--info-border);
+      color: #004085;
+    }
+
+    .alert-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    /* Radio Groups */
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0;
+    }
+
+    /* Signature Area */
+    .sig-area {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .sig-preview {
+      display: none;
+      max-height: 60px;
+      margin-top: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: white;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    /* Modal Styles */
+    .sig-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sig-modal.active {
+      display: flex;
+    }
+
+    .sig-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .sig-modal-content {
+      position: relative;
+      background: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .sig-modal-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sig-modal-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--primary-blue);
+    }
+
+    .sig-modal-body {
+      padding: 1.5rem;
+    }
+
+    .sig-modal-body canvas {
+      width: 100%;
+      height: 200px;
+      border: 1px dashed var(--border-color);
+      border-radius: 4px;
+      cursor: crosshair;
+      touch-action: none;
+      background: #fcfcfc;
+    }
+
+    .sig-modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #002244;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .btn-sm {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+    }
+
+    .upload-sig-label {
+      cursor: pointer;
+    }
+
+    /* Footer Actions */
+    .form-footer {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+      position: sticky;
+      bottom: 1rem;
+    }
+
+    @media print {
+
+      .form-footer,
+      .sig-area .btn,
+      .sig-area label,
+      .section-header-actions {
+        display: none !important;
+      }
+
+      .form-section {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+      }
+
+      .form-section.collapsed .section-body {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <img src="https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-reversed.jpg"
+      alt="BC Hydro Logo" class="header-logo" onerror="this.style.display='none'">
+    <h1 class="header-title">Distribution Engineering Check & Review Form Rev.0</h1>
+  </header>
+
+  <div class="progress-container">
+    <span>Completion</span>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span id="progressText" class="progress-text">0 percent</span>
+  </div>
+
+  <main class="form-container">
+    <form id="checkForm" novalidate>
+
+      <!-- Section 1: Work Information -->
+      <section class="form-section" data-section="workInfo">
+        <div class="section-header">
+          <h2>Work Information</h2>
+          <div class="section-header-actions">
+            <button type="button" class="btn btn-secondary btn-sm clear-section-btn">Clear</button>
+            <span class="collapse-icon">&#9660;</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="workTitle">Work Title <span class="required">*</span></label>
+              <input type="text" id="workTitle" name="workTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="revision">Revision</label>
+              <input type="text" id="revision" name="revision">
+            </div>
+            <div class="form-group">
+              <label for="yourRole">Your Role <span class="required">*</span></label>
+              <select id="yourRole" name="yourRole" required>
+                <option value="">Choose...</option>
+                <option value="Engineer">Engineer</option>
+                <option value="EIT">Engineer-in-Training</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="riskLevel">Risk Level <span class="required">*</span></label>
+              <select id="riskLevel" name="riskLevel" required>
+                <option value="">Choose...</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="deliverable">Check / Review Deliverable or Milestone <span class="required">*</span></label>
+              <select id="deliverable" name="deliverable" required>
+                <option value="">Choose an item…</option>
+                <option>Memo</option>
+                <option>Standard Form Settings Sheet</option>
+                <option>Preliminary Design</option>
+                <option>Detailed Design</option>
+                <option>Final Design</option>
+                <option>In Construction Report</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="minCheckLevel">Minimum Check / Review Level <span class="required">*</span></label>
+              <select id="minCheckLevel" name="minCheckLevel" required>
+                <option value="">Select Risk Level above…</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Self-Check -->
+      <section class="form-section" data-section="selfCheck">
+        <div class="section-header">
+          <h2>1. Self-Check <small class="section-counter">0 / 0</small></h2>
+          <div class="section-header-actions">
+            <button type="button" class="btn btn-secondary btn-sm clear-section-btn">Clear</button>
+            <span class="collapse-icon">&#9660;</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="scDate">Date <span class="required">*</span></label>
+              <input type="date" id="scDate" name="scDate" required>
+            </div>
+            <div class="form-group">
+              <label for="scName">Name (Engineer) <span class="required">*</span></label>
+              <input type="text" id="scName" name="scName" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Signature (Engineer) <span class="required">*</span></label>
+              <div class="sig-area">
+                <button type="button" class="btn btn-secondary open-sig-pad" data-target="scSig">Open signature
+                  pad</button>
+                <label class="btn btn-secondary upload-sig-label">
+                  Choose Signature Image
+                  <input type="file" class="upload-sig-btn" data-target="scSig" accept="image/*" style="display: none;">
+                </label>
+              </div>
+              <input type="hidden" class="sig-data" data-sig-id="scSig" name="scSig" required>
+              <img class="sig-preview" data-sig-preview="scSig" alt="Signature Preview">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Direct Supervision -->
+      <section class="form-section" data-section="directSup">
+        <div class="section-header">
+          <h2>2. Direct Supervision <small class="section-counter">0 / 0</small></h2>
+          <div class="section-header-actions">
+            <button type="button" class="btn btn-secondary btn-sm clear-section-btn">Clear</button>
+            <span class="collapse-icon">&#9660;</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="dsDate">Date <span class="required">*</span></label>
+              <input type="date" id="dsDate" name="dsDate" required>
+            </div>
+            <div class="form-group">
+              <label for="dsName">Name (Engineer) <span class="required">*</span></label>
+              <input type="text" id="dsName" name="dsName" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Signature (Engineer) <span class="required">*</span></label>
+              <div class="sig-area">
+                <button type="button" class="btn btn-secondary open-sig-pad" data-target="dsSig">Open signature
+                  pad</button>
+                <label class="btn btn-secondary upload-sig-label">
+                  Choose Signature Image
+                  <input type="file" class="upload-sig-btn" data-target="dsSig" accept="image/*" style="display: none;">
+                </label>
+              </div>
+              <input type="hidden" class="sig-data" data-sig-id="dsSig" name="dsSig" required>
+              <img class="sig-preview" data-sig-preview="dsSig" alt="Signature Preview">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Check -->
+      <section class="form-section" data-section="check">
+        <div class="section-header">
+          <h2>3. Check <small class="section-counter">0 / 0</small></h2>
+          <div class="section-header-actions">
+            <button type="button" class="btn btn-secondary btn-sm clear-section-btn">Clear</button>
+            <span class="collapse-icon">&#9660;</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-warning">
+            <span class="alert-icon">⚠️</span>
+            <div><strong>Attention:</strong> A "No" answer requires your <strong>Team Lead</strong> to complete a Peer
+              Review for acceptance.</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="chkComments">Checker Comments & Corrections</label>
+              <textarea id="chkComments" name="chkComments"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label for="chkResponse">Engineer Response</label>
+              <textarea id="chkResponse" name="chkResponse"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label>Are all comments and corrections addressed? <span class="required">*</span></label>
+              <div class="radio-group">
+                <label><input type="radio" name="chkAddressed" value="Yes" required> Yes</label>
+                <label><input type="radio" name="chkAddressed" value="No"> No</label>
+                <label><input type="radio" name="chkAddressed" value="N/A"> N/A</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="chkDate">Date <span class="required">*</span></label>
+              <input type="date" id="chkDate" name="chkDate" required>
+            </div>
+            <div class="form-group">
+              <label for="chkName">Name (Checker) <span class="required">*</span></label>
+              <input type="text" id="chkName" name="chkName" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Signature (Checker) <span class="required">*</span></label>
+              <div class="sig-area">
+                <button type="button" class="btn btn-secondary open-sig-pad" data-target="chkSig">Open signature
+                  pad</button>
+                <label class="btn btn-secondary upload-sig-label">
+                  Choose Signature Image
+                  <input type="file" class="upload-sig-btn" data-target="chkSig" accept="image/*"
+                    style="display: none;">
+                </label>
+              </div>
+              <input type="hidden" class="sig-data" data-sig-id="chkSig" name="chkSig" required>
+              <img class="sig-preview" data-sig-preview="chkSig" alt="Signature Preview">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Peer Review -->
+      <section class="form-section" data-section="peerReview">
+        <div class="section-header">
+          <h2>4. Peer Review <small class="section-counter">0 / 0</small></h2>
+          <div class="section-header-actions">
+            <button type="button" class="btn btn-secondary btn-sm clear-section-btn">Clear</button>
+            <span class="collapse-icon">&#9660;</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-info">
+            <span class="alert-icon">ℹ️</span>
+            <div><strong>Note:</strong> This section applies when the POR requests an <strong>additional</strong> peer
+              review by another professional engineer, <strong>at any risk level</strong>. <strong>NOT</strong> for the
+              Type 1 High Risk Work Independent Review.</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="prComments">Reviewer Comments & Corrections</label>
+              <textarea id="prComments" name="prComments"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label for="prResponse">Engineer Response</label>
+              <textarea id="prResponse" name="prResponse"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label>Are all comments and corrections addressed? <span class="required">*</span></label>
+              <div class="radio-group">
+                <label><input type="radio" name="prAddressed" value="Yes" required> Yes</label>
+                <label><input type="radio" name="prAddressed" value="No"> No</label>
+                <label><input type="radio" name="prAddressed" value="N/A"> N/A</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="prDate">Date <span class="required">*</span></label>
+              <input type="date" id="prDate" name="prDate" required>
+            </div>
+            <div class="form-group">
+              <label for="prName">Name (Peer Reviewer) <span class="required">*</span></label>
+              <input type="text" id="prName" name="prName" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Signature (Peer Reviewer) <span class="required">*</span></label>
+              <div class="sig-area">
+                <button type="button" class="btn btn-secondary open-sig-pad" data-target="prSig">Open signature
+                  pad</button>
+                <label class="btn btn-secondary upload-sig-label">
+                  Choose Signature Image
+                  <input type="file" class="upload-sig-btn" data-target="prSig" accept="image/*" style="display: none;">
+                </label>
+              </div>
+              <input type="hidden" class="sig-data" data-sig-id="prSig" name="prSig" required>
+              <img class="sig-preview" data-sig-preview="prSig" alt="Signature Preview">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Independent Structural Review -->
+      <section class="form-section" data-section="indStructural">
+        <div class="section-header">
+          <h2>5. Independent Structural Review <small class="section-counter">0 / 0</small></h2>
+          <div class="section-header-actions">
+            <button type="button" class="btn btn-secondary btn-sm clear-section-btn">Clear</button>
+            <span class="collapse-icon">&#9660;</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="isrComments">Reviewer Comments & Corrections</label>
+              <textarea id="isrComments" name="isrComments"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label for="isrResponse">Engineer Response</label>
+              <textarea id="isrResponse" name="isrResponse"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label>Are all comments and corrections addressed? <span class="required">*</span></label>
+              <div class="radio-group">
+                <label><input type="radio" name="isrAddressed" value="Yes" required> Yes</label>
+                <label><input type="radio" name="isrAddressed" value="No"> No</label>
+                <label><input type="radio" name="isrAddressed" value="N/A"> N/A</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="isrDate">Date <span class="required">*</span></label>
+              <input type="date" id="isrDate" name="isrDate" required>
+            </div>
+            <div class="form-group">
+              <label for="isrName">Name (Independent Reviewer) <span class="required">*</span></label>
+              <input type="text" id="isrName" name="isrName" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Signature and Seal (Independent Reviewer) <span class="required">*</span></label>
+              <div class="sig-area">
+                <button type="button" class="btn btn-secondary open-sig-pad" data-target="isrSig">Open signature
+                  pad</button>
+                <label class="btn btn-secondary upload-sig-label">
+                  Choose Signature Image
+                  <input type="file" class="upload-sig-btn" data-target="isrSig" accept="image/*"
+                    style="display: none;">
+                </label>
+              </div>
+              <input type="hidden" class="sig-data" data-sig-id="isrSig" name="isrSig" required>
+              <img class="sig-preview" data-sig-preview="isrSig" alt="Signature Preview">
+              <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">* S&S after converting to
+                PDF</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Appoint Tier 1 Reviewer -->
+      <section class="form-section" data-section="tier1">
+        <div class="section-header">
+          <h2>6. Appoint Tier 1 Reviewer & Team Lead Signatures <small class="section-counter">0 / 0</small></h2>
+          <div class="section-header-actions">
+            <button type="button" class="btn btn-secondary btn-sm clear-section-btn">Clear</button>
+            <span class="collapse-icon">&#9660;</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="t1Date">Date <span class="required">*</span></label>
+              <input type="date" id="t1Date" name="t1Date" required>
+            </div>
+            <div class="form-group">
+              <label for="t1Reviewer">Assigned Type 1 Reviewer <span class="required">*</span></label>
+              <input type="text" id="t1Reviewer" name="t1Reviewer" required>
+            </div>
+            <div class="form-group full-width">
+              <label>DE TL Signature <span class="required">*</span></label>
+              <div class="sig-area">
+                <button type="button" class="btn btn-secondary open-sig-pad" data-target="t1Sig">Open signature
+                  pad</button>
+                <label class="btn btn-secondary upload-sig-label">
+                  Choose Signature Image
+                  <input type="file" class="upload-sig-btn" data-target="t1Sig" accept="image/*" style="display: none;">
+                </label>
+              </div>
+              <input type="hidden" class="sig-data" data-sig-id="t1Sig" name="t1Sig" required>
+              <img class="sig-preview" data-sig-preview="t1Sig" alt="Signature Preview">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer Actions -->
+      <div class="form-footer">
+        <button type="button" class="btn btn-secondary" id="resetFormBtn">Reset Form</button>
+        <button type="button" class="btn btn-primary" id="savePdfBtn">Save PDF</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- Signature Modal -->
+  <div class="sig-modal" id="sigModal">
+    <div class="sig-modal-overlay"></div>
+    <div class="sig-modal-content">
+      <div class="sig-modal-header">
+        <h3>Draw Signature</h3>
+        <button type="button" class="close-modal">&times;</button>
+      </div>
+      <div class="sig-modal-body">
+        <canvas id="sigCanvas"></canvas>
+      </div>
+      <div class="sig-modal-footer">
+        <button type="button" id="clearSig" class="btn btn-secondary">Clear</button>
+        <button type="button" id="saveSig" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // ==========================================
+      // 1. Progress Tracker
+      // ==========================================
+      class ProgressTracker {
+        constructor() {
+          this.globalBar = document.getElementById('progressFill');
+          this.globalText = document.getElementById('progressText');
+          this.sections = document.querySelectorAll('.form-section');
+          this.init();
+        }
+
+        init () {
+          this.sections.forEach(section => this.updateSection(section));
+          this.updateGlobal();
+
+          document.addEventListener('input', (e) => this.handleUpdate(e));
+          document.addEventListener('change', (e) => this.handleUpdate(e));
+        }
+
+        handleUpdate (e) {
+          const section = e.target.closest('.form-section');
+          if (section) {
+            this.updateSection(section);
+            this.updateGlobal();
+          }
+        }
+
+        updateSection (section) {
+          const inputs = section.querySelectorAll('input[required], select[required], textarea[required]');
+          let total = inputs.length;
+          let completed = 0;
+
+          inputs.forEach(input => {
+            if (input.type === 'file' || input.type === 'hidden') return;
+            if (input.type === 'radio') {
+              if (section.querySelector(`input[name="${input.name}"]:checked`)) completed++;
+            } else if (input.value && input.value.trim() !== '') {
+              completed++;
+            }
+          });
+
+          // Handle radio buttons uniquely to avoid double counting
+          const radioNames = new Set();
+          inputs.forEach(input => {
+            if (input.type === 'radio') radioNames.add(input.name);
+          });
+          total -= (inputs.length - section.querySelectorAll('input[required]:not([type="radio"]), select[required], textarea[required]').length);
+          total += radioNames.size;
+
+          completed = 0;
+          section.querySelectorAll('input[required]:not([type="radio"]), select[required], textarea[required]').forEach(input => {
+            if (input.type === 'hidden') {
+              if (input.value) completed++;
+            } else if (input.value && input.value.trim() !== '') {
+              completed++;
+            }
+          });
+          radioNames.forEach(name => {
+            if (section.querySelector(`input[name="${name}"]:checked`)) completed++;
+          });
+
+          const counter = section.querySelector('.section-counter');
+          if (counter) counter.textContent = `${completed} / ${total}`;
+        }
+
+        updateGlobal () {
+          let total = 0;
+          let completed = 0;
+          this.sections.forEach(section => {
+            const inputs = section.querySelectorAll('input[required]:not([type="radio"]):not([type="file"]), select[required], textarea[required]');
+            total += inputs.length;
+            inputs.forEach(input => {
+              if (input.value && input.value.trim() !== '') completed++;
+            });
+
+            const radioNames = new Set();
+            section.querySelectorAll('input[required][type="radio"]').forEach(r => radioNames.add(r.name));
+            total += radioNames.size;
+            radioNames.forEach(name => {
+              if (section.querySelector(`input[name="${name}"]:checked`)) completed++;
+            });
+          });
+
+          const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+          if (this.globalBar) this.globalBar.style.width = `${percent}%`;
+          if (this.globalText) this.globalText.textContent = `${percent} percent`;
+        }
+      }
+
+      // ==========================================
+      // 2. Collapsible Sections
+      // ==========================================
+      class CollapsibleManager {
+        constructor() {
+          this.headers = document.querySelectorAll('.section-header');
+          this.init();
+        }
+
+        init () {
+          this.headers.forEach(header => {
+            header.addEventListener('click', (e) => {
+              if (e.target.closest('.clear-section-btn')) return; // Ignore if clicking clear button
+              const section = header.closest('.form-section');
+              section.classList.toggle('collapsed');
+            });
+          });
+        }
+      }
+
+      // ==========================================
+      // 3. Signature Pad (Modal)
+      // ==========================================
+      class SignatureManager {
+        constructor() {
+          this.modal = document.getElementById('sigModal');
+          this.canvas = document.getElementById('sigCanvas');
+          this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+          this.currentTarget = null;
+          this.isDrawing = false;
+          this.init();
+        }
+
+        init () {
+          if (!this.modal) return;
+
+          document.querySelectorAll('.open-sig-pad').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.open(btn.dataset.target);
+            });
+          });
+
+          document.querySelectorAll('.close-modal, .sig-modal-overlay').forEach(el => {
+            el.addEventListener('click', () => this.close());
+          });
+
+          document.getElementById('clearSig').addEventListener('click', () => this.clearCanvas());
+          document.getElementById('saveSig').addEventListener('click', () => this.saveSignature());
+
+          document.querySelectorAll('.upload-sig-btn').forEach(input => {
+            input.addEventListener('change', (e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => this.saveToTarget(input.dataset.target, event.target.result);
+                reader.readAsDataURL(file);
+              }
+            });
+          });
+
+          this.setupCanvasEvents();
+          window.addEventListener('resize', () => this.resizeCanvas());
+        }
+
+        open (targetId) {
+          this.currentTarget = targetId;
+          this.modal.classList.add('active');
+          this.resizeCanvas();
+          this.clearCanvas();
+        }
+
+        close () {
+          this.modal.classList.remove('active');
+          this.currentTarget = null;
+        }
+
+        setupCanvasEvents () {
+          const getPos = (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const touch = e.touches ? e.touches[0] : e;
+            return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+          };
+
+          const start = (e) => {
+            e.preventDefault();
+            this.isDrawing = true;
+            const pos = getPos(e);
+            this.ctx.beginPath();
+            this.ctx.moveTo(pos.x, pos.y);
+          };
+
+          const draw = (e) => {
+            if (!this.isDrawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            this.ctx.lineTo(pos.x, pos.y);
+            this.ctx.stroke();
+          };
+
+          const end = () => { this.isDrawing = false; };
+
+          this.canvas.addEventListener('mousedown', start);
+          this.canvas.addEventListener('mousemove', draw);
+          this.canvas.addEventListener('mouseup', end);
+          this.canvas.addEventListener('mouseout', end);
+
+          this.canvas.addEventListener('touchstart', start, { passive: false });
+          this.canvas.addEventListener('touchmove', draw, { passive: false });
+          this.canvas.addEventListener('touchend', end);
+        }
+
+        resizeCanvas () {
+          if (!this.canvas) return;
+          const rect = this.canvas.getBoundingClientRect();
+          const dpr = window.devicePixelRatio || 1;
+          this.canvas.width = rect.width * dpr;
+          this.canvas.height = rect.height * dpr;
+          this.ctx.scale(dpr, dpr);
+          this.ctx.lineWidth = 2.5;
+          this.ctx.lineCap = 'round';
+          this.ctx.strokeStyle = '#000';
+        }
+
+        clearCanvas () {
+          if (this.ctx) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          }
+        }
+
+        saveSignature () {
+          if (!this.currentTarget) return;
+
+          // Check if canvas is blank
+          const blankCanvas = document.createElement('canvas');
+          blankCanvas.width = this.canvas.width;
+          blankCanvas.height = this.canvas.height;
+          if (this.canvas.toDataURL() === blankCanvas.toDataURL()) {
+            alert('Please draw a signature first.');
+            return;
+          }
+
+          const dataUrl = this.canvas.toDataURL('image/png');
+          this.saveToTarget(this.currentTarget, dataUrl);
+          this.close();
+        }
+
+        saveToTarget (targetId, dataUrl) {
+          const hiddenInput = document.querySelector(`input[data-sig-id="${targetId}"]`);
+          const previewImg = document.querySelector(`img[data-sig-preview="${targetId}"]`);
+
+          if (hiddenInput) {
+            hiddenInput.value = dataUrl;
+            hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          if (previewImg) {
+            previewImg.src = dataUrl;
+            previewImg.style.display = 'block';
+          }
+        }
+      }
+
+      // ==========================================
+      // 4. Dynamic Dropdowns & Logic
+      // ==========================================
+      class FormLogic {
+        constructor() {
+          this.riskSelect = document.getElementById('riskLevel');
+          this.minCheckSelect = document.getElementById('minCheckLevel');
+          this.init();
+        }
+
+        init () {
+          if (this.riskSelect) {
+            this.riskSelect.addEventListener('change', () => this.updateMinCheck());
+          }
+        }
+
+        updateMinCheck () {
+          const risk = this.riskSelect.value;
+          this.minCheckSelect.innerHTML = '<option value="">Select...</option>';
+
+          const levels = {
+            'Low': ['Self-Check'],
+            'Medium': ['Self-Check', 'Check'],
+            'High': ['Self-Check', 'Check', 'Peer Review Type 1', 'Independent Review Required']
+          };
+
+          if (levels[risk]) {
+            levels[risk].forEach(level => {
+              const opt = document.createElement('option');
+              opt.value = level;
+              opt.textContent = level;
+              this.minCheckSelect.appendChild(opt);
+            });
+          }
+        }
+      }
+
+      // ==========================================
+      // 5. Form Actions (Save, Reset, PDF)
+      // ==========================================
+      class FormActions {
+        constructor() {
+          this.form = document.getElementById('checkForm');
+          this.init();
+        }
+
+        init () {
+          document.getElementById('resetFormBtn').addEventListener('click', () => this.resetForm());
+          document.getElementById('savePdfBtn').addEventListener('click', () => window.print());
+
+          this.form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveForm();
+          });
+
+          document.querySelectorAll('.clear-section-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              this.clearSection(btn.closest('.form-section'));
+            });
+          });
+        }
+
+        resetForm () {
+          if (confirm('Are you sure you want to reset the entire form?')) {
+            this.form.reset();
+            document.querySelectorAll('input[type="hidden"].sig-data').forEach(input => input.value = '');
+            document.querySelectorAll('img[data-sig-preview]').forEach(img => {
+              img.src = '';
+              img.style.display = 'none';
+            });
+            document.dispatchEvent(new Event('change'));
+          }
+        }
+
+        clearSection (section) {
+          section.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.type === 'radio' || el.type === 'checkbox') el.checked = false;
+            else if (el.type !== 'file' && el.type !== 'hidden') el.value = '';
+          });
+          section.querySelectorAll('input[type="hidden"].sig-data').forEach(input => input.value = '');
+          section.querySelectorAll('img[data-sig-preview]').forEach(img => {
+            img.src = '';
+            img.style.display = 'none';
+          });
+          section.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        saveForm () {
+          if (!this.form.checkValidity()) {
+            this.form.reportValidity();
+            return;
+          }
+          const formData = new FormData(this.form);
+          console.log('Form Data:', Object.fromEntries(formData.entries()));
+          alert('Form saved successfully!');
+        }
+      }
+
+      // ==========================================
+      // Initialize All Modules
+      // ==========================================
+      new ProgressTracker();
+      new CollapsibleManager();
+      new SignatureManager();
+      new FormLogic();
+      new FormActions();
+    });
+  </script>
+</body>
+
+</html>
