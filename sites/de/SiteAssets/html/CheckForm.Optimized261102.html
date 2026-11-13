@@ -232,7 +232,7 @@
     .header {
       background: var(--surface-inverse);
       color: var(--color-secondary);
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       margin-bottom: var(--gap-lg);
       display: flex;
       align-items: center;
@@ -293,7 +293,7 @@
        -------------------------------- */
     .progress-strip {
       background: var(--surface);
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       padding: var(--space-inset-y) var(--space-inset-x);
       margin-bottom: var(--gap-lg);
       display: flex;
@@ -367,7 +367,7 @@
        6. Cards & Sections
        -------------------------------- */
     .card {
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       margin-bottom: var(--gap-lg);
       overflow: hidden;
       background: var(--surface);
@@ -754,7 +754,7 @@
       justify-content: center;
       background-color: var(--header-bg);
       text-transform: uppercase;
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
       padding: 0 8px;
     }
 
@@ -797,7 +797,7 @@
       text-align: center;
       color: var(--text-muted);
       min-height: 36px;
-      border: 1px solid var(--border-soft);
+      border: 2px solid var(--border-soft);
       text-transform: uppercase;
       transition: color 0.2s ease, background 0.2s ease, border 0.1s ease;
     }
@@ -929,7 +929,7 @@
 
     .check-num {
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: var(--color-primary);
       min-width: 28px;
       align-self: center;
     }
@@ -975,8 +975,8 @@
     }
 
     .pill-group input[type='radio']:not(:checked)+label {
-      border-top: 1px solid var(--border-soft);
-      border-bottom: 1px solid var(--border-soft);
+      border-top: 2px solid var(--border-soft);
+      border-bottom: 2px solid var(--border-soft);
     }
 
     .pill-group input[id$='_yes']:hover+label {
@@ -986,7 +986,7 @@
 
     .pill-group input[id$='_yes']:checked+label {
       background: var(--low-bg);
-      border: 1px solid var(--low-border);
+      border: 2px solid var(--low-border);
       color: var(--low);
     }
 
@@ -997,7 +997,7 @@
 
     .pill-group input[id$='_no']:checked+label {
       background: var(--high-bg);
-      border: 1px solid var(--high-border);
+      border: 2px solid var(--high-border);
       color: var(--high);
     }
 
@@ -1008,7 +1008,7 @@
 
     .pill-group input[id$='_na']:checked+label {
       background: var(--muted-bg);
-      border: 1px solid var(--muted-border);
+      border: 2px solid var(--muted-border);
       color: var(--muted-border);
     }
 
@@ -1025,21 +1025,21 @@
 
 
     .pill-group input[id$='_na']:not(:checked)+label {
-      border-right: 1px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
     }
 
     .pill-group input[id$='_no']:not(:checked)+label {
-      border-right: 1px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
       border-left: 0px;
     }
 
     .pill-group input[id$='_yes']:not(:checked)+label {
-      border-left: 1px solid var(--border-soft);
-      border-right: 1px solid var(--border-soft);
+      border-left: 2px solid var(--border-soft);
+      border-right: 2px solid var(--border-soft);
     }
 
     .pill-group input[id$='_yes']:not(:checked)+label:has(+ input[id$='_no']:checked) {
-      border-left: 1px solid var(--border-soft);
+      border-left: 2px solid var(--border-soft);
       border-right: 0px;
 
     }
@@ -1249,6 +1249,11 @@
       opacity: 0;
       transition: opacity 0.2s ease;
       z-index: 2;
+    }
+
+    .sig-draw-surface.has-signature .image-thumbnail-remove:hover .material-symbols-sharp,
+    .sig-inline-preview:hover .image-thumbnail-remove:hover .material-symbols-sharp {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
     .sig-draw-surface.has-signature:hover .image-thumbnail-remove,
@@ -1582,7 +1587,7 @@
       gap: var(--gap-md);
       padding: var(--space-inset-y) var(--space-inset-x);
       background: var(--header-bg);
-      border: 2px solid var(--border);
+      border: 2pt solid var(--border);
       margin-top: var(--gap-lg);
       align-items: center;
     }
@@ -1652,6 +1657,18 @@
       background: var(--bg);
       border-color: var(--border);
       color: var(--text-muted);
+    }
+
+    .btn-ghost.completed {
+      background: var(--low-bg);
+      border-color: var(--low-border);
+      color: var(--low);
+    }
+
+    .btn-ghost.completed:hover {
+      border-color: var(--low-border);
+      color: var(--low-bg);
+      background: var(--low);
     }
 
     .btn-ghost:hover,
@@ -1933,12 +1950,12 @@
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="scSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="scSigDrawTab" tabindex="-1"
-                    data-testid="sc-sig-draw">
+                    data-testid="sc-sig-draw" title="Draw signature">
                     <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="scSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="true" aria-controls="scSigUploadTab" tabindex="0"
-                    data-testid="sc-sig-upload">
+                    data-testid="sc-sig-upload" title="Upload signature image">
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
@@ -2061,12 +2078,12 @@
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="chSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="chSigDrawTab" tabindex="-1"
-                    data-testid="ch-sig-draw" disabled>
+                    data-testid="ch-sig-draw" title="Draw signature" disabled>
                     <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="chSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="true" aria-controls="chSigUploadTab" tabindex="0"
-                    data-testid="ch-sig-upload" disabled>
+                    data-testid="ch-sig-upload" title="Upload signature image" disabled>
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
@@ -2193,12 +2210,12 @@
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="prSigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="prSigDrawTab" tabindex="-1"
-                    data-testid="pr-sig-draw" disabled>
+                    data-testid="pr-sig-draw" title="Draw signature" disabled>
                     <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="prSigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="true" aria-controls="prSigUploadTab" tabindex="0"
-                    data-testid="pr-sig-upload" disabled>
+                    data-testid="pr-sig-upload" title="Upload signature image" disabled>
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
@@ -2364,12 +2381,12 @@
                 <div class="signature-pad-tabs" role="tablist" aria-label="Signature method">
                   <button class="btn btn-sig-tab" data-tab="draw" type="button" id="fT1SigDrawBtn" role="tab"
                     aria-label="Draw signature" aria-selected="false" aria-controls="fT1SigDrawTab" tabindex="-1"
-                    data-testid="ft1-sig-draw" disabled>
+                    data-testid="ft1-sig-draw" title="Draw signature" disabled>
                     <span class="material-symbols-sharp">signature</span>
                   </button>
                   <button class="btn btn-sig-tab active" data-tab="upload" type="button" id="fT1SigUploadBtn" role="tab"
                     aria-label="Upload signature image" aria-selected="true" aria-controls="fT1SigUploadTab"
-                    tabindex="0" data-testid="ft1-sig-upload" disabled>
+                    tabindex="0" data-testid="ft1-sig-upload" title="Upload signature image" disabled>
                     <span class="material-symbols-sharp">upload</span>
                   </button>
                 </div>
@@ -2473,7 +2490,7 @@
           "Meets BCH format and template standards?",
           "Includes standard BCH waivers/disclaimers?",
           "Uses correct calculations / up-to-date software?",
-          `Work is deemed as "Low Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank" rel="noopener noreferrer"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank" rel="noopener noreferrer"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
+          `Work is deemed as "Low-Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank" rel="noopener noreferrer"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank" rel="noopener noreferrer"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
           `Work is a non-standard structural design.`,
           `Work is defined as 'High-Risk'.`,
           'I am a Professional Registrant who is appropriately qualified with current expertise in the discipline and type of work to self-check.'
@@ -2530,9 +2547,9 @@
           ['checkerComments', 'Ctrl + V to paste screenshots...'],
           ['engineerResponse', 'Enter engineer response...'],
           ['reviewerComments', 'Ctrl + V to paste screenshots...'],
-          ['engineerResponse_2', 'Enter engineer response 2...'],
+          ['engineerResponse_2', 'Enter engineer response...'],
           ['id_reviewerComments', 'Ctrl + V to paste screenshots...'],
-          ['id_engineerResponse_2', 'Enter engineer response 2...']
+          ['id_engineerResponse_2', 'Enter engineer response...']
         ],
         COMMENT_PAIRS: [
           ['checkerComments-editor', 'engineerResponse-editor'],
@@ -4263,8 +4280,8 @@
         }
 
         #notReadyMessage () {
-          this.showValidationMessage('Fill all required fields and complete all questions to 100% progress.');
-          this.toast('Fill all <b>required (Red Underlines)</b> fields and complete all questions to <b>100%</b> progress.', 'error');
+          this.showValidationMessage('Fill all required fields and complete all questions.');
+          this.toast('Fill all <b>required (Red Underlines)</b> fields and complete all questions.', 'error');
         }
 
         handleSubmitAttempt () {
@@ -4274,7 +4291,7 @@
 
         pdfValidation () {
           this.updateProgress();
-          if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100) {
+          if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100 || !this.#sig.allOpenEnabled()) {
             this.#notReadyMessage();
             return false;
           }
@@ -4498,37 +4515,124 @@
           return Boolean(head?.classList.contains('open') && body?.classList.contains('open'));
         }
 
+        async #commentContent (id) {
+          const container = getById(`${id}-editor`);
+          let source = container?.matches('.comments-inline-editor')
+            ? container
+            : container?.querySelector('.ql-editor');
+          if (!source || (!(source.innerText || source.textContent || '').trim() && !source.querySelector('img[src]'))) {
+            source = document.createElement('div');
+            source.innerHTML = sanitizeHtml(getById(id)?.value || '');
+          }
+
+          const content = [];
+          let imageIndex = 0;
+          const hasEditorContent = Boolean((source.innerText || source.textContent || '').trim() || source.querySelector('img[src]'));
+          const pdfImage = async (image) => {
+            const src = image.getAttribute('src') || '';
+            imageIndex += 1;
+            if (!SAFE_DATA_IMAGE.test(src)) {
+              throw new Error(`The ${id} screenshot ${imageIndex} is not an embedded image. Paste it into the editor and try again.`);
+            }
+            return {
+              image: await this.#imageForPdf(src, `${id} screenshot ${imageIndex}`, { maxWidth: 1000, type: 'image/jpeg' }),
+              fit: [230, 180],
+              margin: [0, 3, 0, 3]
+            };
+          };
+          const marksFor = (element, inherited) => {
+            const marks = { ...inherited };
+            if (element.matches('strong, b')) marks.bold = true;
+            if (element.matches('em, i')) marks.italics = true;
+            if (element.matches('u')) marks.decoration = 'underline';
+            const href = element.getAttribute('href') || '';
+            if (element.matches('a[href]') && href && isSafeUrl(href)) {
+              marks.link = href;
+            }
+            return marks;
+          };
+          const inlineContent = async (nodes, prefix = '') => {
+            const blocks = [];
+            let runs = prefix ? [{ text: prefix }] : [];
+            const flush = () => {
+              if (!runs.length) return;
+              blocks.push({ text: runs, style: 'commentValue', margin: [0, 0, 0, 3] });
+              runs = [];
+            };
+            const visit = async (node, marks = {}) => {
+              if (node.nodeType === Node.TEXT_NODE) {
+                if (node.nodeValue) {
+                  runs.push({ text: node.nodeValue, ...marks });
+                }
+                return;
+              }
+              if (node.nodeType !== Node.ELEMENT_NODE) return;
+              if (node.matches('img[src]')) {
+                flush();
+                blocks.push(await pdfImage(node));
+                return;
+              }
+              if (node.matches('br')) {
+                runs.push({ text: '\n', ...marks });
+                return;
+              }
+              const nextMarks = marksFor(node, marks);
+              for (const child of node.childNodes) await visit(child, nextMarks);
+            };
+            for (const node of nodes) await visit(node);
+            flush();
+            return blocks;
+          };
+          const renderBlocks = async (node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              return node.nodeValue?.trim() ? inlineContent([node]) : [];
+            }
+            if (node.nodeType !== Node.ELEMENT_NODE) return [];
+            if (node.matches('ol, ul')) {
+              const rendered = [];
+              let number = 0;
+              for (const item of [...node.children].filter((child) => child.matches('li'))) {
+                number += 1;
+                const isBullet = item.getAttribute('data-list') === 'bullet' || node.matches('ul');
+                const indent = [...item.classList]
+                  .map((className) => /^ql-indent-(\d+)$/.exec(className))
+                  .find(Boolean);
+                const prefix = isBullet ? '\u2022 ' : `${number}. `;
+                const inlineNodes = [...item.childNodes].filter((child) =>
+                  !(child.nodeType === Node.ELEMENT_NODE && child.matches('ol, ul'))
+                  && !(child.nodeType === Node.ELEMENT_NODE && child.matches('.ql-ui'))
+                );
+                const itemBlocks = await inlineContent(inlineNodes, prefix);
+                const leftIndent = indent ? Number(indent[1]) * 12 : 0;
+                itemBlocks.forEach((block) => {
+                  if (block.margin) block.margin[0] = leftIndent;
+                });
+                rendered.push(...itemBlocks);
+                for (const nested of [...item.children].filter((child) => child.matches('ol, ul'))) {
+                  rendered.push(...await renderBlocks(nested));
+                }
+              }
+              return rendered;
+            }
+            if (node.matches('p, div')) return inlineContent(node.childNodes);
+            if (node.matches('img[src]')) return [await pdfImage(node)];
+            return inlineContent([node]);
+          };
+
+          if (hasEditorContent) {
+            for (const child of source.childNodes) content.push(...await renderBlocks(child));
+          }
+          const galleryImages = [...(getById(`${id}-gallery`)?.querySelectorAll('.image-thumbnail img[src]') || [])];
+          if (!source.querySelector('img[src]')) {
+            for (const image of galleryImages) content.push(await pdfImage(image));
+          }
+          return content;
+        }
+
         async #collectPdfData (visible) {
           const value = (id) => getById(id)?.value?.trim() || '';
           const enabledMetaValue = (id) => getById(id)?.closest('.meta-cell.is-disabled') ? null : value(id);
           const checked = (name) => query(`input[name="${name}"]:checked`)?.value || '';
-          const commentSource = (id) => {
-            const container = getById(`${id}-editor`);
-            const editor = container?.matches('.comments-inline-editor') ? container : container?.querySelector('.ql-editor');
-            if (editor && ((editor.innerText || editor.textContent || '').trim() || editor.querySelector('img[src]'))) return editor;
-            const parsed = document.createElement('div');
-            parsed.innerHTML = value(id);
-            return parsed;
-          };
-          const comment = (id) => {
-            const source = commentSource(id);
-            return (source.innerText || source.textContent || '').trim();
-          };
-          const commentImages = async (id) => {
-            const source = commentSource(id);
-            let images = [...source.querySelectorAll('img[src]')];
-            if (!images.length) {
-              images = [...(getById(`${id}-gallery`)?.querySelectorAll('.image-thumbnail img[src]') || [])];
-            }
-            // Screenshots render at ~230 pt and are opaque: cap size and use JPEG.
-            return Promise.all(images.map((image, index) => {
-              const src = image.getAttribute('src') || '';
-              if (!SAFE_DATA_IMAGE.test(src)) {
-                throw new Error(`The ${id} screenshot ${index + 1} is not an embedded image. Paste it into the editor and try again.`);
-              }
-              return this.#imageForPdf(src, `${id} screenshot ${index + 1}`, { maxWidth: 1000, type: 'image/jpeg' });
-            }));
-          };
           const answer = (name) => ({ yes: 'Yes', no: 'No', na: 'N/A' }[checked(name)] || '');
           const checklist = (prefix) => [...(getById(`${prefix}-rows`)?.querySelectorAll('.check-row') || [])]
             .map((row) => {
@@ -4550,10 +4654,10 @@
             reviewerComments: 'pr', engineerResponse_2: 'pr',
             id_reviewerComments: 'ir', id_engineerResponse_2: 'ir'
           };
-          const imagePairs = await Promise.all(CONFIG.COMMENT_FIELDS.map(async ([id]) =>
-            [id, visible[commentSections[id]] ? await commentImages(id) : []]
+          const commentPairs = await Promise.all(CONFIG.COMMENT_FIELDS.map(async ([id]) =>
+            [id, visible[commentSections[id]] ? await this.#commentContent(id) : []]
           ));
-          const img = Object.fromEntries(imagePairs);
+          const comments = Object.fromEntries(commentPairs);
 
           return {
             workInfo: {
@@ -4582,10 +4686,8 @@
               name: value('ch_name'),
               date: value('ch_date'),
               signature: sigOf.ch,
-              comments: comment('checkerComments'),
-              response: comment('engineerResponse'),
-              commentsImages: img.checkerComments,
-              responseImages: img.engineerResponse,
+              comments: comments.checkerComments,
+              response: comments.engineerResponse,
               addressed: answer('ch_c')
             },
             peerReview: {
@@ -4593,10 +4695,8 @@
               name: value('pr_name'),
               date: value('pr_date'),
               signature: sigOf.pr,
-              comments: comment('reviewerComments'),
-              response: comment('engineerResponse_2'),
-              commentsImages: img.reviewerComments,
-              responseImages: img.engineerResponse_2,
+              comments: comments.reviewerComments,
+              response: comments.engineerResponse_2,
               addressed: answer('pr_c')
             },
             independentReview: {
@@ -4604,10 +4704,8 @@
               name: value('ir_name'),
               date: value('ir_date'),
               signature: sigOf.ir,
-              comments: comment('id_reviewerComments'),
-              response: comment('id_engineerResponse_2'),
-              commentsImages: img.id_reviewerComments,
-              responseImages: img.id_engineerResponse_2,
+              comments: comments.id_reviewerComments,
+              response: comments.id_engineerResponse_2,
               addressed: answer('ir_c')
             },
             tier1Reviewer: {
@@ -4645,6 +4743,7 @@
               sectionTitle: { fontSize: 12, bold: true, fillColor: '#E8F0FE', margin: [0, 10, 0, 5] },
               label: { bold: true, fontSize: 10, color: '#333333' },
               value: { fontSize: 10, color: '#000000' },
+              commentValue: { fontSize: 10, color: '#000000', lineHeight: 1.3 },
               warning: { fontSize: 9, italics: true, color: '#fa4616', margin: [0, 5, 0, 5] },
               tableHeader: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#05a1c6' }
             },
@@ -4740,12 +4839,9 @@
           };
         }
 
-        buildCommentsBlock (comments, response, commentsImages = [], responseImages = []) {
-          const cell = (text, images) => ({
-            stack: [
-              ...(text ? [{ text, style: 'value' }] : images.length ? [] : [{ text: 'None', style: 'value' }]),
-              ...images.map((image) => ({ image, fit: [230, 180], margin: [0, 3, 0, 3] }))
-            ]
+        buildCommentsBlock (comments, response) {
+          const cell = (content) => ({
+            stack: content.length ? content : [{ text: 'None', style: 'value' }]
           });
           return {
             stack: [{
@@ -4758,7 +4854,7 @@
                     { text: 'Comments & Corrections', style: 'label', fillColor: '#EDEDED' },
                     { text: 'Engineer Response', style: 'label', fillColor: '#EDEDED' }
                   ],
-                  [cell(comments, commentsImages), cell(response, responseImages)]
+                  [cell(comments), cell(response)]
                 ]
               },
               layout: this.#borderedTableLayout(),
@@ -4876,7 +4972,7 @@
             stack: [
               { text: '3. Check', style: 'sectionTitle' },
               this.buildChecklistBlock(data.checklist),
-              this.buildCommentsBlock(data.comments, data.response, data.commentsImages, data.responseImages),
+              this.buildCommentsBlock(data.comments, data.response),
               this.buildSignatureBlock(data.name, data.date, data.signature, 'Checker', 'ch')
             ]
           };
@@ -4888,7 +4984,7 @@
               { text: '4. Peer Review', style: 'sectionTitle' },
               this.buildChecklistBlock(data.checklist),
               { text: 'Note: Applies when POR requests additional peer review. NOT for Type 1 High Risk Work Independent Review.', style: 'warning' },
-              this.buildCommentsBlock(data.comments, data.response, data.commentsImages, data.responseImages),
+              this.buildCommentsBlock(data.comments, data.response),
               this.buildSignatureBlock(data.name, data.date, data.signature, 'Peer Reviewer', 'pr')
             ]
           };
@@ -4899,7 +4995,7 @@
             stack: [
               { text: '5. Independent Structural Review', style: 'sectionTitle' },
               this.buildChecklistBlock(data.checklist),
-              this.buildCommentsBlock(data.comments, data.response, data.commentsImages, data.responseImages),
+              this.buildCommentsBlock(data.comments, data.response),
               this.buildSignatureBlock(data.name, data.date, data.signature, 'Independent Reviewer', 'ir')
             ]
           };
