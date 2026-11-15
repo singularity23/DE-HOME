@@ -1239,7 +1239,7 @@
           { id: 'main' },
           this.buildProgress(),
           // Reader-mode summary: plain-text mirror of the form, kept in sync by script
-          el('article', { id: 'readerSummary', class: 'sr-only', 'aria-label': 'Form summary (text version)' }),
+          //el('article', { id: 'readerSummary', class: 'sr-only', 'aria-label': 'Form summary (text version)' }),
           // Validation announcer
           el('div', { role: 'alert', 'aria-live': 'assertive', id: 'validationMessages', class: 'sr-only' }),
           this.buildInfoCard(),
@@ -4581,130 +4581,132 @@
    * Keeps a hidden plain-text copy of the form (#readerSummary) up to date,
    * because reader modes drop form controls but keep text.
    */
-  const ReaderSummary = (() => {
-    /**
-     * Collapses whitespace and trims.
-     * @param {string} s Text.
-     * @returns {string}
-     */
-    const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
+  // const ReaderSummary = (() => {
+  //   /**
+  //    * Collapses whitespace and trims.
+  //    * @param {string} s Text.
+  //    * @returns {string}
+  //    */
+  //   const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
 
-    /**
-     * Finds the label text of a control.
-     * @param {HTMLElement} el Form control.
-     * @returns {string}
-     */
-    const labelOf = (el) => {
-      const lbl = el.id && document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
-      return clean(lbl?.textContent);
-    };
+  //   /**
+  //    * Finds the label text of a control.
+  //    * @param {HTMLElement} el Form control.
+  //    * @returns {string}
+  //    */
+  //   const labelOf = (el) => {
+  //     const lbl = el.id && document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+  //     return clean(lbl?.textContent);
+  //   };
 
-    /**
-     * Gets the displayed value of a control. For selects, the placeholder counts as empty.
-     * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} el Form control.
-     * @returns {string}
-     */
-    const valueOf = (el) => {
-      if (el.tagName === 'SELECT') {
-        return el.selectedOptions[0]?.disabled || !el.value ? '' : clean(el.selectedOptions[0]?.textContent);
-      }
-      return clean(el.value);
-    };
+  //   /**
+  //    * Gets the displayed value of a control. For selects, the placeholder counts as empty.
+  //    * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} el Form control.
+  //    * @returns {string}
+  //    */
+  //   const valueOf = (el) => {
+  //     if (el.tagName === 'SELECT') {
+  //       return el.selectedOptions[0]?.disabled || !el.value ? '' : clean(el.selectedOptions[0]?.textContent);
+  //     }
+  //     return clean(el.value);
+  //   };
 
-    /**
-     * Creates an element with text.
-     * @param {string} tag Tag name.
-     * @param {string} text Text content.
-     * @returns {HTMLElement}
-     */
-    const el = (tag, text) => {
-      const node = document.createElement(tag);
-      node.textContent = text;
-      return node;
-    };
+  //   /**
+  //    * Creates an element with text.
+  //    * @param {string} tag Tag name.
+  //    * @param {string} text Text content.
+  //    * @returns {HTMLElement}
+  //    */
+  //   const el = (tag, text) => {
+  //     const node = document.createElement(tag);
+  //     node.textContent = text;
+  //     return node;
+  //   };
 
-    /**
-     * Converts a Work Information cell to "Label: value".
-     * @param {Element} cell A .meta-cell element.
-     * @returns {string}
-     */
-    function cellText (cell) {
-      const title = clean(cell.querySelector('.field-label')?.textContent);
-      const checked = [...cell.querySelectorAll('input[type=radio]:checked')].map((r) => labelOf(r) || r.value);
-      const pressed = [...cell.querySelectorAll('[aria-pressed="true"]')].map((b) => clean(b.textContent));
-      const fields = [...cell.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea')]
-        .map(valueOf).filter(Boolean);
-      const value = [...checked, ...pressed, ...fields].join(', ');
-      return `${title}: ${value || 'Not provided'}`;
-    }
+  //   /**
+  //    * Converts a Work Information cell to "Label: value".
+  //    * @param {Element} cell A .meta-cell element.
+  //    * @returns {string}
+  //    */
+  //   function cellText (cell) {
+  //     const title = clean(cell.querySelector('.field-label')?.textContent);
+  //     const checked = [...cell.querySelectorAll('input[type=radio]:checked')].map((r) => labelOf(r) || r.value);
+  //     const pressed = [...cell.querySelectorAll('[aria-pressed="true"]')].map((b) => clean(b.textContent));
+  //     const fields = [...cell.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea')]
+  //       .map(valueOf).filter(Boolean);
+  //     const value = [...checked, ...pressed, ...fields].join(', ');
+  //     return `${title}: ${value || 'Not provided'}`;
+  //   }
 
-    /**
-     * Converts a checklist row to "number question — answer (notice)".
-     * @param {Element} row A .check-row element.
-     * @returns {string}
-     */
-    function rowText (row) {
-      const num = clean(row.querySelector('.check-num')?.textContent);
-      const text = clean(row.querySelector('.check-text')?.textContent);
-      const r = row.querySelector('input[type=radio]:checked');
-      const answer = r ? { yes: 'Yes', no: 'No', na: 'N/A' }[r.value] || r.value : 'Not answered';
-      const notice = clean(row.querySelector('.row-notice-stack:not(.hidden)')?.textContent);
-      return `${num} ${text} — ${answer}${notice ? ` (${notice})` : ''}`;
-    }
+  //   /**
+  //    * Converts a checklist row to "number question — answer (notice)".
+  //    * @param {Element} row A .check-row element.
+  //    * @returns {string}
+  //    */
+  //   function rowText (row) {
+  //     const num = clean(row.querySelector('.check-num')?.textContent);
+  //     const text = clean(row.querySelector('.check-text')?.textContent);
+  //     const r = row.querySelector('input[type=radio]:checked');
+  //     const answer = r ? { yes: 'Yes', no: 'No', na: 'N/A' }[r.value] || r.value : 'Not answered';
+  //     const notice = clean(row.querySelector('.row-notice-stack:not(.hidden)')?.textContent);
+  //     return `${num} ${text} — ${answer}${notice ? ` (${notice})` : ''}`;
+  //   }
 
-    /**
-     * Rebuilds the whole text summary from the current form.
-     * @returns {void}
-     */
-    function render () {
-      const host = getById('readerSummary');
-      if (!host) return;
-      const frag = document.createDocumentFragment();
-      frag.append(el('h1', 'Distribution Engineering Check & Review Form'));
-      const pct = getById('progressPct')?.textContent;
-      if (pct != null) frag.append(el('p', `Completion: ${pct}%`));
+  //   /**
+  //    * Rebuilds the whole text summary from the current form.
+  //    * @returns {void}
+  //    */
+  //   function render () {
+  //     const host = getById('readerSummary');
 
-      document.querySelectorAll('#check_form .card:not(.hidden)').forEach((card) => {
-        const title = clean(card.querySelector('.sec-title')?.textContent);
-        const badge = clean(card.querySelector('.sec-badge')?.textContent);
-        frag.append(el('h2', badge ? `${title} (${badge})` : title));
-        // Nested cards (Section 2 inside Section 1) are skipped here and rendered as their own cards.
-        const own = (n) => n.closest('.card') === card;
-        const handled = new Set();
-        card.querySelectorAll('.meta-cell, .check-row').forEach((n) => {
-          if (!own(n)) return;
-          n.querySelectorAll('input, select, textarea').forEach((i) => handled.add(i));
-          frag.append(el('p', n.classList.contains('check-row') ? rowText(n) : cellText(n)));
-        });
-        card.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea').forEach((f) => {
-          if (handled.has(f) || !own(f)) return;
-          const label = labelOf(f) || f.getAttribute('aria-label') || f.name || f.id;
-          if (label) frag.append(el('p', `${clean(label)}: ${valueOf(f) || 'Not provided'}`));
-        });
-      });
-      host.replaceChildren(frag);
-    }
+  //     if (!host) return;
+  //     const frag = document.createDocumentFragment();
+  //     frag.append(el('h1', 'Distribution Engineering Check & Review Form'));
+  //     const pct = getById('progressPct')?.textContent;
+  //     if (pct != null) frag.append(el('p', `Completion: ${pct}%`));
 
-    let timer = null;
+  //     document.querySelectorAll('#check_form .card:not(.hidden)').forEach((card) => {
+  //       const title = clean(card.querySelector('.sec-title')?.textContent);
+  //       const badge = clean(card.querySelector('.sec-badge')?.textContent);
+  //       frag.append(el('h2', badge ? `${title} (${badge})` : title));
+  //       // Nested cards (Section 2 inside Section 1) are skipped here and rendered as their own cards.
+  //       const own = (n) => n.closest('.card') === card;
+  //       const handled = new Set();
+  //       card.querySelectorAll('.meta-cell, .check-row').forEach((n) => {
+  //         if (!own(n)) return;
+  //         n.querySelectorAll('input, select, textarea').forEach((i) => handled.add(i));
+  //         frag.append(el('p', n.classList.contains('check-row') ? rowText(n) : cellText(n)));
+  //       });
+  //       card.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea').forEach((f) => {
+  //         if (handled.has(f) || !own(f)) return;
+  //         const label = labelOf(f) || f.getAttribute('aria-label') || f.name || f.id;
+  //         if (label) frag.append(el('p', `${clean(label)}: ${valueOf(f) || 'Not provided'}`));
+  //       });
+  //     });
+  //     host.replaceChildren(frag);
+  //     return host;
+  //   }
 
-    /** Debounces render by 250 ms. */
-    const schedule = () => {
-      clearTimeout(timer);
-      timer = setTimeout(render, 250);
-    };
+  //   let timer = null;
 
-    /**
-     * Renders once and re-renders on input, change, click, page show, and visibility changes.
-     * @returns {void}
-     */
-    function init () {
-      render();
-      ['input', 'change', 'click'].forEach((t) => document.addEventListener(t, schedule, true));
-      window.addEventListener('pageshow', render);
-      document.addEventListener('visibilitychange', render);
-    }
-    return { init, render };
-  })();
+  //   /** Debounces render by 250 ms. */
+  //   const schedule = () => {
+  //     clearTimeout(timer);
+  //     timer = setTimeout(render, 250);
+  //   };
+
+  //   /**
+  //    * Renders once and re-renders on input, change, click, page show, and visibility changes.
+  //    * @returns {void}
+  //    */
+  //   function init () {
+  //     render();
+  //     ['input', 'change', 'click'].forEach((t) => document.addEventListener(t, schedule, true));
+  //     window.addEventListener('pageshow', render);
+  //     document.addEventListener('visibilitychange', render);
+  //   }
+  //   return { init, render };
+  // })();
 
   // ============================================================
   // 9. Boot
@@ -4719,7 +4721,7 @@
     if (!getById('check_form')) new htmlBuilder().mount();
     window.__checkFormInstance = new CheckForm();
     // Reader summary runs after CheckForm has built the question rows
-    setTimeout(() => ReaderSummary.init(), 0);
+    //ReaderSummary.render();
   }
 
   if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', boot);
@@ -4727,4 +4729,5 @@
 
   // Exposed for debugging / automation
   window.CheckForm = CheckForm;
+  window.renderReaderSummary = ReaderSummary.render;
 })();

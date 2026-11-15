@@ -1768,9 +1768,24 @@
 </head>
 
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
+  <article id="readerSummary" class="sr-only" aria-label="Form summary (text version)"></article>
   <div id="app"></div>
   <script>
+    /**
+ * @file BC Hydro Distribution Engineering "Check & Review Form".
+ *
+ * Structure of this file:
+ *   1. Configuration      - checklist text, risk rules, limits, CDN URLs
+ *   2. DOM + asset helpers
+ *   3. Sanitization       - DOMPurify with an allowlist fallback
+ *   4. htmlBuilder           - builds the form markup with DOM calls
+ *   5. Toast              - global notice banner
+ *   6. SignatureManager   - draw/upload signatures, modal, gating
+ *   7. CommentEditorManager - Quill (or fallback) comment editors
+ *   8. CheckForm          - main orchestrator, PDF export, snapshot
+ *   9. ReaderSummary      - text mirror of the form for reader modes
+ *   10. Boot
+ */
     (function () {
       "use strict";
 
@@ -1830,15 +1845,22 @@
           "Design check of representative structural elements.",
           "Review of representative structural details."
         ],
+        /**
+         * Expected answers to Self-Check questions 1.8 and 1.10 for each risk level.
+         *   1.8  "Work is deemed Low-Risk..."  -> Yes only for low risk
+         *   1.10 "Work is defined as High-Risk" -> Yes only for high risk
+         */
         RISK_MAP: Object.freeze({
           low: { sc8: 'yes', sc10: 'no' },
           medium: { sc8: 'no', sc10: 'no' },
           high: { sc8: 'no', sc10: 'yes' }
         }),
+        /** Question numbers (1-based) per section that only offer Yes / No (N/A is disabled). */
         BINARY_QUESTIONS: {
           sc: new Set([8, 9, 10, 11]),
           ch: new Set([1])
         },
+        /** [hidden field id, editor placeholder] for every rich-text comment box. */
         COMMENT_FIELDS: [
           ['checkerComments', 'Ctrl + V to paste screenshots...'],
           ['engineerResponse', 'Enter engineer response...'],
@@ -1847,12 +1869,14 @@
           ['id_reviewerComments', 'Ctrl + V to paste screenshots...'],
           ['id_engineerResponse_2', 'Enter engineer response...']
         ],
+        /** Editor pairs shown side by side; their heights are kept equal. */
         COMMENT_PAIRS: [
           ['checkerComments-editor', 'engineerResponse-editor'],
           ['reviewerComments-editor', 'engineerResponse_2-editor'],
           ['id_reviewerComments-editor', 'id_engineerResponse_2-editor']
         ],
         SIG_PREFIXES: ['sc', 'ch', 'pr', 'ir', 'fT1'],
+        /** Minimum check level implied by each risk level button. */
         RISK_TO_CHECK_LEVEL: Object.freeze({
           low: 'Self-Check',
           medium: 'Check',
@@ -1862,7 +1886,7 @@
         EMPTY_EDITOR_HTML: '<p><br></p>',
         COMMENT_EDITOR_MIN_HEIGHT: 100,
         SIGNATURE_FILE_TYPES: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
-        SIGNATURE_MAX_SIZE: 5 * 1024 * 1024
+        SIGNATURE_MAX_SIZE: 5 * 1024 * 1024 // 5 MiB
       });
 
       const CDN = Object.freeze({
@@ -1871,7 +1895,8 @@
         DOMPURIFY_JS: 'https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js',
         PDFMAKE_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js',
         PDFMAKE_FONTS_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js',
-        PDFLIB_JS: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js'
+        PDFLIB_JS: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+
       });
 
       // Same-origin copies. Tried first: a miss returns instantly, a blocked CDN does not.
@@ -1881,29 +1906,89 @@
         DOMPURIFY_JS: '/sites/de/SiteAssets/js/purify.min.js',
         PDFMAKE_JS: '/sites/de/SiteAssets/js/pdfmake.min.js',
         PDFMAKE_FONTS_JS: '/sites/de/SiteAssets/js/vfs_fonts.js',
-        PDFLIB_JS: '/sites/de/SiteAssets/js/pdf-lib.min.js'
+        PDFLIB_JS: '/sites/de/SiteAssets/js/pdf-lib.min.js',
       });
 
+      const URL_PREFIX = 'https://hydroshare.bchydro.bc.ca'
+      const CDN_ALT_WITH_PREFIX = Object.freeze(
+        Object.fromEntries(
+          Object.entries(CDN_ALT).map(([key, url]) => [key, URL_PREFIX + url])
+        )
+      );
+
       const BC_HYDRO_LOGO_URL = 'https://www.bchydro.com/content/dam/BCHydro/customer-portal/logos/bchydro/bch-logo-colour-rgb.png';
+
+      // PDF signature table geometry, all in PDF points (1 pt = 1/72 in).
       const SIG_CELL_HEIGHT = 40;
       const SIG_CELL_PADDING = 3;
       const SIG_CELL_HORIZONTAL_PADDING = 4;
+      /** Widths of the two fixed columns (name, date); the third column is '*' (the rest). */
       const SIG_TABLE_FIXED_COLUMN_WIDTHS = [150, 150];
+
+      /** Inputs whose values are mirrored between Work Info and the section signature blocks. */
       const LINKED_NAME_IDS = new Set(['engineer', 'sc_name', 'direct_supervisor', 'checker', 'ch_name']);
+      /** Radio names like "sc8" -> [prefix, question number]. */
       const ROW_NAME_RE = /^(sc|ds|ch|pr|ir)(\d+)$/;
+      /** Clicks on these inside a section header must not toggle the section. */
       const INTERACTIVE_SEL = 'button, a, input, select, textarea, label, [role="tab"]';
 
       let pdfMakeFontsLoaded = false;
 
+
       // ============================================================
       // 2. DOM + asset helpers
       // ============================================================
+
+      /**
+       * Shorthand for document.getElementById.
+       * @param {string} id Element id.
+       * @returns {HTMLElement|null}
+       */
       const getById = (id) => document.getElementById(id);
+
+      /**
+       * Shorthand for querySelector.
+       * @param {string} sel CSS selector.
+       * @param {ParentNode} [root=document] Search root.
+       * @returns {Element|null}
+       */
       const query = (sel, root = document) => root.querySelector(sel);
+
+      /**
+       * querySelectorAll that returns a real array.
+       * @param {string} sel CSS selector.
+       * @param {ParentNode} [root=document] Search root.
+       * @returns {Element[]}
+       */
       const queryAll = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+      /**
+       * Limits a number to the range [lo, hi].
+       * @param {number} v Value.
+       * @param {number} lo Lower bound.
+       * @param {number} hi Upper bound.
+       * @returns {number}
+       */
       const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+      /**
+       * Sets textContent when the element exists.
+       * @param {Element|null} el Target element.
+       * @param {string} text New text.
+       * @returns {void}
+       */
       const setText = (el, text) => { if (el) el.textContent = text; };
 
+      /**
+       * Loads one script or stylesheet and resolves when it is usable.
+       * Rejects on error, on timeout, or when `isReady` says the asset loaded
+       * but did not define what it should (for example a captive-portal HTML page).
+       * @param {string} src Asset URL.
+       * @param {'script'|'stylesheet'} kind Asset type.
+       * @param {number} timeoutMs Give up after this many milliseconds.
+       * @param {() => boolean} [isReady] Optional check run after load.
+       * @returns {Promise<void>}
+       */
       function loadAsset (src, kind, timeoutMs, isReady) {
         return new Promise((resolve, reject) => {
           const element = document.createElement(kind === 'script' ? 'script' : 'link');
@@ -1913,6 +1998,7 @@
             element.href = src;
           }
           let settled = false;
+          /** Settles the promise exactly once and cleans up the element. */
           const done = (err) => {
             if (settled) return;
             settled = true;
@@ -1931,9 +2017,20 @@
         });
       }
 
+      /**
+       * Loads a library by key, trying the same-origin copy first and the CDN second.
+       * @param {keyof typeof CDN} key Key into CDN / CDN_ALT.
+       * @param {'script'|'stylesheet'} [kind='script'] Asset type.
+       * @param {number} [timeoutMs=10000] Per-source timeout.
+       * @param {() => boolean} [isReady] Optional post-load check.
+       * @returns {Promise<void>} Rejects with the last error if both sources fail.
+       */
       async function loadCdnAsset (key, kind = 'script', timeoutMs = 10000, isReady) {
         let lastError;
-        for (const src of [CDN_ALT[key], CDN[key]]) {
+        const curURL = window.location.href;
+        const CDN_ALT_TO_USE = curURL.startsWith(URL_PREFIX) ? CDN_ALT : CDN_ALT_WITH_PREFIX;
+        for (const src of [CDN_ALT_TO_USE[key], CDN[key]]) {
+          console.log(src);
           try {
             await loadAsset(src, kind, timeoutMs, isReady);
             return;
@@ -1951,6 +2048,7 @@
       const SAFE_DATA_IMAGE = /^data:image\/(png|jpe?g|gif|webp);/i;
       const ANY_PROTOCOL = /^[a-z][a-z0-9+.-]*:/i;
       // Browsers ignore control characters and whitespace inside a URL scheme ("java\nscript:")
+      // so they are stripped before the scheme is checked.
       // eslint-disable-next-line no-control-regex
       const URL_CTRL_WS = /[\u0000-\u0020\u007f-\u009f]/g;
 
@@ -1961,12 +2059,24 @@
       ]);
       const FALLBACK_ATTRS = { a: ['href'], img: ['src', 'alt'] };
 
+      /**
+       * Tells whether a URL is safe to keep in sanitized HTML.
+       * Allows relative URLs, anchors, http(s), mailto, tel, file, and data:image.
+       * @param {string} value URL from an href or src attribute.
+       * @returns {boolean}
+       */
       function isSafeUrl (value) {
         const v = value.replace(URL_CTRL_WS, '');
         if (!v || v[0] === '#' || v[0] === '/' || v[0] === '.') return true;
         return SAFE_URL_PROTOCOLS.test(v) || SAFE_DATA_IMAGE.test(v) || !ANY_PROTOCOL.test(v);
       }
 
+      /**
+       * Cleans untrusted HTML down to a small set of tags and attributes.
+       * Uses DOMPurify when loaded; otherwise a template-based allowlist walker.
+       * @param {string} html Untrusted HTML.
+       * @returns {string} Safe HTML, or the empty-editor placeholder when nothing is left.
+       */
       function sanitizeHtml (html) {
         if (!html) return CONFIG.EMPTY_EDITOR_HTML;
         if (typeof DOMPurify !== 'undefined') {
@@ -1980,6 +2090,7 @@
         // keep only allowlisted tags and attributes, unwrap unknown tags.
         const tpl = document.createElement('template');
         tpl.innerHTML = html;
+        /** Recursively drops, unwraps, or strips attributes from child nodes. */
         const walk = (node) => {
           for (const child of Array.from(node.childNodes)) {
             if (child.nodeType === Node.TEXT_NODE) continue;
@@ -2004,6 +2115,11 @@
         return tpl.innerHTML || CONFIG.EMPTY_EDITOR_HTML;
       }
 
+      /**
+       * Escapes the five HTML-significant characters for safe use in markup text or attributes.
+       * @param {*} text Value to escape (converted to string).
+       * @returns {string}
+       */
       function escapeHtml (text) {
         return String(text)
           .replace(/&/g, '&amp;')
@@ -2012,18 +2128,43 @@
           .replace(/"/g, '&quot;');
       }
 
+      /**
+       * Finds the comment editor (Quill or fallback) that contains an element.
+       * @param {Element|null|undefined} el Any element, usually an event target.
+       * @returns {Element|null} The editor element, or null when `el` is not inside one.
+       */
       function resolveCommentEditor (el) {
         return el?.closest?.('.comments-inline-editor, .ql-editor, .ql-container') ?? null;
       }
 
 
+      // ============================================================
+      // 4. htmlBuilder — builds the form markup with plain DOM calls
+      // ============================================================
+
+      /**
+       * Builds the "Check & Review Form" markup with DOM calls instead of an HTML string.
+       * Static methods are small element helpers; instance methods build one piece of the form each.
+       */
       class htmlBuilder {
+        /**
+         * @param {string|Element} [host='#app'] Mount point or a selector for it.
+         */
         constructor(host = '#app') {
           this.host = host;
         }
         /* ---------- static helpers ---------- */
 
-        // htmlBuilder.el('div', {class: 'x', hidden: true, text: 'hi'}, child, child...)
+        /**
+         * Creates an element.
+         * Attribute handling: `false`/null skip the attribute, `true` sets an empty attribute,
+         * `class` sets className, `text` sets textContent.
+         * @example htmlBuilder.el('div', {class: 'x', hidden: true, text: 'hi'}, child)
+         * @param {string} tag Tag name.
+         * @param {Object<string, *>|null} [attrs] Attribute map.
+         * @param {...(Node|string|Array|null|false)} kids Children (arrays are flattened, falsy skipped).
+         * @returns {HTMLElement}
+         */
         static el (tag, attrs, ...kids) {
           const node = document.createElement(tag);
           for (const [key, val] of Object.entries(attrs || {})) {
@@ -2039,26 +2180,55 @@
           return node;
         }
 
+        /**
+         * Creates a Material Symbols icon span.
+         * @param {string} name Ligature name, for example "delete_history".
+         * @returns {HTMLSpanElement}
+         */
         static icon (name) {
           return htmlBuilder.el('span', { class: 'material-symbols-sharp', text: name });
         }
 
+        /**
+         * Creates the text span used inside buttons.
+         * @param {string} text Button label.
+         * @returns {HTMLSpanElement}
+         */
         static btnText (text) {
           return htmlBuilder.el('span', { class: 'button-text', text });
         }
 
+        /**
+         * Creates a <b> element.
+         * @param {string} text Bold text.
+         * @returns {HTMLElement}
+         */
         static bold (text) {
           return htmlBuilder.el('b', { text });
         }
 
+        /**
+         * Creates the red underline that marks a required field.
+         * @returns {HTMLDivElement}
+         */
         static underline () {
           return htmlBuilder.el('div', { class: 'required-field-underline', 'aria-hidden': 'true' });
         }
 
+        /**
+         * Creates the screen-reader-only "(required)" hint.
+         * @returns {HTMLSpanElement}
+         */
         static srOnly () {
           return htmlBuilder.el('span', { class: 'sr-only', text: '(required)' });
         }
 
+        /**
+         * Creates a "Clear" button with the history-delete icon.
+         * @param {string} id Button id.
+         * @param {string} [testid] Value for data-testid.
+         * @returns {HTMLButtonElement}
+         */
         static clearBtn (id, testid) {
           const { el, icon, btnText } = htmlBuilder;
           return el('button', { class: 'btn-clear', type: 'button', id, 'data-testid': testid }, icon('delete_history'),
@@ -2067,6 +2237,12 @@
 
         /* ---------- section shell ---------- */
 
+        /**
+         * Creates a section card.
+         * @param {{id: string, cls?: string, prefix: string, hidden?: boolean}} cfg Card settings.
+         * @param {...Node} kids Card children.
+         * @returns {HTMLDivElement}
+         */
         card ({ id, cls, prefix, hidden }, ...kids) {
           return htmlBuilder.el(
             'div',
@@ -2075,6 +2251,20 @@
           );
         }
 
+        /**
+         * Creates a collapsible section header: number badge, title, optional count badge, Clear button, chevron.
+         * @param {Object} cfg Header settings.
+         * @param {string} cfg.id Header id.
+         * @param {string} cfg.controls Id of the body this header toggles.
+         * @param {boolean} cfg.open Initial expanded state.
+         * @param {string} cfg.numId Id of the number badge.
+         * @param {Node|string} cfg.num Badge content.
+         * @param {string} cfg.title Section title.
+         * @param {string} [cfg.badgeId] Id of the "0 / N" counter; omitted when the section has none.
+         * @param {string} cfg.clearId Id of the Clear button.
+         * @param {string} [cfg.testid] data-testid of the Clear button.
+         * @returns {HTMLDivElement}
+         */
         secHead ({ id, controls, open, numId, num, title, badgeId, clearId, testid }) {
           const { el, icon, clearBtn } = htmlBuilder;
           return el(
@@ -2095,17 +2285,40 @@
           );
         }
 
+        /**
+         * Creates the collapsible body of a section.
+         * @param {string} id Body id (matches the header's aria-controls).
+         * @param {boolean} open Initial expanded state.
+         * @param {...Node} kids Body children.
+         * @returns {HTMLDivElement}
+         */
         secBody (id, open, ...kids) {
           return htmlBuilder.el('div', { class: open ? 'sec-body open' : 'sec-body', id }, ...kids);
         }
 
         /* ---------- work info cells ---------- */
 
+        /**
+         * Creates a Work Information grid cell with a trailing required-field underline.
+         * @param {string} cls Extra class name(s).
+         * @param {string|null} id Cell id.
+         * @param {...Node} kids Cell children placed before the underline.
+         * @returns {HTMLDivElement}
+         */
         metaCell (cls, id, ...kids) {
           const { el, underline } = htmlBuilder;
           return el('div', { class: 'meta-cell ' + cls, id }, ...kids, underline());
         }
 
+        /**
+         * Creates a labelled text-like input cell.
+         * @param {string} cls Cell class.
+         * @param {string|null} id Cell id.
+         * @param {string} label Label text.
+         * @param {string} forId Input id (also the label's `for`).
+         * @param {Object<string, *>} inputAttrs Extra or overriding input attributes.
+         * @returns {HTMLDivElement}
+         */
         textCell (cls, id, label, forId, inputAttrs) {
           const { el } = htmlBuilder;
           return this.metaCell(
@@ -2116,6 +2329,15 @@
           );
         }
 
+        /**
+         * Creates a labelled <select> cell with a placeholder option first.
+         * @param {string} cls Cell class.
+         * @param {string} label Label text.
+         * @param {string} forId Select id and name.
+         * @param {string[]} options Option labels.
+         * @param {{text: string, disabled?: boolean}} placeholder First option; disabled when `disabled` is true.
+         * @returns {HTMLDivElement}
+         */
         selectCell (cls, label, forId, options, placeholder) {
           const { el } = htmlBuilder;
           return this.metaCell(
@@ -2132,8 +2354,13 @@
           );
         }
 
+        /**
+         * Creates the Engineer / Engineer-in-Training radio group.
+         * @returns {HTMLDivElement}
+         */
         roleCell () {
           const { el } = htmlBuilder;
+          /** Returns an [input, label] pair for one role option. */
           const radio = (id, value, label, checked) => [
             el('input', { type: 'radio', name: 'sc_role', id, value, checked }),
             el('label', { for: id, text: label }),
@@ -2151,8 +2378,13 @@
           );
         }
 
+        /**
+         * Creates the Low / Medium / High risk button row.
+         * @returns {HTMLDivElement}
+         */
         riskCell () {
           const { el } = htmlBuilder;
+          /** Returns one risk toggle button. */
           const btn = (risk, label) =>
             el('button', {
               class: 'risk-btn', type: 'button', 'data-risk': risk, 'aria-describedby': 'riskLevelLabel',
@@ -2168,6 +2400,12 @@
 
         /* ---------- comments / check / signature blocks ---------- */
 
+        /**
+         * Creates one rich-text comment cell: label, editor container, hidden input, image gallery.
+         * The element ids derive from `base`: `<base>-editor`, `<base>-gallery`, `for_<base>`.
+         * @param {{cellId: string, base: string, label: string, placeholder: string}} cfg Cell settings.
+         * @returns {HTMLDivElement}
+         */
         commentCell ({ cellId, base, label, placeholder }) {
           const { el } = htmlBuilder;
           return el(
@@ -2191,6 +2429,13 @@
           );
         }
 
+        /**
+         * Creates a two-column grid: reviewer comments on the left, engineer response on the right.
+         * @param {string|null} id Grid id.
+         * @param {Object} left Overrides for the left cell (see commentCell).
+         * @param {Object} right Overrides for the right cell (see commentCell).
+         * @returns {HTMLDivElement}
+         */
         commentsGrid (id, left, right) {
           const COMMENT_PH = 'Enter comments, corrections, or corrective actions…';
           const RESPONSE_PH = 'Accept / Reject / Address comments…';
@@ -2202,8 +2447,14 @@
           );
         }
 
+        /**
+         * Creates the "Are all comments and corrections addressed?" Yes / No / N/A row.
+         * @param {string} p Section prefix ("ch", "pr", "ir"); radio name is `<p>_c`.
+         * @returns {HTMLDivElement}
+         */
         addressedRow (p) {
           const { el } = htmlBuilder;
+          /** Returns an [input, label] pair for one answer. */
           const pill = (v, label) => [
             el('input', { type: 'radio', name: p + '_c', id: `${p}_c_${v}`, value: v, 'data-prefix': p }),
             el('label', { for: `${p}_c_${v}`, text: label }),
@@ -2216,7 +2467,15 @@
           );
         }
 
-        // Left half of a signature grid: date + typed name
+        /**
+         * Left half of a signature grid: date input and typed name input.
+         * @param {Object} cfg Settings.
+         * @param {string} cfg.p Section prefix; ids become `<p>_date` and `<p>_name`.
+         * @param {string} cfg.tid Prefix for data-testid values.
+         * @param {string} cfg.nameLabel Label of the name field.
+         * @param {string} [cfg.namePlaceholder='Type full name'] Name placeholder.
+         * @returns {HTMLDivElement}
+         */
         dateNameCell ({ p, tid, nameLabel, namePlaceholder }) {
           const { el, icon, underline, srOnly } = htmlBuilder;
           return el(
@@ -2254,11 +2513,22 @@
           );
         }
 
-        // Right half: draw/upload signature widget
-        // lock: tab buttons disabled. ids: pad/choose buttons get ids and are disabled.
+        /**
+         * Right half of a signature grid: draw / upload tabs, panes, and the hidden data input.
+         * @param {Object} cfg Settings.
+         * @param {string} cfg.p Section prefix.
+         * @param {string} cfg.tid Prefix for data-testid values.
+         * @param {string} cfg.labelId Id of the label element.
+         * @param {string} cfg.label Label text.
+         * @param {string} cfg.uploadAria aria-label for the hidden file input.
+         * @param {boolean} cfg.lock Disable the tab buttons.
+         * @param {boolean} cfg.ids Give the pad and choose buttons ids and disable them.
+         * @returns {HTMLDivElement}
+         */
         sigCell ({ p, tid, labelId, label, uploadAria, lock, ids }) {
           const { el, icon, btnText, srOnly } = htmlBuilder;
 
+          /** Creates one tab button ("draw" or "upload"). */
           const tab = (kind, iconName, title, active) =>
             el(
               'button',
@@ -2341,12 +2611,21 @@
           );
         }
 
+        /**
+         * Wraps signature cells in a two-column grid.
+         * @param {...Node} cells Grid cells.
+         * @returns {HTMLDivElement}
+         */
         sigGrid (...cells) {
           return htmlBuilder.el('div', { class: 'sig-grid' }, ...cells);
         }
 
         /* ---------- page sections ---------- */
 
+        /**
+         * Builds the page header: BC Hydro logo, title, form revision.
+         * @returns {HTMLDivElement}
+         */
         buildHeader () {
           const { el } = htmlBuilder;
           return el(
@@ -2366,6 +2645,10 @@
           );
         }
 
+        /**
+         * Builds the completion progress strip.
+         * @returns {HTMLDivElement}
+         */
         buildProgress () {
           const { el, icon } = htmlBuilder;
           return el(
@@ -2381,6 +2664,10 @@
           );
         }
 
+        /**
+         * Builds the Work Information card (title, revision, role, risk, deliverable, check level, people).
+         * @returns {HTMLDivElement}
+         */
         buildInfoCard () {
           const { el, icon } = htmlBuilder;
           return this.card(
@@ -2434,7 +2721,11 @@
           );
         }
 
-        // Section 2 sits inside Section 1's body, as in the source markup
+        /**
+         * Builds Section 2 (Direct Supervision).
+         * It sits inside Section 1's body, as in the source markup.
+         * @returns {HTMLDivElement}
+         */
         buildDirectSupervisionCard () {
           return this.card(
             { id: 'card-ds', prefix: 'ds', hidden: true },
@@ -2446,6 +2737,10 @@
           );
         }
 
+        /**
+         * Builds Section 1 (Self-Check), including nested Section 2 and the engineer signature grid.
+         * @returns {HTMLDivElement}
+         */
         buildSelfCheckCard () {
           return this.card(
             { id: 'card-sc', cls: 'sc', prefix: 'sc' },
@@ -2468,6 +2763,10 @@
           );
         }
 
+        /**
+         * Builds Section 3 (Check): rows, "No" notice, comments, addressed question, checker signature.
+         * @returns {HTMLDivElement}
+         */
         buildCheckCard () {
           const { el, icon, bold } = htmlBuilder;
           return this.card(
@@ -2502,6 +2801,10 @@
           );
         }
 
+        /**
+         * Builds Section 4 (Peer Review).
+         * @returns {HTMLDivElement}
+         */
         buildPeerReviewCard () {
           const { el, icon, bold } = htmlBuilder;
           return this.card(
@@ -2551,6 +2854,11 @@
           );
         }
 
+        /**
+         * Builds Section 5 (Independent Structural Review). Its signature cell is a seal placeholder:
+         * the reviewer signs and seals after the PDF is created.
+         * @returns {HTMLDivElement}
+         */
         buildIndependentReviewCard () {
           const { el, srOnly } = htmlBuilder;
           return this.card(
@@ -2584,6 +2892,10 @@
           );
         }
 
+        /**
+         * Builds Section 6 (Tier 1 Reviewer assignment and Team Lead signature).
+         * @returns {HTMLDivElement}
+         */
         buildFinalCard () {
           return this.card(
             { id: 'card-final', prefix: 'fT1', hidden: true },
@@ -2603,6 +2915,10 @@
           );
         }
 
+        /**
+         * Builds the global notice banner (shown by Toast).
+         * @returns {HTMLDivElement}
+         */
         buildGlobalNotice () {
           const { el, icon } = htmlBuilder;
           return el(
@@ -2616,6 +2932,10 @@
           );
         }
 
+        /**
+         * Builds the signature drawing modal (canvas, Close, Clear, Save).
+         * @returns {HTMLDivElement}
+         */
         buildSigModal () {
           const { el, icon, btnText } = htmlBuilder;
           return el(
@@ -2648,6 +2968,10 @@
           );
         }
 
+        /**
+         * Builds the bottom action bar (Reset, hidden submit, Save PDF, Save snapshot).
+         * @returns {HTMLDivElement}
+         */
         buildActions () {
           const { el, icon, btnText } = htmlBuilder;
           return el(
@@ -2673,6 +2997,10 @@
 
         /* ---------- assemble ---------- */
 
+        /**
+         * Assembles the whole form.
+         * @returns {HTMLFormElement} The detached <form id="check_form"> element.
+         */
         build () {
           const { el } = htmlBuilder;
           return el(
@@ -2684,7 +3012,7 @@
               { id: 'main' },
               this.buildProgress(),
               // Reader-mode summary: plain-text mirror of the form, kept in sync by script
-              el('article', { id: 'readerSummary', class: 'sr-only', 'aria-label': 'Form summary (text version)' }),
+              //el('article', { id: 'readerSummary', class: 'sr-only', 'aria-label': 'Form summary (text version)' }),
               // Validation announcer
               el('div', { role: 'alert', 'aria-live': 'assertive', id: 'validationMessages', class: 'sr-only' }),
               this.buildInfoCard(),
@@ -2700,6 +3028,10 @@
           );
         }
 
+        /**
+         * Builds the form and appends it to the host (falls back to document.body).
+         * @returns {HTMLFormElement} The mounted form.
+         */
         mount () {
           const host = typeof this.host === 'string' ? document.querySelector(this.host) : this.host;
           const form = this.build();
@@ -2709,18 +3041,31 @@
       }
 
       // ============================================================
-      // 4. Toast (global notice)
+      // 5. Toast (global notice)
       // ============================================================
+
+      /** Shows short messages in the global notice banner and hides them after a delay. */
       class Toast {
         #el;
         #text;
         #timer = null;
 
+        /**
+         * @param {HTMLElement|null} el Notice container.
+         * @param {HTMLElement|null} textEl Element that receives the message.
+         */
         constructor(el, textEl) {
           this.#el = el;
           this.#text = textEl;
         }
 
+        /**
+         * Shows a message. The message is written with innerHTML, so callers pass trusted markup only.
+         * @param {string} msg Message (HTML allowed).
+         * @param {'info'|'success'|'error'|'warn'} [type='info'] Style variant.
+         * @param {number} [duration=5000] Milliseconds before it hides itself.
+         * @returns {void}
+         */
         show (msg, type = 'info', duration = 5000) {
           if (!this.#el || !this.#text) return;
           this.#text.innerHTML = msg;
@@ -2730,6 +3075,10 @@
           this.#timer = setTimeout(() => this.hide(), duration);
         }
 
+        /**
+         * Hides the banner and cancels the pending auto-hide.
+         * @returns {void}
+         */
         hide () {
           if (!this.#el) return;
           this.#el.classList.add('hidden');
@@ -2738,8 +3087,13 @@
       }
 
       // ============================================================
-      // 5. SignatureManager — tabs, uploads, draw modal, previews, gating
+      // 6. SignatureManager — tabs, uploads, draw modal, previews, gating
       // ============================================================
+
+      /**
+       * Owns everything about signatures: the draw / upload tabs, file validation,
+       * the drawing modal with its pen model, inline previews, and locking.
+       */
       class SignatureManager {
         #host;
         #modal;
@@ -2756,6 +3110,9 @@
         #trapTimer = null;
         #returnFocus = null;
 
+        /**
+         * @param {CheckForm} host Owning form (used for toasts and element lookups).
+         */
         constructor(host) {
           this.#host = host;
           this.#modal = getById('sigModal');
@@ -2763,12 +3120,22 @@
           this.#title = getById('sigModalTitle');
         }
 
+        /**
+         * Wires the canvas pen and the upload controls.
+         * @returns {void}
+         */
         init () {
           if (this.#canvas) this.#setupCanvasDrawing();
           this.#bindUploadControls();
         }
 
         // ---------- Tabs ----------
+
+        /**
+         * Activates one signature tab (draw or upload) and shows its pane.
+         * @param {HTMLElement|null} tabBtn The tab button to activate.
+         * @returns {void}
+         */
         setTab (tabBtn) {
           if (!tabBtn) return;
           const container = tabBtn.closest('.signature-pad-container');
@@ -2785,6 +3152,11 @@
         }
 
         // ---------- Upload ----------
+
+        /**
+         * Binds click, change, and drag-and-drop on every signature upload area.
+         * @returns {void}
+         */
         #bindUploadControls () {
           queryAll('.sig-upload-trigger').forEach((trigger) => {
             const prefix = trigger.getAttribute('data-prefix');
@@ -2800,6 +3172,7 @@
               uploadInput.addEventListener('change', (e) => this.#handleUpload(e, prefix));
             }
             if (uploadArea && uploadInput) {
+              // Stop the browser from navigating to a dropped file.
               ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((evt) => {
                 uploadArea.addEventListener(evt, (ev) => {
                   ev.preventDefault();
@@ -2817,6 +3190,12 @@
           });
         }
 
+        /**
+         * Reads a chosen signature file as a data URL and stores it.
+         * @param {Event} e The file input's change event.
+         * @param {string} prefix Section prefix.
+         * @returns {void}
+         */
         #handleUpload (e, prefix) {
           const file = e.target.files?.[0];
           if (!file || !this.#validateFile(file)) return;
@@ -2831,6 +3210,11 @@
           reader.readAsDataURL(file);
         }
 
+        /**
+         * Checks a signature file's type and size, showing a toast on failure.
+         * @param {File} file Chosen file.
+         * @returns {boolean} True when the file is acceptable.
+         */
         #validateFile (file) {
           if (!CONFIG.SIGNATURE_FILE_TYPES.includes(file.type)) {
             this.#host.toast('Please upload a PNG, JPEG, GIF, or WEBP image.', 'error');
@@ -2844,14 +3228,31 @@
         }
 
         // ---------- Data / previews ----------
+
+        /**
+         * Returns the hidden input that holds a section's signature data URL.
+         * @param {string} prefix Section prefix.
+         * @returns {HTMLInputElement|null}
+         */
         #dataInput (prefix) {
           return getById(`${prefix}_sig_data`);
         }
 
+        /**
+         * Returns the draw surface (preview area) of a section.
+         * @param {string} prefix Section prefix.
+         * @returns {Element|null}
+         */
         getSurface (prefix) {
           return query(`.sig-draw-surface[data-prefix="${prefix}"]`);
         }
 
+        /**
+         * Shows or clears the inline signature preview and switches to the matching tab.
+         * @param {string} prefix Section prefix.
+         * @param {string} dataUrl Image data URL, or '' to clear.
+         * @returns {void}
+         */
         setPreview (prefix, dataUrl) {
           const surface = this.getSurface(prefix);
           const img = surface?.querySelector('.sig-inline-preview img');
@@ -2868,12 +3269,21 @@
           if (tabBtn) this.setTab(tabBtn);
         }
 
+        /**
+         * Removes a section's signature data and preview.
+         * @param {string} prefix Section prefix.
+         * @returns {void}
+         */
         clearInline (prefix) {
           const dataInput = this.#dataInput(prefix);
           if (dataInput) dataInput.value = '';
           this.setPreview(prefix, '');
         }
 
+        /**
+         * Re-renders every preview from the hidden inputs (after a snapshot loads).
+         * @returns {void}
+         */
         refreshPreviews () {
           CONFIG.SIG_PREFIXES.forEach((prefix) => {
             this.setPreview(prefix, this.#dataInput(prefix)?.value || '');
@@ -2882,6 +3292,13 @@
 
         // ---------- Gating (ch / pr / ir signatures unlock when the
         // "comments addressed" question is Yes or N/A) ----------
+
+        /**
+         * Tells whether a section's signature may be used.
+         * Check, Peer Review, and Independent Review unlock when "comments addressed" is Yes or N/A.
+         * @param {string} prefix Section prefix.
+         * @returns {boolean}
+         */
         isEnabledByComments (prefix) {
           if (prefix !== 'ch' && prefix !== 'pr' && prefix !== 'ir') return true;
           const yes = this.#host.elements[`${prefix}CYes`];
@@ -2889,6 +3306,13 @@
           return !!(yes?.checked || na?.checked);
         }
 
+        /**
+         * Locks or unlocks every control in a section's signature widget.
+         * Locking also empties file inputs.
+         * @param {string} prefix Section prefix.
+         * @param {boolean} enabled True to unlock.
+         * @returns {void}
+         */
         setEnabled (prefix, enabled) {
           const container = getById(`${prefix}SigContainer`);
           if (!container) return;
@@ -2900,10 +3324,19 @@
           });
         }
 
+        /**
+         * Applies the comments-addressed rule to one section's signature widget.
+         * @param {string} prefix Section prefix.
+         * @returns {void}
+         */
         updateGating (prefix) {
           this.setEnabled(prefix, this.isEnabledByComments(prefix));
         }
 
+        /**
+         * Checks that every open Check / Peer / Independent section has its signature unlocked.
+         * @returns {boolean} False when an open section is still locked.
+         */
         allOpenEnabled () {
           for (const prefix of ['ch', 'pr', 'ir']) {
             const body = getById(`card-${prefix}`)?.querySelector('.sec-body');
@@ -2913,10 +3346,19 @@
         }
 
         // ---------- Modal ----------
+
+        /**
+         * @returns {boolean} True while the drawing modal is open.
+         */
         isOpen () {
           return !!this.#modal?.classList.contains('open');
         }
 
+        /**
+         * Opens the drawing modal for a section, loading any saved signature onto the canvas.
+         * @param {string} prefix Section prefix.
+         * @returns {void}
+         */
         open (prefix) {
           if (!this.#modal || !this.#canvas) return;
           this.#activePrefix = prefix;
@@ -2931,6 +3373,11 @@
           this.#modal.querySelector('[data-action="close-sig-modal"]')?.focus?.();
         }
 
+        /**
+         * Closes the drawing modal, optionally saving the canvas, and restores focus.
+         * @param {boolean} save True to store the drawing as the section's signature.
+         * @returns {void}
+         */
         close (save) {
           if (!this.#modal || !this.#canvas) return;
           const prefix = this.#activePrefix;
@@ -2950,13 +3397,23 @@
           if (back?.isConnected) back.focus?.();
         }
 
+        /**
+         * Erases the canvas.
+         * @returns {void}
+         */
         clearCanvas () {
           if (!this.#canvas) return;
           const { width, height } = this.#getCssSize(this.#canvas);
+          // The 2D transform already scales by devicePixelRatio, so clearing in CSS pixels covers the bitmap.
           this.#canvas.getContext('2d').clearRect(0, 0, width, height);
         }
 
         // ---------- Modal focus trap ----------
+
+        /**
+         * Keeps Tab and Shift+Tab inside the modal while it is open.
+         * @returns {void}
+         */
         #installFocusTrap () {
           this.#uninstallFocusTrap();
           const modal = this.#modal;
@@ -2967,6 +3424,7 @@
             if (!focusables.length) return;
             const first = focusables[0];
             const last = focusables[focusables.length - 1];
+            // Wrap focus at either end of the tab order.
             if (e.shiftKey && document.activeElement === first) {
               e.preventDefault();
               last.focus();
@@ -2982,6 +3440,10 @@
           }, 50);
         }
 
+        /**
+         * Removes the focus trap listener and its pending timer.
+         * @returns {void}
+         */
         #uninstallFocusTrap () {
           if (this.#focusHandler) {
             document.removeEventListener('keydown', this.#focusHandler);
@@ -2991,6 +3453,12 @@
         }
 
         // ---------- Canvas ----------
+
+        /**
+         * Returns an element's layout size in CSS pixels.
+         * @param {HTMLElement} canvas Element to measure.
+         * @returns {{width: number, height: number}}
+         */
         #getCssSize (canvas) {
           const rect = canvas.getBoundingClientRect();
           return {
@@ -2999,12 +3467,17 @@
           };
         }
 
+        /**
+         * Sizes the canvas bitmap for the current display density.
+         * @returns {void}
+         */
         #resizeCanvas () {
           const canvas = this.#canvas;
           if (!canvas) return;
           const { width: cssW, height: cssH } = this.#getCssSize(canvas);
           if (!cssW || !cssH) return;
-          // Scale the bitmap for HiDPI; the 2D transform keeps drawing math in CSS pixels.
+          // HiDPI scaling: the bitmap gets cssSize * devicePixelRatio pixels so strokes stay sharp,
+          // and setTransform(dpr, ...) makes drawing code keep working in CSS pixels.
           const dpr = window.devicePixelRatio || 1;
           canvas.width = Math.round(cssW * dpr);
           canvas.height = Math.round(cssH * dpr);
@@ -3015,6 +3488,11 @@
           ctx.lineWidth = 2;
         }
 
+        /**
+         * Draws a saved signature onto the (cleared) canvas, stretched to the canvas size.
+         * @param {string} dataUrl Image data URL, or '' for a blank canvas.
+         * @returns {void}
+         */
         #loadDataUrl (dataUrl) {
           this.clearCanvas();
           if (!dataUrl) return;
@@ -3026,17 +3504,29 @@
           img.src = dataUrl;
         }
 
+        /**
+         * Sets up the pen: pointer events plus an animation-frame loop.
+         *
+         * Pen model, evaluated once per frame:
+         *   1. "Lazy" brush: the brush follows the pointer on a leash of `lazyRadius` px.
+         *      While the pointer is inside the leash the brush stays put, which hides hand jitter.
+         *   2. Position smoothing: the brush moves toward its target by an exponential factor
+         *      (see expSmoothingFactor), so motion is frame-rate independent.
+         *   3. Width from speed: fast strokes get thinner, slow strokes thicker (like a pen).
+         *   4. Stroke is drawn as quadratic curves through midpoints, which removes corners.
+         * @returns {void}
+         */
         #setupCanvasDrawing () {
           const canvas = this.#canvas;
           const ctx = canvas.getContext('2d');
-          const TARGET_DT_MS = 1000 / 60;
-          const lazyRadius = 6;
-          const friction = 0.02;
-          const posSmoothingHz = 26;
-          const widthSmoothingHz = 20;
-          const minWidth = 5.0;
-          const maxWidth = 12.0;
-          const speedForMinWidth = 1100;
+          const TARGET_DT_MS = 1000 / 60; // fallback frame time (60 fps)
+          const lazyRadius = 6; // px the pointer can move before the brush follows
+          const friction = 0.02; // 0..1; damps the brush slightly so it trails the pointer
+          const posSmoothingHz = 26; // higher = brush catches up faster
+          const widthSmoothingHz = 20; // higher = width reacts to speed faster
+          const minWidth = 5.0; // px, at or above speedForMinWidth
+          const maxWidth = 12.0; // px, when nearly still
+          const speedForMinWidth = 1100; // px/s at which the line reaches minWidth
 
           let drawing = false;
           let hasPointer = false;
@@ -3047,11 +3537,24 @@
           let lastTs = performance.now();
           let prevMid = null;
 
+          /**
+           * Exponential smoothing factor: the share of the remaining gap to close this frame.
+           *   alpha = 1 - e^(-hz * dt)
+           * Because it uses elapsed time `dt`, the motion feels the same at 30, 60, or 144 fps.
+           * Small hz*dt gives alpha ~ hz*dt (slow); large hz*dt gives alpha -> 1 (snap).
+           * @param {number} hz Smoothing rate in 1/s.
+           * @param {number} dtSec Frame time in seconds.
+           * @returns {number} Value between 0 and 1.
+           */
           const expSmoothingFactor = (hz, dtSec) => 1 - Math.exp(-hz * dtSec);
+
+          /** Converts a pointer event to canvas-relative CSS pixel coordinates. */
           const getCanvasPoint = (e) => {
             const rect = canvas.getBoundingClientRect();
             return { x: e.clientX - rect.left, y: e.clientY - rect.top };
           };
+
+          /** Ends the current stroke. */
           const endDraw = () => {
             drawing = false;
             hasPointer = false;
@@ -3076,22 +3579,30 @@
           canvas.addEventListener('pointercancel', endDraw);
           canvas.addEventListener('dblclick', () => this.clearCanvas());
 
+          /**
+           * One animation frame: moves the brush, updates the width, draws one curve segment.
+           * @param {number} ts High-resolution timestamp from requestAnimationFrame.
+           */
           this.#frame = (ts) => {
             this.#rafId = 0;
             if (!canvas.isConnected || !this.#modal?.classList.contains('open')) {
               if (hasPointer) endDraw();
               return;
             }
+            // Frame time in ms, limited to 1..33 so a stalled tab does not cause a huge jump.
             const dtMsRaw = ts - lastTs || TARGET_DT_MS;
             const dtMs = Math.min(33, Math.max(1, dtMsRaw));
             const dtSec = dtMs / 1000;
             lastTs = ts;
 
             if (hasPointer) {
+              // Lazy brush: distance from brush to pointer.
               const dx = pointer.x - brush.x;
               const dy = pointer.y - brush.y;
               const dist = Math.hypot(dx, dy);
               if (dist > lazyRadius) {
+                // Only the part of the distance beyond the leash counts. (tx, ty) is the point on the
+                // brush->pointer line that is exactly `lazyRadius` short of the pointer.
                 const pull = dist - lazyRadius;
                 const tx = brush.x + (dx / dist) * pull;
                 const ty = brush.y + (dy / dist) * pull;
@@ -3099,14 +3610,20 @@
                 brush.x += (tx - brush.x) * posAlpha;
                 brush.y += (ty - brush.y) * posAlpha;
               }
+              // Speed in px/s = distance moved this frame / frame time.
               const vx = brush.x - prevBrush.x;
               const vy = brush.y - prevBrush.y;
               const speed = Math.hypot(vx, vy) / dtSec;
+              // Width from speed: linear blend from maxWidth (t = 0, still) to minWidth (t = 1, fast).
+              //   width = maxWidth - (maxWidth - minWidth) * clamp(speed / speedForMinWidth, 0, 1)
               const t = clamp(speed / speedForMinWidth, 0, 1);
               const targetWidth = maxWidth - (maxWidth - minWidth) * t;
               currentWidth += (targetWidth - currentWidth) * expSmoothingFactor(widthSmoothingHz, dtSec);
 
               if (drawing) {
+                // Midpoint smoothing: draw a quadratic curve from the previous midpoint to the new
+                // midpoint, using the previous brush position as the control point. Consecutive
+                // segments then share tangents, so the line has no visible corners.
                 const midX = (prevBrush.x + brush.x) * 0.5;
                 const midY = (prevBrush.y + brush.y) * 0.5;
                 ctx.strokeStyle = '#111';
@@ -3125,9 +3642,12 @@
               this.#scheduleFrame();
             }
           };
+
+          /** Requests the next animation frame unless one is already pending. */
           this.#scheduleFrame = () => {
             if (!this.#rafId) this.#rafId = requestAnimationFrame(this.#frame);
           };
+          /** Cancels a pending animation frame. */
           this.#stopRaf = () => {
             if (this.#rafId) {
               cancelAnimationFrame(this.#rafId);
@@ -3135,6 +3655,7 @@
             }
           };
           this.#resetStroke = endDraw;
+          /** Resets the frame clock so the first frame after opening has a normal dt. */
           this.#lastTsReset = () => {
             lastTs = performance.now();
           };
@@ -3142,9 +3663,15 @@
       }
 
       // ============================================================
-      // 6. CommentEditorManager — lazy Quill, fallback editors,
+      // 7. CommentEditorManager — lazy Quill, fallback editors,
       // inline images, height pairing
       // ============================================================
+
+      /**
+       * Manages the six comment boxes. Loads Quill on first use and falls back to a simple
+       * contenteditable editor when Quill cannot load. Keeps hidden inputs in sync, handles
+       * pasted screenshots in the fallback, and equalizes the height of paired editors.
+       */
       class CommentEditorManager {
         #host;
         #initialized = false;
@@ -3152,11 +3679,20 @@
         #fallbackEditors = null;
         #syncRaf = 0;
 
+        /**
+         * @param {CheckForm} host Owning form (used for toasts and state flags).
+         */
         constructor(host) {
           this.#host = host;
         }
 
         // ---------- Lazy init ----------
+
+        /**
+         * Starts editor setup the first time it is needed; later calls only move focus.
+         * @param {Element} [focusTarget] Element near the editor to focus once ready.
+         * @returns {void}
+         */
         ensureInitialized (focusTarget) {
           if (this.#initialized) {
             if (focusTarget) this.#focusEditorNear(focusTarget);
@@ -3166,6 +3702,11 @@
           this.#init(focusTarget);
         }
 
+        /**
+         * Loads dependencies and builds editors; uses fallback editors on failure.
+         * @param {Element} [focusTarget] Element near the editor to focus afterward.
+         * @returns {Promise<void>}
+         */
         async #init (focusTarget) {
           try {
             await this.#loadDependencies();
@@ -3180,6 +3721,11 @@
           if (focusTarget) this.#focusEditorNear(focusTarget);
         }
 
+        /**
+         * Focuses the editor in the same wrapper as `target`.
+         * @param {Element} target Element inside a .rich-text-wrapper.
+         * @returns {void}
+         */
         #focusEditorNear (target) {
           if (!target?.isConnected) return;
           const wrapper = target.closest('.rich-text-wrapper');
@@ -3190,6 +3736,11 @@
           editorEl?.querySelector?.('.ql-editor')?.focus?.();
         }
 
+        /**
+         * Loads DOMPurify (optional), Quill, and Quill's CSS in parallel.
+         * A DOMPurify failure is tolerated (the allowlist sanitizer takes over).
+         * @returns {Promise<Array>}
+         */
         #loadDependencies () {
           const purifier = typeof DOMPurify === 'undefined'
             ? loadCdnAsset('DOMPURIFY_JS', 'script', 10000, () => typeof window.DOMPurify?.sanitize === 'function').catch((err) => {
@@ -3204,6 +3755,12 @@
         }
 
         // ---------- Adapter ----------
+
+        /**
+         * Returns one interface for a comment field, whichever editor type backs it.
+         * @param {string} fieldId Hidden field id (for example "checkerComments").
+         * @returns {{container: (Element|null), getHtml: () => string, setHtml: (html: string) => void}}
+         */
         #adapter (fieldId) {
           const quill = this.#quillEditors?.[fieldId];
           if (quill) {
@@ -3225,17 +3782,33 @@
           };
         }
 
-        // Load HTML through Quill's clipboard so the Delta model stays in sync with the DOM.
+        /**
+         * Loads HTML into Quill through its clipboard so the Delta model stays in sync with the DOM.
+         * @param {Object} quill Quill instance.
+         * @param {string} html HTML to load (sanitized first).
+         * @returns {void}
+         */
         #setQuillHtml (quill, html) {
           quill.setContents(quill.clipboard.convert(sanitizeHtml(html)), 'silent');
         }
 
+        /**
+         * Replaces a comment box's content.
+         * @param {string} fieldId Hidden field id.
+         * @param {string} html New HTML (sanitized before use).
+         * @returns {void}
+         */
         setHtml (fieldId, html) {
           const ad = this.#adapter(fieldId);
           ad.setHtml(html);
           if (ad.container) this.scheduleSyncHeights();
         }
 
+        /**
+         * Copies an editor's HTML into its hidden input (the value saved in snapshots).
+         * @param {string} fieldId Hidden field id.
+         * @returns {void}
+         */
         syncHidden (fieldId) {
           const hidden = getById(fieldId);
           const adapter = this.#adapter(fieldId);
@@ -3243,11 +3816,21 @@
           hidden.value = adapter.getHtml();
         }
 
+        /**
+         * Runs syncHidden for all six comment boxes.
+         * @returns {void}
+         */
         syncAllHidden () {
           CONFIG.COMMENT_FIELDS.forEach(([fieldId]) => this.syncHidden(fieldId));
         }
 
         // ---------- Placeholder / emptiness ----------
+
+        /**
+         * Converts HTML to trimmed plain text (non-breaking spaces become spaces).
+         * @param {string} html HTML string.
+         * @returns {string}
+         */
         htmlToPlainText (html) {
           if (!html || html === CONFIG.EMPTY_EDITOR_HTML) return '';
           const el = document.createElement('div');
@@ -3255,6 +3838,11 @@
           return el.textContent?.replace(/\u00a0/g, ' ').trim() ?? '';
         }
 
+        /**
+         * Tells whether an editor (or HTML string) has no text and no image.
+         * @param {Element|string|null} editorOrHtml Editor element or HTML.
+         * @returns {boolean}
+         */
         isEditorEmpty (editorOrHtml) {
           if (typeof editorOrHtml === 'string') {
             return !this.htmlToPlainText(editorOrHtml) && !/<img\b /i.test(editorOrHtml);
@@ -3263,12 +3851,21 @@
           if (/<img\b/i.test(html)) return false; return !this.htmlToPlainText(html);
         }
 
+        /**
+         * Toggles the "is-empty" class that shows the placeholder on a fallback editor.
+         * @param {Element|null} editor Fallback editor element.
+         * @returns {void}
+         */
         updatePlaceholder (editor) {
           if
             (!editor?.classList?.contains('comments-inline-editor')) return;
           editor.classList.toggle('is-empty', this.isEditorEmpty(editor));
         }
 
+        /**
+         * Replaces each editor container with a Quill instance, keeping any existing content.
+         * @returns {void}
+         */
         #initQuillEditors () {
           const quillConfig = {
             theme: 'snow', modules: {
@@ -3293,6 +3890,12 @@
           this.scheduleSyncHeights();
         }
 
+        /**
+         * Connects a Quill editor to its hidden input and to height syncing.
+         * @param {Object} quill Quill instance.
+         * @param {string} fieldId Hidden field id.
+         * @returns {void}
+         */
         #bindQuillEditor (quill, fieldId) {
           // text-change is the single driver: sync the hidden field, then one scheduled height pass.
           quill.on('text-change', () => {
@@ -3305,6 +3908,11 @@
         }
 
         // ---------- Fallback editors (Quill failed / unavailable) ----------
+
+        /**
+         * Builds simple contenteditable editors in place of Quill.
+         * @returns {void}
+         */
         #initFallbackEditors () {
           this.#quillEditors = null;
           this.#fallbackEditors = {};
@@ -3343,6 +3951,14 @@
           this.scheduleSyncHeights();
         }
 
+        /**
+         * Builds the starting HTML of a fallback editor from saved text and gallery thumbnails.
+         * Plain text is wrapped in a paragraph with line breaks; gallery images are appended
+         * when the saved HTML has none.
+         * @param {string} initial Saved content (HTML or plain text).
+         * @param {Element|null} gallery Image gallery element.
+         * @returns {string} HTML.
+         */
         #buildInitialHtml (initial, gallery) {
           let html = (initial || '').trim();
           const galleryUrls = gallery
@@ -3360,6 +3976,13 @@
           return html || CONFIG.EMPTY_EDITOR_HTML;
         }
 
+        /**
+         * Attaches input, blur, paste, and click handlers to a fallback editor (once).
+         * @param {HTMLElement} editor Fallback editor element.
+         * @param {string} fieldId Hidden field id.
+         * @param {string} placeholder Placeholder text.
+         * @returns {void}
+         */
         #bindFallbackEditor (editor, fieldId, placeholder) {
           if (editor.dataset.editorBound === '1') return;
           editor.dataset.placeholder = placeholder;
@@ -3394,6 +4017,12 @@
           editor.dataset.editorBound = '1';
         }
 
+        /**
+         * Reads a pasted image file and inserts it into a fallback editor.
+         * @param {File} file Pasted image.
+         * @param {string} fieldId Hidden field id.
+         * @returns {void}
+         */
         #processImageFile (file, fieldId) {
           if (!file?.type?.startsWith('image/')) return;
           const editor = this.#fallbackEditors?.[fieldId];
@@ -3409,6 +4038,12 @@
           reader.readAsDataURL(file);
         }
 
+        /**
+         * Inserts an image paragraph at the caret (or at the end when the caret is elsewhere).
+         * @param {HTMLElement} editor Fallback editor element.
+         * @param {string} dataUrl Image data URL.
+         * @returns {void}
+         */
         #insertImage (editor, dataUrl) {
           if (!editor || !dataUrl) return;
           editor.focus();
@@ -3438,6 +4073,11 @@
           this.updatePlaceholder(editor);
         }
 
+        /**
+         * Opens a full-size preview of a comment image. Closes on backdrop click, close button, or Escape.
+         * @param {string} dataUrl Image source.
+         * @returns {void}
+         */
         showImageModal (dataUrl) {
           const modal = document.createElement('div');
           modal.className = 'comment-image-modal';
@@ -3451,10 +4091,12 @@
           const img = document.createElement('img');
           img.src = dataUrl;
           img.alt = 'Screenshot preview';
+          /** Removes the modal and its Escape listener. */
           const close = () => {
             document.removeEventListener('keydown', onEsc);
             modal.remove();
           };
+          /** Closes the modal on Escape. */
           const onEsc = (e) => {
             if (e.key === 'Escape') close();
           };
@@ -3468,6 +4110,12 @@
         }
 
         // ---------- Sizing / height pairing ----------
+
+        /**
+         * Resolves the outer container and the inner editing surface for any editor element.
+         * @param {Element|null} el A Quill container, Quill editor, or fallback editor.
+         * @returns {{container: (Element|null), surface: (Element|null)}}
+         */
         #getNodes (el) {
           if (!el) return { container: null, surface: null };
           if (el.classList.contains('comments-inline-editor')) return { container: null, surface: el };
@@ -3478,6 +4126,12 @@
           return { container: null, surface: el };
         }
 
+        /**
+         * Sets an editor's height, never below the minimum.
+         * @param {Element} el Editor element.
+         * @param {number} heightPx Height in pixels.
+         * @returns {void}
+         */
         setHeight (el, heightPx) {
           const { container, surface } = this.#getNodes(el);
           const minH = CONFIG.COMMENT_EDITOR_MIN_HEIGHT;
@@ -3492,6 +4146,13 @@
           }
         }
 
+        /**
+         * Measures how tall an editor's content is.
+         * Technique: set height to auto, read scrollHeight (the natural content height), then restore
+         * the old height. The result is never below the minimum.
+         * @param {Element} el Editor element.
+         * @returns {number} Height in pixels.
+         */
         measureHeight (el) {
           const { container, surface } = this.#getNodes(el);
           if (!surface) return CONFIG.COMMENT_EDITOR_MIN_HEIGHT;
@@ -3505,14 +4166,29 @@
           return h;
         }
 
+        /**
+         * Resizes one editor to fit its content.
+         * @param {Element|null} el Editor element.
+         * @returns {void}
+         */
         autosize (el) {
           if (el) this.setHeight(el, this.measureHeight(el));
         }
 
+        /**
+         * Schedules a height sync when the event target is inside a comment editor.
+         * @param {Element} target Event target.
+         * @returns {void}
+         */
         handleFieldEvent (target) {
           if (resolveCommentEditor(target)) this.scheduleSyncHeights();
         }
 
+        /**
+         * Makes paired editors (comment / response) the same height: the larger of the two.
+         * If one side is hidden, the visible side just fits its own content.
+         * @returns {void}
+         */
         syncHeights () {
           CONFIG.COMMENT_PAIRS.forEach(([aId, bId]) => {
             const a = getById(aId);
@@ -3530,6 +4206,10 @@
           });
         }
 
+        /**
+         * Runs syncHeights at most once per animation frame (batches rapid edits).
+         * @returns {void}
+         */
         scheduleSyncHeights () {
           if (this.#syncRaf) return;
           this.#syncRaf = requestAnimationFrame(() => {
@@ -3539,6 +4219,12 @@
         }
 
         // ---------- Clear / restore ----------
+
+        /**
+         * Empties every editor inside a root element.
+         * @param {ParentNode} root Section or document.
+         * @returns {void}
+         */
         clearContent (root) {
           root.querySelectorAll('.ql-editor, .comments-inline-editor').forEach((el) => {
             if (this.#quillEditors) {
@@ -3554,10 +4240,19 @@
           });
         }
 
+        /**
+         * Removes all image thumbnails in the galleries inside a root.
+         * @param {ParentNode} root Section or document.
+         * @returns {void}
+         */
         clearGalleries (root) {
           root.querySelectorAll('.comments-image-gallery').forEach((g) => g.replaceChildren());
         }
 
+        /**
+         * Loads each hidden input's saved HTML back into its editor.
+         * @returns {void}
+         */
         restore () {
           CONFIG.COMMENT_FIELDS.forEach(([fieldId]) => {
             const hidden = getById(fieldId);
@@ -3566,6 +4261,11 @@
         }
 
         // ---------- Cleanup ----------
+
+        /**
+         * Cancels pending work and detaches Quill listeners.
+         * @returns {void}
+         */
         destroy () {
           if (this.#syncRaf) cancelAnimationFrame(this.#syncRaf);
           if (this.#quillEditors) {
@@ -3578,13 +4278,19 @@
       }
 
       // ============================================================
-      // 7. CheckForm — main orchestrator
+      // 8. CheckForm — main orchestrator
       // ============================================================
+
+      /**
+       * Main controller. Builds the checklist rows, handles all page events, applies the
+       * visibility rules between sections, tracks progress, validates, and exports to PDF or snapshot.
+       */
       class CheckForm {
         // Public (read by managers)
         elements;
         sectionConfig;
         isRestored = false;
+        /** Radio answers by section and question number, for example formState.sc[8] === 'yes'. */
         formState = { sc: {}, ds: {}, ch: {}, pr: {}, ir: {} };
 
         // Internals
@@ -3606,6 +4312,9 @@
         #sigTooltips = {};
         #inconsistent = false;
 
+        /**
+         * Caches elements, creates the helper managers, and starts the form.
+         */
         constructor() {
           this.elements = this.cacheElements();
           this.sectionConfig = this.buildSectionConfig();
@@ -3642,7 +4351,10 @@
           this.init();
         }
 
-        /** Rebuild the radio-answer cache from the DOM (after snapshot load, reset, clear). */
+        /**
+         * Rebuilds the radio-answer cache from the DOM (after snapshot load, reset, clear).
+         * @returns {void}
+         */
         _hydrateFormStateFromDom () {
           const state = { sc: {}, ds: {}, ch: {}, pr: {}, ir: {} };
           for (const radio of queryAll('input[type="radio"]:checked')) {
@@ -3653,6 +4365,11 @@
         }
 
         // ---------- DOM cache ----------
+
+        /**
+         * Looks up and stores the elements used repeatedly.
+         * @returns {Object<string, *>} Element map.
+         */
         cacheElements () {
           return {
             progressStrip: getById('progressStrip'),
@@ -3715,8 +4432,13 @@
           };
         }
 
+        /**
+         * Describes each checklist section for the progress calculation.
+         * @returns {Array<{prefix: string, rowsEl: Element, count: number, badge: Element, num: Element, label: string, cardEl: Element|null}>}
+         */
         buildSectionConfig () {
           const e = this.elements;
+          /** Creates one section descriptor. */
           const make = (prefix, rowsEl, items, badge, num, label) => ({
             prefix,
             rowsEl,
@@ -3736,32 +4458,60 @@
         }
 
         // ---------- Utilities ----------
+
+        /**
+         * @returns {boolean} True when the role is Engineer-in-Training.
+         */
         isEitRole () {
           return this.getRadioValue('sc_role') === 'Engineer-in-Training';
         }
 
+        /**
+         * Returns the selected value of a radio group.
+         * @param {string} name Radio group name.
+         * @returns {string|null} Value, or null when none is selected.
+         */
         getRadioValue (name) {
           return query(`input[name="${name}"]:checked`)?.value ?? null;
         }
 
+        /**
+         * Caches the Self-Check radios used by the visibility rules (they exist only after rows are built).
+         * @returns {void}
+         */
         cacheRowRadios () {
           this.elements.sc11No = getById('sc11_no');
           this.elements.sc11Yes = getById('sc11_yes');
           this.elements.sc9Yes = getById('sc9_yes');
         }
 
+        /**
+         * @returns {boolean} True when Self-Check question 1.11 is answered "No".
+         */
         isSc11No () {
           return this.elements.sc11No?.checked ?? false;
         }
 
+        /**
+         * @returns {boolean} True when Self-Check question 1.9 is answered "Yes".
+         */
         isSc9Yes () {
           return this.elements.sc9Yes?.checked ?? false;
         }
 
+        /**
+         * Tells whether any row in a section has the given answer.
+         * @param {Element|null} rowsEl Container of the section's rows.
+         * @param {'yes'|'no'|'na'} value Answer to look for.
+         * @returns {boolean}
+         */
         rowHasAnswer (rowsEl, value) {
           return !!rowsEl?.querySelector(`.check-row input[type="radio"][value="${value}"]:checked`);
         }
 
+        /**
+         * @returns {string|null} The active risk level ("low", "medium", "high"), or null.
+         */
         getActiveRiskLevel () {
           for (const btn of this.elements.riskBtns) {
             if (btn.classList.contains('active')) return btn.dataset.risk ?? null;
@@ -3769,6 +4519,12 @@
           return null;
         }
 
+        /**
+         * Copies a source input's value to linked inputs and clears the red "invalid" label color.
+         * @param {HTMLInputElement} source Input being edited.
+         * @param {...(HTMLInputElement|null)} targets Inputs to update.
+         * @returns {void}
+         */
         syncLinkedFields (source, ...targets) {
           const value = source.value;
           for (const field of targets) {
@@ -3779,11 +4535,17 @@
         }
 
         // ---------- Init ----------
+
+        /**
+         * Starts the form: builds rows (unless restored from a snapshot), binds events, sets initial state.
+         * @returns {void}
+         */
         init () {
           const hasPersistedRows = !!this.elements.scRows?.querySelector('.check-row');
           if (!hasPersistedRows) this.buildAllRows();
           else this.cacheRowRadios();
 
+          // A saved snapshot opened from disk, or one that already has answers or a title, counts as restored.
           this.isRestored = !!(hasPersistedRows && (window.location.protocol === 'file:' ||
             !!query('#check_form input[type="radio"]:checked') ||
             !!this.elements.workTitle?.value?.trim()));
@@ -3799,6 +4561,10 @@
           this.syncCssStateClasses();
         }
 
+        /**
+         * Attaches the delegated document listeners and the form submit listener.
+         * @returns {void}
+         */
         attachEventListeners () {
           document.addEventListener('click', this.#boundClick);
           document.addEventListener('change', this.#boundChange);
@@ -3810,6 +4576,11 @@
         }
 
         // ---------- Build rows ----------
+
+        /**
+         * Builds the question rows for all five checklist sections.
+         * @returns {void}
+         */
         buildAllRows () {
           this.buildRows(this.elements.scRows, 'sc', CONFIG.SC_ITEMS, CONFIG.BINARY_QUESTIONS.sc);
           this.buildRows(this.elements.dsRows, 'ds', CONFIG.DS_ITEMS);
@@ -3819,10 +4590,20 @@
           this.cacheRowRadios();
         }
 
+        /**
+         * Builds the rows of one checklist section: number, text, Yes/No/N-A radios, notice area.
+         * Radio names are `<prefix><n>` and ids `<prefix><n>_<value>` (for example "sc8_yes").
+         * @param {Element|null} container Rows container.
+         * @param {string} prefix Section prefix.
+         * @param {string[]} items Question texts (HTML allowed, from trusted CONFIG).
+         * @param {Set<number>} [binarySet] 1-based question numbers that only allow Yes / No.
+         * @returns {void}
+         */
         buildRows (container, prefix, items, binarySet = new Set()) {
           if (!container) return;
           const fragment = document.createDocumentFragment();
           const sectionNum = CONFIG.SECTION_NUM[prefix];
+          /** Answer options; binary questions show a disabled blank N/A slot to keep the layout aligned. */
           const pillOptions = (binary) => binary
             ? [['yes', 'Yes'], ['no', 'No'], ['na', ' ', true]]
             : [['yes', 'Yes'], ['no', 'No'], ['na', 'N/A']];
@@ -3865,6 +4646,14 @@
         }
 
         // ---------- Global delegated handlers ----------
+
+        /**
+         * Single click handler for the whole page (event delegation).
+         * Order: signature tabs, open pad, clear preview, modal actions, section toggle,
+         * risk buttons, registered buttons, then a visibility refresh.
+         * @param {MouseEvent} e Click event.
+         * @returns {void}
+         */
         #handleClick (e) {
           const target = e.target;
 
@@ -3923,6 +4712,11 @@
           this.syncSectionVisibility();
         }
 
+        /**
+         * Delegated change handler: radio answers, field validity, check-level changes, comment editors.
+         * @param {Event} e Change event.
+         * @returns {void}
+         */
         #handleChange (e) {
           const target = e.target;
           if (target.matches('input[type="radio"]')) this.#onRadioChange(target);
@@ -3934,6 +4728,15 @@
           this.#comments.handleFieldEvent(target);
         }
 
+        /**
+         * Delegated input handler: mirrors linked name fields and refreshes progress.
+         * Name linking rules:
+         *   - Engineer / Self-Check name are the same person unless Direct Supervision applies.
+         *   - When Direct Supervision applies, the Self-Check name follows the Direct Supervisor field.
+         *   - Checker name is always shared between Work Info and Section 3.
+         * @param {Event} e Input event.
+         * @returns {void}
+         */
         #handleInput (e) {
           const target = e.target;
           if (LINKED_NAME_IDS.has(target.id)) {
@@ -3954,6 +4757,11 @@
           }
         }
 
+        /**
+         * Delegated keydown handler: Escape closes the signature modal; Enter / Space toggles a section header.
+         * @param {KeyboardEvent} e Keydown event.
+         * @returns {void}
+         */
         #handleKeydown (e) {
           if (e.key === 'Escape' && this.#sig.isOpen()) {
             e.preventDefault();
@@ -3970,6 +4778,11 @@
           }
         }
 
+        /**
+         * Reacts to a radio change: updates the answer cache, role labels, notices, and gating.
+         * @param {HTMLInputElement} radio The radio that changed.
+         * @returns {void}
+         */
         #onRadioChange (radio) {
           const name = radio.name || '';
           const m = ROW_NAME_RE.exec(name);
@@ -3988,6 +4801,12 @@
         }
 
         // ---------- Section toggle ----------
+
+        /**
+         * Expands or collapses a section and focuses its first control when expanding.
+         * @param {HTMLElement} head The section header.
+         * @returns {void}
+         */
         toggleSection (head) {
           const body = getById(head.getAttribute('aria-controls'));
           const isExpanding = !head.classList.contains('open');
@@ -4001,6 +4820,12 @@
         }
 
         // ---------- Risk ----------
+
+        /**
+         * Selects a risk level, sets the minimum check level it implies, and refreshes notices.
+         * @param {string} level "low", "medium", or "high".
+         * @returns {void}
+         */
         setRiskLevel (level) {
           let activeBtn = null;
           this.elements.riskBtns.forEach((b) => {
@@ -4020,12 +4845,25 @@
         }
 
         // ---------- Notices ----------
+
+        /**
+         * Compares Self-Check answers with the chosen risk level and shows notices on rows 1.8 to 1.11.
+         * Also sets `#inconsistent`, which blocks PDF export until the answers are corrected.
+         * Rules:
+         *   1.8 and 1.10 must match RISK_MAP for the active level (N/A is ignored).
+         *   1.9 = Yes needs a Check and an Independent Structural Review, and cannot be Low risk.
+         *   1.10 = Yes needs the High Risk Work Independent Review Record.
+         *   1.11 = Yes is not allowed for an EIT; 1.11 = No means Direct Supervision is required.
+         * @returns {void}
+         */
         showRiskConsistencyNotices () {
           const sc = this.formState.sc;
           const isEit = this.isEitRole();
           const level = this.getActiveRiskLevel();
           const exp = level ? CONFIG.RISK_MAP[level] : null;
+          /** Maps "yes"/"no" to display text. */
           const word = (v) => (v === 'yes' ? 'Yes' : 'No');
+          /** Returns an error notice when question `n` disagrees with the risk level's expected answer. */
           const inconsistent = (n, key) => exp && sc[n] && sc[n] !== 'na' && sc[n] !== exp[key]
             ? [{
               message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>).
@@ -4082,6 +4920,13 @@
           this.renderNoticeStack('sc', 11, blocks11);
         }
 
+        /**
+         * Renders notices under one checklist row. Skips the DOM write when the HTML is unchanged.
+         * @param {string} prefix Section prefix.
+         * @param {number} n 1-based question number.
+         * @param {Array<{message: string, type?: 'warn'|'error'}>} blocks Notices to show.
+         * @returns {void}
+         */
         renderNoticeStack (prefix, n, blocks) {
           const stack = getById(`${prefix}${n}_notice_stack`);
           if (!stack) return;
@@ -4097,6 +4942,19 @@
         }
 
         // ---------- Section visibility ----------
+
+        /**
+         * Works out which sections to show from the current answers.
+         * Rules:
+         *   showDs      Direct Supervision: 1.11 is "No", or the role is EIT.
+         *   showCheck   Check: minimum level is "Check", or risk is High.
+         *   showPeer    Peer Review: any "No" in the Check, or a risk level is set, or the minimum
+         *               level is Peer Review / Type 1 Independent Review.
+         *   openS4      Open Peer Review: any "No" in the Check, or minimum level is Peer Review.
+         *   openS5      Independent Review: 1.9 is "Yes" and risk is not Low.
+         *   finalShown  Section 6: risk is High.
+         * @returns {{showDs: boolean, showCheck: boolean, showPeer: boolean, openS4: boolean, openS5: boolean, showChNotice: boolean, finalShown: boolean}}
+         */
         computeVisibilityState () {
           const isEit = this.isEitRole();
           const risk = this.getActiveRiskLevel();
@@ -4117,6 +4975,11 @@
           };
         }
 
+        /**
+         * Shows, hides, opens, and closes sections, and toggles required fields to match a state.
+         * @param {ReturnType<CheckForm['computeVisibilityState']>} state Result of computeVisibilityState.
+         * @returns {void}
+         */
         applyVisibilityState (state) {
           const e = this.elements;
           e.chNotice.classList.toggle('hidden', !state.showChNotice);
@@ -4130,6 +4993,7 @@
           this.setCheckerRequired(state.showCheck);
 
           e.cardPr.classList.toggle('hidden', !state.showPeer);
+          // Once Peer Review is open it stays open, so a user is not shut out mid-edit.
           const shouldOpenPr = (e.s4Body?.classList.contains('open') ?? false) || state.openS4;
           this.setSectionOpen(e.s4Head, e.s4Body, shouldOpenPr);
           this.setRequired(e.cardPr, shouldOpenPr);
@@ -4146,10 +5010,21 @@
           this.scheduleUpdateProgress();
         }
 
+        /**
+         * Recomputes and applies section visibility.
+         * @returns {void}
+         */
         syncSectionVisibility () {
           this.applyVisibilityState(this.computeVisibilityState());
         }
 
+        /**
+         * Opens or closes a section and updates aria-expanded.
+         * @param {Element|null} head Section header.
+         * @param {Element|null} body Section body.
+         * @param {boolean} open Target state.
+         * @returns {void}
+         */
         setSectionOpen (head, body, open) {
           if (!head || !body) return;
           head.classList.toggle('open', open);
@@ -4157,6 +5032,12 @@
           head.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
 
+        /**
+         * Makes an input required and enabled, or optional and disabled.
+         * @param {Element|null} input Input element.
+         * @param {boolean} required Target state.
+         * @returns {void}
+         */
         #setEnabledRequired (input, required) {
           if (!input) return;
           if (required) {
@@ -4168,21 +5049,41 @@
           }
         }
 
+        /**
+         * Enables or disables the Direct Supervisor field.
+         * @param {boolean} required True when Direct Supervision applies.
+         * @returns {void}
+         */
         setDirectSuperRequired (required) {
           this.#setEnabledRequired(this.elements.directSuper, required);
         }
 
+        /**
+         * Enables or disables the Checker field.
+         * @param {boolean} required True when a Check applies.
+         * @returns {void}
+         */
         setCheckerRequired (required) {
           this.#setEnabledRequired(this.elements.checker, required);
         }
 
+        /**
+         * Makes the date and name inputs of a card required (or disabled).
+         * @param {Element|null} element Card element.
+         * @param {boolean} required Target state.
+         * @returns {void}
+         */
         setRequired (element, required) {
           element?.querySelectorAll(`input[id$='_date'], input[id$='_name']`)
             .forEach((input) => this.#setEnabledRequired(input, required));
         }
 
         // ---------- Role labels ----------
-        /** Labels that never change; set once instead of on every role change. */
+
+        /**
+         * Applies labels that never change, once at startup.
+         * @returns {void}
+         */
         applyStaticLabels () {
           const e = this.elements;
           setText(e.scNameLabel, 'Professional of Record');
@@ -4195,6 +5096,12 @@
           setText(e.checkerCommentsLabel, 'Checker Comments & Corrections');
         }
 
+        /**
+         * Updates labels for the chosen role and, optionally, presets question 1.11.
+         * An EIT always starts with 1.11 = "No" (direct supervision required).
+         * @param {boolean} [resetSc11=true] True to reset the 1.11 answer to match the role.
+         * @returns {void}
+         */
         updateRoleLabels (resetSc11 = true) {
           const isEit = this.isEitRole();
           const { sc11No, sc11Yes, engLabel, engInput } = this.elements;
@@ -4209,6 +5116,16 @@
         }
 
         // ---------- Progress ----------
+
+        /**
+         * Recalculates the progress bar, section badges, and the Save PDF "ready" state.
+         *
+         * Completion formula (over visible sections only):
+         *   pct = round(answered / total * 100)
+         * where `total` is the sum of question counts of visible sections and `answered` is the
+         * sum of answered counts. Peer Review counts only after its first answer, because it is optional.
+         * @returns {void}
+         */
         updateProgress () {
           let total = 0;
           let answered = 0;
@@ -4246,6 +5163,10 @@
           );
         }
 
+        /**
+         * Debounces updateProgress by 50 ms so bursts of input cause one update.
+         * @returns {void}
+         */
         scheduleUpdateProgress () {
           if (this.#progressTimer) clearTimeout(this.#progressTimer);
           this.#progressTimer = setTimeout(() => {
@@ -4255,10 +5176,21 @@
         }
 
         // ---------- Validation ----------
+
+        /**
+         * Sets the screen-reader announcement text.
+         * @param {string} msg Message.
+         * @returns {void}
+         */
         showValidationMessage (msg) {
           if (this.elements.validationAnnouncer) this.elements.validationAnnouncer.textContent = msg;
         }
 
+        /**
+         * Checks every required field. A field is valid when its underline would be hidden.
+         * @param {boolean} [highlightInvalid=false] True to color the labels of invalid fields red.
+         * @returns {boolean} True when all required fields are valid.
+         */
         allRequiredFieldsValid (highlightInvalid = false) {
           return Array.from(document.querySelectorAll('.required-field-underline')).reduce((acc, el) => {
             const isValid = this.#isUnderlineHidden(el);
@@ -4270,8 +5202,12 @@
           }, true);
         }
 
-        // Mirrors the CSS rules that hide the required-field underline,
-        // without reading computed styles (avoids layout thrash).
+        /**
+         * Mirrors the CSS rules that hide the required-field underline, without reading computed
+         * styles (which would force layout). Hidden means: the field is not applicable or is valid.
+         * @param {Element} el An underline element.
+         * @returns {boolean} True when the field counts as valid.
+         */
         #isUnderlineHidden (el) {
           if (el.closest('.hidden')) return true; // card hidden
           if (el.closest('.sec-body:not(.open)')) return true; // section collapsed
@@ -4286,16 +5222,30 @@
           return true;
         }
 
+        /**
+         * Announces and toasts the "form not ready" message.
+         * @returns {void}
+         */
         #notReadyMessage () {
           this.showValidationMessage('Not all required fields are filled / Not all check questions are answered or answered correctly.');
           this.toast('Not all <b>required (Red Underlines)</b> fields are filled / Not all check questions are answered or answered correctly.', 'error');
         }
 
+        /**
+         * Handles the form's submit event: validates and shows a message when not ready.
+         * @returns {void}
+         */
         handleSubmitAttempt () {
           this.updateProgress();
           if (!(this.allRequiredFieldsValid() && this.elements.progressBar.value == 100)) this.#notReadyMessage();
         }
 
+        /**
+         * Checks that the form can be exported to PDF.
+         * Requires: all required fields valid, 100% progress, open sections' signatures unlocked,
+         * and no risk inconsistencies.
+         * @returns {boolean} True when export may proceed.
+         */
         pdfValidation () {
           this.updateProgress();
           if (!this.allRequiredFieldsValid(true) || this.elements.progressBar.value != 100 ||
@@ -4307,6 +5257,12 @@
         }
 
         // ---------- Clear section ----------
+
+        /**
+         * Clears one section's fields, answers, and signatures, then refreshes dependent state.
+         * @param {string} sectionId Id of the section body ("s1", "s2", ..., or "sec-info-body").
+         * @returns {void}
+         */
         clearSection (sectionId) {
           const sec = getById(sectionId);
           if (!sec) return;
@@ -4328,6 +5284,11 @@
           this.toast('Section cleared', 'info');
         }
 
+        /**
+         * Resets all inputs, selects, risk buttons, signatures, and comments inside a root.
+         * @param {ParentNode} root Section or document.
+         * @returns {void}
+         */
         clearFormControls (root) {
           root.querySelectorAll('input[type="radio"]').forEach((r) => { r.checked = false; });
           root.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="hidden"],   input[type = "file"]').forEach((i) => { i.value = ''; });
@@ -4341,22 +5302,42 @@
           this.syncCssStateClasses();
         }
 
-        /** Restore revision/role defaults, but only if they live inside the cleared root. */
+        /**
+         * Restores the revision and role defaults, but only if they live inside the cleared root.
+         * @param {ParentNode} [root=document] Cleared root.
+         * @returns {void}
+         */
         restoreDefaults (root = document) {
           if (root.contains(this.elements.revision)) this.elements.revision.value = '0';
           if (root.contains(this.elements.scRoleEng)) this.elements.scRoleEng.checked = true;
         }
 
         // ---------- Toast ----------
+
+        /**
+         * Hides the global notice.
+         * @returns {void}
+         */
         hideGlobalNotice () {
           this.#toast.hide();
         }
 
+        /**
+         * Shows a message in the global notice.
+         * @param {string} msg Message (HTML allowed).
+         * @param {'info'|'success'|'error'|'warn'} [type='info'] Style variant.
+         * @returns {void}
+         */
         toast (msg, type = 'info') {
           this.#toast.show(msg, type);
         }
 
         // ---------- CSS state classes ----------
+
+        /**
+         * Mirrors DOM state into CSS classes so stylesheets do not need :has() selectors.
+         * @returns {void}
+         */
         syncCssStateClasses () {
           document.querySelectorAll('.sec-right').forEach((el) => {
             el.classList.toggle('has-role-selector', !!el.querySelector('.role-selector'));
@@ -4370,6 +5351,11 @@
         }
 
         // ---------- Reset ----------
+
+        /**
+         * Resets the entire form after the user confirms.
+         * @returns {void}
+         */
         resetForm () {
           if (!confirm('Reset entire form? All data will be lost.')) return;
           this.clearFormControls(document);
@@ -4384,10 +5370,23 @@
         }
 
         // ============================================================
-        // PDF export
+        // 9. PDF export
         // ============================================================
 
         // --- 1. PDF-Lib signature field injection ---
+
+        /**
+         * Adds empty, clickable digital-signature fields to the generated PDF.
+         * pdfmake cannot create form fields, so pdf-lib post-processes the file: it adds a
+         * signature widget annotation per recorded position and registers them in the AcroForm.
+         *
+         * Coordinate note: pdfmake measures `top` from the top of the page, but the PDF format
+         * measures `y` from the bottom. A rectangle's bottom edge is therefore
+         *   y = pageHeight - top - height
+         * and the PDF Rect is [left, y, left + width, y + height].
+         * @param {Uint8Array} pdfBytes PDF generated by pdfmake.
+         * @returns {Promise<Uint8Array>} PDF bytes with signature fields.
+         */
         async #addSignatureFields (pdfBytes) {
           if (!this.#sigFields.length) return pdfBytes;
           try {
@@ -4407,7 +5406,7 @@
             for (const sig of fields.values()) {
               const page = pages[sig.page - 1];
               if (!page) continue;
-              const y = page.getHeight() - sig.top - sig.height;
+              const y = page.getHeight() - sig.top - sig.height; // flip from top-based to bottom-based coordinates
               const widget = ctx.obj({
                 Type: 'Annot',
                 Subtype: 'Widget',
@@ -4424,6 +5423,7 @@
             }
 
             if (widgetRefs.length > 0) {
+              // SigFlags 1 = SignaturesExist.
               const acroForm = ctx.obj({ Fields: ctx.obj(widgetRefs), SigFlags: 1 });
               doc.catalog.set(PDFName.of('AcroForm'), ctx.register(acroForm));
             }
@@ -4434,6 +5434,11 @@
         }
 
         // --- 2. Main export handler ---
+
+        /**
+         * Validates the form, builds the PDF, adds signature fields, and downloads the file.
+         * @returns {Promise<void>}
+         */
         async exportPdf () {
           if (!this.pdfValidation()) return;
           const button = this.elements.exportPdf;
@@ -4455,6 +5460,7 @@
             }
 
             const definition = await this.#buildPdfDefinition();
+            // File name: the work title with characters that are illegal in file names replaced by "-".
             const title = getById('workTitle')?.value.trim().replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80) ||
               'DE_CheckForm';
 
@@ -4490,13 +5496,30 @@
         }
 
         // --- 3. PDF definition builder ---
+
+        /**
+         * Returns a section's signature image prepared for the PDF, or '' when unsigned.
+         * @param {string} prefix Section prefix.
+         * @returns {Promise<string>} PNG data URL.
+         */
         async #signatureForPdf (prefix) {
           const dataUrl = getById(`${prefix}_sig_data`)?.value || '';
           if (!dataUrl) return '';
-          // Signatures render at 120×40 pt; keep PNG for transparency.
+          // Signatures render at 120×40 pt; 480 px wide is 4x that, enough for print. Keep PNG for transparency.
           return this.#imageForPdf(dataUrl, `${prefix} signature`, { maxWidth: 480 });
         }
 
+        /**
+         * Decodes an image, scales it down to at most `maxWidth` pixels wide, and re-encodes it.
+         *
+         * Scale factor: scale = min(1, maxWidth / naturalWidth). The `min(1, ...)` means images
+         * are only shrunk, never enlarged. Height follows the same scale to keep the aspect ratio.
+         * JPEG has no transparency, so a white background is painted first for JPEG output.
+         * @param {string} dataUrl Source image data URL.
+         * @param {string} description Name used in error messages.
+         * @param {{maxWidth?: number, type?: string}} [opts] Max width in px (default 1200) and output MIME type (default image/png).
+         * @returns {Promise<string>} Re-encoded data URL (quality 0.85 for JPEG).
+         */
         async #imageForPdf (dataUrl, description, { maxWidth = 1200, type = 'image/png' } = {}) {
           const image = new Image();
           image.src = dataUrl;
@@ -4519,6 +5542,11 @@
           return canvas.toDataURL(type, 0.85);
         }
 
+        /**
+         * Tells whether a section card is shown and expanded (so it belongs in the PDF).
+         * @param {string} cardId Card element id.
+         * @returns {boolean}
+         */
         #isPdfCardVisible (cardId) {
           const card = getById(cardId);
           if (!card || card.closest('.hidden, [hidden], .sec-body:not(.open)')) return false;
@@ -4527,6 +5555,12 @@
           return Boolean(head?.classList.contains('open') && body?.classList.contains('open'));
         }
 
+        /**
+         * Converts a comment box into pdfmake content: text runs with bold / italic / underline /
+         * links, ordered and bullet lists, and embedded images.
+         * @param {string} id Hidden field id of the comment box.
+         * @returns {Promise<Array<Object>>} pdfmake content blocks (empty when there is no content).
+         */
         async #commentContent (id) {
           const container = getById(`${id}-editor`);
           let source = container?.matches('.comments-inline-editor')
@@ -4542,6 +5576,8 @@
           let imageIndex = 0;
           const hasEditorContent = Boolean((source.innerText || source.textContent || '').trim() ||
             source.querySelector('img[src]'));
+
+          /** Converts an <img> to a pdfmake image block, fitted inside 230 x 180 pt. Only embedded images are allowed. */
           const pdfImage = async (image) => {
             const src = image.getAttribute('src') || '';
             imageIndex += 1;
@@ -4557,6 +5593,8 @@
               margin: [0, 3, 0, 3]
             };
           };
+
+          /** Adds the formatting that an element contributes (bold, italics, underline, safe link) to inherited marks. */
           const marksFor = (element, inherited) => {
             const marks = { ...inherited };
             if (element.matches('strong, b')) marks.bold = true;
@@ -4570,14 +5608,21 @@
             }
             return marks;
           };
+
+          /**
+           * Converts inline nodes to pdfmake blocks. Text and inline elements collect into one
+           * paragraph; an image ends the current paragraph and becomes its own block.
+           */
           const inlineContent = async (nodes, prefix = '') => {
             const blocks = [];
             let runs = prefix ? [{ text: prefix }] : [];
+            /** Emits the collected runs as one paragraph. */
             const flush = () => {
               if (!runs.length) return;
               blocks.push({ text: runs, style: 'commentValue', margin: [0, 0, 0, 3] });
               runs = [];
             };
+            /** Walks a node, carrying the active text marks down to its children. */
             const visit = async (node, marks = {}) => {
               if (node.nodeType === Node.TEXT_NODE) {
                 if (node.nodeValue) {
@@ -4602,6 +5647,11 @@
             flush();
             return blocks;
           };
+
+          /**
+           * Converts a block-level node. Lists get a "• " or "N. " prefix and a left indent of
+           * 12 pt per Quill indent level (indent = level * 12).
+           */
           const renderBlocks = async (node) => {
             if (node.nodeType === Node.TEXT_NODE) {
               return node.nodeValue?.trim() ? inlineContent([node]) : [];
@@ -4648,11 +5698,22 @@
           return content;
         }
 
+        /**
+         * Reads the form into a plain object used to build the PDF.
+         * Only sections that are visible are read; hidden ones get empty signatures and comments.
+         * @param {Object<string, boolean>} visible Section visibility by key (info, sc, ds, ch, pr, ir, fT1).
+         * @returns {Promise<Object>} Data object grouped by section.
+         */
         async #collectPdfData (visible) {
+          /** Trimmed value of an input by id. */
           const value = (id) => getById(id)?.value?.trim() || '';
+          /** Value of a Work Info field, or null when its cell is disabled (so it is omitted from the PDF). */
           const enabledMetaValue = (id) => getById(id)?.closest('.meta-cell.is-disabled') ? null : value(id);
+          /** Selected value of a radio group. */
           const checked = (name) => query(`input[name="${name}"]:checked`)?.value || '';
+          /** Display text for a yes / no / na radio group. */
           const answer = (name) => ({ yes: 'Yes', no: 'No', na: 'N/A' }[checked(name)] || '');
+          /** Question and answer text for every row of a section. */
           const checklist = (prefix) => [...(getById(`${prefix}-rows`)?.querySelectorAll('.check-row') || [])]
             .map((row) => {
               const selected = row.querySelector('input[type="radio"]:checked');
@@ -4668,6 +5729,7 @@
             CONFIG.SIG_PREFIXES.map((prefix) => visible[prefix] ? this.#signatureForPdf(prefix) : '')
           );
           const sigOf = Object.fromEntries(CONFIG.SIG_PREFIXES.map((prefix, i) => [prefix, signatures[i]]));
+          // Which section each comment box belongs to (decides whether it is exported).
           const commentSections = {
             checkerComments: 'ch', engineerResponse: 'ch',
             reviewerComments: 'pr', engineerResponse_2: 'pr',
@@ -4735,6 +5797,11 @@
           };
         }
 
+        /**
+         * Builds the pdfmake document definition: A4 page, styles, content sections, and the
+         * `pageBreakBefore` callback that keeps tables together and records signature-field positions.
+         * @returns {Promise<Object>} pdfmake document definition.
+         */
         async #buildPdfDefinition () {
           const visible = Object.fromEntries([
             ['info', 'card-info'], ['sc', 'card-sc'], ['ds', 'card-ds'],
@@ -4768,9 +5835,18 @@
               tableHeader: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#05a1c6' }
             },
             defaultStyle: { font: 'Roboto', fontSize: 10 },
+            /**
+             * pdfmake calls this for every node while it lays out pages.
+             *   - "keep-table:*" nodes that would split across pages move to a fresh page, unless they
+             *     already start near the top (within 15 pt), where moving gains nothing.
+             *   - Signature tables also move when the signing row would not fit on the current page.
+             *   - "sigfield:*" nodes only record where a signature field must be placed (and return false).
+             */
             pageBreakBefore: (node) => {
               const id = String(node.id ?? '');
               // Move a split table to a fresh page once; oversized comments may still span pages.
+              // verticalRatio is the node's position as a fraction (0..1) of the page's inner height,
+              // so ratio * innerHeight is its distance from the top margin in points.
               if (id.startsWith('keep-table:') && node.pageNumbers.length > 1
                 && node.startPosition.verticalRatio * node.startPosition.pageInnerHeight > 15) {
                 return true;
@@ -4779,9 +5855,14 @@
                 const prefix = id.slice('keep-table:signature:'.length);
                 const positions = node.table.body[1].flatMap((cell) => cell.positions || []);
                 const first = positions[0];
+                // Top and bottom of the current page's content area:
+                //   pageTop    = node top - (distance from the top margin)
+                //   pageBottom = pageTop + inner page height
                 const pageTop = node.startPosition.top - node.startPosition.verticalRatio *
                   node.startPosition.pageInnerHeight;
                 const pageBottom = pageTop + node.startPosition.pageInnerHeight;
+                // Break if the full signing row (cell height + padding + 1 pt border) would cross the
+                // page bottom, or if any cell's first line (16 pt) is already too low.
                 if (first && (first.top + this.#signatureCellHeight(prefix) + SIG_CELL_PADDING + 1 > pageBottom
                   || positions.some((position) => position.top + 16 > pageBottom))) return true;
               }
@@ -4790,6 +5871,14 @@
                 const prefix = name.slice(0, -'_digital_signature'.length);
                 const { pageNumber, pageInnerWidth, left, top } = node.startPosition;
                 // The node starts inside the cell padding; the widget should start at the cell border.
+                // Field geometry (points):
+                //   left   = node left - horizontal padding      (back out to the cell border)
+                //   top    = node top  - vertical padding
+                //   width  = innerWidth - fixed column 1 - fixed column 2 - 4 * horizontal padding - 2
+                //            The '*' column gets what remains. The two fixed columns each add a left and
+                //            right padding (2 * 2 = 4 paddings), and 2 pt is allowed for the four 0.5 pt
+                //            vertical border lines.
+                //   height = cell height + 2 * vertical padding   (the full cell)
                 this.#sigFields.push({
                   name,
                   tooltip: this.#sigTooltips[name] ?? 'Digital signature',
@@ -4809,17 +5898,42 @@
           };
         }
 
+        /**
+         * Creates the empty placeholder node that marks where a PDF signature field goes.
+         * @param {string} prefix Section prefix.
+         * @param {string} label Name shown in the field's tooltip.
+         * @returns {{text: string, fontSize: number, id: string, margin: number[]}} pdfmake node.
+         */
         #signatureField (prefix, label) {
           const name = `${prefix}_digital_signature`;
           this.#sigTooltips[name] = `Digital signature: ${label}`;
           return { text: ' ', fontSize: 10, id: `sigfield:${name}`, margin: [0, 0, 0, 0] };
         }
 
+        /**
+         * Height of a signature cell in points.
+         * The Independent Review cell is taller because it holds a signature and a professional seal:
+         *   height = 2 * SIG_CELL_HEIGHT + 2 * SIG_CELL_PADDING   (for "ir")
+         *   height = SIG_CELL_HEIGHT                               (all others)
+         * @param {string} prefix Section prefix.
+         * @returns {number} Height in points.
+         */
         #signatureCellHeight (prefix) {
           return prefix === 'ir' ? SIG_CELL_HEIGHT * 2 + SIG_CELL_PADDING * 2 : SIG_CELL_HEIGHT;
         }
 
         // ---------- PDF helpers ----------
+
+        /**
+         * Builds a name / date / signature table. Without an image, the signature cell holds an
+         * empty field that becomes a clickable signature box.
+         * @param {string} name Typed name.
+         * @param {string} date Date text.
+         * @param {string} signatureUrl Signature image data URL, or ''.
+         * @param {string} title Role title shown on the name column.
+         * @param {string} prefix Section prefix.
+         * @returns {Object} pdfmake table node.
+         */
         buildSignatureBlock (name, date, signatureUrl, title, prefix) {
           return this.#signatureTable([
             { text: `${title} Name`, style: 'label' },
@@ -4833,7 +5947,13 @@
           ], prefix);
         }
 
-        // Table with a full-width empty cell that hosts the clickable PDF signature field
+        /**
+         * Table with a full-width empty cell that hosts the clickable PDF signature field.
+         * @param {Object[]} headerCells Three header cells.
+         * @param {Object[]} valueCells Three value cells.
+         * @param {string} prefix Section prefix (sets the row height and the keep-together id).
+         * @returns {Object} pdfmake table node.
+         */
         #signatureTable (headerCells, valueCells, prefix) {
           return {
             id: `keep-table:signature:${prefix}`,
@@ -4848,6 +5968,10 @@
           };
         }
 
+        /**
+         * Table layout with thin grey borders and the shared cell padding.
+         * @returns {Object} pdfmake layout object.
+         */
         #borderedTableLayout () {
           return {
             hLineColor: () => '#BFBFBF',
@@ -4861,7 +5985,14 @@
           };
         }
 
+        /**
+         * Builds the two-column comments / response table.
+         * @param {Object[]} comments pdfmake content for comments.
+         * @param {Object[]} response pdfmake content for the engineer response.
+         * @returns {Object} pdfmake node.
+         */
         buildCommentsBlock (comments, response) {
+          /** Cell content, or "None" when empty. */
           const cell = (content) => ({
             stack: content.length ? content : [{ text: 'None', style: 'value' }]
           });
@@ -4886,6 +6017,11 @@
           };
         }
 
+        /**
+         * Builds a checklist table (question and response).
+         * @param {Array<{question: string, answer: string}>} rows Checklist rows.
+         * @returns {Object} pdfmake table node.
+         */
         buildChecklistBlock (rows) {
           return {
             layout: 'lightHorizontalLines',
@@ -4907,6 +6043,10 @@
           };
         }
 
+        /**
+         * Downloads the BC Hydro logo as a data URL (cached). Gives up after 4 s.
+         * @returns {Promise<string>} Data URL, or '' when the logo cannot be loaded.
+         */
         async #logoDataUrl () {
           if (this.#logoCache) return this.#logoCache;
           try {
@@ -4926,6 +6066,12 @@
         }
 
         // ---------- PDF section builders ----------
+
+        /**
+         * Builds the PDF page header: logo (or a text fallback) and the form title.
+         * @param {string} logo Logo data URL, or ''.
+         * @returns {Object} pdfmake node.
+         */
         buildFormHeader (logo) {
           return {
             columns: [
@@ -4943,6 +6089,11 @@
           };
         }
 
+        /**
+         * Builds the Work Information table. Rows whose value is null (disabled fields) are left out.
+         * @param {Object} info Work info data.
+         * @returns {Object} pdfmake node.
+         */
         buildSection1_WorkInfo (info) {
           return {
             stack: [
@@ -4969,6 +6120,12 @@
           };
         }
 
+        /**
+         * Builds Section 1 (Self-Check), with Section 2 nested before the signature when it applies.
+         * @param {Object} data Self-check data.
+         * @param {Object|null} [directSupervision] Direct supervision data, or null.
+         * @returns {Object} pdfmake node.
+         */
         buildSection1_SelfCheck (data, directSupervision = null) {
           return {
             stack: [
@@ -4980,6 +6137,11 @@
           };
         }
 
+        /**
+         * Builds Section 2 (Direct Supervision).
+         * @param {Object} data Direct supervision data.
+         * @returns {Object} pdfmake node.
+         */
         buildSection2_DirectSupervision (data) {
           return {
             stack: [
@@ -4989,6 +6151,11 @@
           };
         }
 
+        /**
+         * Builds Section 3 (Check).
+         * @param {Object} data Check data.
+         * @returns {Object} pdfmake node.
+         */
         buildSection3_Check (data) {
           return {
             stack: [
@@ -5000,6 +6167,11 @@
           };
         }
 
+        /**
+         * Builds Section 4 (Peer Review).
+         * @param {Object} data Peer review data.
+         * @returns {Object} pdfmake node.
+         */
         buildSection4_PeerReview (data) {
           return {
             stack: [
@@ -5014,6 +6186,11 @@
           };
         }
 
+        /**
+         * Builds Section 5 (Independent Structural Review).
+         * @param {Object} data Independent review data.
+         * @returns {Object} pdfmake node.
+         */
         buildSection5_IndependentReview (data) {
           return {
             stack: [
@@ -5025,6 +6202,11 @@
           };
         }
 
+        /**
+         * Builds Section 6 (assigned Tier 1 Reviewer and Team Lead signature).
+         * @param {Object} data Tier 1 reviewer data.
+         * @returns {Object} pdfmake node.
+         */
         buildSection6_Tier1Reviewer (data) {
           return {
             stack: [
@@ -5046,11 +6228,19 @@
         }
 
         // ---------- Save snapshot ----------
+
+        /**
+         * Saves the page as a standalone HTML file that reopens with all answers filled in.
+         * Live values are copied into the cloned markup as attributes (value, checked, selected),
+         * and a JSON block with the same state is appended for tools that read it.
+         * @returns {void}
+         */
         saveSnapshot () {
           this.#comments.syncAllHidden();
           const clone = document.documentElement.cloneNode(true);
           const formState = {};
 
+          /** Finds the clone's copy of a live control: by id first, then by radio / checkbox name and value. */
           const findCloneControl = (live) => {
             if (live.id) {
               try {
@@ -5102,7 +6292,8 @@
           clone.querySelector('#progressBar')?.setAttribute('value', progressVal);
           formState.progressBar = progressVal;
 
-          // Metadata block (checked state also lives in the cloned attributes above)
+          // Metadata block (checked state also lives in the cloned attributes above).
+          // "<" is escaped as \u003c so the JSON can never close its own <script> tag.
           const metaScript = document.createElement('script');
           metaScript.type = 'application/json';
           metaScript.dataset.snapshotFormState = '';
@@ -5133,6 +6324,11 @@
         }
 
         // ---------- Cleanup ----------
+
+        /**
+         * Removes all listeners and timers created by this instance.
+         * @returns {void}
+         */
         destroy () {
           this.#comments.destroy();
           document.removeEventListener('click', this.#boundClick);
@@ -5150,9 +6346,14 @@
       }
 
       // ============================================================
-      // 8. Reader mode (Edge Immersive Reader / Chrome Reading mode)
+      // 9. Reader mode (Edge Immersive Reader / Chrome Reading mode)
       // Reader views strip form controls, so mirror the form as text.
       // ============================================================
+
+      /**
+       * Keeps a hidden plain-text copy of the form (#readerSummary) up to date,
+       * because reader modes drop form controls but keep text.
+       */
       const ReaderSummary = (() => {
         const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
         const labelOf = (el) => {
@@ -5225,8 +6426,7 @@
         };
 
         function init () {
-          render();
-          ['input', 'change', 'click'].forEach((t) => document.addEventListener(t, schedule, true));
+
           window.addEventListener('pageshow', render);
           document.addEventListener('visibilitychange', render);
         }
@@ -5234,13 +6434,19 @@
       })();
 
       // ============================================================
-      // 9. Boot
+      // 10. Boot
       // ============================================================
+
+      /**
+       * Starts the app: builds the form markup if the page does not already contain it
+       * (a saved snapshot does), creates CheckForm, then starts the reader summary.
+       * @returns {void}
+       */
       function boot () {
         if (!getById('check_form')) new htmlBuilder().mount();
         window.__checkFormInstance = new CheckForm();
         // Reader summary runs after CheckForm has built the question rows
-        setTimeout(() => ReaderSummary.init(), 0);
+        setTimeout(() => ReaderSummary.render(), 0);
       }
 
       if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', boot);

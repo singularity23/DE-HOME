@@ -17,12 +17,16 @@
     rel="stylesheet">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+  <!-- local sources-->
+  <link id="local-css" rel="stylesheet" href="/sites/de/SiteAssets/css/check_form.css">
+  <script id="local-js" defer src="/sites/de/SiteAssets/js/check_form.js"></script>
+
   <!-- Quill CSS loaded on demand (lazy) -->
 
 </head>
 
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
+  <article id="readerSummary" aria-label="Form summary (text version)" class="sr-only" aria-live="polite"></article>
   <div id="app"></div>
   <script>
     const DEBUG = true;
@@ -55,21 +59,148 @@
       return false;
     }
 
-    console.log('source_to_use:', source_alt);
+    const ReaderSummary = (() => {
+      /**
+       * Collapses whitespace and trims.
+       * @param {string} s Text.
+       * @returns {string}
+       */
+      const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
+
+      /**
+       * Finds the label text of a control.
+       * @param {HTMLElement} el Form control.
+       * @returns {string}
+       */
+      const labelOf = (el) => {
+        const lbl = el.id && document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+        return clean(lbl?.textContent);
+      };
+
+      /**
+       * Gets the displayed value of a control. For selects, the placeholder counts as empty.
+       * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} el Form control.
+       * @returns {string}
+       */
+      const valueOf = (el) => {
+        if (el.tagName === 'SELECT') {
+          return el.selectedOptions[0]?.disabled || !el.value ? '' : clean(el.selectedOptions[0]?.textContent);
+        }
+        return clean(el.value);
+      };
+
+      /**
+       * Creates an element with text.
+       * @param {string} tag Tag name.
+       * @param {string} text Text content.
+       * @returns {HTMLElement}
+       */
+      const el = (tag, text) => {
+        const node = document.createElement(tag);
+        node.textContent = text;
+        return node;
+      };
+
+      /**
+       * Converts a Work Information cell to "Label: value".
+       * @param {Element} cell A .meta-cell element.
+       * @returns {string}
+       */
+      function cellText (cell) {
+        const title = clean(cell.querySelector('.field-label')?.textContent);
+        const checked = [...cell.querySelectorAll('input[type=radio]:checked')].map((r) => labelOf(r) || r.value);
+        const pressed = [...cell.querySelectorAll('[aria-pressed="true"]')].map((b) => clean(b.textContent));
+        const fields = [...cell.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea')]
+          .map(valueOf).filter(Boolean);
+        const value = [...checked, ...pressed, ...fields].join(', ');
+        return `${title}: ${value || 'Not provided'}`;
+      }
+
+      /**
+       * Converts a checklist row to "number question — answer (notice)".
+       * @param {Element} row A .check-row element.
+       * @returns {string}
+       */
+      function rowText (row) {
+        const num = clean(row.querySelector('.check-num')?.textContent);
+        const text = clean(row.querySelector('.check-text')?.textContent);
+        const r = row.querySelector('input[type=radio]:checked');
+        const answer = r ? { yes: 'Yes', no: 'No', na: 'N/A' }[r.value] || r.value : 'Not answered';
+        const notice = clean(row.querySelector('.row-notice-stack:not(.hidden)')?.textContent);
+        return `${num} ${text} — ${answer}${notice ? ` (${notice})` : ''}`;
+      }
+
+      /**
+       * Rebuilds the whole text summary from the current form.
+       * @returns {void}
+       */
+      function render () {
+        const host = document.getElementById('readerSummary');
+
+        if (!host) return;
+        const frag = document.createDocumentFragment();
+        frag.append(el('h1', 'Distribution Engineering Check & Review Form'));
+        const pct = document.getElementById('progressPct')?.textContent;
+        if (pct != null) frag.append(el('p', `Completion: ${pct}%`));
+
+        document.querySelectorAll('#check_form .card:not(.hidden)').forEach((card) => {
+          const title = clean(card.querySelector('.sec-title')?.textContent);
+          const badge = clean(card.querySelector('.sec-badge')?.textContent);
+          frag.append(el('h2', badge ? `${title} (${badge})` : title));
+          // Nested cards (Section 2 inside Section 1) are skipped here and rendered as their own cards.
+          const own = (n) => n.closest('.card') === card;
+          const handled = new Set();
+          card.querySelectorAll('.meta-cell, .check-row').forEach((n) => {
+            if (!own(n)) return;
+            n.querySelectorAll('input, select, textarea').forEach((i) => handled.add(i));
+            frag.append(el('p', n.classList.contains('check-row') ? rowText(n) : cellText(n)));
+          });
+          card.querySelectorAll('input:not([type=radio]):not([type=hidden]), select, textarea').forEach((f) => {
+            if (handled.has(f) || !own(f)) return;
+            const label = labelOf(f) || f.getAttribute('aria-label') || f.name || f.id;
+            if (label) frag.append(el('p', `${clean(label)}: ${valueOf(f) || 'Not provided'}`));
+          });
+        });
+        host.replaceChildren(frag);
+        return host;
+      }
+
+      let timer = null;
+
+      /** Debounces render by 250 ms. */
+      const schedule = () => {
+        clearTimeout(timer);
+        timer = setTimeout(render, 250);
+      };
+
+      /**
+       * Renders once and re-renders on input, change, click, page show, and visibility changes.
+       * @returns {void}
+       */
+      function init () {
+        render();
+        ['input', 'change', 'click'].forEach((t) => document.addEventListener(t, schedule, true));
+        window.addEventListener('pageshow', render);
+        document.addEventListener('visibilitychange', render);
+      }
+      return { init, render };
+    })();
+
 
     window.addEventListener('DOMContentLoaded', async () => {
 
       const curLink = window.location.href;
       const source_to_use = DEBUG && isLocal() ? source : source_alt;
-      const linkEl = document.createElement('link');
-      linkEl.rel = 'stylesheet';
-      linkEl.href = source_to_use.FORM_CSS;
-      document.head.appendChild(linkEl);
 
-      const scriptEl = document.createElement('script');
-      scriptEl.src = source_to_use.FORM_JS;
-      document.head.appendChild(scriptEl);
+      const linkEl = document.getElementById('local-css');
+      let href = linkEl.href;
+      href !== source_to_use.FORM_CSS ? linkEl.href = source_to_use.FORM_CSS : href;
 
+      const scriptEl = document.getElementById('local-js');
+      let src = scriptEl.src;
+      src !== source_to_use.FORM_JS ? scriptEl.src = source_to_use.FORM_JS : src;
+
+      ReaderSummary.init();
     });
 
   </script>
