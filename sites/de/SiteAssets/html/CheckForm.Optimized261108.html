@@ -35,7 +35,7 @@
       --surface-inverse: #231f20;
       --color-success: #046a38;
       --color-warning: #9adbe8;
-      --color-medium: #ffb656;
+      --color-medium: #004F6C;
       --color-error: #fa4616;
       --color-info: rgb(113, 113, 122);
       --color-link: #0074a4;
@@ -93,8 +93,10 @@
       --font-size-xs: 0.6rem;
       --line-height-base: 1.5;
       --line-height-tight: 1.2;
-      --shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
     }
+
 
     /* --------------------------------
        2. Reset & Base
@@ -761,7 +763,8 @@
       background: var(--color-tertiary);
       border-color: var(--color-info);
       color: var(--color-info);
-      box-shadow: inset var(--shadow);
+      box-shadow: var(--shadow) inset;
+      text-shadow: var(--shadow);
     }
 
     /* --------------------------------
@@ -801,7 +804,9 @@
       background: var(--risk-bg, var(--header-bg));
       border-color: var(--risk-border, var(--border-soft));
       color: var(--risk-color, var(--text-muted));
-      box-shadow: inset var(--shadow);
+      box-shadow: var(--shadow) inset;
+      text-shadow: var(--shadow);
+
     }
 
     .risk-btn[data-risk='medium']:not(.active) {
@@ -970,7 +975,9 @@
       background: var(--low-bg);
       border: 1pt solid var(--low-border);
       color: var(--low);
-      box-shadow: inset var(--shadow);
+      box-shadow: var(--shadow) inset;
+      text-shadow: var(--shadow);
+
     }
 
     .pill-group input[id$='_no']:hover+label {
@@ -982,7 +989,9 @@
       background: var(--high-bg);
       border: 1pt solid var(--high-border);
       color: var(--high);
-      box-shadow: inset var(--shadow);
+      box-shadow: var(--shadow) inset;
+      text-shadow: var(--shadow);
+
     }
 
     .pill-group input[id$='_na']:hover+label {
@@ -994,7 +1003,9 @@
       background: var(--muted-bg);
       border: 1pt solid var(--muted-border);
       color: var(--muted-border);
-      box-shadow: inset var(--shadow);
+      box-shadow: var(--shadow) inset;
+      text-shadow: var(--shadow);
+
     }
 
     /* Yes/No only variant (no N/A column) */
@@ -1684,7 +1695,7 @@
 
     .btn-sig-tab[data-tab='draw'].active .material-symbols-sharp,
     .btn-sig-tab[data-tab='upload'].active .material-symbols-sharp {
-      text-shadow: 0.5px 0.5px var(--surface-base);
+      text-shadow: var(--shadow);
     }
 
     .btn-sig-tab[data-tab='upload'].active {
@@ -1694,7 +1705,8 @@
     .btn-sig-tab.active {
       background: var(--color-tertiary);
       color: var(--color-info);
-      box-shadow: inset var(--shadow);
+      box-shadow: var(--shadow) inset;
+      border: 0;
     }
 
     .btn-ghost {
@@ -1754,23 +1766,11 @@
     }
 
     .btn-clear {
-      font-family: var(--font-sans);
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: var(--gap-sm) var(--gap-sm);
-      border-radius: 0;
-      cursor: pointer;
+
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text-muted);
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-      min-height: 36px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
+
     }
 
     .btn-clear:hover {
@@ -1972,6 +1972,8 @@
     const ROW_NAME_RE = /^(sc|ds|ch|pr|ir)(\d+)$/;
     /** Clicks on these inside a section header must not toggle the section. */
     const INTERACTIVE_SEL = 'button, a, input, select, textarea, label, [role="tab"]';
+
+    const DURATION = 5000;
 
     let pdfMakeFontsLoaded = false;
 
@@ -2287,7 +2289,7 @@
         const { el, icon, btnText } = HtmlBuilder;
         return el(
           'button',
-          { class: 'btn-clear', type: 'button', id, 'data-testid': testid },
+          { class: 'btn btn-clear', type: 'button', id, 'data-testid': testid },
           icon('delete_history'),
           btnText('Clear')
         );
@@ -2556,7 +2558,7 @@
           el(
             'div',
             { class: 'sig-cell-sub' },
-            el('label', { class: 'field-label', for: p + '_date' }, 'Date ', srOnly()),
+            el('label', { class: 'field-label', for: p + '-date' }, 'Date ', srOnly()),
             el(
               'div',
               { class: 'date-icon-wrap' },
@@ -2565,8 +2567,8 @@
                 { class: 'date-input-wrap' },
                 el('input', {
                   class: 'field-input',
-                  id: p + '_date',
-                  name: p + '_date',
+                  id: p + '-date',
+                  name: p + '-date',
                   type: 'date',
                   autocomplete: 'off',
                   required: true,
@@ -2581,11 +2583,11 @@
           el(
             'div',
             { class: 'sig-cell-sub' },
-            el('label', { class: 'field-label', for: p + '_name' }, nameLabel + ' ', srOnly()),
+            el('label', { class: 'field-label', for: p + '-name' }, nameLabel + ' ', srOnly()),
             el('input', {
               class: 'field-input',
-              id: p + '_name',
-              name: p + '_name',
+              id: p + '-name',
+              name: p + '-name',
               type: 'text',
               placeholder: namePlaceholder || 'Type full name',
               autocomplete: 'name',
@@ -3258,7 +3260,7 @@
             el(
               'button',
               { class: 'btn btn-clear', type: 'button', id: 'resetFormBtn', 'data-testid': 'reset-form' },
-              icon('restart_alt'),
+              icon(' settings_backup_restore'),
               btnText('Reset Form')
             ),
             el('button', { type: 'submit', style: 'display: none;', text: 'hidden' })
@@ -3270,13 +3272,13 @@
               'button',
               { class: 'btn btn-ghost', type: 'button', id: 'exportPdfBtn', 'data-testid': 'export-pdf' },
               icon('picture_as_pdf'),
-              btnText('Save PDF')
+              btnText('Complete (PDF)')
             ),
             el(
               'button',
               { class: 'btn btn-primary', type: 'button', id: 'saveSnapshotBtn', 'data-testid': 'save-snapshot' },
               icon('save'),
-              btnText('Save')
+              btnText('Save Progress')
             )
           )
         );
@@ -3353,7 +3355,7 @@
        * @param {number} [duration=5000] Milliseconds before it hides itself.
        * @returns {void}
        */
-      show (msg, type = 'info', duration = 5000) {
+      show (msg, type = 'info', duration = DURATION) {
         if (!this.#el || !this.#text) return;
         this.#text.innerHTML = msg;
         this.#el.classList.remove('hidden', 'info', 'success', 'error', 'warn');
@@ -5583,7 +5585,13 @@
           if (highlightInvalid) {
             const label = el.parentElement.querySelector('.field-label') ? el.parentElement.querySelector('.field-label') : el.closest('.sig-cell-sub').querySelector('.field-label');
             console.log(label);
-            if (label) label.style.color = isValid ? '' : '#d32f2f';
+            const curColor = label ? label.style.color : '';
+            if (label) {
+              label.style.color = isValid ? '' : '#d32f2f';
+              setTimeout(() => {
+                label.style.color = curColor;
+              }, DURATION); // reset color after 3 seconds
+            }
           }
           return acc && isValid;
         }, true);
