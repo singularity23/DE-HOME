@@ -1154,6 +1154,14 @@
       position-anchor: --ch-sig-container;
     }
 
+    #prSigContainer {
+      anchor-name: --pr-sig-container;
+    }
+
+    #prSigTooltip {
+      position-anchor: --pr-sig-container;
+    }
+
     #irSigContainer {
       anchor-name: --ir-sig-container;
     }
@@ -2743,8 +2751,9 @@
             el(
               'ul',
               null,
-              el('li', null, 'You can upload your signature image here / draw your signature manually.'),
-              el('li', null, 'You can also digitally sign using ConsignO after PDF is generated.')
+              el('li', null, 'Electronic Signature: upload your signature image or draw your signature from here, or'),
+              el('li', null, 'Digital Signature: a signable field will be automatically provided for you to sign once pdf file is generated.'),
+              el('li', null, 'Both methods comply to EGBC requirements.')
             )
           ),
           el('input', { type: 'hidden', id: p + '_sig_data', name: p + '_sig_data' })
@@ -3120,13 +3129,23 @@
                 el(
                   'div',
                   {
-                    class: 'signature-pad-container',
+                    class: 'signature-pad-container tooltip-trigger',
                     id: 'irSigContainer',
                     'data-prefix': 'ir',
                     role: 'group',
                     'aria-labelledby': 'ir_sig',
+                    'aria-describedby': 'irSigTooltip'
                   },
                   el('div', { class: 'seal', text: 'S&S after converting to PDF' })
+                ),
+                el(
+                  'div',
+                  { class: 'sig-tooltip', id: 'irSigTooltip', popover: 'auto' },
+                  el(
+                    'ul',
+                    null,
+                    el('li', null, 'Digital Signature: a signable field will be automatically provided for you to sign once pdf file is generated.')
+                  )
                 )
               )
             )
@@ -3155,10 +3174,10 @@
             's6',
             false,
             this.sigGrid(
-              this.dateNameCell({ p: 'fT1', tid: 'ft1', nameLabel: 'Assigned Type 1 Reviewer', namePlaceholder: 'Full name' }),
+              this.dateNameCell({ p: 'fT1', tid: 'fT1', nameLabel: 'Assigned Type 1 Reviewer', namePlaceholder: 'Full name' }),
               this.sigCell({
                 p: 'fT1',
-                tid: 'ft1',
+                tid: 'fT1',
                 labelId: 'fT1Sig',
                 label: 'DE TL Signature',
                 uploadAria: 'Upload Team Lead signature image',
@@ -6192,7 +6211,7 @@
             date: value('pr_date'),
             signature: sigOf.pr,
             comments: comments.reviewerComments,
-            response: comments.engineerResponse - 2,
+            response: comments.engineerResponse_2,
             addressed: answer('pr_c'),
           },
           independentReview: {
@@ -6200,8 +6219,8 @@
             name: value('ir_name'),
             date: value('ir_date'),
             signature: sigOf.ir,
-            comments: comments.ind - reviewerComments,
-            response: comments.ind - engineerResponse - 2,
+            comments: comments.ind_reviewerComments,
+            response: comments.ind_engineerResponse_2,
             addressed: answer('ir_c'),
           },
           tier1Reviewer: {
