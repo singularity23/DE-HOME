@@ -140,8 +140,8 @@
     }
 
     :focus-visible {
-      outline: 1px solid var(--color-link);
-      outline-offset: 0;
+      outline: 1px solid var(--color-medium);
+      outline-offset: -1px;
     }
 
     .sr-only {
@@ -603,11 +603,11 @@
       background-color: var(--valid);
     }
 
-    .field-input:focus {
+    /* .field-input:focus {
       outline: none;
       border-color: var(--accent);
       background: var(--surface);
-    }
+    } */
 
     .field-input::placeholder {
       color: var(--border-soft);
@@ -1182,32 +1182,44 @@
       position-anchor: --fT1-sig-container;
     }
 
+    #card-pr {
+      anchor-name: --card-pr;
+    }
+
+    #prTooltip {
+      position-anchor: --card-pr;
+    }
 
 
-    .sig-tooltip {
+
+    .sig-tooltip,
+    .sec-tooltip {
 
       /* Place it above the anchor; shift or flip if it would leave the viewport */
       position: absolute;
       position-try-fallbacks: flip-block, flip-inline;
       position-area: block-start;
-      width: anchor-size(width, 100%);
+      width: fit-content;
       border: 0;
       bottom: 20px;
       max-height: 200px;
       inset: auto;
       margin: 1.5rem 0;
 
-      padding: 0.5rem 0.75rem;
+      padding: var(--space-cell-y) var(--space-cell-x);
       background: var(--color-primary);
       color: var(--color-secondary);
-      font-size: var(--font-size-base);
+      font-size: var(--font-size-sm);
       line-height: var(--line-height-base);
       filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5));
+      border-radius: 8px;
 
       overflow: visible;
     }
 
-    .sig-tooltip::after {
+    .sig-tooltip::after,
+    .sec-tooltip::after {
+
       content: " ";
       position: absolute;
       top: 100%;
@@ -1460,7 +1472,6 @@
       overflow: hidden;
       background: var(--surface);
       color: var(--text);
-      outline: none;
     }
 
     .comments-inline-editor.is-empty::before {
@@ -1594,13 +1605,9 @@
       fill: var(--accent);
     }
 
-    .ql-editor:focus-within {
-      outline: none !important;
-    }
-
     .ql-container:focus-within {
-      outline: 1px solid var(--color-link) !important;
-      outline-offset: 0px !important;
+      outline: 1px solid var(--color-medium) !important;
+      outline-offset: -1px !important;
     }
 
     .rich-text-wrapper {
@@ -1699,6 +1706,7 @@
 
     .btn-sig-tab:hover {
       background: var(--color-tertiary);
+      color: var(--color-secondary);
     }
 
     .btn-sig-tab[data-tab='draw'].active {
@@ -2283,6 +2291,14 @@
       }
 
       /**
+     * Creates the section tooltip.
+     * @returns {HTMLDivElement}
+     */
+      static tooltip (text) {
+        return HtmlBuilder.el('div', { class: 'sec-tooltip', id: 'prTooltip', popover: 'auto' }, HtmlBuilder.el('span', { class: 'tooltip-text', text }));
+      }
+
+      /**
        * Creates the screen-reader-only "(required)" hint.
        * @returns {HTMLSpanElement}
        */
@@ -2336,16 +2352,17 @@
        * @param {string} [cfg.testid] data-testid of the Clear button.
        * @returns {HTMLDivElement}
        */
-      secHead ({ id, controls, open, numId, num, title, badgeId, clearId, testid }) {
+      secHead ({ id, controls, open, numId, num, title, badgeId, clearId, testid, tooltip }) {
         const { el, icon, clearBtn } = HtmlBuilder;
         return el(
           'div',
           {
-            class: open ? 'sec-head open' : 'sec-head',
+            class: ['sec-head', open && 'open', tooltip && 'tooltip-trigger'].filter(Boolean).join(' '),
             id,
             'aria-controls': controls,
             'aria-expanded': String(!!open),
             role: 'tab',
+            'aria-describedby': tooltip ? 'prTooltip' : undefined,
           },
           el(
             'div',
@@ -3032,7 +3049,7 @@
        * @returns {HTMLDivElement}
        */
       buildPeerReviewCard () {
-        const { el, icon, bold } = HtmlBuilder;
+        const { el, icon, bold, tooltip } = HtmlBuilder;
         return this.card(
           { id: 'card-pr', prefix: 'pr', hidden: true },
           this.secHead({
@@ -3045,6 +3062,7 @@
             badgeId: 'badge-4',
             clearId: 'clearSec4Btn',
             testid: 'clear-sec4',
+            tooltip: true,
           }),
           this.secBody(
             's4',
@@ -3089,7 +3107,8 @@
                 lockControl: true,
               })
             )
-          )
+          ),
+          tooltip('For additional peer review by another professional engineer')
         );
       }
 
@@ -6192,7 +6211,7 @@
           selfCheck: {
             checklist: checklist('sc'),
             name: value('sc-name'),
-            date: value('sc_date'),
+            date: value('sc-date'),
             signature: sigOf.sc,
           },
           directSupervision: {
@@ -6202,7 +6221,7 @@
           check: {
             checklist: checklist('ch'),
             name: value('ch-name'),
-            date: value('ch_date'),
+            date: value('ch-date'),
             signature: sigOf.ch,
             comments: comments.checkerComments,
             response: comments.engineerResponse,
@@ -6210,8 +6229,8 @@
           },
           peerReview: {
             checklist: checklist('pr'),
-            name: value('pr_name'),
-            date: value('pr_date'),
+            name: value('pr-name'),
+            date: value('pr-date'),
             signature: sigOf.pr,
             comments: comments.reviewerComments,
             response: comments.engineerResponse_2,
@@ -6219,16 +6238,16 @@
           },
           independentReview: {
             checklist: checklist('ir'),
-            name: value('ir_name'),
-            date: value('ir_date'),
+            name: value('ir-name'),
+            date: value('ir-date'),
             signature: sigOf.ir,
             comments: comments.ind_reviewerComments,
             response: comments.ind_engineerResponse_2,
             addressed: answer('ir_c'),
           },
           tier1Reviewer: {
-            date: value('fT1_date'),
-            assignedReviewer: value('fT1_name'),
+            date: value('fT1-date'),
+            assignedReviewer: value('fT1-name'),
             tlSignature: sigOf.fT1,
           },
         };
