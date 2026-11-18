@@ -6192,7 +6192,7 @@
           selfCheck: {
             checklist: checklist('sc'),
             name: value('sc-name'),
-            date: value('sc_date'),
+            date: value('sc-date'),
             signature: sigOf.sc,
           },
           directSupervision: {
@@ -6202,7 +6202,7 @@
           check: {
             checklist: checklist('ch'),
             name: value('ch-name'),
-            date: value('ch_date'),
+            date: value('ch-date'),
             signature: sigOf.ch,
             comments: comments.checkerComments,
             response: comments.engineerResponse,
@@ -6210,8 +6210,8 @@
           },
           peerReview: {
             checklist: checklist('pr'),
-            name: value('pr_name'),
-            date: value('pr_date'),
+            name: value('pr-name'),
+            date: value('pr-date'),
             signature: sigOf.pr,
             comments: comments.reviewerComments,
             response: comments.engineerResponse_2,
@@ -6219,16 +6219,16 @@
           },
           independentReview: {
             checklist: checklist('ir'),
-            name: value('ir_name'),
-            date: value('ir_date'),
+            name: value('ir-name'),
+            date: value('ir-date'),
             signature: sigOf.ir,
             comments: comments.ind_reviewerComments,
             response: comments.ind_engineerResponse_2,
             addressed: answer('ir_c'),
           },
           tier1Reviewer: {
-            date: value('fT1_date'),
-            assignedReviewer: value('fT1_name'),
+            date: value('fT1-date'),
+            assignedReviewer: value('fT1-name'),
             tlSignature: sigOf.fT1,
           },
         };
