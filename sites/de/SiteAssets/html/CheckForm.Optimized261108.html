@@ -28,7 +28,7 @@
        1. CSS Custom Properties
        -------------------------------- */
     :root {
-      --color-primary: rgb(50, 50, 50);
+      --color-primary: #323232;
       --color-secondary: rgb(250, 250, 250);
       --color-tertiary: rgb(180, 180, 180);
       --surface-base: rgb(250, 250, 250);
@@ -93,7 +93,7 @@
       --font-size-xs: 0.6rem;
       --line-height-base: 1.5;
       --line-height-tight: 1.2;
-      --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      --shadow: 0 1px 3px #00000033;
 
     }
 
@@ -107,10 +107,6 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-    }
-
-    html {
-      zoom: 110%;
     }
 
     body {
@@ -1211,7 +1207,7 @@
       color: var(--color-secondary);
       font-size: var(--font-size-sm);
       line-height: var(--line-height-base);
-      filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(5px 5px 5px #00000080);
       border-radius: 8px;
 
       overflow: visible;
@@ -3897,8 +3893,8 @@
         const lazyRadius = 6; // px the pointer can move before the brush follows
         const friction = 0.02; // 0..1; damps the brush slightly so it trails the pointer
         const posSmoothingHz = 26; // higher = brush catches up faster
-        const widthSmoothingHz = 20; // higher = width reacts to speed faster
-        const minWidth = 5.0; // px, at or above speedForMinWidth
+        const widthSmoothingHz = 26; // higher = width reacts to speed faster
+        const minWidth = 4.0; // px, at or above speedForMinWidth
         const maxWidth = 12.0; // px, when nearly still
         const speedForMinWidth = 1100; // px/s at which the line reaches minWidth
 
@@ -4000,9 +3996,9 @@
               // segments then share tangents, so the line has no visible corners.
               const midX = (prevBrush.x + brush.x) * 0.5;
               const midY = (prevBrush.y + brush.y) * 0.5;
-              ctx.strokeStyle = '#111';
+              ctx.strokeStyle = '#231f20';
               ctx.lineCap = 'round';
-              ctx.lineJoin = 'round';
+              ctx.lineJoin = 'miter';
               ctx.lineWidth = currentWidth;
               ctx.beginPath();
               if (prevMid) ctx.moveTo(prevMid.x, prevMid.y);
