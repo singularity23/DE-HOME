@@ -5848,7 +5848,9 @@
           }
           const { PDFDocument, PDFName, PDFString } = window.PDFLib;
 
-          const doc = await PDFDocument.load(pdfBytes);
+          // updateMetadata: false keeps the Info dictionary (Producer, Creator, ModDate) in sync
+          // with pdfkit's XMP metadata, as PDF/A requires.
+          const doc = await PDFDocument.load(pdfBytes, { updateMetadata: false });
           const ctx = doc.context;
           const pages = doc.getPages();
           const widgetRefs = [];
@@ -5859,6 +5861,10 @@
             const page = pages[sig.page - 1];
             if (!page) continue;
             const y = page.getHeight() - sig.top - sig.height; // flip from top-based to bottom-based coordinates
+            // PDF/A requires every widget to have a normal appearance stream; an empty one is enough.
+            const appearance = ctx.register(
+              ctx.stream('', { Type: 'XObject', Subtype: 'Form', BBox: [0, 0, sig.width, sig.height], Resources: {} })
+            );
             const widget = ctx.obj({
               Type: 'Annot',
               Subtype: 'Widget',
@@ -5867,6 +5873,7 @@
               TU: PDFString.of(sig.tooltip),
               F: 4, // Print flag
               Rect: [sig.left, y, sig.left + sig.width, y + sig.height],
+              AP: { N: appearance },
               P: page.ref,
             });
             const ref = ctx.register(widget);
@@ -6279,6 +6286,11 @@
         if (visible.fT1) content.push(this.#buildTier1Section(data.tier1Reviewer));
 
         return {
+          // PDF/A-3 is based on PDF 1.7. pdfmake defaults to 1.3, for which pdfkit omits the
+          // XMP metadata stream (and with it the pdfaid identification), breaking conformance.
+          version: '1.7',
+          subset: 'PDF/A-3b',
+          tagged: true,
           pageSize: 'A4',
           pageMargins: [40, 40, 40, 40],
           content,
