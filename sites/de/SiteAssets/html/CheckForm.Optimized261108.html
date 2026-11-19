@@ -5553,7 +5553,7 @@
       updateProgress () {
         let total = 0;
         let answered = 0;
-        const prAnswered = Object.keys(this.formState.pr).length > 0;
+        const prCardOpen = this.elements.cardPr?.querySelector('.sec-body.open');
 
         this.sectionConfig.forEach(s => {
           const cnt = Object.keys(this.formState[s.prefix]).length;
@@ -5568,8 +5568,8 @@
             }
           }
           if (s.cardEl?.classList.contains('hidden')) return;
-          // Peer review only counts once the user starts answering it
-          if (s.prefix !== 'pr' || prAnswered) {
+          // Peer review only counts once expanded (open)
+          if (s.prefix !== 'pr' || prCardOpen) {
             total += s.count;
             answered += cnt;
           }
@@ -5848,9 +5848,8 @@
           }
           const { PDFDocument, PDFName, PDFString } = window.PDFLib;
 
-          // updateMetadata: false keeps the Info dictionary (Producer, Creator, ModDate) in sync
-          // with pdfkit's XMP metadata, as PDF/A requires.
-          const doc = await PDFDocument.load(pdfBytes, { updateMetadata: false });
+          // Keep the original document metadata when adding signature fields.
+          const doc = await PDFDocument.load(pdfBytes, { updateMetadata: true });
           const ctx = doc.context;
           const pages = doc.getPages();
           const widgetRefs = [];
@@ -5861,7 +5860,7 @@
             const page = pages[sig.page - 1];
             if (!page) continue;
             const y = page.getHeight() - sig.top - sig.height; // flip from top-based to bottom-based coordinates
-            // PDF/A requires every widget to have a normal appearance stream; an empty one is enough.
+            // Give each signature widget an empty normal appearance stream.
             const appearance = ctx.register(
               ctx.stream('', { Type: 'XObject', Subtype: 'Form', BBox: [0, 0, sig.width, sig.height], Resources: {} })
             );
@@ -5917,6 +5916,14 @@
             await loadCdnAsset('PDFMAKE_FONTS_JS', 'script', 30000);
             pdfMakeFontsLoaded = true;
           }
+          window.pdfMake.addFonts({
+            Roboto: {
+              normal: 'Roboto-Regular.ttf',
+              bold: 'Roboto-Medium.ttf',
+              italics: 'Roboto-Italic.ttf',
+              bolditalics: 'Roboto-MediumItalic.ttf'
+            }
+          });
 
           const definition = await this.#buildPdfDefinition();
           // File name: the work title with characters that are illegal in file names replaced by "-".
@@ -5967,7 +5974,7 @@
       async #signatureForPdf (prefix) {
         const dataUrl = getById(`${prefix}_sig_data`)?.value || '';
         if (!dataUrl) return '';
-        // Signatures render at 120×40 pt; 480 px wide is 4x that, enough for print. Keep PNG for transparency.
+        // Signatures fit within 120 pt wide; 480 px is 4x that, enough for print. Keep PNG for transparency.
         return this.#imageForPdf(dataUrl, `${prefix} signature`, { maxWidth: 480 });
       }
 
@@ -5990,10 +5997,15 @@
         } catch {
           throw new Error(`Could not read the ${description} image.`);
         }
-        const scale = Math.min(1, maxWidth / image.naturalWidth);
+        const maxHeight = 400; // Assuming maxHeight should be the same as maxWidth for now.
+        let wRatio = maxWidth / image.naturalWidth;
+        let hRatio = maxHeight / image.naturalHeight;
+        const scale = Math.min(wRatio, hRatio);
+
         const canvas = document.createElement('canvas');
-        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
-        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        canvas.width = Math.round(image.naturalWidth * scale);
+        canvas.height = Math.round(image.naturalHeight * scale);
+        console.log(`Scaling image: ${image.naturalWidth}x${image.naturalHeight} -> ${canvas.width}x${canvas.height}`);
         const context = canvas.getContext('2d');
         if (!context) throw new Error(`Could not process the ${description} image.`);
         if (type === 'image/jpeg') {
@@ -6278,6 +6290,7 @@
         this.#sigTooltips = {};
 
         const content = [this.#buildFormHeader(logo)];
+        console.log(content);
         if (visible.info) content.push(this.#buildWorkInfoSection(data.workInfo));
         if (visible.sc) content.push(this.#buildSelfCheckSection(data.selfCheck, visible.ds ? data.directSupervision : null));
         if (visible.ch) content.push(this.#buildCheckSection(data.check));
@@ -6286,13 +6299,28 @@
         if (visible.fT1) content.push(this.#buildTier1Section(data.tier1Reviewer));
 
         return {
-          // PDF/A-3 is based on PDF 1.7. pdfmake defaults to 1.3, for which pdfkit omits the
-          // XMP metadata stream (and with it the pdfaid identification), breaking conformance.
           version: '1.7',
           subset: 'PDF/A-3b',
           tagged: true,
+          displayTitle: true,
           pageSize: 'A4',
-          pageMargins: [40, 40, 40, 40],
+          pageMargins: [40, 25, 40, 40],
+          permissions: {
+            modifying: true,
+            copying: true,
+            annotating: true,
+            fillingForms: true,
+            contentAccessibility: true,
+            documentAssembly: true
+          },
+          info: {
+            title: 'BC Hydro Distribution Engineering Check & Review Form',
+            author: 'Kan Tang',
+            subject: 'Check & Review Form',
+            keywords: 'EGBC Compliance',
+            creator: 'Kan Tang',
+            producer: 'Kan Tang',
+          },
           content,
           styles: {
             header: { fontSize: 16, bold: true, color: '#0074a4', margin: [0, 0, 0, 10] },
@@ -6412,6 +6440,7 @@
        * @returns {Object} pdfmake table node.
        */
       #buildSignatureBlock (name, date, signatureUrl, title, prefix) {
+        const roles = { sc: 'Professional of Record', ds: 'Direct Supervisor', pr: 'Peer Reviewer', ir: 'Independent Reviewer', fT1: 'Tier 1 Reviewer' };
         return this.#signatureTable(
           [
             { text: `${title} Name`, style: 'label' },
@@ -6422,7 +6451,7 @@
             { text: name || 'N/A', style: 'value' },
             { text: date || 'N/A', style: 'value' },
             signatureUrl
-              ? { image: signatureUrl, width: 120, height: this.#signatureCellHeight(prefix) }
+              ? { image: signatureUrl, fit: [120, this.#signatureCellHeight(prefix)], valign: 'middle', alignment: 'center' }
               : this.#signatureField(prefix, title),
           ],
           prefix
@@ -6467,6 +6496,29 @@
         };
       }
 
+      #lightHorizontalLines () {
+        return {
+          hLineWidth: (i, node) => {
+            if (i === 0 || i === node.table.body.length) {
+              return 0;
+            }
+            return (i === node.table.headerRows) ? 2 : 0.5;
+          },
+          vLineWidth: () => {
+            return 0;
+          },
+          hLineColor: (i) => {
+            return i === 1 ? 'black' : '#BFBFBF';
+          },
+          paddingLeft: (i) => {
+            return i === 0 ? 0 : 8;
+          },
+          paddingRight: (i, node) => {
+            return (i === node.table.widths.length - 1) ? 0 : 8;
+          }
+        };
+      }
+
       /**
        * Builds the two-column comments / response table.
        * @param {Object[]} comments pdfmake content for comments.
@@ -6508,9 +6560,9 @@
        */
       #buildChecklistBlock (rows) {
         return {
-          layout: 'lightHorizontalLines',
+          layout: this.#lightHorizontalLines(),
           table: {
-            widths: ['*', 75],
+            widths: ['*', 50],
             headerRows: 1,
             body: [
               [
@@ -6581,7 +6633,7 @@
           stack: [
             { text: 'Work Information', style: 'sectionTitle' },
             {
-              layout: 'lightHorizontalLines',
+              layout: this.#lightHorizontalLines(),
               table: {
                 widths: ['30%', '70%'],
                 body: [
@@ -6660,10 +6712,6 @@
           stack: [
             { text: '4. Peer Review', style: 'sectionTitle' },
             this.#buildChecklistBlock(data.checklist),
-            {
-              text: 'Note: Applies when POR requests additional peer review. NOT for Type 1 High Risk Work Independent Review.',
-              style: 'warning',
-            },
             this.#buildCommentsBlock(data.comments, data.response),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Peer Reviewer', 'pr'),
           ],
@@ -6705,7 +6753,7 @@
                 { text: data.assignedReviewer || 'N/A', style: 'value' },
                 { text: data.date || 'N/A', style: 'value' },
                 data.tlSignature
-                  ? { image: data.tlSignature, width: 120, height: 40 }
+                  ? { image: data.tlSignature, fit: [120, this.#signatureCellHeight('fT1')] }
                   : {
                     text: 'Not signed',
                     style: 'value',
