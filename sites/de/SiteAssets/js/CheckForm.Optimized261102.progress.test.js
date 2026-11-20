@@ -245,8 +245,8 @@ test('CDN assets retry alternate URLs on failure or invalid scripts', async () =
       QUILL_JS: '/sites/de/SiteAssets/js/quill.js',
       QUILL_CSS: '/sites/de/SiteAssets/css/quill.snow.css',
       DOMPURIFY_JS: '/sites/de/SiteAssets/js/purify.min.js',
-      PDFMAKE_JS: '/sites/de/SiteAssets/js/pdfmake.min.js',
-      PDFMAKE_FONTS_JS: '/sites/de/SiteAssets/js/vfs_fonts.js',
+      PDFMAKE_JS: '/sites/de/SiteAssets/js/pdfmake-0.2.20.min.js',
+      PDFMAKE_FONTS_JS: '/sites/de/SiteAssets/js/vfs_fonts-0.2.20.js',
       PDFLIB_JS: '/sites/de/SiteAssets/js/pdf-lib.min.js'
     };
     for (const [key, alternate] of Object.entries(assets)) {
@@ -391,7 +391,7 @@ test('PDF export retries alternate libraries and reports failed signature depend
     form.pdfValidation = () => true;
     form.toast = (message) => messages.push(message);
     await form.exportPdf();
-    for (const suffix of ['pdfmake.min.js', 'vfs_fonts.js', 'pdf-lib.min.js']) {
+    for (const suffix of ['pdfmake-0.2.20.min.js', 'vfs_fonts-0.2.20.js', 'pdf-lib.min.js']) {
       assert.equal(requests.filter((url) => url.endsWith(suffix)).length, 2, suffix);
     }
     assert.equal(downloaded, 1);

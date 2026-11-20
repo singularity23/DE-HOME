@@ -120,8 +120,8 @@
     QUILL_CSS: 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css',
     QUILL_JS: 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js',
     DOMPURIFY_JS: 'https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js',
-    PDFMAKE_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js',
-    PDFMAKE_FONTS_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js',
+    PDFMAKE_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.3.14/build/pdfmake.min.js',
+    PDFMAKE_FONTS_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.3.14/build/vfs_fonts.js',
     PDFLIB_JS: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
 
   });
@@ -3685,19 +3685,21 @@
           await loadCdnAsset('PDFMAKE_FONTS_JS', 'script', 30000);
           pdfMakeFontsLoaded = true;
         }
+        window.pdfMake.addFonts({
+          Roboto: {
+            normal: 'Roboto-Regular.ttf',
+            bold: 'Roboto-Medium.ttf',
+            italics: 'Roboto-Italic.ttf',
+            bolditalics: 'Roboto-MediumItalic.ttf'
+          }
+        });
 
         const definition = await this.#buildPdfDefinition();
         // File name: the work title with characters that are illegal in file names replaced by "-".
         const title = getById('workTitle')?.value.trim().replace(/[\\/:*?"<>|]+/g, '-').slice(0, 80) ||
           'DE_CheckForm';
 
-        const pdfBytes = await new Promise((resolve, reject) => {
-          try {
-            window.pdfMake.createPdf(definition).getBuffer(resolve);
-          } catch (err) {
-            reject(err);
-          }
-        });
+        const pdfBytes = await window.pdfMake.createPdf(definition).getBuffer();
 
         const finalBytes = await this.#addSignatureFields(pdfBytes);
         const url = URL.createObjectURL(new Blob([finalBytes], { type: 'application/pdf' }));

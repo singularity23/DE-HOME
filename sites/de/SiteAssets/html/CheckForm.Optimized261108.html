@@ -451,7 +451,11 @@
       color: var(--color-primary);
       font-weight: 600;
       border: 1px solid var(--border);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .sec-right {
@@ -1954,8 +1958,8 @@
       QUILL_CSS: 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css',
       QUILL_JS: 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js',
       DOMPURIFY_JS: 'https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js',
-      PDFMAKE_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js',
-      PDFMAKE_FONTS_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js',
+      PDFMAKE_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.3.14/build/pdfmake.min.js',
+      PDFMAKE_FONTS_JS: 'https://cdn.jsdelivr.net/npm/pdfmake@0.3.14/build/vfs_fonts.js',
       PDFLIB_JS: 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
     });
 
@@ -2364,10 +2368,10 @@
             'div',
             { class: 'sec-left' },
             el('div', { class: 'sec-num', id: numId }, num),
-            el('span', { class: 'sec-title', text: title }),
-            badgeId && el('span', { class: 'sec-badge', id: badgeId, text: '0 / 0' })
+            el('span', { class: 'sec-title', text: title })
           ),
-          el('div', { class: 'sec-right' }, clearBtn(clearId, testid), el('div', { class: 'chevron' }, icon('keyboard_arrow_down')))
+          el('div', { class: 'sec-right' }, badgeId && el('span', { class: 'sec-badge', id: badgeId, text: '0 / 0' })
+            , clearBtn(clearId, testid), el('div', { class: 'chevron' }, icon('keyboard_arrow_down')))
         );
       }
 
@@ -3662,13 +3666,12 @@
       }
 
       /**
-       * Checks that every open Check / Peer / Independent section has its signature unlocked.
-       * @returns {boolean} False when an open section is still locked.
+       * Checks that every applicable Check / Peer / Independent section has its signature unlocked.
+       * @returns {boolean} False when an applicable section is still locked.
        */
       allOpenEnabled () {
         for (const prefix of ['ch', 'pr', 'ir']) {
-          const body = getById(`card-${prefix}`)?.querySelector('.sec-body');
-          if (body?.classList.contains('open') === true && !this.isEnabledByComments(prefix)) return false;
+          if (this.#host.isSectionActive(getById(`card-${prefix}`)) && !this.isEnabledByComments(prefix)) return false;
         }
         return true;
       }
@@ -4687,6 +4690,7 @@
       #boundSubmit;
       #progressTimer = null;
       #noticeCache = new WeakMap();
+      #peerRequired = null;
       #logoCache = '';
       #sigFields = [];
       #sigTooltips = {};
@@ -5052,7 +5056,7 @@
       /**
        * Single click handler for the whole page (event delegation).
        * Order: signature tabs, open pad, clear preview, modal actions, section toggle,
-       * risk buttons, registered buttons, then a visibility refresh.
+       * risk buttons, and registered buttons.
        * @param {MouseEvent} e Click event.
        * @returns {void}
        */
@@ -5123,7 +5127,6 @@
         const registered = button?.id ? this.#clickActions[button.id] : null;
         if (registered) registered(e);
 
-        this.syncSectionVisibility();
       }
 
       /**
@@ -5227,6 +5230,7 @@
         head.classList.toggle('open');
         body?.classList.toggle('open');
         head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
+        this.syncSectionVisibility();
         if (isExpanding && body) {
           const firstInput = body.querySelector('input:not([type="hidden"]), select, textarea, button:not(.btn-clear)');
           if (firstInput) setTimeout(() => firstInput.focus(), 50);
@@ -5408,27 +5412,23 @@
       applyVisibilityState (state) {
         const e = this.elements;
         e.chNotice.classList.toggle('hidden', !state.showChNotice);
-        e.cardDs.classList.toggle('hidden', !state.showDs);
-        e.cardCh.classList.toggle('hidden', !state.showCheck);
-
-        this.setSectionOpen(e.s2Head, e.s2Body, state.showDs);
+        this.setSectionVisibility(e.cardDs, e.s2Head, e.s2Body, state.showDs);
         this.setDirectSuperRequired(state.showDs);
 
-        this.setSectionOpen(e.s3Head, e.s3Body, state.showCheck);
+        this.setSectionVisibility(e.cardCh, e.s3Head, e.s3Body, state.showCheck);
         this.setCheckerRequired(state.showCheck);
 
-        e.cardPr.classList.toggle('hidden', !state.showPeer);
-        // Once Peer Review is open it stays open, so a user is not shut out mid-edit.
-        const shouldOpenPr = (e.s4Body?.classList.contains('open') ?? false) || state.openS4;
-        this.setSectionOpen(e.s4Head, e.s4Body, shouldOpenPr);
-        this.setRequired(e.cardPr, shouldOpenPr);
+        this.setSectionVisibility(e.cardPr, e.s4Head, e.s4Body, state.showPeer, state.openS4);
+        if (state.showPeer && state.openS4 && this.#peerRequired === false) {
+          this.setSectionOpen(e.s4Head, e.s4Body, true);
+        }
+        this.#peerRequired = state.openS4;
+        this.setRequired(e.cardPr, this.isSectionActive(e.cardPr));
 
-        e.cardFinal.classList.toggle('hidden', !state.finalShown);
-        this.setSectionOpen(e.s6Head, e.s6Body, state.finalShown);
+        this.setSectionVisibility(e.cardFinal, e.s6Head, e.s6Body, state.finalShown);
         this.setRequired(e.cardFinal, state.finalShown);
 
-        e.cardIr.classList.toggle('hidden', !state.openS5);
-        this.setSectionOpen(e.s5Head, e.s5Body, state.openS5);
+        this.setSectionVisibility(e.cardIr, e.s5Head, e.s5Body, state.openS5);
         this.setRequired(e.cardIr, state.openS5);
 
         this.syncCssStateClasses();
@@ -5441,6 +5441,34 @@
        */
       syncSectionVisibility () {
         this.applyVisibilityState(this.computeVisibilityState());
+      }
+
+      /**
+       * Changes expansion only when a section becomes visible or hidden.
+       * @param {Element} card Section card.
+       * @param {Element} head Section header.
+       * @param {Element} body Section body.
+       * @param {boolean} visible Whether the section applies.
+       * @param {boolean} [openOnShow=true] Whether to expand a newly visible section.
+       * @returns {void}
+       */
+      setSectionVisibility (card, head, body, visible, openOnShow = true) {
+        const wasHidden = card.classList.contains('hidden');
+        card.classList.toggle('hidden', !visible);
+        if (wasHidden !== !visible) this.setSectionOpen(head, body, visible && openOnShow);
+      }
+
+      /**
+       * Returns whether a section participates in validation, progress, and export.
+       * @param {Element|null} card Section card.
+       * @returns {boolean}
+       */
+      isSectionActive (card) {
+        if (!card || card.closest('.hidden, [hidden]')) return false;
+        if (card === this.elements.cardPr) {
+          return !!this.#peerRequired || this.elements.s4Body.classList.contains('open');
+        }
+        return true;
       }
 
       /**
@@ -5499,7 +5527,7 @@
        * @returns {void}
        */
       setRequired (element, required) {
-        element?.querySelectorAll(`input[id$='_date'], input[id$='_name']`).forEach(input => this.#setEnabledRequired(input, required));
+        element?.querySelectorAll("input[id$='-date'], input[id$='-name']").forEach(input => this.#setEnabledRequired(input, required));
       }
 
       // ---------- Role labels ----------
@@ -5546,15 +5574,13 @@
        *
        * Completion formula (over visible sections only):
        *   pct = round(answered / total * 100)
-       * where `total` is the sum of question counts of visible sections and `answered` is the
-       * sum of answered counts. Peer Review counts only after its first answer, because it is optional.
+       * where `total` is the sum of question counts of applicable sections and `answered` is the
+       * sum of answered counts. Optional Peer Review counts while expanded.
        * @returns {void}
        */
       updateProgress () {
         let total = 0;
         let answered = 0;
-        const prCardOpen = this.elements.cardPr?.querySelector('.sec-body.open');
-
         this.sectionConfig.forEach(s => {
           const cnt = Object.keys(this.formState[s.prefix]).length;
           if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
@@ -5567,12 +5593,9 @@
               s.num.textContent = s.label;
             }
           }
-          if (s.cardEl?.classList.contains('hidden')) return;
-          // Peer review only counts once expanded (open)
-          if (s.prefix !== 'pr' || prCardOpen) {
-            total += s.count;
-            answered += cnt;
-          }
+          if (!this.isSectionActive(s.cardEl)) return;
+          total += s.count;
+          answered += cnt;
         });
 
         const pct = total ? Math.round((answered / total) * 100) : 0;
@@ -5641,8 +5664,9 @@
        * @returns {boolean} True when the field counts as valid.
        */
       #isUnderlineHidden (el) {
-        if (el.closest('.hidden')) return true; // card hidden
-        if (el.closest('.sec-body:not(.open)')) return true; // section collapsed
+        if (el.closest('.hidden, [hidden]')) return true;
+        const card = el.closest('.card');
+        if (card && !this.isSectionActive(card)) return true;
         const ctrl = el.previousElementSibling;
         if (!ctrl) return true;
         if (ctrl.disabled) return true; // disabled -> not required
@@ -5677,7 +5701,7 @@
 
       /**
        * Checks that the form can be exported to PDF.
-       * Requires: all required fields valid, 100% progress, open sections' signatures unlocked,
+       * Requires: all required fields valid, 100% progress, applicable sections' signatures unlocked,
        * and no risk inconsistencies.
        * @returns {boolean} True when export may proceed.
        */
@@ -5933,13 +5957,7 @@
               .replace(/[\\/:*?"<>|]+/g, '-')
               .slice(0, 80) || 'DE_CheckForm';
 
-          const pdfBytes = await new Promise((resolve, reject) => {
-            try {
-              window.pdfMake.createPdf(definition).getBuffer(resolve);
-            } catch (err) {
-              reject(err);
-            }
-          });
+          const pdfBytes = await window.pdfMake.createPdf(definition).getBuffer();
 
           const finalBytes = await this.#addSignatureFields(pdfBytes);
           const url = URL.createObjectURL(new Blob([finalBytes], { type: 'application/pdf' }));
@@ -6017,16 +6035,12 @@
       }
 
       /**
-       * Tells whether a section card is shown and expanded (so it belongs in the PDF).
+       * Tells whether a section card applies and belongs in the PDF.
        * @param {string} cardId Card element id.
        * @returns {boolean}
        */
       #isPdfCardVisible (cardId) {
-        const card = getById(cardId);
-        if (!card || card.closest('.hidden, [hidden], .sec-body:not(.open)')) return false;
-        const head = card.querySelector(':scope > .sec-head');
-        const body = head && getById(head.getAttribute('aria-controls'));
-        return Boolean(head?.classList.contains('open') && body?.classList.contains('open'));
+        return this.isSectionActive(getById(cardId));
       }
 
       /**
@@ -6290,7 +6304,6 @@
         this.#sigTooltips = {};
 
         const content = [this.#buildFormHeader(logo)];
-        console.log(content);
         if (visible.info) content.push(this.#buildWorkInfoSection(data.workInfo));
         if (visible.sc) content.push(this.#buildSelfCheckSection(data.selfCheck, visible.ds ? data.directSupervision : null));
         if (visible.ch) content.push(this.#buildCheckSection(data.check));
@@ -6335,13 +6348,26 @@
           defaultStyle: { font: 'Roboto', fontSize: 10 },
           /**
            * pdfmake calls this for every node while it lays out pages.
+           *   - A checklist section title moves with its checklist when the table starts on the next page.
            *   - "keep-table:*" nodes that would split across pages move to a fresh page, unless they
            *     already start near the top (within 15 pt), where moving gains nothing.
            *   - Signature tables also move when the signing row would not fit on the current page.
            *   - "sigfield:*" nodes only record where a signature field must be placed (and return false).
            */
-          pageBreakBefore: node => {
+          pageBreakBefore: (node, nodeContainer) => {
             const id = String(node.id ?? '');
+            const followingNodesOnPage = nodeContainer.getFollowingNodesOnPage();
+            const nodesOnNextPage = nodeContainer.getNodesOnNextPage();
+            const checklistId = id.startsWith('section-title:')
+              ? `checklist:${id.slice('section-title:'.length)}`
+              : '';
+            if (
+              checklistId &&
+              !followingNodesOnPage.some(following => following.id === checklistId) &&
+              nodesOnNextPage.some(next => next.id === checklistId)
+            ) {
+              return true;
+            }
             // Move a split table to a fresh page once; oversized comments may still span pages.
             // verticalRatio is the node's position as a fraction (0..1) of the page's inner height,
             // so ratio * innerHeight is its distance from the top margin in points.
@@ -6451,7 +6477,7 @@
             { text: name || 'N/A', style: 'value' },
             { text: date || 'N/A', style: 'value' },
             signatureUrl
-              ? { image: signatureUrl, fit: [120, this.#signatureCellHeight(prefix)], valign: 'middle', alignment: 'center' }
+              ? { image: signatureUrl, fit: [120, this.#signatureCellHeight(prefix)], valign: 'middle', align: 'center' }
               : this.#signatureField(prefix, title),
           ],
           prefix
@@ -6499,7 +6525,7 @@
       #lightHorizontalLines () {
         return {
           hLineWidth: (i, node) => {
-            if (i === 0 || i === node.table.body.length) {
+            if (i === 0) {
               return 0;
             }
             return (i === node.table.headerRows) ? 2 : 0.5;
@@ -6556,14 +6582,17 @@
       /**
        * Builds a checklist table (question and response).
        * @param {Array<{question: string, answer: string}>} rows Checklist rows.
+       * @param {string} sectionId Checklist section identifier.
        * @returns {Object} pdfmake table node.
        */
-      #buildChecklistBlock (rows) {
+      #buildChecklistBlock (rows, sectionId) {
         return {
           layout: this.#lightHorizontalLines(),
           table: {
+            id: `checklist:${sectionId}`,
             widths: ['*', 50],
             headerRows: 1,
+            keepWithHeaderRows: 1,
             body: [
               [
                 { text: 'Checklist item', style: 'tableHeader' },
@@ -6571,7 +6600,7 @@
               ],
               ...rows.map(({ question, answer }) => [
                 { text: question, style: 'value' },
-                { text: answer, style: 'value', alignment: 'left' },
+                { text: answer, style: 'value', verticalAlignment: 'middle', alignment: 'left', },
               ]),
             ],
           },
@@ -6667,8 +6696,8 @@
       #buildSelfCheckSection (data, directSupervision = null) {
         return {
           stack: [
-            { text: '1. Self-Check', style: 'sectionTitle' },
-            this.#buildChecklistBlock(data.checklist),
+            { id: 'section-title:sc', text: '1. Self-Check', style: 'sectionTitle' },
+            this.#buildChecklistBlock(data.checklist, 'sc'),
             ...(directSupervision ? [this.#buildDirectSupervisionSection(directSupervision)] : []),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Professional of Record', 'sc'),
           ],
@@ -6682,7 +6711,10 @@
        */
       #buildDirectSupervisionSection (data) {
         return {
-          stack: [{ text: '2. Direct Supervision', style: 'sectionTitle' }, this.#buildChecklistBlock(data.checklist)],
+          stack: [
+            { id: 'section-title:ds', text: '2. Direct Supervision', style: 'sectionTitle' },
+            this.#buildChecklistBlock(data.checklist, 'ds'),
+          ],
         };
       }
 
@@ -6694,8 +6726,8 @@
       #buildCheckSection (data) {
         return {
           stack: [
-            { text: '3. Check', style: 'sectionTitle' },
-            this.#buildChecklistBlock(data.checklist),
+            { id: 'section-title:ch', text: '3. Check', style: 'sectionTitle' },
+            this.#buildChecklistBlock(data.checklist, 'ch'),
             this.#buildCommentsBlock(data.comments, data.response),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Checker', 'ch'),
           ],
@@ -6710,8 +6742,8 @@
       #buildPeerReviewSection (data) {
         return {
           stack: [
-            { text: '4. Peer Review', style: 'sectionTitle' },
-            this.#buildChecklistBlock(data.checklist),
+            { id: 'section-title:pr', text: '4. Peer Review', style: 'sectionTitle' },
+            this.#buildChecklistBlock(data.checklist, 'pr'),
             this.#buildCommentsBlock(data.comments, data.response),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Peer Reviewer', 'pr'),
           ],
@@ -6726,8 +6758,8 @@
       #buildIndependentReviewSection (data) {
         return {
           stack: [
-            { text: '5. Independent Structural Review', style: 'sectionTitle' },
-            this.#buildChecklistBlock(data.checklist),
+            { id: 'section-title:ir', text: '5. Independent Structural Review', style: 'sectionTitle' },
+            this.#buildChecklistBlock(data.checklist, 'ir'),
             this.#buildCommentsBlock(data.comments, data.response),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Independent Reviewer', 'ir'),
           ],
