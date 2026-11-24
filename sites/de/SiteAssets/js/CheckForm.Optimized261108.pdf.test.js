@@ -172,7 +172,7 @@ test('pdfmake applies middle vertical alignment to checklist response cells', as
   }
 });
 
-test('signature images retain their proportions in PDF layouts', async () => {
+test('signature images retain their proportions and are centered in PDF cells', async () => {
     configurePdfMake();
     const source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108.html'), 'utf8');
     const marker = '      async #buildPdfDefinition () {';
@@ -222,6 +222,21 @@ test('signature images retain their proportions in PDF layouts', async () => {
           const heightLimit = prefix === 'ir' ? 86 : 40;
           assert.ok(Math.abs(image._width / image._height - ratio) < 1e-6, `${prefix}: ${JSON.stringify(image)}`);
           assert.ok(image._width <= 120 && image._height <= heightLimit, prefix);
+          const items = pages.flatMap(page => page.items);
+          const alignment = items.find(item => item.type === 'beginVerticalAlignment' && item.item.cell === image)?.item;
+          assert.equal(alignment?.verticalAlignment, 'middle', prefix);
+          const borders = items
+            .filter(item => item.type === 'vector' && item.item.type === 'line' &&
+              item.item.x1 === item.item.x2 && item.item.y1 <= image.y && item.item.y2 >= image.y + image._height)
+            .map(item => item.item)
+            .sort((a, b) => a.x1 - b.x1)
+            .slice(-2);
+          assert.equal(borders.length, 2, prefix);
+          const centerX = (borders[0].x1 + borders[1].x1) / 2;
+          const centerY = (borders[0].y1 + borders[0].y2) / 2;
+          const renderedY = image.y + (alignment.viewHeight - alignment.nodeHeight) / 2;
+          assert.ok(Math.abs(image.x + image._width / 2 - centerX) < 0.01, `${prefix}: horizontal center`);
+          assert.ok(Math.abs(renderedY + image._height / 2 - centerY) < 0.01, `${prefix}: vertical center`);
           const bytes = await pdfMake.createPdf(definition).getBuffer();
           assert.equal(Buffer.from(bytes).subarray(0, 5).toString(), '%PDF-');
         }
