@@ -925,6 +925,10 @@
       color: var(--color-primary);
     }
 
+    .check-comments .check-text {
+      color: var(--color-error);
+    }
+
     .check-num {
       font-size: 0.8rem;
       color: var(--color-primary);
@@ -2854,7 +2858,7 @@
       buildInfoCard () {
         const { el, icon } = HtmlBuilder;
         return this.card(
-          { id: 'card-info', cls: 'info', prefix: 'info' },
+          { id: 'card-info', prefix: 'info' },
           this.secHead({
             id: 'sec-info-head',
             controls: 'sec-info-body',
@@ -2960,7 +2964,7 @@
        */
       buildSelfCheckCard () {
         return this.card(
-          { id: 'card-sc', cls: 'sc', prefix: 'sc' },
+          { id: 'card-sc', prefix: 'sc' },
           this.secHead({
             id: 'sec1-head',
             controls: 's1',
@@ -3462,7 +3466,7 @@
        * @returns {void}
        */
       init () {
-        if (this.#canvas) this.#setupCanvasDrawing();
+        if (this.#canvas) { this.#setupCanvasDrawing(); }
         this.#bindUploadControls();
         this.#showTooltip();
       }
@@ -3655,12 +3659,14 @@
       setEnabled (prefix, enabled) {
         const container = getById(`${prefix}SigContainer`);
         if (!container) return;
+
         container.classList.toggle('is-locked', !enabled);
         container.setAttribute('aria-disabled', enabled ? 'false' : 'true');
         container.querySelectorAll('button, input[type="file"]').forEach(el => {
           el.disabled = !enabled;
           if (el instanceof HTMLInputElement && !enabled) el.value = '';
         });
+
       }
 
       /**
@@ -3670,6 +3676,22 @@
        */
       updateGating (prefix) {
         this.setEnabled(prefix, this.isEnabledByComments(prefix));
+        this.updatingCommentsTextColor(prefix);
+      }
+
+      /**
+       * Updates the color of the comments text based on the comments-addressed rule.
+       * @param {string} prefix Section prefix.
+       * @returns {void}
+       */
+      updatingCommentsTextColor (prefix) {
+        const card = getById(`card-${prefix}`);
+        console.log(card);
+        const commentsText = card?.querySelector('.check-comments .check-text');
+        console.log(commentsText);
+        if (commentsText) {
+          commentsText.style.color = this.isEnabledByComments(prefix) ? 'var(--color-primary)' : 'var(--color-error)';
+        }
       }
 
       /**
@@ -4831,7 +4853,7 @@
           exportPdf: getById('exportPdfBtn'),
           validationAnnouncer: getById('validationMessages'),
           allRequiredFields: queryAll('.required-field-underline'),
-          allOpenRequired: queryAll('.open .required-field-underline')
+          allOpenRequired: queryAll('.open .required-field-underline'),
         };
       }
 
@@ -5616,6 +5638,7 @@
 
         total += fieldTotal;
         answered += fieldAnswered;
+
 
         const pct = total ? Math.round((answered / total) * 100) : 0;
         const fullyComplete = pct === 100;
