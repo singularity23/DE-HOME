@@ -2218,6 +2218,7 @@
     // so they are stripped before the scheme is checked.
     // eslint-disable-next-line no-control-regex
     const URL_CTRL_WS = /[\u0000-\u0020\u007f-\u009f]/g;
+
     const ALLOWED_TAGS = Object.freeze(['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'span', 'div']);
     const FALLBACK_TAGS = new Set(ALLOWED_TAGS);
     const FALLBACK_DROP = new Set([
@@ -3674,11 +3675,14 @@
       async #handleUpload (e, prefix) {
         const file = e.target.files?.[0];
         if (!file || !this.#validateFile(file)) return;
+        let dataUrl;
         try {
-          this.setSignature(prefix, await readBlobAsDataUrl(file));
+          dataUrl = await readBlobAsDataUrl(file);
         } catch {
           this.#host.showToast('Failed to read image file.', 'error');
+          return;
         }
+        this.setSignature(prefix, dataUrl);
       }
 
       /**
@@ -4576,13 +4580,15 @@
         if (!editor) return;
         let dataUrl;
         try {
-          this.#insertImage(editor, await readBlobAsDataUrl(file));
-          this.syncHidden(fieldId);
-          this.updatePlaceholder(editor);
-          this.scheduleSyncHeights();
+          dataUrl = await readBlobAsDataUrl(file);
         } catch {
           this.#host.showToast('Failed to read image.', 'error');
+          return;
         }
+        this.#insertImage(editor, dataUrl);
+        this.syncHidden(fieldId);
+        this.updatePlaceholder(editor);
+        this.scheduleSyncHeights();
       }
 
       /**
@@ -5388,9 +5394,10 @@
         const isExpanding = !head.classList.contains('open');
         this.setSectionOpen(head, body, isExpanding);
         this.syncSectionVisibility();
-        if (!isExpanding) return;
-        const firstInput = body.querySelector('input:not([type="hidden"]), select, textarea, button:not(.btn-clear)');
-        if (firstInput) setTimeout(() => firstInput.focus(), 50);
+        if (isExpanding) {
+          const firstInput = body.querySelector('input:not([type="hidden"]), select, textarea, button:not(.btn-clear)');
+          if (firstInput) setTimeout(() => firstInput.focus(), 50);
+        }
       }
 
       // ---------- Risk ----------
@@ -5421,67 +5428,6 @@
       // ---------- Notices ----------
 
       /**
-       * Calculates the risk notices for rows 1.8 to 1.11. Does not change the DOM or form state.
-       * @param {{answers: Object<number,string>, level: string|null, isEit: boolean}} input
-       * @returns {{noticesByQuestion: Object<number, Array<{message: string, type: 'warn'|'error'}>>, hasErrors: boolean}}
-       */
-      static evaluateRiskNotices ({ answers, level, isEit }) {
-        const exp = level ? CONFIG.RISK_MAP[level] : null;
-        const word = v => (v === 'yes' ? 'Yes' : 'No');
-
-        const mismatch = (n, key) =>
-          exp && answers[n] && answers[n] !== 'na' && answers[n] !== exp[key]
-            ? [{
-              message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>).
-          Expected <b>"${word(exp[key])}"</b>.`,
-              type: 'error',
-            }]
-            : [];
-
-        const notices = { 8: mismatch(8, 'sc8'), 9: [], 10: mismatch(10, 'sc10'), 11: [] };
-
-        if (answers[9] === 'yes') {
-          notices[9].push({
-            message: `<b>Action required:</b> Question 1.9 is "Yes". The <b>POR</b> must complete the
-          <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn'
-          });
-          if (level === 'low') {
-            notices[9].push({
-              message: `<b>Correction required:</b> This is a non-standard application -
-          the Risk Level should <b>not</b> be <b>Low</b>.`, type: 'error'
-            });
-          }
-        }
-
-        if (answers[10] === 'yes') {
-          notices[10].push({
-            message: `<b>Action required:</b> Question 1.10 is "Yes". The <b>POR</b> must complete this
-          check form and the <a
-            href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8"
-            target="_blank" rel="noopener noreferrer"><strong>High Risk Work Independent Review Record</strong></a>.`, type: 'warn'
-          });
-        }
-
-        if (isEit && answers[11] === 'yes') {
-          notices[11].push({
-            message: `<b>Correction Required:</b> As an EIT for this work type, direct supervision from an
-          experienced individual is required. Expected <b> "No" </b> for this question.`, type: 'error'
-          });
-        }
-        if (answers[11] === 'no') {
-          notices[11].push({
-            message: `<b>Action required:</b> Question 1.11 is "No". As an EIT/Unqualified Engineer for
-          this work type, direct supervision is required. The <b>POR / Direct Supervisor</b> must also complete the
-          <b>Section 2 - Direct Supervision</b>.`, type: 'warn'
-          });
-        }
-
-        // One rule for every question, so new error notices can't be forgotten.
-        const hasErrors = Object.values(notices).some(list => list.some(n => n.type === 'error'));
-
-        return { noticesByQuestion: notices, hasErrors };
-      }
-      /**
        * Compares Self-Check answers with the chosen risk level and shows notices on rows 1.8 to 1.11.
        * Also sets `#inconsistent`, which blocks PDF export until the answers are corrected.
        * Rules:
@@ -5492,17 +5438,75 @@
        * @returns {void}
        */
       showRiskConsistencyNotices () {
-        const { noticesByQuestion, hasErrors } = CheckForm.evaluateRiskNotices({
-          answers: this.formState.sc,
-          level: this.getActiveRiskLevel(),
-          isEit: this.isEitRole(),
-        });
+        const sc = this.formState.sc;
+        const isEit = this.isEitRole();
+        const level = this.getActiveRiskLevel();
+        const exp = level ? CONFIG.RISK_MAP[level] : null;
+        /** Maps "yes"/"no" to display text. */
+        const word = v => (v === 'yes' ? 'Yes' : 'No');
+        /** Returns an error notice when question `n` disagrees with the risk level's expected answer. */
+        const inconsistent = (n, key) =>
+          exp && sc[n] && sc[n] !== 'na' && sc[n] !== exp[key]
+            ? [
+              {
+                message: `<b>Correction required:</b> Not consistent with Risk Level (<b>${level.toUpperCase()}</b>).
+          Expected <b>"${word(exp[key])}"</b>.`,
+                type: 'error',
+              },
+            ]
+            : [];
 
-        this.#inconsistent = hasErrors;
+        this.renderNoticeStack('sc', 8, inconsistent(8, 'sc8'));
+        this.#inconsistent = inconsistent(8, 'sc8').length > 0;
 
-        for (const [n, notices] of Object.entries(noticesByQuestion)) {
-          this.renderNoticeStack('sc', Number(n), notices);
+        const blocks9 = [];
+        if (sc[9] === 'yes') {
+          blocks9.push({
+            message: `<b>Action required:</b> Question 1.9 is "Yes". The <b>POR</b> must complete the
+          <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`,
+            type: 'warn',
+          });
+          if (level === 'low') {
+            blocks9.push({
+              message: `<b>Correction required:</b> This is a non-standard application -
+          the Risk Level should <b>not</b> be <b>Low</b>.`,
+              type: 'error',
+            });
+            this.#inconsistent = true;
+          }
         }
+        this.renderNoticeStack('sc', 9, blocks9);
+
+        const blocks10 = inconsistent(10, 'sc10');
+        if (sc[10] === 'yes') {
+          blocks10.push({
+            message: `<b>Action required:</b> Question 1.10 is "Yes". The <b>POR</b> must complete this
+          check form and the <a
+            href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/High-Risk%20Work%20Independent%20Review%20Record.docx?d=w510f42b3084f4baf87b203f351d13ca8"
+            target="_blank" rel="noopener noreferrer"><strong>High Risk Work Independent Review Record</strong></a>.`,
+            type: 'warn',
+          });
+        }
+        this.renderNoticeStack('sc', 10, blocks10);
+
+        const blocks11 = [];
+        if (isEit && sc[11] === 'yes') {
+          blocks11.push({
+            message: `<b>Correction Required:</b> As an EIT for this work type, direct supervision from an
+          experienced individual is required. Expected <b> "No" </b> for this question.`,
+            type: 'error',
+          });
+          this.#inconsistent = true;
+        }
+        if (sc[11] === 'no') {
+          blocks11.push({
+            message: `<b>Action required:</b> Question 1.11 is "No". As an EIT/Unqualified Engineer for
+          this work type, direct supervision is required. The <b>POR / Direct Supervisor</b> must also complete the
+          <b>Section 2 - Direct Supervision</b>.`,
+            type: 'warn',
+          });
+        }
+        this.renderNoticeStack('sc', 11, blocks11);
       }
 
       /**
@@ -5736,72 +5740,56 @@
       }
 
       // ---------- Progress ----------
-      /**
-        * Counts answered questions and open required fields across applicable sections. Does not change the DOM.
-        * @returns {{pct: number, sections: Array<{s: object, cnt: number}>}}
-        */
-      #collectProgress () {
-        const sections = this.sectionConfig.map(s => ({ s, cnt: Object.keys(this.formState[s.prefix]).length }));
-        const openFields = this.elements.allOpenRequired.filter(el => !el.previousSibling.disabled);
-
-        let total = openFields.length;
-        let answered = openFields.filter(el => this.#isUnderlineHidden(el)).length;
-        for (const { s, cnt } of sections) {
-          if (!this.isSectionActive(s.cardEl)) continue;
-          total += s.count;
-          answered += cnt;
-        }
-
-        const pct = total ? Math.round((answered / total) * 100) : 0;
-        return { pct, sections };
-      }
 
       /**
-       * Calculates every readiness rule once. Does not change the DOM.
-       * Submit and PDF export have different requirements on purpose.
-       * @returns {{pct: number, sections: Array, complete: boolean, fieldsValid: boolean,
-       *   signaturesUnlocked: boolean, riskConsistent: boolean, canSubmit: boolean, canExportPdf: boolean}}
+       * Recalculates the progress bar, section badges, and the Save PDF "ready" state.
+       * An immediate calculation replaces any pending debounced update.
+       *
+       * Completion formula (over visible sections only):
+       *   pct = round(answered / total * 100)
+       * where `total` is the sum of question counts of applicable sections and `answered` is the
+       * sum of answered counts. Optional Peer Review counts while expanded.
+       * @returns {void}
        */
-      getReadinessState () {
-        const { pct, sections } = this.#collectProgress();
-        const complete = pct === 100;
-        const fieldsValid = this.allRequiredFieldsValid();
-        const signaturesUnlocked = this.#sig.allOpenEnabled();
-        const riskConsistent = !this.#inconsistent;
-
-        return {
-          pct,
-          sections,
-          complete,
-          fieldsValid,
-          signaturesUnlocked,
-          riskConsistent,
-          canSubmit: complete && fieldsValid,
-          canExportPdf: complete && fieldsValid && signaturesUnlocked && riskConsistent,
-        };
-      }
-
       updateProgress () {
         clearTimeout(this.#progressTimer);
         this.#progressTimer = null;
+        let total = 0;
+        let answered = 0;
+        let fieldTotal = this.elements.allOpenRequired.filter(el => !el.previousSibling.disabled).length;
+        let fieldAnswered = this.elements.allOpenRequired.filter(el => !el.previousSibling.disabled && this.#isUnderlineHidden(el)).length;
 
-        const state = this.getReadinessState();
-
-        for (const { s, cnt } of state.sections) {
+        this.sectionConfig.forEach(s => {
+          const cnt = Object.keys(this.formState[s.prefix]).length;
           if (s.badge) s.badge.textContent = `${cnt} / ${s.count}`;
-          if (!s.num) continue;
-          const done = cnt === s.count;
-          s.num.classList.toggle('complete', done);
-          if (done) s.num.innerHTML = '<span class="material-symbols-sharp"> check </span>';
-          else s.num.textContent = s.label;
-        }
+          if (s.num) {
+            if (cnt === s.count) {
+              s.num.classList.add('complete');
+              s.num.innerHTML = '<span class="material-symbols-sharp"> check </span>';
+            } else {
+              s.num.classList.remove('complete');
+              s.num.textContent = s.label;
+            }
+          }
+          if (!this.isSectionActive(s.cardEl)) return;
+          total += s.count;
+          answered += cnt;
+        });
 
-        this.elements.progressStrip.classList.toggle('complete', state.complete);
-        this.elements.progressBar.value = state.pct;
-        this.elements.progressPct.textContent = `${state.pct}`;
-        this.elements.exportPdf?.classList.toggle('complete', state.canExportPdf);
+        total += fieldTotal;
+        answered += fieldAnswered;
 
-        return state;
+
+        const pct = total ? Math.round((answered / total) * 100) : 0;
+        const fullyComplete = pct === 100;
+        this.elements.progressStrip.classList.toggle('complete', fullyComplete);
+        this.elements.progressBar.value = pct;
+        this.elements.progressPct.textContent = `${pct}`;
+
+        this.elements.exportPdf?.classList.toggle(
+          'complete',
+          fullyComplete && this.allRequiredFieldsValid() && this.#sig.allOpenEnabled() && !this.#inconsistent
+        );
       }
 
       /**
@@ -5829,26 +5817,25 @@
 
       /**
        * Checks every required field. A field is valid when its underline would be hidden.
+       * @param {boolean} [highlightInvalid=false] True to color the labels of invalid fields red.
        * @returns {boolean} True when all required fields are valid.
        */
-      allRequiredFieldsValid () {
-        return Array.from(this.elements.allRequiredFields).every(el => this.#isUnderlineHidden(el));
-      }
+      allRequiredFieldsValid (highlightInvalid = false) {
+        return Array.from(this.elements.allRequiredFields).reduce((acc, el) => {
 
-      /**
-       * Colours the labels of invalid required fields red for DURATION ms.
-       * @returns {void}
-       */
-      highlightInvalidFields () {
-        for (const el of this.elements.allRequiredFields) {
-          if (this.#isUnderlineHidden(el)) continue;
-          const label = el.parentElement.querySelector('.field-label')
-            ?? el.closest('.sig-cell-sub')?.querySelector('.field-label');
-          if (!label) continue;
-          const previous = label.style.color;
-          label.style.color = '#d32f2f';
-          setTimeout(() => { label.style.color = previous; }, DURATION);
-        }
+          const isValid = this.#isUnderlineHidden(el);
+          if (highlightInvalid) {
+            const label = el.parentElement.querySelector('.field-label') ? el.parentElement.querySelector('.field-label') : el.closest('.sig-cell-sub').querySelector('.field-label');
+            const curColor = label ? label.style.color : '';
+            if (label) {
+              label.style.color = isValid ? '' : '#d32f2f';
+              setTimeout(() => {
+                label.style.color = curColor;
+              }, DURATION); // reset color after 3 seconds
+            }
+          }
+          return acc && isValid;
+        }, true);
       }
 
       /**
@@ -5889,7 +5876,8 @@
        * @returns {void}
        */
       handleSubmitAttempt () {
-        if (!this.updateProgress().canSubmit) this.#notReadyMessage();
+        this.updateProgress();
+        if (!(this.allRequiredFieldsValid() && this.elements.progressBar.value === 100)) this.#notReadyMessage();
       }
 
       /**
@@ -5899,10 +5887,17 @@
        * @returns {boolean} True when export may proceed.
        */
       pdfValidation () {
-        if (this.updateProgress().canExportPdf) return true;
-        this.highlightInvalidFields();
-        this.#notReadyMessage();
-        return false;
+        this.updateProgress();
+        if (
+          !this.allRequiredFieldsValid(true) ||
+          this.elements.progressBar.value !== 100 ||
+          !this.#sig.allOpenEnabled() ||
+          this.#inconsistent
+        ) {
+          this.#notReadyMessage();
+          return false;
+        }
+        return true;
       }
 
       // ---------- Clear section ----------
