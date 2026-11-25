@@ -855,9 +855,9 @@
     }
 
     .risk-btn[data-risk='low']:not(.active):hover {
-      color: var(--low-bg);
-      border-color: var(--low-border);
-      background: var(--low);
+      --risk-bg: var(--low);
+      --risk-border: var(--low-border);
+      --risk-color: var(--low-bg);
     }
 
     .risk-btn[data-risk='high']:not(.active):has(~ .risk-btn[data-risk='medium'].active) {
@@ -865,15 +865,18 @@
     }
 
     .risk-btn[data-risk='medium']:not(.active):hover {
-      color: var(--medium-bg);
-      border-color: var(--medium-border);
-      background: var(--medium);
+
+      --risk-bg: var(--medium);
+      --risk-border: var(--medium-border);
+      --risk-color: var(--medium-bg);
+
     }
 
     .risk-btn[data-risk='high']:not(.active):hover {
-      color: var(--high-bg);
-      border-color: var(--high-border);
-      background: var(--high);
+
+      --risk-bg: var(--high);
+      --risk-border: var(--high-border);
+      --risk-color: var(--high-bg);
     }
 
     /* --------------------------------
@@ -1921,6 +1924,8 @@
         'Design check of representative structural elements.',
         'Review of representative structural details.',
       ],
+
+
       /**
        * Expected answers to Self-Check questions 1.8 and 1.10 for each risk level.
        *   1.8  "Work is deemed Low-Risk..."  -> Yes only for low risk
@@ -1958,12 +1963,68 @@
         medium: 'Check',
         high: 'Type 1 Independent Review Required',
       }),
-      SECTION_NUM: { sc: '1', ds: '2', ch: '3', pr: '4', ir: '5' },
       EMPTY_EDITOR_HTML: '<p><br></p>',
       COMMENT_EDITOR_MIN_HEIGHT: 100,
       SIGNATURE_FILE_TYPES: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
       SIGNATURE_MAX_SIZE: 5 * 1024 * 1024, // 5 MiB
     });
+
+    const SECTION_DEFS = Object.freeze([
+      {
+        prefix: 'info',
+        cardId: 'card-info',
+        cardKey: 'cardInfo',
+      },
+      {
+        prefix: 'sc',
+        number: '1',
+        cardId: 'card-sc',
+        cardKey: 'cardSc',
+        items: CONFIG.SC_ITEMS,
+      },
+      {
+        prefix: 'ds',
+        number: '2',
+        cardId: 'card-ds',
+        cardKey: 'cardDs',
+        items: CONFIG.DS_ITEMS,
+      },
+      {
+        prefix: 'ch',
+        number: '3',
+        cardId: 'card-ch',
+        cardKey: 'cardCh',
+        items: CONFIG.CH_ITEMS,
+      },
+      {
+        prefix: 'pr',
+        number: '4',
+        cardId: 'card-pr',
+        cardKey: 'cardPr',
+        items: CONFIG.PR_ITEMS,
+      },
+      {
+        prefix: 'ir',
+        number: '5',
+        cardId: 'card-ir',
+        cardKey: 'cardIr',
+        items: CONFIG.IR_ITEMS,
+      },
+      {
+        prefix: 'fT1',
+        number: '6',
+        cardId: 'card-final',
+        cardKey: 'cardFinal',
+      },
+    ]);
+
+    const SECTION_NUM = Object.freeze(
+      Object.fromEntries(
+        SECTION_DEFS
+          .filter(section => section.items)
+          .map(section => [section.prefix, section.number])
+      )
+    );
 
     const CDN = Object.freeze({
       QUILL_CSS: 'https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css',
@@ -2114,6 +2175,39 @@
       throw lastError;
     }
 
+    /**
+     * Turns a title into a safe filename base.
+     * @param {string} title Raw title.
+     * @param {{fallback?: string, underscores?: boolean}} [opts]
+     * @returns {string}
+     */
+    function safeFileBase (title, { fallback = 'DE_CheckForm', underscores = false } = {}) {
+      let base = (title || '').trim().replace(/[\\/:*?"<>|]+/g, '-');
+      if (underscores) base = base.replace(/\s+/g, '_');
+      return base.trim().slice(0, 80) || fallback;
+    }
+
+    /**
+     * Downloads a Blob through a temporary anchor, then releases its object URL.
+     * @param {Blob} blob File contents.
+     * @param {string} filename Download name.
+     * @param {number} [revokeDelay=1000] Delay before revoking the URL, in ms.
+     * @returns {void}
+     */
+    function downloadBlob (blob, filename, revokeDelay = 1000) {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filename;
+      try {
+        document.body.appendChild(anchor);
+        anchor.click();
+      } finally {
+        anchor.remove();
+        setTimeout(() => URL.revokeObjectURL(url), revokeDelay);
+      }
+    }
+
     // ============================================================
     // 3. Sanitization — DOMPurify when available, allowlist fallback
     // ============================================================
@@ -2125,7 +2219,8 @@
     // eslint-disable-next-line no-control-regex
     const URL_CTRL_WS = /[\u0000-\u0020\u007f-\u009f]/g;
 
-    const FALLBACK_TAGS = new Set(['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'span', 'div']);
+    const ALLOWED_TAGS = Object.freeze(['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'span', 'div']);
+    const FALLBACK_TAGS = new Set(ALLOWED_TAGS);
     const FALLBACK_DROP = new Set([
       'script',
       'style',
@@ -2149,6 +2244,17 @@
       'noscript',
     ]);
     const FALLBACK_ATTRS = { a: ['href'], img: ['src', 'alt'] };
+    const ANSWER_LABELS = Object.freeze({ yes: 'Yes', no: 'No', na: 'N/A' });
+
+    /**
+     * Returns the display text for an answer value.
+     * @param {string} value Radio value.
+     * @param {string} [fallback=''] Text used when the value is empty or unknown.
+     * @returns {string}
+     */
+    function answerLabel (value, fallback = '') {
+      return ANSWER_LABELS[value] ?? fallback;
+    }
 
     /**
      * Tells whether a URL is safe to keep in sanitized HTML.
@@ -2172,7 +2278,7 @@
       if (!html) return CONFIG.EMPTY_EDITOR_HTML;
       if (typeof DOMPurify !== 'undefined') {
         return DOMPurify.sanitize(html, {
-          ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'a', 'img', 'span', 'div'],
+          ALLOWED_TAGS: [...ALLOWED_TAGS],
           ALLOWED_ATTR: ['href', 'src', 'alt', 'class'],
           ALLOW_DATA_ATTR: false,
         });
@@ -2212,6 +2318,20 @@
      */
     function escapeHtml (text) {
       return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /**
+     * Reads a Blob or File as a data URL.
+     * @param {Blob} blob Source data.
+     * @returns {Promise<string>}
+     */
+    function readBlobAsDataUrl (blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(reader.error ?? new Error('Failed to read file.'));
+        reader.readAsDataURL(blob);
+      });
     }
 
     /**
@@ -2272,6 +2392,25 @@
        */
       static icon (name) {
         return HtmlBuilder.el('span', { class: 'material-symbols-sharp', text: name });
+      }
+
+      /**
+       * Creates the radio and label pairs for a Yes / No / N/A answer group.
+       * Binary questions retain a disabled, blank N/A slot to keep the layout aligned.
+       * @param {string} name Radio group name.
+       * @param {{binary?: boolean, attrs?: Object}} [opts]
+       * @returns {Element[]}
+       */
+      static answerPills (name, { binary = false, attrs = {} } = {}) {
+        const { el } = HtmlBuilder;
+        return Object.entries(ANSWER_LABELS).flatMap(([value, text]) => {
+          const id = `${name}_${value}`;
+          const disabled = binary && value === 'na';
+          return [
+            el('input', { ...attrs, type: 'radio', name, id, value, disabled }),
+            el('label', { for: id, text: disabled ? ' ' : text, disabled }),
+          ];
+        });
       }
 
       /**
@@ -2566,16 +2705,11 @@
        */
       addressedRow (p) {
         const { el } = HtmlBuilder;
-        /** Returns an [input, label] pair for one answer. */
-        const pill = (v, label) => [
-          el('input', { type: 'radio', name: p + '_c', id: `${p}_c_${v}`, value: v, 'data-prefix': p }),
-          el('label', { for: `${p}_c_${v}`, text: label }),
-        ];
         return el(
           'div',
           { class: 'check-comments' },
           el('span', { class: 'check-text', text: 'Are all comments and corrections addressed?' }),
-          el('div', { class: 'pill-group' }, pill('yes', 'Yes'), pill('no', 'No'), pill('na', 'N/A'))
+          el('div', { class: 'pill-group' }, HtmlBuilder.answerPills(p + '_c', { attrs: { 'data-prefix': p } }))
         );
       }
 
@@ -3533,24 +3667,22 @@
       }
 
       /**
-      /**
        * Reads a chosen signature file as a data URL and stores it.
        * @param {Event} e The file input's change event.
        * @param {string} prefix Section prefix.
-       * @returns {void}
+       * @returns {Promise<void>}
        */
-      #handleUpload (e, prefix) {
+      async #handleUpload (e, prefix) {
         const file = e.target.files?.[0];
         if (!file || !this.#validateFile(file)) return;
-        const reader = new FileReader();
-        reader.onload = event => {
-          const dataUrl = String(event.target.result || '');
-          const dataInput = this.#dataInput(prefix);
-          if (dataInput) dataInput.value = dataUrl;
-          this.setPreview(prefix, dataUrl);
-        };
-        reader.onerror = () => this.#host.showToast('Failed to read image file.', 'error');
-        reader.readAsDataURL(file);
+        let dataUrl;
+        try {
+          dataUrl = await readBlobAsDataUrl(file);
+        } catch {
+          this.#host.showToast('Failed to read image file.', 'error');
+          return;
+        }
+        this.setSignature(prefix, dataUrl);
       }
 
       /**
@@ -3613,14 +3745,24 @@
       }
 
       /**
+       * Stores a section's signature and updates its preview.
+       * @param {string} prefix Section prefix.
+       * @param {string} dataUrl Image data URL, or '' to clear.
+       * @returns {void}
+       */
+      setSignature (prefix, dataUrl) {
+        const dataInput = this.#dataInput(prefix);
+        if (dataInput) dataInput.value = dataUrl;
+        this.setPreview(prefix, dataUrl);
+      }
+
+      /**
        * Removes a section's signature data and preview.
        * @param {string} prefix Section prefix.
        * @returns {void}
        */
       clearInline (prefix) {
-        const dataInput = this.#dataInput(prefix);
-        if (dataInput) dataInput.value = '';
-        this.setPreview(prefix, '');
+        this.setSignature(prefix, '');
       }
 
       /**
@@ -3784,10 +3926,7 @@
         if (!this.#modal || !this.#canvas) return;
         const prefix = this.#activePrefix;
         if (save && prefix) {
-          const dataUrl = this.#canvas.toDataURL();
-          const dataInput = this.#dataInput(prefix);
-          if (dataInput) dataInput.value = dataUrl;
-          this.setPreview(prefix, dataUrl);
+          this.setSignature(prefix, this.#canvas.toDataURL());
         }
         this.#modal.classList.remove('open');
         this.#activePrefix = null;
@@ -4433,21 +4572,23 @@
        * Reads a pasted image file and inserts it into a fallback editor.
        * @param {File} file Pasted image.
        * @param {string} fieldId Hidden field id.
-       * @returns {void}
+       * @returns {Promise<void>}
        */
-      #processImageFile (file, fieldId) {
+      async #processImageFile (file, fieldId) {
         if (!file?.type?.startsWith('image/')) return;
         const editor = this.#fallbackEditors?.[fieldId];
         if (!editor) return;
-        const reader = new FileReader();
-        reader.onload = e => {
-          this.#insertImage(editor, e.target.result);
-          this.syncHidden(fieldId);
-          this.updatePlaceholder(editor);
-          this.scheduleSyncHeights();
-        };
-        reader.onerror = () => this.#host.showToast('Failed to read image.', 'error');
-        reader.readAsDataURL(file);
+        let dataUrl;
+        try {
+          dataUrl = await readBlobAsDataUrl(file);
+        } catch {
+          this.#host.showToast('Failed to read image.', 'error');
+          return;
+        }
+        this.#insertImage(editor, dataUrl);
+        this.syncHidden(fieldId);
+        this.updatePlaceholder(editor);
+        this.scheduleSyncHeights();
       }
 
       /**
@@ -4599,9 +4740,14 @@
       /**
        * Makes paired editors (comment / response) the same height: the larger of the two.
        * If one side is hidden, the visible side just fits its own content.
+       * An immediate pass replaces any queued height pass.
        * @returns {void}
        */
       syncHeights () {
+        if (this.#syncRaf) {
+          cancelAnimationFrame(this.#syncRaf);
+          this.#syncRaf = 0;
+        }
         CONFIG.COMMENT_PAIRS.forEach(([aId, bId]) => {
           const a = getById(aId);
           const b = getById(bId);
@@ -4784,7 +4930,26 @@
        * @returns {Object<string, *>} Element map.
        */
       #cacheElements () {
+        const sectionElements = {};
+
+        for (const section of SECTION_DEFS) {
+          const { prefix, number, cardId, cardKey, items } = section;
+
+          sectionElements[cardKey] = getById(cardId);
+
+          if (number) {
+            sectionElements[`s${number}Head`] = getById(`sec${number}-head`);
+            sectionElements[`s${number}Body`] = getById(`s${number}`);
+          }
+
+          if (items) {
+            sectionElements[`${prefix}Rows`] = getById(`${prefix}-rows`);
+            sectionElements[`badge${number}`] = getById(`badge-${number}`);
+            sectionElements[`num${number}`] = getById(`snum-${number}`);
+          }
+        }
         return {
+          ...sectionElements,
           progressStrip: getById('progressStrip'),
           progressBar: getById('progressBar'),
           progressPct: getById('progressPct'),
@@ -4805,29 +4970,9 @@
           prCNa: getById('pr_c_na'),
           irCYes: getById('ir_c_yes'),
           irCNa: getById('ir_c_na'),
-          cardDs: getById('card-ds'),
-          cardCh: getById('card-ch'),
-          cardPr: getById('card-pr'),
-          cardFinal: getById('card-final'),
-          cardIr: getById('card-ir'),
           chNotice: getById('chNotice'),
           globalNotice: getById('globalNotice'),
           globalNoticeText: getById('globalNoticeText'),
-          badge1: getById('badge-1'),
-          num1: getById('snum-1'),
-          badge2: getById('badge-2'),
-          num2: getById('snum-2'),
-          badge3: getById('badge-3'),
-          num3: getById('snum-3'),
-          badge4: getById('badge-4'),
-          num4: getById('snum-4'),
-          badge5: getById('badge-5'),
-          num5: getById('snum-5'),
-          scRows: getById('sc-rows'),
-          dsRows: getById('ds-rows'),
-          chRows: getById('ch-rows'),
-          prRows: getById('pr-rows'),
-          irRows: getById('ir-rows'),
           scName: getById('sc-name'),
           chName: getById('ch-name'),
           engLabel: query('#engineer_eit .field-label'),
@@ -4840,16 +4985,6 @@
           chSigLabel: getById('ch_sig'),
           checkerCommentsLabel: getById('for_checkerComments'),
           engineerResponseLabel: getById('for_engineerResponse'),
-          s2Body: getById('s2'),
-          s2Head: getById('sec2-head'),
-          s3Body: getById('s3'),
-          s3Head: getById('sec3-head'),
-          s4Body: getById('s4'),
-          s4Head: getById('sec4-head'),
-          s5Body: getById('s5'),
-          s5Head: getById('sec5-head'),
-          s6Body: getById('s6'),
-          s6Head: getById('sec6-head'),
           exportPdf: getById('exportPdfBtn'),
           validationAnnouncer: getById('validationMessages'),
           allRequiredFields: queryAll('.required-field-underline'),
@@ -4862,24 +4997,17 @@
        * @returns {Array<{prefix: string, rowsEl: Element, count: number, badge: Element, num: Element, label: string, cardEl: Element|null}>}
        */
       #buildSectionConfig () {
-        const els = this.elements;
-        /** Creates one section descriptor. */
-        const make = (prefix, rowsEl, items, badge, num, label) => ({
-          prefix,
-          rowsEl,
-          count: items.length,
-          badge,
-          num,
-          label,
-          cardEl: getById(`card-${prefix}`),
-        });
-        return [
-          make('sc', els.scRows, CONFIG.SC_ITEMS, els.badge1, els.num1, '1'),
-          make('ds', els.dsRows, CONFIG.DS_ITEMS, els.badge2, els.num2, '2'),
-          make('ch', els.chRows, CONFIG.CH_ITEMS, els.badge3, els.num3, '3'),
-          make('pr', els.prRows, CONFIG.PR_ITEMS, els.badge4, els.num4, '4'),
-          make('ir', els.irRows, CONFIG.IR_ITEMS, els.badge5, els.num5, '5'),
-        ];
+        return SECTION_DEFS
+          .filter(section => section.items)
+          .map(({ prefix, number, cardKey, items }) => ({
+            prefix,
+            rowsEl: this.elements[`${prefix}Rows`],
+            count: items.length,
+            badge: this.elements[`badge${number}`],
+            num: this.elements[`num${number}`],
+            label: number,
+            cardEl: this.elements[cardKey],
+          }));
       }
 
       // ---------- Utilities ----------
@@ -4979,14 +5107,25 @@
         );
 
         this.applyStaticLabels();
-        this.#hydrateFormStateFromDom();
         this.attachEventListeners();
         this.#sig.init();
         this.#sig.refreshPreviews();
-        this.updateRoleLabels(!this.isRestored);
-        this.#comments.syncHeights();
-        this.updateProgress();
+        this.#refreshState({ resetSc11: !this.isRestored });
+      }
+
+      /**
+       * Refreshes derived state once after bulk or role mutations.
+       * @param {{resetSc11?: boolean}} [options] Whether to preset the role-dependent answer.
+       * @returns {void}
+       */
+      #refreshState ({ resetSc11 = false } = {}) {
+        this.#applyRoleLabels(resetSc11);
+        this.#hydrateFormStateFromDom();
+        this.showRiskConsistencyNotices();
+        this.applyVisibilityState(this.computeVisibilityState());
         this.syncCssStateClasses();
+        this.updateProgress();
+        this.#comments.syncHeights();
       }
 
       /**
@@ -5010,12 +5149,18 @@
        * @returns {void}
        */
       buildAllRows () {
-        this.buildRows(this.elements.scRows, 'sc', CONFIG.SC_ITEMS, CONFIG.BINARY_QUESTIONS.sc);
-        this.buildRows(this.elements.dsRows, 'ds', CONFIG.DS_ITEMS);
-        this.buildRows(this.elements.chRows, 'ch', CONFIG.CH_ITEMS, CONFIG.BINARY_QUESTIONS.ch);
-        this.buildRows(this.elements.prRows, 'pr', CONFIG.PR_ITEMS);
-        this.buildRows(this.elements.irRows, 'ir', CONFIG.IR_ITEMS);
+        for (const { prefix, items } of SECTION_DEFS) {
+          if (!items) continue;
+
+          this.buildRows(
+            this.elements[`${prefix}Rows`],
+            prefix,
+            items,
+            CONFIG.BINARY_QUESTIONS[prefix]
+          );
+        }
         this.cacheRowRadios();
+
       }
 
       /**
@@ -5030,23 +5175,11 @@
       buildRows (container, prefix, items, binarySet = new Set()) {
         if (!container) return;
         const fragment = document.createDocumentFragment();
-        const sectionNum = CONFIG.SECTION_NUM[prefix];
-        /** Answer options; binary questions show a disabled blank N/A slot to keep the layout aligned. */
-        const pillOptions = binary =>
-          binary
-            ? [
-              ['yes', 'Yes'],
-              ['no', 'No'],
-              ['na', ' ', true],
-            ]
-            : [
-              ['yes', 'Yes'],
-              ['no', 'No'],
-              ['na', 'N/A'],
-            ];
+        const sectionNum = SECTION_NUM[prefix];
         items.forEach((text, idx) => {
           const n = idx + 1;
           const isBinary = binarySet.has(n);
+          const name = `${prefix}${n}`;
           const row = document.createElement('div');
           row.className = 'check-row';
           const numSpan = document.createElement('span');
@@ -5055,23 +5188,11 @@
           const textSpan = document.createElement('span');
           textSpan.className = 'check-text';
           textSpan.innerHTML = text;
-          const pillGroup = document.createElement('div');
-          pillGroup.className = `pill-group${isBinary ? ' pill-group--yes-no' : ''}`;
-          const name = `${prefix}${n}`;
-          pillOptions(isBinary).forEach(([value, labelText, disabled]) => {
-            const id = `${name}_${value}`;
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = name;
-            radio.id = id;
-            radio.value = value;
-            if (disabled) radio.disabled = true;
-            const label = document.createElement('label');
-            label.htmlFor = id;
-            label.textContent = labelText;
-            if (disabled) label.setAttribute('disabled', '');
-            pillGroup.append(radio, label);
-          });
+          const pillGroup = HtmlBuilder.el(
+            'div',
+            { class: `pill-group${isBinary ? ' pill-group--yes-no' : ''}` },
+            HtmlBuilder.answerPills(name, { binary: isBinary })
+          );
           const noticeStack = document.createElement('div');
           noticeStack.className = 'row-notice-stack hidden';
           noticeStack.id = `${name}_notice_stack`;
@@ -5084,6 +5205,17 @@
 
 
       // ---------- Global delegated handlers ----------
+
+      /**
+       * Clears a valid field's warning label style and schedules a progress refresh.
+       * @param {Element} target Event target.
+       * @returns {void}
+       */
+      #onFieldMaybeValid (target) {
+        if (!target.matches('input, select') || !target.validity.valid) return;
+        target.previousElementSibling?.removeAttribute('style');
+        this.scheduleUpdateProgress();
+      }
 
       /**
        * Single click handler for the whole page (event delegation).
@@ -5168,11 +5300,12 @@
        */
       #handleChange (e) {
         const target = e.target;
-        if (target.matches('input[type="radio"]')) this.#onRadioChange(target);
-        if ((target.matches('input') || target.matches('select')) && target.validity.valid) {
+        if (target.matches('input[type="radio"]')) {
           target.previousElementSibling?.removeAttribute('style');
-          this.scheduleUpdateProgress();
+          this.#onRadioChange(target);
+          return;
         }
+        this.#onFieldMaybeValid(target);
         if (target.id === 'minCheckLevel') this.syncSectionVisibility();
         this.#comments.handleFieldEvent(target);
       }
@@ -5200,10 +5333,7 @@
             this.syncLinkedFields(target, this.elements.chName, this.elements.checker);
           }
         }
-        if ((target.matches('input') || target.matches('select')) && target.validity.valid) {
-          target.previousElementSibling?.removeAttribute('style');
-          this.scheduleUpdateProgress();
-        }
+        this.#onFieldMaybeValid(target);
       }
 
       /**
@@ -5237,8 +5367,10 @@
         const m = ROW_NAME_RE.exec(name);
         if (m) this.formState[m[1]][parseInt(m[2], 10)] = radio.value;
 
-        if (name === 'sc11') this.updateRoleLabels(false);
-        if (name === 'sc_role') this.updateRoleLabels(true);
+        if (name === 'sc11' || name === 'sc_role') {
+          this.updateRoleLabels(name === 'sc_role');
+          return;
+        }
         this.showRiskConsistencyNotices();
         if (name === 'ch_c' || name === 'pr_c' || name === 'ir_c') {
           const prefix = radio.dataset.prefix;
@@ -5258,12 +5390,11 @@
        */
       toggleSection (head) {
         const body = getById(head.getAttribute('aria-controls'));
+        if (!body) return;
         const isExpanding = !head.classList.contains('open');
-        head.classList.toggle('open');
-        body?.classList.toggle('open');
-        head.setAttribute('aria-expanded', head.classList.contains('open') ? 'true' : 'false');
+        this.setSectionOpen(head, body, isExpanding);
         this.syncSectionVisibility();
-        if (isExpanding && body) {
+        if (isExpanding) {
           const firstInput = body.querySelector('input:not([type="hidden"]), select, textarea, button:not(.btn-clear)');
           if (firstInput) setTimeout(() => firstInput.focus(), 50);
         }
@@ -5437,7 +5568,7 @@
       }
 
       /**
-       * Shows, hides, opens, and closes sections, and toggles required fields to match a state.
+       * Applies section visibility and required fields without scheduling another refresh.
        * @param {ReturnType<CheckForm['computeVisibilityState']>} state Result of computeVisibilityState.
        * @returns {void}
        */
@@ -5465,9 +5596,6 @@
 
         this.setSectionVisibility(e.cardIr, e.s5Head, e.s5Body, state.openS5);
         this.setRequired(e.cardIr, state.openS5);
-
-        this.syncCssStateClasses();
-        this.scheduleUpdateProgress();
       }
 
       /**
@@ -5476,6 +5604,8 @@
        */
       syncSectionVisibility () {
         this.applyVisibilityState(this.computeVisibilityState());
+        this.syncCssStateClasses();
+        this.scheduleUpdateProgress();
       }
 
       /**
@@ -5584,28 +5714,36 @@
       }
 
       /**
-       * Updates labels for the chosen role and, optionally, presets question 1.11.
+       * Applies the chosen role and refreshes dependent state, optionally presetting question 1.11.
        * An EIT always starts with 1.11 = "No" (direct supervision required).
        * @param {boolean} [resetSc11=true] True to reset the 1.11 answer to match the role.
        * @returns {void}
        */
       updateRoleLabels (resetSc11 = true) {
+        this.#refreshState({ resetSc11 });
+      }
+
+      /**
+       * Updates role labels and presets without triggering another refresh.
+       * @param {boolean} resetSc11 Whether to preset question 1.11.
+       * @returns {void}
+       */
+      #applyRoleLabels (resetSc11) {
         const isEit = this.isEitRole();
         const { sc11No, sc11Yes, engLabel, engInput } = this.elements;
         if (resetSc11) {
           if (sc11No) sc11No.checked = isEit;
           if (sc11Yes) sc11Yes.checked = false;
-          this.#hydrateFormStateFromDom();
         }
         setText(engLabel, isEit ? 'Engineer-in-Training' : 'Engineer');
         if (engInput) engInput.placeholder = isEit ? 'EIT name...' : 'Engineer name...';
-        this.syncSectionVisibility();
       }
 
       // ---------- Progress ----------
 
       /**
        * Recalculates the progress bar, section badges, and the Save PDF "ready" state.
+       * An immediate calculation replaces any pending debounced update.
        *
        * Completion formula (over visible sections only):
        *   pct = round(answered / total * 100)
@@ -5614,6 +5752,8 @@
        * @returns {void}
        */
       updateProgress () {
+        clearTimeout(this.#progressTimer);
+        this.#progressTimer = null;
         let total = 0;
         let answered = 0;
         let fieldTotal = this.elements.allOpenRequired.filter(el => !el.previousSibling.disabled).length;
@@ -5772,24 +5912,18 @@
         if (!sec) return;
         this.clearFormControls(sec);
         this.restoreDefaults(sec);
-        this.#hydrateFormStateFromDom();
 
-        if (sec.contains(this.elements.scRoleEng)) this.updateRoleLabels(true);
         if (sectionId === 's3') this.#sig.setEnabled('ch', false);
         if (sectionId === 's4') this.#sig.setEnabled('pr', false);
         if (sectionId === 's5') this.#sig.setEnabled('ir', false);
         if (sectionId === 's6') this.#sig.setEnabled('fT1', false);
 
-        this.showRiskConsistencyNotices();
-        this.syncSectionVisibility();
-        this.updateProgress();
-        this.#comments.syncHeights();
-        this.syncCssStateClasses();
+        this.#refreshState({ resetSc11: sec.contains(this.elements.scRoleEng) });
         this.showToast('Section cleared', 'info');
       }
 
       /**
-       * Resets all inputs, selects, risk buttons, signatures, and comments inside a root.
+       * Resets controls inside a root; the caller refreshes derived form state afterward.
        * @param {ParentNode} root Section or document.
        * @returns {void}
        */
@@ -5815,7 +5949,6 @@
         this.#comments.clearContent(root);
         this.#comments.clearGalleries(root);
         this.#comments.syncAllHidden();
-        this.syncCssStateClasses();
       }
 
       /**
@@ -5876,12 +6009,7 @@
         if (!confirm('Reset entire form? All data will be lost.')) return;
         this.clearFormControls(document);
         this.restoreDefaults();
-        this.#hydrateFormStateFromDom();
-        this.updateRoleLabels(true);
-        this.showRiskConsistencyNotices();
-        this.updateProgress();
-        this.#comments.syncHeights();
-        this.syncCssStateClasses();
+        this.#refreshState({ resetSc11: true });
         this.showToast('Form reset', 'info');
       }
 
@@ -5991,24 +6119,12 @@
           });
 
           const definition = await this.#buildPdfDefinition();
-          // File name: the work title with characters that are illegal in file names replaced by "-".
-          const title =
-            getById('workTitle')
-              ?.value.trim()
-              .replace(/[\\/:*?"<>|]+/g, '-')
-              .slice(0, 80) || 'DE_CheckForm';
+          const title = safeFileBase(getById('workTitle')?.value);
 
           const pdfBytes = await window.pdfMake.createPdf(definition).getBuffer();
 
           const finalBytes = await this.#addSignatureFields(pdfBytes);
-          const url = URL.createObjectURL(new Blob([finalBytes], { type: 'application/pdf' }));
-          const anchor = document.createElement('a');
-          anchor.href = url;
-          anchor.download = `${title}.pdf`;
-          document.body.appendChild(anchor);
-          anchor.click();
-          anchor.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
+          downloadBlob(new Blob([finalBytes], { type: 'application/pdf' }), `${title}.pdf`);
           this.showToast('PDF saved successfully', 'success');
         } catch (error) {
           console.error('PDF export failed:', error);
@@ -6236,7 +6352,7 @@
         /** Selected value of a radio group. */
         const checked = name => query(`input[name="${name}"]:checked`)?.value || '';
         /** Display text for a yes / no / na radio group. */
-        const answer = name => ({ yes: 'Yes', no: 'No', na: 'N/A' }[checked(name)] || '');
+        const answer = name => answerLabel(checked(name));
         /** Question and answer text for every row of a section. */
         const checklist = prefix =>
           [...(getById(`${prefix}-rows`)?.querySelectorAll('.check-row') || [])].map(row => {
@@ -6315,6 +6431,7 @@
           },
           independentReview: {
             sectionTitle: '5. Independent Structural Review',
+            prefix: 'ir',
             checklist: checklist('ir'),
             name: value('ir-name'),
             date: value('ir-date'),
@@ -6338,16 +6455,12 @@
        */
       async #buildPdfDefinition () {
         const visible = Object.fromEntries(
-          [
-            ['info', 'card-info'],
-            ['sc', 'card-sc'],
-            ['ds', 'card-ds'],
-            ['ch', 'card-ch'],
-            ['pr', 'card-pr'],
-            ['ir', 'card-ir'],
-            ['fT1', 'card-final'],
-          ].map(([key, cardId]) => [key, this.#isPdfCardVisible(cardId)])
+          SECTION_DEFS.map(({ prefix, cardId }) => [
+            prefix,
+            this.#isPdfCardVisible(cardId),
+          ])
         );
+
         const [data, logo] = await Promise.all([this.#collectPdfData(visible), this.#logoDataUrl()]);
         this.#sigFields = [];
         this.#sigTooltips = {};
@@ -6647,13 +6760,7 @@
         try {
           const response = await fetch(BC_HYDRO_LOGO_URL, { signal: AbortSignal.timeout(4000) });
           if (!response.ok) return '';
-          const blob = await response.blob();
-          this.#logoCache = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result));
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
+          this.#logoCache = await readBlobAsDataUrl(await response.blob());
           return this.#logoCache;
         } catch {
           return '';
@@ -6786,7 +6893,6 @@
         return {
           stack: [
             this.#buildListTable(data),
-
             this.#buildCommentsBlock(data.comments, data.response),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Peer Reviewer', 'pr'),
           ],
@@ -6917,31 +7023,15 @@
         metaScript.textContent = JSON.stringify(formState).replace(/</g, '\\u003c');
         clone.appendChild(metaScript);
         const blob = new Blob([`<!DOCTYPE html>\n${clone.outerHTML}`], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-
-        const title = this.elements.workTitle.value.trim() || 'DE_CheckForm';
-        const safe = title
-          .replace(/[\\/:*?"<>|]+/g, '-')
-          .replace(/\s+/g, '_')
-          .trim()
-          .slice(0, 80);
+        const safe = safeFileBase(this.elements.workTitle.value, { underscores: true });
         const ts = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, never contains "/"
-        const a = document.createElement('a');
+        let filename = `${safe}_snapshot_${ts}.html`;
         if (window.location.protocol === 'file:') {
-          const filename = prompt('Save snapshot as:', `${safe}_snapshot_${ts}.html`);
-          if (!filename) {
-            URL.revokeObjectURL(url);
-            return;
-          }
-          a.download = filename.endsWith('.html') ? filename : `${filename}.html`;
-        } else {
-          a.download = `${safe}_snapshot_${ts}.html`;
+          const chosen = prompt('Save snapshot as:', filename);
+          if (!chosen) return;
+          filename = chosen.endsWith('.html') ? chosen : `${chosen}.html`;
         }
-        a.href = url;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
+        downloadBlob(blob, filename);
         this.showToast('Snapshot saved', 'success');
       }
 
@@ -7009,7 +7099,7 @@
         const num = clean(row.querySelector('.check-num')?.textContent);
         const text = clean(row.querySelector('.check-text')?.textContent);
         const r = row.querySelector('input[type=radio]:checked');
-        const answer = r ? { yes: 'Yes', no: 'No', na: 'N/A' }[r.value] || r.value : 'Not answered';
+        const answer = r ? answerLabel(r.value, r.value) : 'Not answered';
         const notice = clean(row.querySelector('.row-notice-stack:not(.hidden)')?.textContent);
         return `${num} ${text} — ${answer}${notice ? ` (${notice})` : ''}`;
       }
