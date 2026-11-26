@@ -30,7 +30,7 @@
     :root {
       --color-primary: #323232;
       --color-secondary: rgb(250, 250, 250);
-      --color-tertiary: rgb(180, 180, 180);
+      --color-tertiary: #b4b4b4;
       --surface-base: rgb(250, 250, 250);
       --surface-inverse: #231f20;
       --color-success: #046a38;
@@ -389,6 +389,26 @@
       border-bottom: none;
     }
 
+    a.help-link {
+      color: var(--color-link);
+      margin-left: 8px;
+    }
+
+    a.help-link .material-symbols-sharp {
+      font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 200, 'opsz' 40;
+      font-size: 18px;
+    }
+
+    a.help-link:hover .material-symbols-sharp {
+      font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 40;
+    }
+
+
+    div.close:focus-visible {
+      outline: 2px solid var(--color-link);
+      outline-offset: 2px;
+    }
+
     .sec-head {
       display: flex;
       align-items: center;
@@ -590,7 +610,7 @@
 
     .field-input {
       width: 100%;
-      padding: var(--gap-xs) var(--gap-md);
+      padding: var(--gap-xs) 7px var(--gap-xs) var(--gap-md);
       border: 1px solid var(--border-soft);
       font-family: var(--font-sans);
       font-size: 0.875rem;
@@ -626,10 +646,7 @@
       min-height: var(--touch-min);
     }
 
-    select.field-input {
-      cursor: pointer;
-      min-height: var(--touch-min);
-    }
+
 
     select.field-input option {
       color: var(--text);
@@ -670,8 +687,9 @@
 
     /* ===== Date inputs: hide native icon, overlay custom icon ===== */
     input[type='date']::-webkit-calendar-picker-indicator {
-      color: transparent;
-      background: transparent;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 1;
     }
 
     input[type='date'] {
@@ -700,9 +718,43 @@
       color: var(--text-muted);
     }
 
+    .date-icon-wrap:hover .material-symbols-sharp,
+    .select-wrapper:focus-within .material-symbols-sharp,
+    .btn:hover .material-symbols-sharp,
+    div.close:hover .material-symbols-sharp {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+    }
+
+    div.close:hover .material-symbols-sharp {
+      color: var(--color-error);
+    }
+
+    select.field-input {
+      cursor: pointer;
+    }
+
     select:disabled {
       opacity: 1;
       cursor: not-allowed;
+    }
+
+    .select-wrapper {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .select-wrapper .material-symbols-sharp {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--text-muted);
+    }
+
+    .select-wrapper:has(select:disabled) .material-symbols-sharp {
+      opacity: 0.5;
     }
 
     .required-field-underline {
@@ -712,9 +764,9 @@
 
     input.field-input:valid+.required-field-underline,
     input.field-input:focus+.required-field-underline,
-    select.field-input:valid+.required-field-underline,
-    select.field-input:disabled+.required-field-underline,
-    select.field-input:focus+.required-field-underline,
+    .select-wrapper:has(select:valid)+.required-field-underline,
+    .select-wrapper:has(select:disabled)+.required-field-underline,
+    .select-wrapper:has(select:focus)+.required-field-underline,
     .role-selector:has(input[type='radio']:checked)+.required-field-underline,
     .risk-row:has(.risk-btn.active)+.required-field-underline,
     input:not(:required)+.required-field-underline,
@@ -855,9 +907,9 @@
     }
 
     .risk-btn[data-risk='low']:not(.active):hover {
-      --risk-bg: var(--low);
-      --risk-border: var(--low-border);
-      --risk-color: var(--low-bg);
+      background: var(--low);
+      border-color: var(--low-border);
+      color: var(--low-bg);
     }
 
     .risk-btn[data-risk='high']:not(.active):has(~ .risk-btn[data-risk='medium'].active) {
@@ -866,23 +918,24 @@
 
     .risk-btn[data-risk='medium']:not(.active):hover {
 
-      --risk-bg: var(--medium);
-      --risk-border: var(--medium-border);
-      --risk-color: var(--medium-bg);
+      background: var(--medium);
+      border-color: var(--medium-border);
+      color: var(--medium-bg);
 
     }
 
     .risk-btn[data-risk='high']:not(.active):hover {
 
-      --risk-bg: var(--high);
-      --risk-border: var(--high-border);
-      --risk-color: var(--high-bg);
+      background: var(--high);
+      border-color: var(--high-border);
+      color: var(--high-bg);
     }
 
     /* --------------------------------
        10. Checklist Rows
        -------------------------------- */
-    .check-row {
+    .check-row,
+    .reference {
       display: flex;
       align-items: center;
       gap: 24px;
@@ -897,7 +950,8 @@
       column-gap: 24px;
     }
 
-    .check-row:last-child {
+    .check-row:last-child,
+    .reference:last-child {
       border-bottom: none;
     }
 
@@ -932,11 +986,17 @@
       color: var(--color-error);
     }
 
-    .check-num {
+    .check-num,
+    .reference-bullet {
       font-size: 0.8rem;
       color: var(--color-primary);
       min-width: 28px;
       align-self: center;
+    }
+
+    .reference-bullet {
+      text-align: center;
+      color: var(--color-info);
     }
 
     .row-notice-stack {
@@ -1126,6 +1186,10 @@
       min-width: 24px;
       align-items: center;
       justify-content: center;
+    }
+
+    .notice-close:hover .material-symbols-sharp {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
     }
 
     /* --------------------------------
@@ -1356,7 +1420,7 @@
 
     .sig-draw-surface.has-signature .image-thumbnail-remove:hover .material-symbols-sharp,
     .sig-inline-preview:hover .image-thumbnail-remove:hover .material-symbols-sharp {
-      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
     }
 
     .sig-draw-surface.has-signature:hover .image-thumbnail-remove,
@@ -1855,16 +1919,16 @@
      * @file BC Hydro Distribution Engineering "Check & Review Form".
      *
      * Structure of this file:
-     *   1. Configuration      - checklist text, risk rules, limits, CDN URLs
+     *   1. Configuration        - checklist text, risk rules, limits, and asset URLs
      *   2. DOM + asset helpers
-     *   3. Sanitization       - DOMPurify with an allowlist fallback
-     *   4. HtmlBuilder           - builds the form markup with DOM calls
-     *   5. Toast              - global notice banner
-     *   6. SignatureManager   - draw/upload signatures, modal, gating
-     *   7. CommentEditorManager - Quill (or fallback) comment editors
-     *   8. CheckForm          - main orchestrator, PDF export, snapshot
-     *   9. readerSummary      - text mirror of the form for reader modes
-     *   10. Boot
+     *   3. Sanitization         - DOMPurify with an allowlist fallback
+     *   4. HtmlBuilder          - constructs the form markup with DOM calls
+     *   5. Toast                - global notice banner
+     *   6. SignatureManager     - signature drawing, uploads, previews, and gating
+     *   7. CommentEditorManager - Quill or contenteditable comment editors
+     *   8. CheckForm            - form orchestration, validation, PDF export, and snapshots
+     *   9. readerSummary        - text mirror of the form for reader modes
+     *   10. Boot                - initialize and mount the form
      */
 
 
@@ -1880,9 +1944,9 @@
         'Meets BCH format and template standards?',
         'Includes standard BCH waivers/disclaimers?',
         'Uses correct calculations / up-to-date software?',
-        `Work is deemed as "Low-Risk" as per the latest <a href="file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/" target="_blank" rel="noopener noreferrer"><strong>DE Documents and Processes</strong></a> sheet, or per a completed <a href="https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae" target="_blank" rel="noopener noreferrer"><strong>Project Based Risk Assessment</strong></a> for work not listed in that sheet.`,
-        `Work is a non-standard structural design.`,
-        `Work is defined as 'High-Risk'.`,
+        'Work is deemed as "Low-Risk".',
+        'Work is a non-standard structural design.',
+        'Work is defined as "High-Risk".',
         'I am a Professional Registrant who is appropriately qualified with current expertise in the discipline and type of work to self-check.',
       ],
       DS_ITEMS: [
@@ -1974,6 +2038,11 @@
         prefix: 'info',
         cardId: 'card-info',
         cardKey: 'cardInfo',
+      },
+      {
+        prefix: 're',
+        cardId: 'card-re',
+        cardKey: 'cardRe',
       },
       {
         prefix: 'sc',
@@ -2115,9 +2184,9 @@
     };
 
     /**
-     * Loads one script or stylesheet and resolves when it is usable.
-     * Rejects on error, on timeout, or when `isReady` says the asset loaded
-     * but did not define what it should (for example a captive-portal HTML page).
+     * Loads one script or stylesheet and resolves after it loads and passes the optional readiness check.
+     * Rejects on load error, timeout, or when `isReady` returns false (for example, if a captive portal
+     * returns HTML instead of the requested library).
      * @param {string} src Asset URL.
      * @param {'script'|'stylesheet'} kind Asset type.
      * @param {number} timeoutMs Give up after this many milliseconds.
@@ -2257,7 +2326,7 @@
 
     /**
      * Tells whether a URL is safe to keep in sanitized HTML.
-     * Allows relative URLs, anchors, http(s), mailto, tel, file, and data:image.
+     * Allows relative URLs, anchors, http(s), mailto, tel, file, and PNG, JPEG, GIF, or WEBP data URLs.
      * @param {string} value URL from an href or src attribute.
      * @returns {boolean}
      */
@@ -2271,7 +2340,7 @@
      * Cleans untrusted HTML down to a small set of tags and attributes.
      * Uses DOMPurify when loaded; otherwise a template-based allowlist walker.
      * @param {string} html Untrusted HTML.
-     * @returns {string} Safe HTML, or the empty-editor placeholder when nothing is left.
+     * @returns {string} Sanitized HTML; the fallback path uses the empty-editor placeholder if no content remains.
      */
     function sanitizeHtml (html) {
       if (!html) return CONFIG.EMPTY_EDITOR_HTML;
@@ -2311,7 +2380,7 @@
     }
 
     /**
-     * Escapes the five HTML-significant characters for safe use in markup text or attributes.
+     * Escapes ampersands, angle brackets, and double quotes for safe use in markup text or attributes.
      * @param {*} text Value to escape (converted to string).
      * @returns {string}
      */
@@ -2340,6 +2409,17 @@
      */
     function resolveCommentEditor (el) {
       return el?.closest?.('.comments-inline-editor, .ql-editor, .ql-container') ?? null;
+    }
+
+    /**
+     * Finds the editing surface for a comment field in the live or cloned document.
+     * @param {string} fieldId Hidden field id.
+     * @param {ParentNode} root Search root.
+     * @returns {Element|null}
+     */
+    function commentSurface (fieldId, root = document) {
+      const container = root.querySelector(`#${CSS.escape(fieldId + '-editor')}`);
+      return container?.matches('.comments-inline-editor') ? container : container?.querySelector('.ql-editor') ?? null;
     }
 
     // ============================================================
@@ -2500,7 +2580,7 @@
        * @param {string} [cfg.testid] data-testid of the Clear button.
        * @returns {HTMLDivElement}
        */
-      secHead ({ id, controls, open, numId, num, title, badgeId, clearId, testid, tooltip }) {
+      secHead ({ id, controls, open, numId, num, title, badgeId, clearId, testid, tooltip, close = false }) {
         const { el, icon, clearBtn } = HtmlBuilder;
         return el(
           'div',
@@ -2519,7 +2599,7 @@
             el('span', { class: 'sec-title', text: title })
           ),
           el('div', { class: 'sec-right' }, badgeId && el('span', { class: 'sec-badge', id: badgeId, text: '0 / 0' })
-            , clearBtn(clearId, testid), el('div', { class: 'chevron' }, icon('keyboard_arrow_down')))
+            , clearId && clearBtn(clearId, testid), !close ? el('div', { class: 'chevron' }, icon('keyboard_arrow_down')) : el('div', { class: 'close', role: 'button', tabindex: '0', 'aria-label': `Close ${title}` }, icon('cancel')))
         );
       }
 
@@ -2582,15 +2662,18 @@
           cls,
           null,
           el('label', { class: 'field-label', for: forId, text: label }),
-          el(
-            'select',
-            { class: 'field-input', id: forId, name: forId, required: true, ...(locked ? { disabled: true } : {}) },
+          el('div', { class: 'select-wrapper' },
             el(
-              'option',
-              Object.assign({ value: '', selected: true }, placeholder.disabled ? { disabled: true } : {}),
-              placeholder.text
+              'select',
+              { class: 'field-input', id: forId, name: forId, required: true, ...(locked ? { disabled: true } : {}) },
+              el(
+                'option',
+                Object.assign({ value: '', selected: true }, placeholder.disabled ? { disabled: true } : {}),
+                placeholder.text
+              ),
+              options.map(o => el('option', { text: o }))
             ),
-            options.map(o => el('option', { text: o }))
+            el('span', { class: 'material-symbols-sharp', text: 'expand_circle_down' })
           )
         );
       }
@@ -2609,7 +2692,21 @@
         return this.metaCell(
           'role-cell',
           null,
-          el('div', { class: 'field-label', id: 'roleLabel', text: 'Your Role' }),
+          el(
+            'div',
+            { class: 'field-label', id: 'roleLabel', text: 'Your Role' },
+            el(
+              'a',
+              {
+                href: '#',
+                class: 'help-link',
+                'aria-label': 'Show reference',
+                'aria-controls': 'card-re',
+                'aria-expanded': 'false',
+              },
+              el('span', { class: 'material-symbols-sharp', text: 'contact_support' })
+            )
+          ),
           el(
             'div',
             { class: 'role-selector', role: 'radiogroup', 'aria-labelledby': 'roleLabel' },
@@ -2638,7 +2735,21 @@
         return this.metaCell(
           'risk-level-cell',
           null,
-          el('div', { class: 'field-label', id: 'riskLevelLabel', text: 'Risk Level' }),
+          el(
+            'div',
+            { class: 'field-label', id: 'riskLevelLabel', text: 'Risk Level ' },
+            el(
+              'a',
+              {
+                href: '#',
+                class: 'help-link',
+                'aria-label': 'Show reference',
+                'aria-controls': 'card-re',
+                'aria-expanded': 'false',
+              },
+              el('span', { class: 'material-symbols-sharp', text: 'contact_support' })
+            )
+          ),
           el('div', { class: 'risk-row', id: 'riskButtons' }, btn('low', 'Low'), btn('medium', 'Medium'), btn('high', 'High'))
         );
       }
@@ -2646,8 +2757,9 @@
       /* ---------- comments / check / signature blocks ---------- */
 
       /**
-       * Creates one rich-text comment cell: label, editor container, hidden input, image gallery.
-       * The element lockControl derive from `base`: `<base>-editor`, `<base>-gallery`, `for_<base>`.
+       * Creates one rich-text comment cell with a label, editor container, hidden input, and image gallery.
+       * IDs are derived from `base`: `<base>-editor`, `<base>-gallery`, and `for_<base>`; the hidden
+       * input uses `base` as both its ID and name.
        * @param {{cellId: string, base: string, label: string, placeholder: string}} cfg Cell settings.
        * @returns {HTMLDivElement}
        */
@@ -2715,7 +2827,7 @@
       /**
        * Left half of a signature grid: date input and typed name input.
        * @param {Object} cfg Settings.
-       * @param {string} cfg.p Section prefix; lockControl become `<p>_date` and `<p>_name`.
+       * @param {string} cfg.p Section prefix; the date and name input IDs are `<p>-date` and `<p>-name`.
        * @param {string} cfg.tid Prefix for data-testid values.
        * @param {string} cfg.nameLabel Label of the name field.
        * @param {string} [cfg.namePlaceholder='Type full name'] Name placeholder.
@@ -2780,7 +2892,7 @@
        * @param {string} cfg.label Label text.
        * @param {string} cfg.uploadAria aria-label for the hidden file input.
        * @param {boolean} cfg.lockTab Disable the tab buttons.
-       * @param {boolean} cfg.lockControl Give the pad and choose buttons lockControl and disable them.
+       * @param {boolean} cfg.lockControl Disable the draw-pad and image-chooser buttons.
        * @returns {HTMLDivElement}
        */
       sigCell ({ p, tid, labelId, label, uploadAria, lockTab, lockControl }) {
@@ -3065,6 +3177,53 @@
               })
             )
           )
+        );
+      }
+
+      buildReferenceCard () {
+        const { el, icon } = HtmlBuilder;
+        const referenceText_1 = el();
+        const referenceText_2 = el(
+          'span',
+          { class: 'check-text' },
+          'Work is deemed as "Low-Risk" as per the latest ',
+          el(
+            'a',
+            {
+              href: 'file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/',
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            },
+            el('strong', { text: 'DE Documents and Processes' })
+          ),
+          ' sheet, or per a completed ',
+          el(
+            'a',
+            {
+              href: 'https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae',
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            },
+            el('strong', { text: 'Project Based Risk Assessment' })
+          ),
+          ' for work not listed in that sheet.'
+        );
+        const reference = (text) => el('div', { class: 'reference' }, el('div', {
+          class: 'reference-bullet', text: "◯",
+        }), text);
+
+        return this.card(
+          { id: 'card-re', prefix: 're', hidden: true },
+          this.secHead({
+            id: 'sec-re-head',
+            controls: 'sec-re-body',
+            open: false,
+            numId: 'snum-re',
+            num: icon('asterisk'),
+            title: 'Reference',
+            close: true,
+          }),
+          this.secBody('sec-re-body', true, el('div', { id: 're-rows', 'data-section': 're' }, reference(referenceText_1), reference(referenceText_2)))
         );
       }
 
@@ -3490,6 +3649,7 @@
             // Validation announcer
             el('div', { role: 'alert', 'aria-live': 'assertive', id: 'validationMessages', class: 'sr-only' }),
             this.buildInfoCard(),
+            this.buildReferenceCard(),
             this.buildSelfCheckCard(),
             this.buildCheckCard(),
             this.buildPeerReviewCard(),
@@ -3824,9 +3984,7 @@
        */
       updatingCommentsTextColor (prefix) {
         const card = getById(`card-${prefix}`);
-        console.log(card);
         const commentsText = card?.querySelector('.check-comments .check-text');
-        console.log(commentsText);
         if (commentsText) {
           commentsText.style.color = this.isEnabledByComments(prefix) ? 'var(--color-primary)' : 'var(--color-error)';
         }
@@ -4211,9 +4369,9 @@
      */
     class CommentEditorManager {
       #host;
-      #initialized = false;
-      #quillEditors = null;
-      #fallbackEditors = null;
+      #loadPromise = null;
+      #quillEditors = {};
+      #fallbackEditors = {};
       #syncRaf = 0;
 
       /**
@@ -4226,36 +4384,50 @@
       // ---------- Lazy init ----------
 
       /**
-       * Starts editor setup the first time it is needed; later calls only move focus.
-       * @param {Element} [focusTarget] Element near the editor to focus once ready.
+       * Loads editor dependencies once and initializes the requested editor's pair on demand.
+       * @param {Element} focusTarget Element in the editor wrapper.
+       * @param {boolean} [focusAfterInit=false] Whether to focus after initialization.
        * @returns {void}
        */
-      ensureInitialized (focusTarget) {
-        if (this.#initialized) {
-          if (focusTarget) this.#focusEditorNear(focusTarget);
-          return;
-        }
-        this.#initialized = true;
-        this.#init(focusTarget);
+      ensureInitialized (focusTarget, focusAfterInit = false) {
+        const wrapper = focusTarget?.closest('.rich-text-wrapper');
+        const fieldId = wrapper?.querySelector('input[type="hidden"]')?.id;
+        if (!fieldId) return;
+        const pair = CONFIG.COMMENT_PAIRS.find(ids => ids.includes(`${fieldId}-editor`)) || [`${fieldId}-editor`];
+        const fields = CONFIG.COMMENT_FIELDS.filter(([id]) => pair.includes(`${id}-editor`));
+        if (!fields.length || fields.every(([id]) => this.#quillEditors[id] || this.#fallbackEditors[id])) return;
+        this.#loadPromise ??= this.#loadEditorMode();
+        this.#loadPromise.then(mode => {
+          if (!wrapper.isConnected || fields.every(([id]) => this.#quillEditors[id] || this.#fallbackEditors[id])) return;
+          const activeWrapper = focusAfterInit ? document.activeElement?.closest('.rich-text-wrapper') : null;
+          const activeId = activeWrapper?.querySelector('input[type="hidden"]')?.id;
+          const shouldFocus = fields.some(([id]) => id === activeId && !this.#quillEditors[id] && !this.#fallbackEditors[id]);
+          for (const [id, placeholder] of fields) {
+            if (this.#quillEditors[id] || this.#fallbackEditors[id]) continue;
+            if (mode === 'quill') this.#initQuillEditor(id, placeholder);
+            else this.#initFallbackEditor(id, placeholder);
+          }
+          this.syncHeights();
+          if (shouldFocus) this.#focusEditorNear(activeWrapper);
+        }).catch(err => {
+          console.error('Comment editor initialization failed:', err);
+          this.#host.showToast('Could not initialize the comment editor.', 'error');
+        });
       }
 
       /**
-       * Loads dependencies and builds editors; uses fallback editors on failure.
-       * @param {Element} [focusTarget] Element near the editor to focus afterward.
-       * @returns {Promise<void>}
+       * Loads editor dependencies, selecting the fallback if Quill is unavailable.
+       * @returns {Promise<'quill'|'fallback'>}
        */
-      async #init (focusTarget) {
+      async #loadEditorMode () {
         try {
           await this.#loadDependencies();
-          this.#initQuillEditors();
+          return 'quill';
         } catch (err) {
           console.warn('Quill unavailable, using fallback:', err);
           this.#host.showToast('Rich‑text editor failed to load, simple text mode active', 'warn');
-          this.#initFallbackEditors();
+          return 'fallback';
         }
-        if (!this.#host.isRestored) this.restore();
-        this.syncHeights();
-        if (focusTarget) this.#focusEditorNear(focusTarget);
       }
 
       /**
@@ -4328,7 +4500,7 @@
        * @returns {void}
        */
       #setQuillHtml (quill, html) {
-        quill.setContents(quill.clipboard.convert(sanitizeHtml(html)), 'silent');
+        quill.setContents(quill.clipboard.convert({ html: sanitizeHtml(html) }), 'silent');
       }
 
       /**
@@ -4403,35 +4575,39 @@
       }
 
       /**
-       * Replaces each editor container with a Quill instance, keeping any existing content.
+       * Replaces one editor container with a Quill instance, keeping any existing content.
+       * @param {string} fieldId Hidden field id.
+       * @param {string} placeholder Editor placeholder.
        * @returns {void}
        */
-      #initQuillEditors () {
+      #initQuillEditor (fieldId, placeholder) {
         const quillConfig = {
           theme: 'snow',
           modules: {
             toolbar: [['bold', 'italic', 'underline'], [{ list: 'ordered' }], ['link'], ['clean']],
           },
         };
-        this.#quillEditors = {};
-        this.#fallbackEditors = null;
-        CONFIG.COMMENT_FIELDS.forEach(([fieldId, placeholder]) => {
-          const container = getById(`${fieldId}-editor`);
-          if (!container) return;
-          container
-            .closest('.rich-text-wrapper')
-            ?.querySelectorAll('.ql-toolbar')
-            .forEach(t => t.remove());
-          const existingHtml = container.querySelector('.ql-editor')?.innerHTML ?? '';
-          container.classList.remove('ql-snow');
-          container.innerHTML = '<div class="ql-editor"></div>';
-          const quill = new Quill(container, { ...quillConfig, placeholder });
-          this.#quillEditors[fieldId] = quill;
-          if (existingHtml && existingHtml !== CONFIG.EMPTY_EDITOR_HTML) {
-            this.#setQuillHtml(quill, existingHtml);
-          }
-          this.#bindQuillEditor(quill, fieldId);
-        });
+        const container = getById(`${fieldId}-editor`);
+        if (!container) return;
+        container
+          .closest('.rich-text-wrapper')
+          ?.querySelectorAll('.ql-toolbar')
+          .forEach(t => t.remove());
+        const existingHtml = getById(fieldId)?.value || container.querySelector('.ql-editor')?.innerHTML || '';
+        if (container.matches('.comments-inline-editor')) {
+          container.className = 'ql-container';
+          container.removeAttribute('contenteditable');
+          container.removeAttribute('data-editor-bound');
+          container.closest('.rich-text-wrapper')?.classList.remove('comments-editor-fallback');
+        }
+        container.classList.remove('ql-snow');
+        container.innerHTML = '<div class="ql-editor"></div>';
+        const quill = new Quill(container, { ...quillConfig, placeholder });
+        this.#quillEditors[fieldId] = quill;
+        if (existingHtml && existingHtml !== CONFIG.EMPTY_EDITOR_HTML) {
+          this.#setQuillHtml(quill, existingHtml);
+        }
+        this.#bindQuillEditor(quill, fieldId);
         this.scheduleSyncHeights();
       }
 
@@ -4455,44 +4631,48 @@
       // ---------- Fallback editors (Quill failed / unavailable) ----------
 
       /**
-       * Builds simple contenteditable editors in place of Quill.
+       * Builds a simple contenteditable editor in place of Quill.
+       * @param {string} fieldId Hidden field id.
+       * @param {string} placeholder Editor placeholder.
        * @returns {void}
        */
-      #initFallbackEditors () {
-        this.#quillEditors = null;
-        this.#fallbackEditors = {};
-        CONFIG.COMMENT_FIELDS.forEach(([fieldId, placeholder]) => {
-          const container = getById(`${fieldId}-editor`);
-          const wrapper = container?.closest('.rich-text-wrapper');
-          const hidden = getById(fieldId);
-          const gallery = getById(`${fieldId}-gallery`);
-          if (!container || !wrapper || !hidden) return;
-          wrapper.classList.add('comments-editor-fallback');
+      #initFallbackEditor (fieldId, placeholder) {
+        const container = getById(`${fieldId}-editor`);
+        const wrapper = container?.closest('.rich-text-wrapper');
+        const hidden = getById(fieldId);
+        const gallery = getById(`${fieldId}-gallery`);
+        if (!container || !wrapper || !hidden) return;
+        wrapper.classList.add('comments-editor-fallback');
+        const initial = hidden.value || (container.matches('.comments-inline-editor')
+          ? container.innerHTML
+          : container.querySelector('.ql-editor')?.innerHTML) || '';
+        let editor = container.matches('.comments-inline-editor') ? container : wrapper.querySelector('.comments-inline-editor');
+        if (container !== editor) {
           container.removeAttribute('id');
           container.hidden = true;
-          const initial = hidden.value || container.querySelector('.ql-editor')?.innerHTML || '';
-          wrapper.querySelector('textarea.comments-textarea')?.remove();
-          let editor = wrapper.querySelector('.comments-inline-editor');
-          if (!editor) {
-            editor = document.createElement('div');
-            editor.className = 'field-input comments-textarea comments-inline-editor';
-            wrapper.insertBefore(editor, hidden);
-          }
-          editor.contentEditable = 'true';
-          editor.id = `${fieldId}-editor`;
-          editor.innerHTML = sanitizeHtml(this.#buildInitialHtml(initial, gallery));
-          this.#bindFallbackEditor(editor, fieldId, placeholder);
-          this.#fallbackEditors[fieldId] = editor;
-          this.syncHidden(fieldId);
-          this.updatePlaceholder(editor);
-          const commentsArea = wrapper.closest('.comments-area');
-          if (commentsArea && !commentsArea.querySelector('.comments-paste-hint')) {
-            const hint = document.createElement('p');
-            hint.className = 'comments-paste-hint';
-            hint.textContent = 'Tip: Ctrl+V to paste screenshots inside the comment box.';
-            commentsArea.appendChild(hint);
-          }
-        });
+        }
+        wrapper.querySelector('textarea.comments-textarea')?.remove();
+        if (!editor) {
+          editor = document.createElement('div');
+          editor.className = 'field-input comments-textarea comments-inline-editor';
+          wrapper.insertBefore(editor, hidden);
+        }
+        editor.hidden = false;
+        editor.contentEditable = 'true';
+        editor.id = `${fieldId}-editor`;
+        editor.innerHTML = sanitizeHtml(this.#buildInitialHtml(initial, gallery));
+        delete editor.dataset.editorBound;
+        this.#bindFallbackEditor(editor, fieldId, placeholder);
+        this.#fallbackEditors[fieldId] = editor;
+        this.syncHidden(fieldId);
+        this.updatePlaceholder(editor);
+        const commentsArea = wrapper.closest('.comments-area');
+        if (commentsArea && !commentsArea.querySelector('.comments-paste-hint')) {
+          const hint = document.createElement('p');
+          hint.className = 'comments-paste-hint';
+          hint.textContent = 'Tip: Ctrl+V to paste screenshots inside the comment box.';
+          commentsArea.appendChild(hint);
+        }
         this.scheduleSyncHeights();
       }
 
@@ -4783,6 +4963,7 @@
             const entry = Object.entries(this.#quillEditors).find(([, q]) => q.root === el);
             if (entry) {
               entry[1].setContents([], 'silent');
+              entry[1].history.clear();
               this.syncHidden(entry[0]);
               return;
             }
@@ -4799,17 +4980,6 @@
        */
       clearGalleries (root) {
         root.querySelectorAll('.comments-image-gallery').forEach(g => g.replaceChildren());
-      }
-
-      /**
-       * Loads each hidden input's saved HTML back into its editor.
-       * @returns {void}
-       */
-      restore () {
-        CONFIG.COMMENT_FIELDS.forEach(([fieldId]) => {
-          const hidden = getById(fieldId);
-          if (hidden?.value) this.setHtml(fieldId, hidden.value);
-        });
       }
 
       // ---------- Cleanup ----------
@@ -4850,6 +5020,7 @@
       #comments;
       #toast;
       #clickActions;
+      #referenceTrigger = null;
       #boundClick;
       #boundChange;
       #boundInput;
@@ -4857,6 +5028,7 @@
       #boundFocusin;
       #boundPointerdown;
       #boundSubmit;
+      #boundBlur;
       #progressTimer = null;
       #noticeCache = new WeakMap();
       #peerRequired = null;
@@ -4887,15 +5059,16 @@
           exportPdfBtn: () => this.exportPdf(),
           dismissNoticeBtn: () => this.hideToast(),
         };
+        this.#boundBlur = e => this.#handleBlur(e);
         this.#boundClick = e => this.#handleClick(e);
         this.#boundChange = e => this.#handleChange(e);
         this.#boundInput = e => this.#handleInput(e);
         this.#boundKeydown = e => this.#handleKeydown(e);
         this.#boundFocusin = e => {
-          if (resolveCommentEditor(e.target)) this.#comments.ensureInitialized();
+          if (resolveCommentEditor(e.target)) this.#comments.ensureInitialized(e.target, true);
         };
         this.#boundPointerdown = e => {
-          if (e.target.closest?.('.rich-text-wrapper')) this.#comments.ensureInitialized(e.target);
+          if (e.target.closest?.('.rich-text-wrapper')) this.#comments.ensureInitialized(e.target, true);
         };
         this.#boundSubmit = e => {
           e.preventDefault();
@@ -4947,6 +5120,8 @@
           progressStrip: getById('progressStrip'),
           progressBar: getById('progressBar'),
           progressPct: getById('progressPct'),
+          reHead: getById('sec-re-head'),
+          reBody: getById('sec-re-body'),
           workTitle: getById('workTitle'),
           engineer: getById('engineer'),
           revision: getById('revision'),
@@ -5206,11 +5381,14 @@
        * @returns {void}
        */
       #onFieldMaybeValid (target) {
-        if (!target.matches('input, select') || !target.validity.valid) return;
-        target.previousElementSibling?.removeAttribute('style');
+        if (!target.matches('input, select')) return;
         this.scheduleUpdateProgress();
       }
 
+      #handleBlur (e) {
+        const target = e.target;
+        this.#onFieldMaybeValid(target);
+      }
       /**
        * Single click handler for the whole page (event delegation).
        * Order: signature tabs, open pad, clear preview, modal actions, section toggle,
@@ -5220,6 +5398,28 @@
        */
       #handleClick (e) {
         const target = e.target;
+
+        const referenceToggle = target.closest('.help-link[aria-controls="card-re"]');
+        const referenceClose = target.closest('#card-re .close');
+        if (referenceToggle || referenceClose) {
+          e.preventDefault();
+          if (referenceToggle) this.#referenceTrigger = referenceToggle;
+          const visible = this.elements.cardRe.classList.contains('hidden');
+          this.setSectionVisibility(
+            this.elements.cardRe,
+            this.elements.reHead,
+            this.elements.reBody,
+            visible
+          );
+          document.querySelectorAll('.help-link[aria-controls="card-re"]').forEach(link => {
+            link.setAttribute('aria-expanded', String(visible));
+            link.setAttribute('aria-label', `${visible ? 'Hide' : 'Show'} reference`);
+          });
+          if (referenceClose && !visible) {
+            (this.#referenceTrigger || query('.help-link[aria-controls="card-re"]'))?.focus();
+          }
+          return;
+        }
 
         // Signature method tabs
         const tabBtn = target.closest('.btn-sig-tab');
@@ -5294,12 +5494,13 @@
        */
       #handleChange (e) {
         const target = e.target;
+        this.#onFieldMaybeValid(target);
+
         if (target.matches('input[type="radio"]')) {
           target.previousElementSibling?.removeAttribute('style');
           this.#onRadioChange(target);
           return;
         }
-        this.#onFieldMaybeValid(target);
         if (target.id === 'minCheckLevel') this.syncSectionVisibility();
         this.#comments.handleFieldEvent(target);
       }
@@ -5339,6 +5540,12 @@
         if (e.key === 'Escape' && this.#sig.isOpen()) {
           e.preventDefault();
           this.#sig.close(false);
+          return;
+        }
+        const referenceClose = e.target.closest('#card-re .close');
+        if (referenceClose && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          referenceClose.click();
           return;
         }
         const head = e.target.closest('.sec-head');
@@ -5843,7 +6050,7 @@
         for (const el of this.elements.allRequiredFields) {
           if (this.#isUnderlineHidden(el)) continue;
           const label = el.parentElement.querySelector('.field-label')
-            ?? el.closest('.sig-cell-sub')?.querySelector('.field-label');
+            ?? el.closest('div[class$="-cell"]')?.querySelector('.field-label');
           if (!label) continue;
           const previous = label.style.color;
           label.style.color = '#d32f2f';
@@ -5858,6 +6065,7 @@
        * @returns {boolean} True when the field counts as valid.
        */
       #isUnderlineHidden (el) {
+
         if (el.closest('.hidden, [hidden]')) return true;
         const card = el.closest('.card');
         if (card && !this.isSectionActive(card)) return true;
@@ -5866,8 +6074,9 @@
         if (ctrl.disabled) return true; // disabled -> not required
         if (ctrl.classList?.contains('role-selector')) return !!ctrl.querySelector('input[type="radio"]:checked');
         if (ctrl.classList?.contains('risk-row')) return !!ctrl.querySelector('.risk-btn.active');
+        if (ctrl.classList?.contains('select-wrapper')) return !!ctrl.querySelector('select').validity?.valid;
         if (ctrl.tagName === 'INPUT' || ctrl.tagName === 'SELECT' || ctrl.tagName === 'TEXTAREA') {
-          return ctrl.validity.valid;
+          return ctrl.validity?.valid;
         }
         return true;
       }
@@ -6180,7 +6389,7 @@
         const maxHeight = 400; // Assuming maxHeight should be the same as maxWidth for now.
         let wRatio = maxWidth / image.naturalWidth;
         let hRatio = maxHeight / image.naturalHeight;
-        const scale = Math.min(wRatio, hRatio);
+        const scale = Math.min(1, wRatio, hRatio);
 
         const canvas = document.createElement('canvas');
         canvas.width = Math.round(image.naturalWidth * scale);
@@ -6370,8 +6579,10 @@
             };
           });
 
-        const signatures = await Promise.all(CONFIG.SIG_PREFIXES.map(prefix => (visible[prefix] ? this.#signatureForPdf(prefix) : '')));
-        const sigOf = Object.fromEntries(CONFIG.SIG_PREFIXES.map((prefix, i) => [prefix, signatures[i]]));
+        const sigOf = {};
+        for (const prefix of CONFIG.SIG_PREFIXES) {
+          sigOf[prefix] = visible[prefix] ? await this.#signatureForPdf(prefix) : '';
+        }
         // Which section each comment box belongs to (decides whether it is exported).
         const commentSections = {
           checkerComments: 'ch',
@@ -6381,10 +6592,10 @@
           ind_reviewerComments: 'ir',
           ind_engineerResponse_2: 'ir',
         };
-        const commentPairs = await Promise.all(
-          CONFIG.COMMENT_FIELDS.map(async ([id]) => [id, visible[commentSections[id]] ? await this.#commentContent(id) : []])
-        );
-        const comments = Object.fromEntries(commentPairs);
+        const comments = {};
+        for (const [id] of CONFIG.COMMENT_FIELDS) {
+          comments[id] = visible[commentSections[id]] ? await this.#commentContent(id) : [];
+        }
 
         return {
           workInfo: {
@@ -6773,7 +6984,6 @@
       }
 
       // ---------- PDF section builders ----------
-
       /**
        * Builds the PDF page header: logo (or a text fallback) and the form title.
        * @param {string} logo Logo data URL, or ''.
@@ -6870,8 +7080,6 @@
         };
       }
 
-
-
       /**
        * Builds Section 3 (Check).
        * @param {Object} data Check data.
@@ -6880,8 +7088,7 @@
       #buildCheckSection (data) {
         return {
           stack: [
-            // { id: 'section-title:ch', text: '3. Check', style: 'sectionTitle' },
-            // this.#buildChecklistBlock(data.checklist, 'ch'),
+
             this.#buildListTable(data),
             this.#buildCommentsBlock(data.comments, data.response),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Checker', 'ch'),
@@ -6913,7 +7120,6 @@
         return {
           stack: [
             this.#buildListTable(data),
-
             this.#buildCommentsBlock(data.comments, data.response),
             this.#buildSignatureBlock(data.name, data.date, data.signature, 'Independent Reviewer', 'ir'),
           ],
@@ -7019,6 +7225,12 @@
         const progressVal = this.elements.progressBar.value;
         clone.querySelector('#progressBar')?.setAttribute('value', progressVal);
         formState.progressBar = progressVal;
+
+        for (const [fieldId] of CONFIG.COMMENT_FIELDS) {
+          const editor = commentSurface(fieldId, clone);
+          if (editor && getById(fieldId)?.value) editor.replaceChildren();
+        }
+        clone.querySelectorAll('script[data-snapshot-form-state]').forEach(script => script.remove());
 
         // Metadata block (checked state also lives in the cloned attributes above).
         // "<" is escaped as \u003c so the JSON can never close its own <script> tag.
@@ -7161,6 +7373,13 @@
      */
     function boot () {
       if (!getById('check_form')) new HtmlBuilder().mount();
+      for (const [fieldId] of CONFIG.COMMENT_FIELDS) {
+        const hidden = getById(fieldId);
+        const editor = commentSurface(fieldId);
+        if (hidden?.value && editor && !editor.hasChildNodes()) {
+          editor.innerHTML = sanitizeHtml(hidden.value);
+        }
+      }
       window.__checkFormInstance = new CheckForm();
       // Reader summary runs after CheckForm has built the question rows
       setTimeout(() => readerSummary.init(), 0);
@@ -7169,8 +7388,28 @@
     if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', boot);
     else boot();
 
-    // Exposed for debugging / automation
+    // Console examples: CheckFormAPI.getState(), CheckFormAPI.getReadinessState(), CheckFormAPI.instance
     window.CheckForm = CheckForm;
+    window.CheckFormAPI = Object.freeze({
+      get instance () {
+        if (!window.__checkFormInstance) throw new Error('CheckForm has not initialized yet.');
+        return window.__checkFormInstance;
+      },
+      getState: () => Object.fromEntries(
+        Object.entries(window.CheckFormAPI.instance.formState).map(([section, answers]) => [section, { ...answers }])
+      ),
+      getReadinessState: () => window.CheckFormAPI.instance.getReadinessState(),
+      allRequiredFieldsValid: () => window.CheckFormAPI.instance.allRequiredFieldsValid(),
+      computeVisibilityState: () => window.CheckFormAPI.instance.computeVisibilityState(),
+      getRadioValue: name => window.CheckFormAPI.instance.getRadioValue(name),
+      getActiveRiskLevel: () => window.CheckFormAPI.instance.getActiveRiskLevel(),
+      evaluateRiskNotices: input => CheckForm.evaluateRiskNotices(input),
+      setRiskLevel: level => window.CheckFormAPI.instance.setRiskLevel(level),
+      updateProgress: () => window.CheckFormAPI.instance.updateProgress(),
+      answerLabel,
+      sanitizeHtml,
+      CONFIG,
+    });
 
   </script>
 </body>
