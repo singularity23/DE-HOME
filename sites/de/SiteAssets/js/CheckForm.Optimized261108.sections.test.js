@@ -168,6 +168,109 @@ test('signature updates keep the hidden value and preview synchronized', async (
   }
 });
 
+test('signature upload in the copy remains on the upload tab with a removable preview', async () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108 copy.html'), 'utf8');
+  const dom = await createForm(source);
+  let restored;
+  try {
+    const { document, __checkFormInstance: form } = dom.window;
+    const file = new dom.window.File(['signature'], 'signature.png', { type: 'image/png' });
+    for (const prefix of ['sc', 'ch']) {
+      if (prefix === 'ch') answer(document, 'ch_c_yes');
+      const input = document.getElementById(`${prefix}SigUpload`);
+      const uploadTab = document.getElementById(`${prefix}SigUploadTab`);
+      const uploadButton = document.getElementById(`${prefix}SigUploadBtn`);
+      const drawTab = document.getElementById(`${prefix}SigDrawTab`);
+      const drawButton = document.getElementById(`${prefix}SigDrawBtn`);
+      const uploadArea = uploadTab.querySelector('.sig-upload-area');
+      const hidden = document.getElementById(`${prefix}_sig_data`);
+      Object.defineProperty(input, 'files', { configurable: true, value: [file] });
+      input.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+      for (let i = 0; i < 100 && !hidden.value; i++) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      assert.equal(hidden.value, 'data:image/png;base64,c2lnbmF0dXJl');
+      assert.equal(uploadButton.getAttribute('aria-selected'), 'true');
+      assert.equal(drawButton.getAttribute('aria-selected'), 'false');
+      assert.equal(uploadTab.classList.contains('active'), true);
+      assert.equal(drawTab.classList.contains('active'), false);
+      assert.equal(uploadArea.querySelector('img').getAttribute('src'), hidden.value);
+      assert.equal(dom.window.getComputedStyle(uploadArea.querySelector('.sig-inline-preview')).display, 'flex');
+      assert.equal(dom.window.getComputedStyle(uploadArea.querySelector('.image-thumbnail-remove')).display, 'flex');
+
+      if (prefix === 'sc') {
+        let snapshot;
+        dom.window.Blob = class {
+          constructor (parts) { snapshot = parts.join(''); }
+        };
+        dom.window.URL.createObjectURL = () => 'blob:test';
+        dom.window.URL.revokeObjectURL = () => {};
+        dom.window.HTMLAnchorElement.prototype.click = () => {};
+        form.saveSnapshot();
+        restored = await createForm(snapshot);
+        const restoredDocument = restored.window.document;
+        assert.equal(restoredDocument.getElementById('sc_sig_data').value, hidden.value);
+        assert.equal(restoredDocument.querySelector('#scSigUploadTab img').getAttribute('src'), hidden.value);
+        assert.equal(restoredDocument.querySelector('#scSigDrawTab img').getAttribute('src'), hidden.value);
+      }
+
+      uploadArea.querySelector('.image-thumbnail-remove').click();
+      assert.equal(hidden.value, '');
+      assert.equal(uploadArea.querySelector('img').hasAttribute('src'), false);
+      assert.equal(uploadTab.classList.contains('active'), true);
+      assert.equal(dom.window.getComputedStyle(uploadArea.querySelector('.image-thumbnail-remove')).display, 'none');
+
+      form.setSignatureForTest(prefix, 'data:image/png;base64,ZHJhdw==');
+      assert.equal(drawButton.getAttribute('aria-selected'), 'true');
+      assert.equal(drawTab.classList.contains('active'), true);
+      assert.equal(drawTab.querySelector('img').getAttribute('src'), hidden.value);
+      assert.equal(uploadArea.querySelector('img').getAttribute('src'), hidden.value);
+    }
+  } finally {
+    restored?.window.close();
+    dom.window.close();
+  }
+});
+
+for (const mode of ['uninitialized', 'fallback']) {
+  test(`paired comment editors in the copy size independently (${mode})`, async () => {
+    let source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108 copy.html'), 'utf8');
+    if (mode === 'fallback') {
+      source = source.replace('      #loadDependencies () {', '      #loadDependencies () { return Promise.reject(new Error("offline"));');
+    }
+    const dom = await createForm(source);
+    try {
+      const { document } = dom.window;
+      const ids = ['checkerComments', 'engineerResponse'];
+      const firstContainer = document.getElementById(`${ids[0]}-editor`);
+      ids.forEach(id => document.getElementById(`${id}-editor`).closest('.comments-cell').classList.remove('hidden'));
+      if (mode === 'fallback') {
+        firstContainer.querySelector('.ql-editor').dispatchEvent(new dom.window.FocusEvent('focusin', { bubbles: true }));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+      const editors = ids.map(id => {
+        const container = document.getElementById(`${id}-editor`);
+        return container.matches('.comments-inline-editor') ? container : container.querySelector('.ql-editor');
+      });
+      let firstHeight = 340;
+      Object.defineProperty(editors[0], 'scrollHeight', { configurable: true, get: () => firstHeight });
+      Object.defineProperty(editors[1], 'scrollHeight', { configurable: true, get: () => 180 });
+      const eventType = mode === 'fallback' ? 'input' : 'change';
+      editors[0].dispatchEvent(new dom.window.Event(eventType, { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 80));
+      assert.deepEqual(editors.map(editor => editor.style.height), ['340px', '180px']);
+      assert.equal(dom.window.getComputedStyle(editors[0].closest('.comments-grid')).gridTemplateRows, 'auto auto');
+
+      firstHeight = 160;
+      editors[0].dispatchEvent(new dom.window.Event(eventType, { bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 80));
+      assert.deepEqual(editors.map(editor => editor.style.height), ['160px', '180px']);
+    } finally {
+      dom.window.close();
+    }
+  });
+}
+
 test('clear and reset flush pending refreshes once and preserve their scope and defaults', async () => {
   const dom = await createForm();
   try {
@@ -275,6 +378,69 @@ test('eligible sections remain collapsed across unrelated changes and reopen whe
     for (const n of [3, 5, 6]) assert.equal(isOpen(document, n), false);
     document.querySelector('.risk-btn[data-risk="high"]').click();
     for (const n of [3, 5, 6]) assert.equal(isOpen(document, n), true);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('medium risk tracks newly opened required fields and retains collapsed-section progress', async () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108 copy.html'), 'utf8');
+  const dom = await createForm(source);
+  try {
+    const { document, __checkFormInstance: form } = dom.window;
+    const enabledOpenFields = () => form.elements.allOpenRequired.filter(el => !el.previousSibling.disabled);
+    document.querySelector('.risk-btn[data-risk="medium"]').click();
+    const fields = enabledOpenFields();
+    assert.equal(fields.length, 12);
+    assert.ok(fields.some(el => el.previousElementSibling.id === 'ch-date'));
+    assert.ok(fields.some(el => el.previousElementSibling.id === 'ch-name'));
+    assert.equal(form.getReadinessState().pct, 12);
+
+    document.getElementById('sec3-head').click();
+    assert.equal(enabledOpenFields().length, 10);
+    assert.equal(form.getReadinessState().pct, 12);
+    document.getElementById('sec3-head').click();
+    assert.equal(enabledOpenFields().length, 12);
+
+    document.getElementById('ch-date').value = '2026-01-01';
+    const beforeName = form.getReadinessState().pct;
+    document.getElementById('ch-name').value = 'Checker';
+    assert.ok(form.getReadinessState().pct > beforeName);
+    document.querySelector('.risk-btn[data-risk="low"]').click();
+    assert.equal(enabledOpenFields().some(el => el.previousElementSibling.id === 'ch-date'), false);
+    document.querySelector('.risk-btn[data-risk="medium"]').click();
+    assert.equal(enabledOpenFields().length, 12);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('medium-risk progress includes incomplete fields in a collapsed Check section', async () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108 copy.html'), 'utf8');
+  const dom = await createForm(source);
+  try {
+    const { document, __checkFormInstance: form } = dom.window;
+    document.querySelector('.risk-btn[data-risk="medium"]').click();
+    for (let n = 1; n <= 11; n++) answer(document, `sc${n}_${[8, 9, 10].includes(n) ? 'no' : 'yes'}`);
+    for (let n = 1; n <= 10; n++) answer(document, `ch${n}_yes`);
+    for (const [id, value] of Object.entries({
+      workTitle: 'Test work',
+      deliverable: 'Memo',
+      engineer: 'Engineer',
+      checker: 'Checker',
+      'sc-date': '2026-01-01',
+      'sc-name': 'Engineer',
+      'ch-name': 'Checker',
+    })) {
+      document.getElementById(id).value = value;
+    }
+
+    document.getElementById('sec3-head').click();
+    assert.equal(form.getReadinessState().pct, 97);
+    assert.equal(form.getReadinessState().canSubmit, false);
+    document.getElementById('ch-date').value = '2026-01-01';
+    assert.equal(form.getReadinessState().pct, 100);
+    assert.equal(form.getReadinessState().canSubmit, true);
   } finally {
     dom.window.close();
   }
@@ -497,6 +663,178 @@ test('a saved fallback editor reopens and continues updating its hidden field', 
     assert.equal(restored.window.document.querySelectorAll('.comments-inline-editor').length, 2);
   } finally {
     restored?.window.close();
+    dom.window.close();
+  }
+});
+
+test('PDF comments and responses in the copy are stacked for every review section', async () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108 copy.html'), 'utf8');
+  const dom = await createForm(source);
+  try {
+    const { document, __checkFormInstance: form } = dom.window;
+    document.querySelector('.risk-btn[data-risk="high"]').click();
+    answer(document, 'sc9_yes');
+    document.getElementById('sec4-head').click();
+    const pairs = [
+      ['checkerComments', 'engineerResponse'],
+      ['reviewerComments', 'engineerResponse_2'],
+      ['ind_reviewerComments', 'ind_engineerResponse_2'],
+    ];
+    for (const [comments, response] of pairs) {
+      const extra = comments === 'checkerComments'
+        ? Array.from({ length: 60 }, (_, i) => `<p>Long comment line ${i + 1}</p>`).join('')
+        : '';
+      document.querySelector(`#${comments}-editor .ql-editor`).innerHTML = `<p><strong>${comments}</strong></p>${extra}`;
+      if (response !== 'ind_engineerResponse_2') {
+        document.querySelector(`#${response}-editor .ql-editor`).innerHTML = `<p>${response}</p>`;
+      }
+    }
+
+    const pdf = await form.buildPdfForTest();
+    const blocks = [];
+    const visit = node => {
+      if (!node || typeof node !== 'object') return;
+      if (node.id === 'keep-table:comments') blocks.push(node);
+      if (Array.isArray(node)) node.forEach(visit);
+      else if (node.stack) visit(node.stack);
+    };
+    visit(pdf.content);
+    assert.equal(blocks.length, 3);
+    blocks.forEach((block, index) => {
+      assert.deepEqual(Array.from(block.table.widths), ['*']);
+      assert.equal(block.table.headerRows, undefined);
+      const rows = block.table.body;
+      assert.equal(rows.length, 4);
+      assert.ok(rows.every(row => row.length === 1));
+      assert.equal(rows[0][0].text, 'Comments & Corrections');
+      assert.equal(rows[2][0].text, 'Engineer Response');
+      assert.equal(rows[1][0].stack[0].text[0].text, pairs[index][0]);
+      assert.equal(rows[1][0].stack[0].text[0].bold, true);
+      if (index === 2) assert.equal(rows[3][0].stack[0].text, 'None');
+      else assert.equal(rows[3][0].stack[0].text[0].text, pairs[index][1]);
+    });
+
+    const firstTable = blocks[0].table.body;
+    firstTable[1][0].stack[0].id = 'test-comment-start';
+    firstTable[1][0].stack.at(-1).id = 'test-comment-end';
+    firstTable[3][0].stack[0].id = 'test-response';
+    const positions = {};
+    const pageBreakBefore = pdf.pageBreakBefore;
+    pdf.pageBreakBefore = (node, container) => {
+      if (node.id?.startsWith('test-') && node.startPosition) positions[node.id] = node.startPosition;
+      return pageBreakBefore(node, container);
+    };
+    const pdfMake = require(path.join(__dirname, 'pdfmake.min.js'));
+    pdfMake.addVirtualFileSystem(require(path.join(__dirname, 'vfs_fonts.js')));
+    pdfMake.addFonts({
+      Roboto: {
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Medium.ttf',
+        italics: 'Roboto-Italic.ttf',
+        bolditalics: 'Roboto-MediumItalic.ttf',
+      },
+    });
+    const buffer = await pdfMake.createPdf(pdf).getBuffer();
+    assert.ok(buffer.length > 0);
+    assert.ok(positions['test-comment-end'].pageNumber > positions['test-comment-start'].pageNumber, JSON.stringify(positions));
+    assert.ok(positions['test-response'].pageNumber >= positions['test-comment-end'].pageNumber);
+    if (positions['test-response'].pageNumber === positions['test-comment-end'].pageNumber) {
+      assert.ok(positions['test-response'].top > positions['test-comment-end'].top);
+    }
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('PDF comment screenshots in the copy use the available width and fit on a page', async () => {
+  const marker = "      async #imageForPdf (dataUrl, description, { maxWidth = 1200, maxHeight = 400, type = 'image/png' } = {}) {";
+  const source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108 copy.html'), 'utf8');
+  assert.ok(source.includes(marker));
+  const dom = await createForm(source.replace(marker, marker +
+    "\n        (window.imageOptions ||= []).push({ description, maxWidth, maxHeight, type });\n        return dataUrl;"));
+  try {
+    const { document, __checkFormInstance: form } = dom.window;
+    document.querySelector('.risk-btn[data-risk="medium"]').click();
+    const landscape = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAC0lEQVR4nGNgAAMAAAcAAbKGrPQAAAAASUVORK5CYII=';
+    const portrait = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAECAIAAADAusJtAAAAC0lEQVR4nGNgQAUAABAAATm9j2UAAAAASUVORK5CYII=';
+    document.querySelector('#checkerComments-editor .ql-editor').innerHTML = `<p>Comment text</p><p><img src="${landscape}"></p>`;
+    document.querySelector('#engineerResponse-editor .ql-editor').innerHTML = `<p>Response text</p><p><img src="${portrait}"></p>`;
+    const pdf = await form.buildPdfForTest();
+    const commentBlock = pdf.content.flatMap(section => section.stack || [])
+      .flatMap(block => block.stack || [])
+      .find(block => block.id === 'keep-table:comments');
+    const commentNodes = commentBlock.table.body[1][0].stack;
+    const responseNodes = commentBlock.table.body[3][0].stack;
+    assert.equal(commentNodes[0].text[0].text, 'Comment text');
+    assert.equal(responseNodes[0].text[0].text, 'Response text');
+    const [wide, tall] = [commentNodes[1], responseNodes[1]];
+    assert.equal(wide.image, landscape);
+    assert.equal(tall.image, portrait);
+    assert.ok(wide.fit[0] > 500);
+    assert.ok(wide.fit[1] > 700);
+    assert.ok(dom.window.imageOptions.every(options =>
+      options.maxWidth === 2000 && options.maxHeight === 2000 && options.type === 'image/png'));
+
+    wide.id = 'test-wide-image';
+    tall.id = 'test-tall-image';
+    const positions = {};
+    const pageBreakBefore = pdf.pageBreakBefore;
+    pdf.pageBreakBefore = (node, container) => {
+      if (node.id?.startsWith('test-') && node.startPosition) positions[node.id] = node.startPosition;
+      return pageBreakBefore(node, container);
+    };
+    const pdfMake = require(path.join(__dirname, 'pdfmake.min.js'));
+    pdfMake.addVirtualFileSystem(require(path.join(__dirname, 'vfs_fonts.js')));
+    pdfMake.addFonts({ Roboto: {
+      normal: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Medium.ttf',
+      italics: 'Roboto-Italic.ttf',
+      bolditalics: 'Roboto-MediumItalic.ttf',
+    } });
+    const buffer = await pdfMake.createPdf(pdf).getBuffer();
+    assert.ok(buffer.length > 0);
+    assert.ok(Math.abs(wide._width - wide.fit[0]) < 0.1);
+    assert.ok(Math.abs(wide._width / wide._height - 2) < 0.001);
+    assert.ok(Math.abs(tall._width / tall._height - 0.25) < 0.001);
+    assert.ok(tall._height <= tall.fit[1]);
+    for (const [image, id] of [[wide, 'test-wide-image'], [tall, 'test-tall-image']]) {
+      assert.ok(positions[id]);
+      assert.ok(positions[id].top + image._height <= pdf.pageMargins[1] + positions[id].pageInnerHeight + 0.1);
+    }
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('PDF image conversion preserves screenshot detail and keeps signature limits', async () => {
+  const marker = '      async #buildPdfDefinition () {';
+  const source = fs.readFileSync(path.join(__dirname, '..', 'html', 'CheckForm.Optimized261108 copy.html'), 'utf8')
+    .replace(marker, '      imageForPdfForTest (url, opts) { return this.#imageForPdf(url, "test", opts); }\n' + marker);
+  const dom = await createForm(source);
+  try {
+    let dimensions = [1200, 900];
+    let rendered;
+    dom.window.Image = class {
+      constructor () { [this.naturalWidth, this.naturalHeight] = dimensions; }
+      async decode () {}
+    };
+    dom.window.HTMLCanvasElement.prototype.getContext = function () {
+      return { drawImage () {}, fillRect () { assert.fail('PNG transparency should be preserved'); } };
+    };
+    dom.window.HTMLCanvasElement.prototype.toDataURL = function (type) {
+      rendered = { width: this.width, height: this.height, type };
+      return 'data:image/png;base64,test';
+    };
+    const form = dom.window.__checkFormInstance;
+    await form.imageForPdfForTest('data:image/png;base64,test', { maxWidth: 2000, maxHeight: 2000 });
+    assert.deepEqual(rendered, { width: 1200, height: 900, type: 'image/png' });
+    dimensions = [4000, 1000];
+    await form.imageForPdfForTest('data:image/png;base64,test', { maxWidth: 2000, maxHeight: 2000 });
+    assert.deepEqual(rendered, { width: 2000, height: 500, type: 'image/png' });
+    dimensions = [1200, 900];
+    await form.imageForPdfForTest('data:image/png;base64,test', { maxWidth: 480 });
+    assert.deepEqual(rendered, { width: 480, height: 360, type: 'image/png' });
+  } finally {
     dom.window.close();
   }
 });
