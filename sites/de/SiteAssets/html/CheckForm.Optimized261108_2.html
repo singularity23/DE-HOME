@@ -176,6 +176,111 @@
       outline-offset: 1px;
     }
 
+    #section-navigation {
+      --drawer-bg: #fff;
+      --drawer-text: #242424;
+      --drawer-border: #d1d1d1;
+      --drawer-hover: #f0f0f0;
+      margin-bottom: 12px;
+    }
+
+    .section-navigation-layout {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    #section-navigation .section-navigation-trigger {
+      min-height: 44px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      background: var(--drawer-bg);
+      color: var(--drawer-text);
+      font: inherit;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    #section-navigation .section-navigation-trigger {
+      border-color: var(--drawer-border);
+      font-weight: 500;
+    }
+
+    #section-navigation .section-navigation-trigger:hover {
+      background: var(--drawer-hover);
+    }
+
+    #section-navigation .section-navigation-trigger:active {
+      border-color: var(--drawer-text);
+    }
+
+    #section-navigation .section-navigation-trigger:focus-visible {
+      outline: 2px solid #0078d4;
+      outline-offset: 2px;
+    }
+
+    #section-navigation .section-navigation-drawer {
+      width: min(320px, 100%);
+      min-width: 0;
+      min-height: 96px;
+      height: auto;
+      padding: 8px;
+      border: 1px solid var(--drawer-border);
+      border-radius: 4px;
+      background: var(--drawer-bg);
+      color: var(--drawer-text);
+      animation: section-drawer-enter 180ms ease-out;
+    }
+
+    #section-navigation .section-navigation-drawer[hidden] {
+      display: none;
+    }
+
+    @keyframes section-drawer-enter {
+      from {
+        opacity: 0;
+        transform: translateX(500px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #section-navigation {
+        --drawer-bg: #292929;
+        --drawer-text: #fff;
+        --drawer-border: #666;
+        --drawer-hover: #383838;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #section-navigation .section-navigation-drawer {
+        animation: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .section-navigation-layout {
+        flex-direction: column;
+      }
+
+      #section-navigation .section-navigation-drawer {
+        width: 100%;
+      }
+    }
+
+    @media print {
+      #section-navigation {
+        display: none;
+      }
+    }
+
     .material-symbols-sharp {
       font-family: 'Material Symbols Sharp';
       font-weight: normal;
@@ -1849,7 +1954,18 @@
 
 <body>
   <article id="readerSummary" class="sr-only" aria-label="Form summary (text version)"></article>
+  <div id="section-navigation">
+    <div class="section-navigation-layout">
+      <button type="button" class="section-navigation-trigger" aria-controls="section-navigation-drawer"
+        aria-expanded="false">Show drawer</button>
+      <div id="section-navigation-drawer" class="section-navigation-drawer" hidden>
+        <!-- Add drawer content here. -->
+      </div>
+    </div>
+  </div>
   <div id="app"></div>
+  <script defer src="../fluent-check-form-drawer/dist/check-form-drawer.js"
+    onerror="console.error('Section navigation could not be loaded.')"></script>
   <script type="module">
     /**
      * @file BC Hydro Distribution Engineering "Check & Review Form".

@@ -7,16 +7,15 @@
   <meta name="description" content="BC Hydro Distribution Engineering Check & Review Form">
   <title>Distribution Engineering Check Form</title>
   <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23046a38'/><path d='M8 17l5.5 5.5L24 11' stroke='%23fff' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23046a38'/><path d='M8 17l5.5 5.5L24 11' stroke='%23fff' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
+        rel="stylesheet">
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
   <!-- Quill CSS loaded on demand (lazy) -->
   <style>
     /* ============================================================
@@ -403,6 +402,27 @@
       background: var(--surface);
     }
 
+    #card-re {
+      animation: flying-card-in 0.3s ease forwards;
+      display: block;
+    }
+
+    #card-re.card.hidden {
+      display: none;
+    }
+
+    #card-re.card.hidden.is-closing {
+      display: block;
+      animation: flying-card-out 0.3s ease forwards;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #card-re {
+        animation: none;
+      }
+    }
+
     #card-ds {
       border-left: 0;
       border-right: 0;
@@ -424,6 +444,30 @@
       min-width: 24px;
       min-height: 24px;
       transition: all 0.3s ease;
+    }
+
+    @keyframes flying-card-in {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes flying-card-out {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
     }
 
     a.help-link .material-symbols-sharp {
@@ -456,8 +500,7 @@
       -webkit-user-select: none;
       gap: var(--gap-md);
       background: var(--header-bg);
-      transition: all 0.3s ease;
-
+      transition: background 0.3s ease, transform 0.3s ease;
     }
 
     .sec-head:hover {
@@ -961,7 +1004,7 @@
       align-items: center;
       gap: var(--space-24);
       flex-wrap: wrap;
-      padding: var(--space-cell-y) var(--space-cell-x);
+      padding: var(--space-4) var(--space-16);
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
@@ -970,7 +1013,10 @@
       row-gap: var(--gap-sm);
       column-gap: var(--space-24);
       transition: all 0.3s ease;
+    }
 
+    .reference {
+      padding: var(--space-12) var(--space-16);
     }
 
     .check-row:last-child,
@@ -978,7 +1024,8 @@
       border-bottom: none;
     }
 
-    .check-row:hover {
+    .check-row:hover,
+    .reference:hover {
       background: var(--bg);
       z-index: 1;
     }
@@ -996,7 +1043,8 @@
       background: var(--header-bg);
     }
 
-    .check-text {
+    .check-text,
+    .reference-text {
       flex: 1;
       min-width: 0;
       font-size: var(--font-size-sm);
@@ -1046,9 +1094,9 @@
     }
 
     .pill-group label {
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-xs);
       font-weight: 600;
-      font-family: 'Roboto', ui-monospace, monospace;
+      font-family: var(--font-mono);
       cursor: pointer;
       color: var(--text-muted);
       transition: background-color 0.1.5s ease, color 0.15s ease, border 0.15s ease;
@@ -1341,16 +1389,16 @@
       border: 0;
       bottom: 20px;
       max-height: 200px;
+      max-width: 600px;
       inset: auto;
       margin: var(--space-24) 0;
 
-      padding: var(--space-cell-y) var(--space-cell-x);
-      background: var(--color-primary);
+      padding: var(--space-12) var(--space-16);
+      background: var(--color-info);
       color: var(--color-secondary);
       font-size: var(--font-size-sm);
       line-height: var(--line-height-base);
       filter: drop-shadow(5px 5px 5px #00000080);
-      border-radius: 8px;
 
       overflow: visible;
     }
@@ -1366,7 +1414,7 @@
       margin-left: -5px;
       border-width: 10px;
       border-style: solid;
-      border-color: var(--color-primary) transparent transparent transparent;
+      border-color: var(--color-info) transparent transparent transparent;
     }
 
 
@@ -1982,8 +2030,7 @@
        15. Utility
        -------------------------------- */
     .hidden {
-      transition: all 0.3s ease;
-      display: none !important;
+      display: none;
     }
 
     .seal {
@@ -2316,7 +2363,7 @@
           element.href = src;
         }
         let settled = false;
-        /** Settles the promise exactly once and cleans up the element. */
+        /** Settles once, removes event handlers, and removes the element on failure. */
         const done = err => {
           if (settled) return;
           settled = true;
@@ -2336,7 +2383,8 @@
     }
 
     /**
-     * Loads a library by key, trying the same-origin copy first and the CDN second.
+     * Loads an asset by key, trying the HydroShare copy first and the CDN second.
+     * The HydroShare URL is relative when the current URL starts with URL_PREFIX.
      * @param {keyof typeof CDN} key Key into CDN / CDN_ALT.
      * @param {'script'|'stylesheet'} [kind='script'] Asset type.
      * @param {number} [timeoutMs=10000] Per-source timeout.
@@ -2364,7 +2412,7 @@
      * @param {{fallback?: string, underscores?: boolean}} [opts]
      * @returns {string}
      */
-    function safeFileBase (title, { fallback = 'DE_CheckForm', underscores = false } = {}) {
+    function safeFileBase (title, { fallback = 'DE', underscores = false } = {}) {
       let base = (title || '').trim().replace(/[\\/:*?"<>|]+/g, '-');
       if (underscores) base = base.replace(/\s+/g, '_');
       return base.trim().slice(0, 80) || fallback;
@@ -2494,7 +2542,7 @@
     }
 
     /**
-     * Escapes ampersands, angle brackets, and double quotes for safe use in markup text or attributes.
+     * Escapes ampersands, angle brackets, and double quotes for markup text or double-quoted attributes.
      * @param {*} text Value to escape (converted to string).
      * @returns {string}
      */
@@ -2528,7 +2576,7 @@
     /**
      * Finds the editing surface for a comment field in the live or cloned document.
      * @param {string} fieldId Hidden field id.
-     * @param {ParentNode} root Search root.
+     * @param {ParentNode} [root=document] Search root.
      * @returns {Element|null}
      */
     function commentSurface (fieldId, root = document) {
@@ -2560,7 +2608,7 @@
        * @example HtmlBuilder.el('div', {class: 'x', hidden: true, text: 'hi'}, child)
        * @param {string} tag Tag name.
        * @param {Object<string, *>|null} [attrs] Attribute map.
-       * @param {...(Node|string|Array|null|false)} kids Children (arrays are flattened, falsy skipped).
+       * @param {...(Node|string|Array|null|false)} kids Children; arrays are flattened one level and null, undefined, and false are skipped.
        * @returns {HTMLElement}
        */
       static el (tag, attrs, ...kids) {
@@ -2633,9 +2681,10 @@
       }
 
       /**
-     * Creates the section tooltip.
-     * @returns {HTMLDivElement}
-     */
+       * Creates the peer-review section tooltip.
+       * @param {string} text Tooltip text.
+       * @returns {HTMLDivElement}
+       */
       static tooltip (text) {
         return HtmlBuilder.el('div', { class: 'sec-tooltip', id: 'prTooltip', popover: 'auto' }, HtmlBuilder.el('span', { class: 'tooltip-text', text }));
       }
@@ -2681,7 +2730,8 @@
       }
 
       /**
-       * Creates a collapsible section header: number badge, title, optional count badge, Clear button, chevron.
+       * Creates a section header with a number badge, title, optional count and Clear button,
+       * and either a chevron or a close control.
        * @param {Object} cfg Header settings.
        * @param {string} cfg.id Header id.
        * @param {string} cfg.controls Id of the body this header toggles.
@@ -2690,8 +2740,10 @@
        * @param {Node|string} cfg.num Badge content.
        * @param {string} cfg.title Section title.
        * @param {string} [cfg.badgeId] Id of the "0 / N" counter; omitted when the section has none.
-       * @param {string} cfg.clearId Id of the Clear button.
+       * @param {string} [cfg.clearId] Id of the optional Clear button.
        * @param {string} [cfg.testid] data-testid of the Clear button.
+       * @param {boolean} [cfg.tooltip] Whether the header references the peer-review tooltip.
+       * @param {boolean} [cfg.close=false] Whether to show a close control instead of a chevron.
        * @returns {HTMLDivElement}
        */
       secHead ({ id, controls, open, numId, num, title, badgeId, clearId, testid, tooltip, close = false }) {
@@ -2768,6 +2820,7 @@
        * @param {string} forId Select id and name.
        * @param {string[]} options Option labels.
        * @param {{text: string, disabled?: boolean}} placeholder First option; disabled when `disabled` is true.
+       * @param {boolean} [locked=false] Whether the select starts disabled.
        * @returns {HTMLDivElement}
        */
       selectCell (cls, label, forId, options, placeholder, locked = false) {
@@ -3149,7 +3202,7 @@
             el(
               'ul',
               null,
-              el('li', null, el('bold', null, 'Electronic Signature: '), 'Before clicking the "Complete(pdf)" button, upload an image of your signature, or draw it here.'),
+              el('li', null, el('bold', null, 'Electronic Signature: '), 'Before clicking the "COMPLETE (PDF)" button, upload an image of your signature, or draw your signature here - switch using the tab buttons on the left side of the signature box. '),
               el('li', null, el('bold', null, 'Digital Signature: '), 'If no electronic signature is provided, once the PDF is generated, a signable field is added automatically for you to sign.'),
               el('li', null, 'Both methods comply to EGBC requirements.')
             )
@@ -3303,33 +3356,41 @@
         );
       }
 
+      /**
+       * Builds the initially hidden reference card with links to the practice and risk assessments.
+       * @returns {HTMLDivElement}
+       */
       buildReferenceCard () {
         const { el, icon } = HtmlBuilder;
-        const referenceText_1 = el();
+        const referenceText_1 = el('span', { class: 'reference-text' }, 'For roles and responsibilities related to the checking and reviewing of DE work, refer to ', el('a', {
+          href: 'https://bchydro.sharepoint.com/sites/Distribution-Engineering-Doc-Hub/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FDistribution%2DEngineering%2DDoc%2DHub%2FShared%20Documents%2FEGBC%20Practice%20Documents%2FCheck%20and%20Review%2FDE%20Check%20and%20Review%20Practice%2Epdf&parent=%2Fsites%2FDistribution%2DEngineering%2DDoc%2DHub%2FShared%20Documents%2FEGBC%20Practice%20Documents%2FCheck%20and%20Review',
+          target: '_blank',
+          rel: 'noopener noreferrer',
+        }, el('strong', { text: 'DE Check and Review Practice' })));
         const referenceText_2 = el(
           'span',
-          { class: 'check-text' },
-          'Work is deemed as "Low-Risk" as per the latest ',
+          { class: 'reference-text' },
+          'Work shall be risk-assessed in accordance with the ',
           el(
             'a',
             {
-              href: 'file://bchydro.adroot.bchydro.bc.ca/data/Engineering/Distribution/0%20EGBC%20Filing/0%20Guidelines%20and%20References/',
+              href: 'https://bchydro.sharepoint.com/:x:/r/sites/Distribution-Engineering-Doc-Hub/_layouts/15/Doc.aspx?sourcedoc=%7B9936CBEA-4D26-497C-B9F9-42D27D48B004%7D&file=DE%20Global%20Risk%20Assessment.xlsx&action=default&mobileredirect=true',
               target: '_blank',
               rel: 'noopener noreferrer',
             },
-            el('strong', { text: 'DE Documents and Processes' })
+            el('strong', { text: 'DE Global Risk Assessment' })
           ),
-          ' sheet, or per a completed ',
+          ' sheet. For work not listed in the sheet, a ',
           el(
             'a',
             {
-              href: 'https://hydroshare.bchydro.bc.ca/sites/engineering/HydroWeb%20Documents/Engineering%20Check%20%2526%20Review%20Documents/Risk%20Assessment%20-%20Project%20Based%20Work.xlsx?d=w78127d17a5794a559fb2d8bf31cf31ae',
+              href: 'https://bchydro.sharepoint.com/:x:/r/sites/engineering/_layouts/15/Doc.aspx?sourcedoc=%7B1DF83BB6-1350-40A3-B01A-2A6F9D66A084%7D&file=Risk%20Assessment%20-%20Project%20Based%20Work.xlsx&action=default&mobileredirect=true',
               target: '_blank',
               rel: 'noopener noreferrer',
             },
-            el('strong', { text: 'Project Based Risk Assessment' })
+            el('strong', { text: 'Risk Assessment - Project Based Work' })
           ),
-          ' for work not listed in that sheet.'
+          ' shall be completed.'
         );
         const reference = (text) => el('div', { class: 'reference' }, el('div', {
           class: 'reference-bullet', text: "◯",
@@ -3878,13 +3939,13 @@
       }
 
       /**
-       * Wires the canvas pen and the upload controls.
+       * Wires the canvas pen, upload controls, and tooltip triggers.
        * @returns {void}
        */
       init () {
         if (this.#canvas) { this.#setupCanvasDrawing(); }
         this.#bindUploadControls();
-        this.#showTooltip();
+        this.#setupTooltip();
       }
 
       // ---------- Tabs ----------
@@ -4003,9 +4064,10 @@
 
       /**
        * Shows or clears the inline signature preview and switches to the matching tab.
+       * Hides an open signature tooltip when a signature is added.
        * @param {string} prefix Section prefix.
        * @param {string} dataUrl Image data URL, or '' to clear.
-       * @param {'draw'|'upload'} [tab] Tab to activate for a saved signature.
+       * @param {'draw'|'upload'} [tab='draw'] Tab to activate for a saved signature.
        * @returns {void}
        */
       setPreview (prefix, dataUrl, tab = 'draw') {
@@ -4019,6 +4081,8 @@
           else img.removeAttribute('src');
           area.classList.toggle('has-signature', !!dataUrl);
         });
+        const tooltip = getById(container.getAttribute('aria-describedby'));
+        if (dataUrl && tooltip?.matches(':popover-open')) tooltip.hidePopover();
         const tabBtn = container.querySelector(`.btn-sig-tab[data-tab="${dataUrl ? tab : 'upload'}"]`);
         if (tabBtn) this.setTab(tabBtn);
       }
@@ -4128,19 +4192,29 @@
       }
 
       // ---------- Signature Tooltip ----------
-      #showTooltip () {
+      /**
+       * Attaches delayed show and hide handlers to tooltip triggers and their popovers.
+       * Signature tooltips are suppressed while their container has a signature.
+       * @returns {void}
+       */
+      #setupTooltip () {
         const
           SHOW_DELAY = 150,
           HIDE_DELAY = 100;
 
         for (const trigger of document.querySelectorAll('.tooltip-trigger')) {
+
           const tooltip = document.getElementById(trigger.getAttribute('aria-describedby'));
 
           let showTimer, hideTimer;
 
           const show = () => {
             clearTimeout(hideTimer);
-            showTimer = setTimeout(() => { tooltip?.showPopover(); }, SHOW_DELAY);
+            clearTimeout(showTimer);
+            showTimer = setTimeout(() => {
+              if (trigger.matches('.signature-pad-container') && trigger.querySelector('.has-signature')) return;
+              tooltip?.showPopover();
+            }, SHOW_DELAY);
           }
 
           const hide = () => {
@@ -4401,7 +4475,8 @@
         canvas.addEventListener('dblclick', () => this.clearCanvas());
 
         /**
-         * One animation frame: moves the brush, updates the width, draws one curve segment.
+         * One animation frame: moves the brush, updates the width, and draws a curve segment
+         * while a pointer is active.
          * @param {number} ts High-resolution timestamp from requestAnimationFrame.
          */
         this.#frame = ts => {
@@ -4574,7 +4649,7 @@
       /**
        * Loads DOMPurify (optional), Quill, and Quill's CSS in parallel.
        * A DOMPurify failure is tolerated (the allowlist sanitizer takes over).
-       * @returns {Promise<Array>}
+       * @returns {Promise<[void, void, void]>} Results of the purifier, Quill, and stylesheet loads.
        */
       #loadDependencies () {
         const purifier =
@@ -4676,7 +4751,8 @@
       }
 
       /**
-       * Tells whether an editor (or HTML string) has no text and no image.
+       * Tests for empty text and image markup. For string input, image detection requires
+       * a space after the img tag name; element input checks any img tag.
        * @param {Element|string|null} editorOrHtml Editor element or HTML.
        * @returns {boolean}
        */
@@ -4701,7 +4777,7 @@
       }
 
       /**
-       * Replaces one editor container with a Quill instance, keeping any existing content.
+       * Initializes Quill in an editor container, preserving existing content when present.
        * @param {string} fieldId Hidden field id.
        * @param {string} placeholder Editor placeholder.
        * @returns {void}
@@ -4803,9 +4879,9 @@
       }
 
       /**
-       * Builds the starting HTML of a fallback editor from saved text and gallery thumbnails.
-       * Plain text is wrapped in a paragraph with line breaks; gallery images are appended
-       * when the saved HTML has none.
+       * Builds starting HTML for a fallback editor from saved content and gallery thumbnails.
+       * Gallery images are appended when the saved content has no "<img" substring; content
+       * without HTML tags is escaped and wrapped in a paragraph with line breaks.
        * @param {string} initial Saved content (HTML or plain text).
        * @param {Element|null} gallery Image gallery element.
        * @returns {string} HTML.
@@ -5038,7 +5114,7 @@
       }
 
       /**
-       * Sizes each visible editor to fit its own content.
+       * Sizes each editor whose comments cell does not have the hidden class.
        * An immediate pass replaces any queued height pass.
        * @returns {void}
        */
@@ -5280,7 +5356,7 @@
 
       /**
        * Describes each checklist section for the progress calculation.
-       * @returns {Array<{prefix: string, rowsEl: Element, count: number, badge: Element, num: Element, label: string, cardEl: Element|null}>}
+       * @returns {Array<{prefix: string, rowsEl: Element|null, count: number, badge: Element|null, num: Element|null, label: string, cardEl: Element|null}>}
        */
       #buildSectionConfig () {
         return SECTION_DEFS
@@ -5451,7 +5527,7 @@
 
       /**
        * Builds the rows of one checklist section: number, text, Yes/No/N-A radios, notice area.
-       * Radio names are `<prefix><n>` and lockControl `<prefix><n>_<value>` (for example "sc8_yes").
+       * Radio names are `<prefix><n>` and input IDs are `<prefix><n>_<value>` (for example "sc8_yes").
        * @param {Element|null} container Rows container.
        * @param {string} prefix Section prefix.
        * @param {string[]} items Question texts (HTML allowed, from trusted CONFIG).
@@ -5493,7 +5569,7 @@
       // ---------- Global delegated handlers ----------
 
       /**
-       * Clears a valid field's warning label style and schedules a progress refresh.
+       * Schedules a progress refresh for input and select targets.
        * @param {Element} target Event target.
        * @returns {void}
        */
@@ -5502,13 +5578,18 @@
         this.scheduleUpdateProgress();
       }
 
+      /**
+       * Schedules a progress refresh when an input or select loses focus.
+       * @param {FocusEvent} e Blur event.
+       * @returns {void}
+       */
       #handleBlur (e) {
         const target = e.target;
         this.#onFieldMaybeValid(target);
       }
       /**
        * Single click handler for the whole page (event delegation).
-       * Order: signature tabs, open pad, clear preview, modal actions, section toggle,
+       * Order: reference controls, signature tabs, open pad, clear preview, modal actions, section toggle,
        * risk buttons, and registered buttons.
        * @param {MouseEvent} e Click event.
        * @returns {void}
@@ -5521,13 +5602,27 @@
         if (referenceToggle || referenceClose) {
           e.preventDefault();
           if (referenceToggle) this.#referenceTrigger = referenceToggle;
-          const visible = this.elements.cardRe.classList.contains('hidden');
-          this.setSectionVisibility(
-            this.elements.cardRe,
-            this.elements.reHead,
-            this.elements.reBody,
-            visible
-          );
+          const { cardRe, reHead, reBody } = this.elements;
+          const visible = cardRe.classList.contains('hidden');
+          cardRe.onanimationend = null;
+          cardRe.classList.remove('is-closing');
+          if (visible) {
+            cardRe.removeAttribute('inert');
+            cardRe.removeAttribute('aria-hidden');
+            this.setSectionVisibility(cardRe, reHead, reBody, true);
+          } else if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            this.setSectionVisibility(cardRe, reHead, reBody, false);
+          } else {
+            cardRe.setAttribute('inert', '');
+            cardRe.setAttribute('aria-hidden', 'true');
+            cardRe.classList.add('hidden', 'is-closing');
+            cardRe.onanimationend = event => {
+              if (event.target !== cardRe || event.animationName !== 'flying-card-out') return;
+              cardRe.onanimationend = null;
+              cardRe.classList.remove('is-closing');
+              this.setSectionOpen(reHead, reBody, false);
+            };
+          }
           document.querySelectorAll('.help-link[aria-controls="card-re"]').forEach(link => {
             link.setAttribute('aria-expanded', String(visible));
             link.setAttribute('aria-label', `${visible ? 'Hide' : 'Show'} reference`);
@@ -5605,7 +5700,8 @@
       }
 
       /**
-       * Delegated change handler: radio answers, field validity, check-level changes, comment editors.
+       * Delegated change handler: schedules progress updates and handles radio answers,
+       * check-level changes, and comment-editor sizing.
        * @param {Event} e Change event.
        * @returns {void}
        */
@@ -5649,7 +5745,8 @@
       }
 
       /**
-       * Delegated keydown handler: Escape closes the signature modal; Enter / Space toggles a section header.
+       * Delegated keydown handler: Escape closes the signature modal; Enter / Space activates
+       * the reference close control or toggles a section header.
        * @param {KeyboardEvent} e Keydown event.
        * @returns {void}
        */
@@ -5767,7 +5864,7 @@
         if (answers[9] === 'yes') {
           notices[9].push({
             message: `<b>Action required:</b> Question 1.9 is "Yes". The <b>POR</b> must complete the
-          <b>Section 3 - Check</b> and the <b>Section 6 - Independent Structural Review</b>.`, type: 'warn'
+          <b>Section 3 - Check</b> and the <b>Section 5 - Independent Structural Review</b>.`, type: 'warn'
           });
           if (level === 'low') {
             notices[9].push({
@@ -6110,6 +6207,10 @@
         };
       }
 
+      /**
+       * Refreshes section counts, completion indicators, and PDF-button state.
+       * @returns {ReturnType<CheckForm['getReadinessState']>} The current readiness state.
+       */
       updateProgress () {
         clearTimeout(this.#progressTimer);
         this.#progressTimer = null;
@@ -6181,8 +6282,8 @@
       }
 
       /**
-       * Mirrors the CSS rules that hide the required-field underline, without reading computed
-       * styles (which would force layout). Hidden means: the field is not applicable or is valid.
+       * Determines whether an underline counts as satisfied without reading computed styles.
+       * Hidden or inactive cards, disabled controls, and valid controls count as satisfied.
        * @param {Element} el An underline element.
        * @returns {boolean} True when the field counts as valid.
        */
@@ -6281,7 +6382,7 @@
           t.value = '';
         });
         root.querySelectorAll('.risk-btn').forEach(b => b.classList.remove('active'));
-        root.querySelectorAll('.sig-draw-surface').forEach(el => el.classList.remove('has-signature'));
+        root.querySelectorAll('.sig-draw-surface, .sig-upload-area').forEach(el => el.classList.remove('has-signature'));
         this.#comments.clearContent(root);
         this.#comments.clearGalleries(root);
         this.#comments.syncAllHidden();
@@ -6456,11 +6557,12 @@
 
           const definition = await this.#buildPdfDefinition();
           const title = safeFileBase(getById('workTitle')?.value);
+          const ts = new Date().toLocaleDateString('en-CA');
 
           const pdfBytes = await window.pdfMake.createPdf(definition).getBuffer();
 
           const finalBytes = await this.#addSignatureFields(pdfBytes);
-          downloadBlob(new Blob([finalBytes], { type: 'application/pdf' }), `${title}.pdf`);
+          downloadBlob(new Blob([finalBytes], { type: 'application/pdf' }), `${title}_Check_Form_${ts}.pdf`);
           this.showToast('PDF saved successfully', 'success');
         } catch (error) {
           console.error('PDF export failed:', error);
@@ -6480,7 +6582,7 @@
       /**
        * Returns a section's signature image prepared for the PDF, or '' when unsigned.
        * @param {string} prefix Section prefix.
-       * @returns {Promise<string>} PNG data URL.
+       * @returns {Promise<string>} PNG data URL, or '' when unsigned.
        */
       async #signatureForPdf (prefix) {
         const dataUrl = getById(`${prefix}_sig_data`)?.value || '';
@@ -6674,7 +6776,8 @@
 
       /**
        * Reads the form into a plain object used to build the PDF.
-       * Only sections that are visible are read; hidden ones get empty signatures and comments.
+       * Reads checklist and field values for all sections; signatures and comments are loaded
+       * only for sections marked visible.
        * @param {Object<string, boolean>} visible Section visibility by key (info, sc, ds, ch, pr, ir, fT1).
        * @returns {Promise<Object>} Data object grouped by section.
        */
@@ -6785,8 +6888,8 @@
       }
 
       /**
-       * Builds the pdfmake document definition: A4 page, styles, content sections, and the
-       * `pageBreakBefore` callback that keeps tables together and records signature-field positions.
+       * Builds the pdfmake document definition: A4 page, styles, applicable content sections,
+       * and a `pageBreakBefore` callback that records signature-field positions.
        * @returns {Promise<Object>} pdfmake document definition.
        */
       async #buildPdfDefinition () {
@@ -6845,12 +6948,11 @@
           },
           defaultStyle: { font: 'Roboto', fontSize: PDF_FONT_SIZES.base },
           /**
-           * pdfmake calls this for every node while it lays out pages.
-           *   - A checklist section title moves with its checklist when the table starts on the next page.
-           *   - "keep-table:*" nodes that would split across pages move to a fresh page, unless they
-           *     already start near the top (within 15 pt), where moving gains nothing.
-           *   - Signature tables also move when the signing row would not fit on the current page.
-           *   - "sigfield:*" nodes only record where a signature field must be placed (and return false).
+           * Records the position of each "sigfield:*" node during layout.
+           * Always returns false, so it does not request a page break.
+           * @param {Object} node Current pdfmake layout node.
+           * @param {Object} nodeContainer Access to neighboring layout nodes.
+           * @returns {boolean} Always false.
            */
           pageBreakBefore: (node, nodeContainer) => {
             const id = String(node.id ?? '');
@@ -6961,7 +7063,7 @@
       }
 
       /**
-       * Table with a full-width empty cell that hosts the clickable PDF signature field.
+       * Builds a three-column signature table with a fixed-height signing row.
        * @param {Object[]} headerCells Three header cells.
        * @param {Object[]} valueCells Three value cells.
        * @param {string} prefix Section prefix (sets the row height and the keep-together id).
@@ -6999,6 +7101,10 @@
         };
       }
 
+      /**
+       * Creates the light horizontal-line layout used by PDF information and checklist tables.
+       * @returns {Object} pdfmake layout object.
+       */
       #lightHorizontalLines () {
         return {
           hLineWidth: (i, node) => {
@@ -7158,6 +7264,11 @@
         };
       }
 
+      /**
+       * Builds a PDF section title and its checklist table as an unbreakable stack.
+       * @param {{prefix: string, sectionTitle: string, checklist: Array<{question: string, answer: string}>}} data Section data.
+       * @returns {Object} pdfmake node.
+       */
       #buildListTable (data) {
         return {
           stack: [
@@ -7281,15 +7392,23 @@
       // ---------- Save snapshot ----------
 
       /**
-       * Saves the page as a standalone HTML file that reopens with all answers filled in.
-       * Live values are copied into the cloned markup as attributes (value, checked, selected),
-       * and a JSON block with the same state is appended for tools that read it.
+       * Saves a standalone HTML snapshot. Live control values are copied into the cloned markup
+       * (textarea contents or value, checked, and selected attributes), and a JSON state block is
+       * appended. An in-progress reference-card exit is saved in its closed state.
        * @returns {void}
        */
       saveSnapshot () {
         this.#comments.syncAllHidden();
         const clone = document.documentElement.cloneNode(true);
         const formState = {};
+
+        const closingReference = clone.querySelector('#card-re.is-closing');
+        if (closingReference) {
+          closingReference.classList.remove('is-closing');
+          closingReference.removeAttribute('inert');
+          closingReference.removeAttribute('aria-hidden');
+          this.setSectionOpen(closingReference.querySelector('#sec-re-head'), closingReference.querySelector('#sec-re-body'), false);
+        }
 
         /** Finds the clone's copy of a live control: by id first, then by radio / checkbox name and value. */
         const findCloneControl = live => {
@@ -7361,7 +7480,7 @@
         const blob = new Blob([`<!DOCTYPE html>\n${clone.outerHTML}`], { type: 'text/html;charset=utf-8' });
         const safe = safeFileBase(this.elements.workTitle.value, { underscores: true });
         const ts = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, never contains "/"
-        let filename = `${safe}_snapshot_${ts}.html`;
+        let filename = `${safe}_Check_Form_${ts}.html`;
         if (window.location.protocol === 'file:') {
           const chosen = prompt('Save snapshot as:', filename);
           if (!chosen) return;
@@ -7374,7 +7493,7 @@
       // ---------- Cleanup ----------
 
       /**
-       * Removes all listeners and timers created by this instance.
+       * Removes the delegated listeners and pending progress timer, and cleans up comment editors.
        * @returns {void}
        */
       destroy () {
@@ -7399,8 +7518,8 @@
     // ============================================================
 
     /**
-     * Keeps a hidden plain-text copy of the form (#readerSummary) up to date,
-     * because reader modes drop form controls but keep text.
+     * Renders a hidden plain-text copy of the form (#readerSummary) for reader modes.
+     * The summary is refreshed on pageshow and visibilitychange, or by calling render directly.
      */
     const readerSummary = (() => {
       const clean = s => (s || '').replace(/\s+/g, ' ').trim();
